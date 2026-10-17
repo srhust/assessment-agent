@@ -134,8 +134,13 @@ def solve_figure_regions(
         )
 
     canvas_file: Optional[str] = None
-    if canvas_path is not None:
-        canvas_file = _save_canvas(canvas, Path(canvas_path))
+    if canvas_path is None:
+        # 叠加规律需要按 bbox 从同一张掩码文件重读选项区域——必须保证画布存在，
+        # 未指定路径时默认落在题干裁剪同目录，命名可追溯
+        canvas_path = Path(stem).parent / f"{Path(stem).stem}_adapter_canvas.png"
+    canvas_file = _save_canvas(canvas, Path(canvas_path))
+    if canvas_file is None:
+        raise ToolError("合成证据画布落盘失败，无法执行叠加规律复核")
 
     layout = {
         "path": canvas_file or str(stem),

@@ -41,6 +41,12 @@ class CaseResult:
     routed_skill: Optional[str] = None  # Router 预测的题型
     route_source: Optional[str] = None  # 路由来源（rules/llm/explicit）
     route_confidence: Optional[float] = None  # 路由置信度
+    # 评测输入模式与 E2E（image-only）字段
+    input_mode: str = "oracle_solver"  # oracle_solver / auto_router / image_only
+    extraction_accurate: Optional[bool] = None  # 解析题干是否与金标准一致
+    region_iou: Optional[float] = None  # 题干矩阵区域 IoU（vs 标注）
+    option_map_ok: Optional[bool] = None  # 选项标号集合是否与标注一致
+    run_ref: Optional[str] = None  # image_only 模式对应的 runs/ 产物目录（可追溯证据）
 
     def as_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -210,6 +216,21 @@ class MetricsAccumulator:
         )
         answerable_coverage = round(covered_answerable / len(answerable), 4) if answerable else 0.0
 
+        # E2E（image-only）模块级归因指标：视觉解析 / 区域 IoU / 选项映射 / 端到端
+        e2e_items = [item for item in self._results if item.input_mode == "image_only"]
+        e2e: Dict[str, Any] = {}
+        if e2e_items:
+            extraction_flags = [item.extraction_accurate for item in e2e_items if item.extraction_accurate is not None]
+            region_ious = [item.region_iou for item in e2e_items if item.region_iou is not None]
+            option_flags = [item.option_map_ok for item in e2e_items if item.option_map_ok is not None]
+            e2e = {
+                "cases": len(e2e_items),
+                "extraction_accuracy": round(sum(1 for flag in extraction_flags if flag) / len(extraction_flags), 4) if extraction_flags else None,
+                "region_iou_mean": round(mean(region_ious), 4) if region_ious else None,
+                "option_mapping_accuracy": round(sum(1 for flag in option_flags if flag) / len(option_flags), 4) if option_flags else None,
+                "end_to_end_accuracy": round(sum(1 for item in e2e_items if item.correct) / len(e2e_items), 4),
+            }
+
         return {
             "total": total,
             "correct": correct,
@@ -228,6 +249,7 @@ class MetricsAccumulator:
             "route_total": len(route_items),
             "route_correct": route_correct,
             "route_accuracy": round(route_correct / len(route_items), 4) if route_items else 0.0,
+            "e2e": e2e,
             # 原有指标
             "unsupported": sum(1 for item in self._results if item.status == "unsupported"),
             "failed": sum(1 for item in self._results if item.status == "failed"),

@@ -78,6 +78,7 @@ def _crop_and_save(source: Path, bbox: Sequence[int], target: Path) -> bool:
     crop = gray[y : y + h, x : x + w]
     if crop.size == 0:
         return False
+    crop = crop.astype("uint8")
     target.parent.mkdir(parents=True, exist_ok=True)
     try:
         import cv2
@@ -88,7 +89,7 @@ def _crop_and_save(source: Path, bbox: Sequence[int], target: Path) -> bool:
     try:
         from PIL import Image
 
-        Image.fromarray(crop.astype("uint8")).save(target)
+        Image.fromarray(crop).save(target)
         return True
     except Exception:  # noqa: BLE001
         return False

@@ -16,6 +16,7 @@
       ▼
 ┌───────────────┐   截图时调用视觉模型，只抄写可见内容
 │   Extraction  │   extraction.json（题干 + 选项 + 置信度 + 警告）
+│  +区域(R2a)   │   VISION_PARSER=true：schema v2 区域坐标 + 题干矩阵/选项裁剪像素证据
 └───────┬───────┘
         ▼
 ┌───────────────┐   规则打分优先，LLM 兜底；可显式指定题型
@@ -24,6 +25,7 @@
         ▼
 ┌───────────────┐   Skill = 题意归一 + 选工具 + 组织步骤
 │    Solver     │──▶ tools: python_math (SymPy) / number_series / z3_logic / figure_tools
+│  +适配层(R2a) │      图形题优先用"题干矩阵裁剪 + 选项裁剪"经 figure_adapter 喂入原六类规律引擎
 └───────┬───────┘   solution.json（答案 / 步骤 / 置信度 / 工具调用轨迹）
         ▼
 ┌───────────────┐   结构校验 + 题型专属复核（独立重算 / 留出预测 / Z3 重建模）
@@ -50,7 +52,8 @@ assessment-agent/
 │   ├── schemas.py         # 全局 Pydantic 数据结构
 │   ├── llm.py             # OpenAI 兼容客户端（文本 + 视觉、重试、JSON 容错）
 │   ├── prompts.py         # 提示词模板（与逻辑分离）
-│   ├── vision.py          # 截图 -> ExtractionResult
+│   ├── vision.py          # 截图 -> ExtractionResult（schema v1 纯文本，兼容保留）
+│   ├── vision_parser.py   # R2a：截图 -> 区域化 schema v2（坐标校验 + OpenCV/PIL 裁剪像素证据）
 │   ├── router.py          # 题型路由（规则 + LLM 兜底）
 │   ├── solver.py          # Skill 调度与异常归一
 │   ├── verifier.py        # 独立校验（结构 + 题型复核 + 可选 LLM 交叉校验）
@@ -60,12 +63,13 @@ assessment-agent/
 │   ├── cli.py             # solve / eval / skills / doctor / inspect / mcp-manifest / call
 │   ├── integration.py     # DSH / MCP 接入层（工具清单 + tools/call 形状调用）
 │   ├── skills/            # 八个题型 Skill（4 个 MVP + 4 个声明式接口）
-│   ├── tools/             # SymPy 计算、数列规律、Z3 约束、图形布局与规律引擎
+│   ├── tools/             # SymPy 计算、数列规律、Z3 约束、图形布局/规律引擎、图形布局适配层
 │   ├── knowledge/         # 知识库加载器（Markdown）
-│   └── evaluation/        # 数据集加载、指标、评测执行器
+│   └── evaluation/        # 数据集加载、指标、评测执行器（oracle/auto/image 三模式）
 ├── data/{train,dev,test}/ # 按题型分文件的 JSONL 数据集
+├── data/screens/          # R2a 合成截图基准（images + regions 裁剪 + screens.jsonl 金标准）
 ├── knowledge/             # 八个题型的方法论笔记
-├── tests/                 # 120 个 pytest 单元测试
+├── tests/                 # 143 个 pytest 单元测试（+1 真实模型用例，未配置时显式 skip）
 ├── runs/                  # 运行产物（gitignore）
 ├── results/               # 评测结果（gitignore）
 ├── .env.example
@@ -216,7 +220,8 @@ image/original.png  # 原始题图，原样保存
 ## 6. 数据集与评测
 
 ```
-data/train/  data/dev/  data/test/
+data/train/  data/dev/  data/test/     # 文本/整图样本
+data/screens/                          # R2a 合成截图基准（截图 + 区域金标准）
 ```
 
 样本为一题一行的 JSONL，字段见 [`data/README.md`](data/README.md)。评测强制路由到样本声明的题型，
@@ -231,10 +236,42 @@ python -m assessment_agent eval --split test
 | 指标 | 定义 | 说明 |
 | --- | --- | --- |
 | **Answer Accuracy** | 正确解答数 / 有标准答案的题目数 | 衡量解题能力 |
-| **Coverage** | 提供通过校验答案的题目数 / 全部可评分题目数 | 衡量系统覆盖率 |
+| **Answerable Coverage** | 给出通过校验答案的可答题数 / 全部可答题数 | ≤100%（错误接受的答案不计入分子） |
 | **Selective Accuracy** | 已通过校验的答案中，真正正确的比例 | 衡量答案可信度 |
 | **Abstention Accuracy** | 应当拒答的样本中，正确拒答的比例 | 衡量诚实拒答能力 |
-| **Router Accuracy** | 自动选择正确 Skill 的比例 | 衡量路由准确率 |
+| **Router Accuracy** | 自动选择正确 Skill 的比例 | oracle_solver 模式下显示 N/A |
+| **Extraction Accuracy** | image_only 下解析题干与金标准一致的比例 | 衡量 Vision Parser |
+| **Region IoU** | 题干矩阵识别区域与标注框的平均 IoU | 衡量区域定位质量 |
+| **Option Mapping Accuracy** | 选项标号（A/B/C/D/E）映射正确的比例 | 衡量选项布局解析 |
+| **End-to-End Accuracy** | 仅截图输入下最终答案正确的比例 | 全链路能力 |
+
+### 6.1 截图基准与三模式评测（R2a）
+
+`data/screens/` 由 `scripts/make_screenshot_benchmark.py` 生成——**合成评估页面截图**
+（纯文字题、数字序列、图形序列/两行选项/九宫格、低分辨率缩放、干扰页眉页脚、诚实失败、
+未实现题型弃权），每题带像素坐标金标准（`regions` 字段 + 题干/选项裁剪图）。
+生成时即用生产适配层自校验，杜绝"意外构造的坏基准"。
+
+评测按输入信息量分三级（`--eval-mode`）：
+
+| 模式 | 提供给系统的内容 | 考察范围 |
+| --- | --- | --- |
+| `oracle_solver` | 标准题干 + 金标准区域/标号 + 标注题型 | 仅 Solver/Verifier |
+| `auto_router` | 标准题干 + 金标准区域/标号，题型未知 | Router + Solver |
+| `image_only` | **仅原始截图**（无任何标注注入） | Vision + Router + Solver + Verifier 全链路 |
+
+```bash
+python -X utf8 scripts/make_screenshot_benchmark.py          # 重建基准（自校验）
+python -m assessment_agent eval --split screens --eval-mode oracle_solver
+python -m assessment_agent eval --split screens --eval-mode image_only   # 需配置视觉模型
+python -X utf8 scripts/run_screenshot_modes_report.py        # 三模式对照报告（results/screens/）
+```
+
+`image_only` 未配置视觉模型时会逐题记录 `pipeline_error`（诚实失败，不猜测）；
+配置真实模型后截图会走 VisionParser → 区域裁剪 → 图形适配层 → 独立复核，
+`runs/e2e-<case>/` 保存原图、抽取 JSON、区域裁剪图与警告。
+未配置 `LLM_API_KEY`/`LLM_VISION_MODEL` 时，真实模型端到端测试自动跳过并**明确报告"未执行"**——
+mock 视觉后端的结果只用于验证链路机制，绝不代表真实识别能力。
 
 ```
 split=test  样本 19  准确率 100.00%  用时 1.02s
@@ -266,7 +303,7 @@ python -m assessment_agent eval --split test --json
 
 ```bash
 python -m pytest -q
-# 120 passed
+# 143 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
 ```
 
 覆盖范围：
@@ -277,22 +314,26 @@ python -m pytest -q
 - 校验（数值篡改 → repair、数列篡改 → repair、逻辑复核、unsupported → reject、图形换阈值复算、Skill 复核异常 → blocking 失败）
 - Skill（8 个注册、4 个 MVP、声明式 Skill 绝不返回答案、数列歧义标记 ambiguous）
 - 流水线（文本端到端、内联选项解析、截图 + 假视觉模型端到端、缺视觉模型报错、产物完整性、拒答不暴露原始答案）
-- 评测（数据集加载、指标统计、失败归因、结果落盘、oracle/auto 路由模式、新指标计算、failed 状态严格匹配）
+- 评测（数据集加载、指标统计、失败归因、结果落盘、oracle/auto 路由模式、新指标计算、failed 状态严格匹配、answerable_coverage 不被错误拒答虚高）
 - 图形工具接口（布局解析、特征提取、规律引擎、Skill 端到端、诚实失败、换阈值复核）
+- Vision Parser（区域协议、越界/过小/空白/重复标号丢弃、裁剪像素证据、旧 payload 兼容、结构化失败）
+- 图形布局适配层（题干矩阵+选项裁剪→原六类规律引擎、标号映射保持、题干专属 grid、空白选项诚实失败）
+- 截图基准（oracle_solver/auto_router 全离线通过；image_only 用 mock 视觉后端验证全链路机制与产物落盘；真实模型用例未配置时显式 skip）
 - DSH / MCP 接入（清单结构、`tools/call` 形状、未知工具与非法参数、能力输出脱敏、`save=false` 不落盘）
 - CLI（solve / eval / skills / doctor / mcp-manifest / call 的返回码与输出）
 
-截图流程的测试使用 `FakeChatModel` 注入，无需真实 API Key。
+截图流程的离线测试使用注入的脚本化模型（`FakeChatModel`/mock 视觉后端），无需真实 API Key；
+mock 结果只证明链路机制，不用于宣称模型识别能力。
 
-> **重要说明**：当前 120 个测试和评测数据集仅使用**小规模合成数据**（19 道测试题），
+> **重要说明**：离线测试与评测数据集仅使用**小规模合成数据**（19 道文本题 + 9 张合成截图），
 > 主要用于验证系统架构、模块接口和核心逻辑的正确性。**这些测试结果不代表系统在真实招聘测评场景下的表现**。
 > 真实场景需要：
-> - 真实视觉模型（而非 FakeChatModel）
-> - 真实招聘测评截图（而非合成图片）
+> - 真实视觉模型（而非 mock payload）：配置 `LLM_VISION_MODEL` 后 `eval --split screens --eval-mode image_only` 才产生有效 E2E 指标
+> - 获授权的真实测评截图（当前基准全部为程序合成，`screens.jsonl` 的 `source.provenance` 字段有显式标注）
 > - 更大规模、更多样化的测试数据集
-> - 端到端的路由、求解、校验全链路验证
+> - 按失败归因分层改进：VLM 感知错误 ≠ 区域布局错误 ≠ Solver 规律错误 ≠ Verifier 误接受
 >
-> 下一步计划（R2）：打通真实截图理解链路，建立真实场景评测能力。
+> R2a 已打通"截图 → 区域 → 裁剪证据 → 适配层 → 求解 → 独立复核"机制；R2b 起进行真实截图泛化基准。
 
 ---
 

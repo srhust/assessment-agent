@@ -39,7 +39,7 @@ def build_parser() -> argparse.ArgumentParser:
     solve.add_argument("--json", action="store_true", help="以 JSON 输出结果")
 
     evaluate = subparsers.add_parser("eval", help="运行数据集评测")
-    evaluate.add_argument("--split", default="test", choices=["train", "dev", "test"])
+    evaluate.add_argument("--split", default="test", choices=["train", "dev", "test", "screens"])
     evaluate.add_argument("--skills", help="只评测指定题型，逗号分隔")
     evaluate.add_argument("--run-name", help="结果目录名")
     evaluate.add_argument("--no-save", action="store_true", help="不写 results/ 产物")
@@ -48,7 +48,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--route-mode",
         default="oracle",
         choices=["oracle", "auto"],
-        help="路由模式：oracle 使用标注题型，auto 由 Router 自动判断（默认 oracle）",
+        help="路由模式（兼容保留）：oracle→oracle_solver，auto→auto_router",
+    )
+    evaluate.add_argument(
+        "--eval-mode",
+        default=None,
+        choices=["oracle_solver", "auto_router", "image_only"],
+        help="评测输入模式：oracle_solver 标注题型+标准题干；auto_router 标准题干+自动路由；"
+        "image_only 仅原始截图（Vision+Router+Solver+Verifier 全链路，不注入任何标注）",
     )
 
     subparsers.add_parser("skills", help="列出题型 Skill")
@@ -141,6 +148,7 @@ def _cmd_eval(args: argparse.Namespace, settings: Settings) -> int:
             run_name=args.run_name,
             skills=skills,
             route_mode=args.route_mode,
+            eval_mode=getattr(args, "eval_mode", None),
         )
     except (FileNotFoundError, ValueError) as exc:
         print(f"[错误] {exc}", file=sys.stderr)
@@ -150,6 +158,7 @@ def _cmd_eval(args: argparse.Namespace, settings: Settings) -> int:
             json.dumps(
                 {
                     "split": summary.split,
+                    "eval_mode": summary.eval_mode,
                     "total": summary.total,
                     "accuracy": summary.accuracy,
                     "duration_s": summary.duration_s,
@@ -162,7 +171,17 @@ def _cmd_eval(args: argparse.Namespace, settings: Settings) -> int:
         )
     else:
         metrics = summary.metrics
-        print(f"split={summary.split}  样本 {summary.total}  准确率 {summary.accuracy:.2%}  用时 {summary.duration_s:.2f}s")
+        print(
+            f"split={summary.split}  eval_mode={summary.eval_mode}  样本 {summary.total}"
+            f"  准确率 {summary.accuracy:.2%}  用时 {summary.duration_s:.2f}s"
+        )
+        e2e = metrics.get("e2e") or {}
+        if e2e:
+            print(
+                f"E2E(image_only)：题干解析 {e2e.get('extraction_accuracy')!s}｜"
+                f"区域IoU {e2e.get('region_iou_mean')!s}｜选项映射 {e2e.get('option_mapping_accuracy')!s}｜"
+                f"端到端 {e2e.get('end_to_end_accuracy')!s}"
+            )
         print(f"{'题型':<24}{'正确/总数':<14}{'准确率':<10}{'平均ms':<10}{'p95ms':<10}失败原因")
         for skill, stats in metrics["per_skill"].items():
             reasons = ", ".join(f"{key}×{value}" for key, value in stats["failure_reasons"].items()) or "-"

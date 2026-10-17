@@ -3,17 +3,20 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from ..pipeline import Pipeline, PipelineError
 from ..schemas import QuestionOption
 from .metrics import CaseResult, MetricsAccumulator, answers_match
 
-SPLITS = ("train", "dev", "test")
+SPLITS = ("train", "dev", "test", "screens")
+
+EVAL_MODES = ("oracle_solver", "auto_router", "image_only")
 
 
 @dataclass
@@ -28,6 +31,8 @@ class Case:
     source_file: str = ""
     image: Optional[str] = None
     grid: Optional[List[int]] = None
+    # 金标准区域（oracle region）：VisionParser v2 结构的 dict，crop_path 已解析为绝对路径
+    regions: Optional[Dict[str, Any]] = None
 
 
 @dataclass
@@ -39,6 +44,7 @@ class EvaluationSummary:
     output_dir: Optional[str]
     duration_s: float
     results: List[CaseResult] = field(default_factory=list)
+    eval_mode: str = "oracle_solver"
 
 
 def _load_options(raw: Any) -> List[QuestionOption]:
@@ -85,6 +91,31 @@ def _resolve_image(data_dir: Path, raw: Any, source: Path, line_number: int) -> 
     return str(resolved)
 
 
+def _load_regions(raw: Any, source: Path) -> Optional[Dict[str, Any]]:
+    """金标准区域：crop 路径按 data/ 目录解析；引用缺失文件时直接报错（不静默降级）。"""
+    if not isinstance(raw, dict):
+        return None
+    regions = json.loads(json.dumps(raw))  # deep copy
+
+    def _resolve(path_value: Any) -> Optional[str]:
+        if not path_value:
+            return None
+        candidate = Path(str(path_value))
+        resolved = candidate if candidate.is_absolute() else Path(source).parent.parent / candidate
+        return str(resolved)
+
+    stem_crop = _resolve(regions.get("stem_matrix_crop"))
+    if stem_crop and not Path(stem_crop).is_file():
+        raise FileNotFoundError(f"{source.name} 区域裁剪不存在: {stem_crop}")
+    regions["stem_matrix_crop"] = stem_crop
+    for option in regions.get("option_regions") or []:
+        crop = _resolve(option.get("crop_path"))
+        if crop and not Path(crop).is_file():
+            raise FileNotFoundError(f"{source.name} 选项裁剪不存在: {crop}")
+        option["crop_path"] = crop
+    return regions
+
+
 def _load_grid(raw: Any) -> Optional[List[int]]:
     if isinstance(raw, (list, tuple)) and len(raw) == 2:
         try:
@@ -127,6 +158,7 @@ def load_cases(data_dir: Path, split: str, skills: Optional[Sequence[str]] = Non
                     source_file=str(path.name),
                     image=_resolve_image(data_dir, payload.get("image"), path, line_number),
                     grid=_load_grid(payload.get("grid")),
+                    regions=_load_regions(payload.get("regions"), path),
                 )
             )
     if not cases:
@@ -144,6 +176,31 @@ def _failure_reason(status: str, action: str, error: Optional[str]) -> Optional[
     return "wrong_answer"
 
 
+def _compact(text: str) -> str:
+    return re.sub(r"\s+", "", text or "")
+
+
+def _compare_extraction(case: Case, extraction: Any) -> Tuple[Optional[bool], Optional[float], Optional[bool]]:
+    """image-only 模式模块级归因：题干解析 / 区域 IoU / 选项标号映射（vs 金标准标注）。"""
+    if extraction is None:
+        return False, None, False
+    accurate = bool(case.stem) and _compact(extraction.stem) == _compact(case.stem)
+    iou: Optional[float] = None
+    gold_bbox = (case.regions or {}).get("stem_matrix_bbox") if isinstance(case.regions, dict) else None
+    if gold_bbox and extraction.diagram_regions:
+        from ..vision_parser import _bbox_iou
+
+        best = max((_bbox_iou(gold_bbox, region.bbox) for region in extraction.diagram_regions), default=None)
+        iou = round(float(best), 4) if best is not None else None
+    gold_labels = [option.label for option in case.options]
+    parsed_labels = [option.label for option in extraction.options]
+    if gold_labels:
+        option_map_ok = gold_labels == parsed_labels
+    else:
+        option_map_ok = not parsed_labels
+    return accurate, iou, option_map_ok
+
+
 class EvaluationRunner:
     def __init__(self, pipeline: Pipeline, data_dir: Optional[Path] = None, results_dir: Optional[Path] = None):
         self.pipeline = pipeline
@@ -158,16 +215,24 @@ class EvaluationRunner:
         run_name: Optional[str] = None,
         skills: Optional[Sequence[str]] = None,
         route_mode: str = "oracle",
+        eval_mode: Optional[str] = None,
     ) -> EvaluationSummary:
+        # 三种评测输入模式（R2a）：
+        #   oracle_solver：标准题干/区域/题型 → 只测 Solver
+        #   auto_router ：标准题干/区域、题型未知 → 测 Router + Solver
+        #   image_only  ：仅原始截图 → 测 Vision + Router + Solver + Verifier
+        mode = eval_mode or ("oracle_solver" if route_mode == "oracle" else "auto_router")
+        if mode not in EVAL_MODES:
+            raise ValueError(f"eval_mode 必须是 {EVAL_MODES} 之一，收到 {mode!r}")
         cases = load_cases(self.data_dir, split, skills=skills)
         accumulator = MetricsAccumulator()
         started = time.perf_counter()
         for case in cases:
-            result = self._run_case(case, route_mode=route_mode)
+            result = self._run_case(case, mode)
             accumulator.add(result)
         duration = time.perf_counter() - started
 
-        metrics = accumulator.summary(route_mode=route_mode)
+        metrics = accumulator.summary(route_mode=mode)
         output_dir: Optional[Path] = None
         if save:
             output_dir = self.results_dir / split / (run_name or datetime.now().strftime("%Y%m%dT%H%M%S"))
@@ -181,22 +246,53 @@ class EvaluationRunner:
             output_dir=str(output_dir) if output_dir else None,
             duration_s=round(duration, 3),
             results=accumulator.results,
+            eval_mode=mode,
         )
 
     # ------------------------------------------------------------------ 内部
-    def _run_case(self, case: Case, route_mode: str = "oracle") -> CaseResult:
+    def _run_case(self, case: Case, mode: str = "oracle_solver") -> CaseResult:
         started = time.perf_counter()
+        extraction_accurate: Optional[bool] = None
+        region_iou: Optional[float] = None
+        option_map_ok: Optional[bool] = None
+        run_ref: Optional[str] = None
         try:
-            # oracle 模式使用标注题型，auto 模式由 Router 自动判断
-            skill_for_pipeline = case.skill if route_mode == "oracle" else None
-            run = self.pipeline.run(
-                text=case.stem,
-                image_path=case.image,
-                options=case.options,
-                skill=skill_for_pipeline,
-                save=False,
-                meta={"grid": case.grid} if case.grid else None,
-            )
+            if mode == "image_only":
+                # 端到端：只给原始截图，禁止注入 stem / options / skill / grid / 区域标注
+                if not case.image:
+                    latency = (time.perf_counter() - started) * 1000.0
+                    return CaseResult(
+                        case_id=case.id,
+                        skill=case.skill,
+                        expected=case.answer,
+                        predicted=None,
+                        correct=False,
+                        status="failed",
+                        verification_action="reject",
+                        latency_ms=round(latency, 3),
+                        expected_status=case.expected_status,
+                        failure_reason="missing_image_for_e2e",
+                        tags=list(case.tags),
+                        input_mode=mode,
+                    )
+                run = self.pipeline.run(image_path=case.image, save=True, run_id=f"e2e-{case.id}")
+                extraction_accurate, region_iou, option_map_ok = _compare_extraction(case, run.extraction)
+                run_ref = run.run_id
+            else:
+                skill_for_pipeline = case.skill if mode == "oracle_solver" else None
+                meta: Dict[str, Any] = {}
+                if case.grid:
+                    meta["grid"] = case.grid
+                if case.regions:
+                    meta["vision"] = case.regions
+                run = self.pipeline.run(
+                    text=case.stem,
+                    image_path=case.image,
+                    options=case.options,
+                    skill=skill_for_pipeline,
+                    save=False,
+                    meta=meta or None,
+                )
             solution = run.solution
             verification = run.verification
             route = run.route
@@ -230,6 +326,11 @@ class EvaluationRunner:
                 routed_skill=route.skill,
                 route_source=route.source,
                 route_confidence=route.confidence,
+                input_mode=mode,
+                extraction_accurate=extraction_accurate,
+                region_iou=region_iou,
+                option_map_ok=option_map_ok,
+                run_ref=run_ref,
             )
         except PipelineError as exc:
             latency = (time.perf_counter() - started) * 1000.0
@@ -245,6 +346,7 @@ class EvaluationRunner:
                 expected_status=case.expected_status,
                 failure_reason=f"pipeline_error: {exc}",
                 tags=list(case.tags),
+                input_mode=mode,
             )
         except Exception as exc:  # noqa: BLE001 - 评测需要记录单题崩溃而不是中断
             latency = (time.perf_counter() - started) * 1000.0
@@ -260,6 +362,7 @@ class EvaluationRunner:
                 expected_status=case.expected_status,
                 failure_reason=f"exception: {type(exc).__name__}: {exc}",
                 tags=list(case.tags),
+                input_mode=mode,
             )
 
     def _write_outputs(
@@ -297,11 +400,12 @@ class EvaluationRunner:
     @staticmethod
     def _render_summary(split: str, sample_count: int, metrics: Dict[str, Any], duration: float) -> str:
         route_mode = metrics.get("route_mode", "unknown")
+        oracle_route = route_mode in {"oracle", "oracle_solver"}
         lines = [
-            f"# 评测报告 · split={split} · route_mode={route_mode}",
+            f"# 评测报告 · split={split} · eval_mode={route_mode}",
             "",
             f"- 样本数：{sample_count}",
-            f"- 路由模式：{route_mode}",
+            f"- 输入模式：{route_mode}（oracle_solver=标注题型+标准题干；auto_router=标准题干+自动路由；image_only=仅原始截图）",
             "",
             "## 核心指标",
             "",
@@ -309,28 +413,53 @@ class EvaluationRunner:
             f"- **可答题覆盖率**：{metrics['answerable_coverage']:.2%}（{metrics['covered_count']}/{metrics['answerable']}）",
             f"- **选择性准确率**：{metrics['selective_accuracy']:.2%}（通过验证的答案中正确的比例）",
         ]
-        
-        # 路由准确率：oracle 模式下标注为 N/A
-        if route_mode == "oracle":
-            lines.append(f"- **路由准确率**：N/A（oracle 模式直接使用标注题型）")
+
+        # 路由准确率：oracle 系模式下由标注题型直接给定，标注为 N/A
+        if oracle_route:
+            lines.append("- **路由准确率**：N/A（oracle_solver 模式直接使用标注题型）")
         else:
             lines.append(f"- **路由准确率**：{metrics['route_accuracy']:.2%}（{metrics['route_correct']}/{metrics['route_total']}）")
-        
+
         lines.extend([
             "",
             f"- **拒答准确率**：{metrics['abstention_accuracy']:.2%}（{metrics['abstention_correct']}/{metrics['abstention_total']}）",
             f"- 耗时：总 {duration:.2f}s，平均 {metrics['mean_latency_ms']:.1f} ms，"
             f"p50 {metrics['p50_latency_ms']:.1f} ms，p95 {metrics['p95_latency_ms']:.1f} ms",
-            "",
-            "## 各题型详情",
-            "",
-            "| 题型 | 答案准确率 | 可答题覆盖率 | 选择性准确率 | 路由准确率 | 平均耗时(ms) | p95(ms) | unsupported | failed | 主要失败原因 |",
-            "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
         ])
+
+        e2e = metrics.get("e2e") or {}
+        if e2e:
+            def _fmt(value: Any) -> str:
+                if value is None:
+                    return "N/A"
+                return f"{value:.2%}" if value <= 1.0 else str(value)
+
+            lines.extend(
+                [
+                    "",
+                    "## E2E（image_only）模块级归因指标",
+                    "",
+                    f"- 仅截图样本数：{e2e.get('cases', 0)}",
+                    f"- **Extraction Accuracy**（题干解析与金标准一致率）：{_fmt(e2e.get('extraction_accuracy'))}",
+                    f"- **Region IoU**（题干矩阵区域均值）：{_fmt(e2e.get('region_iou_mean'))}",
+                    f"- **Option Mapping Accuracy**（选项标号映射正确率）：{_fmt(e2e.get('option_mapping_accuracy'))}",
+                    f"- **End-to-End Accuracy**（仅截图输入下最终答案正确率）：{_fmt(e2e.get('end_to_end_accuracy'))}",
+                ]
+            )
+
+        lines.extend(
+            [
+                "",
+                "## 各题型详情",
+                "",
+                "| 题型 | 答案准确率 | 可答题覆盖率 | 选择性准确率 | 路由准确率 | 平均耗时(ms) | p95(ms) | unsupported | failed | 主要失败原因 |",
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+            ]
+        )
         for skill, stats in metrics["per_skill"].items():
             reasons = ", ".join(f"{key}×{value}" for key, value in stats["failure_reasons"].items()) or "-"
-            # 路由准确率：oracle 模式下标注为 N/A
-            route_acc = "N/A" if route_mode == "oracle" else f"{stats['route_accuracy']:.2%}"
+            # 路由准确率：oracle 系模式标注 N/A
+            route_acc = "N/A" if oracle_route else f"{stats['route_accuracy']:.2%}"
             lines.append(
                 f"| {skill} | {stats['answer_accuracy']:.2%} | {stats['answerable_coverage']:.2%} | "
                 f"{stats['selective_accuracy']:.2%} | {route_acc} | "
