@@ -47,6 +47,12 @@ class CaseResult:
     region_iou: Optional[float] = None  # 题干矩阵区域 IoU（vs 标注）
     option_map_ok: Optional[bool] = None  # 选项标号集合是否与标注一致
     run_ref: Optional[str] = None  # image_only 模式对应的 runs/ 产物目录（可追溯证据）
+    failure_class: Optional[str] = None  # R2b 失败归因类别（diagnosis.FAILURE_CLASSES）
+    # R2b：逐题视觉内容评测明细（CER / 选项文本 / 逐选项 IoU / 区域召回 / 表格单元格 …），
+    # 仅 image_only 且存在金标准时填充；分母字段一律显式写出
+    vision: Dict[str, Any] = field(default_factory=dict)
+    # R2b：真实模型用量（tokens / 成本，客户端可获取时记录，否则 None）
+    usage: Dict[str, Any] = field(default_factory=dict)
 
     def as_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -133,7 +139,7 @@ class MetricsAccumulator:
                 item for item in items
                 if item.predicted is not None and item.verification_action in {"accept", "repair"}
             ]
-            abstention_items = [item for item in items if item.expected_status in {"unsupported", "failed"}]
+            abstention_items = [item for item in items if item.expected_status in {"unsupported", "failed", "undecidable"}]
             route_items = [item for item in items if item.routed_skill is not None]
 
             answerable_correct = sum(1 for item in answerable if item.correct)
@@ -199,7 +205,7 @@ class MetricsAccumulator:
             item for item in self._results
             if item.predicted is not None and item.verification_action in {"accept", "repair"}
         ]
-        abstention_items = [item for item in self._results if item.expected_status in {"unsupported", "failed"}]
+        abstention_items = [item for item in self._results if item.expected_status in {"unsupported", "failed", "undecidable"}]
         route_items = [item for item in self._results if item.routed_skill is not None]
 
         answerable_correct = sum(1 for item in answerable if item.correct)
@@ -216,20 +222,52 @@ class MetricsAccumulator:
         )
         answerable_coverage = round(covered_answerable / len(answerable), 4) if answerable else 0.0
 
-        # E2E（image-only）模块级归因指标：视觉解析 / 区域 IoU / 选项映射 / 端到端
+        # E2E（image-only）模块级归因指标（R2b 口径：可答题与拒答分开，不再混合）
         e2e_items = [item for item in self._results if item.input_mode == "image_only"]
         e2e: Dict[str, Any] = {}
         if e2e_items:
             extraction_flags = [item.extraction_accurate for item in e2e_items if item.extraction_accurate is not None]
             region_ious = [item.region_iou for item in e2e_items if item.region_iou is not None]
             option_flags = [item.option_map_ok for item in e2e_items if item.option_map_ok is not None]
+            e2e_answerable = [
+                item for item in e2e_items if item.expected is not None and item.expected_status == "solved"
+            ]
+            e2e_abstention = [item for item in e2e_items if item.expected_status in {"unsupported", "failed", "undecidable"}]
             e2e = {
                 "cases": len(e2e_items),
                 "extraction_accuracy": round(sum(1 for flag in extraction_flags if flag) / len(extraction_flags), 4) if extraction_flags else None,
+                "extraction_scored": len(extraction_flags),
                 "region_iou_mean": round(mean(region_ious), 4) if region_ious else None,
+                "region_iou_scored": len(region_ious),  # 分母=带题干矩阵金标准的样本数（漏检按 0 计入）
                 "option_mapping_accuracy": round(sum(1 for flag in option_flags if flag) / len(option_flags), 4) if option_flags else None,
-                "end_to_end_accuracy": round(sum(1 for item in e2e_items if item.correct) / len(e2e_items), 4),
+                # R2b 口径：分母只含有标准答案的样本
+                "answer_accuracy": round(sum(1 for item in e2e_answerable if item.correct) / len(e2e_answerable), 4) if e2e_answerable else None,
+                "answer_scored": len(e2e_answerable),
+                # 拒答口径独立
+                "abstention_accuracy": round(sum(1 for item in e2e_abstention if item.correct) / len(e2e_abstention), 4) if e2e_abstention else None,
+                "abstention_scored": len(e2e_abstention),
+                # 覆盖率：image_only 下给出通过校验答案的可答题比例
+                "answerable_coverage": round(
+                    sum(
+                        1
+                        for item in e2e_answerable
+                        if item.predicted is not None and item.verification_action in {"accept", "repair"}
+                    )
+                    / len(e2e_answerable),
+                    4,
+                )
+                if e2e_answerable
+                else None,
+                # 旧混合口径（可答题+拒答一起算）——保留但显式标注
+                "end_to_end_accuracy_mixed": round(sum(1 for item in e2e_items if item.correct) / len(e2e_items), 4),
+                "mixed_note": "旧口径：分母含应拒答样本，仅作历史对照；R2b 起以 answer_accuracy/abstention_accuracy 为准",
             }
+
+        # 失败归因类别分布（R2b）
+        failure_class_totals: Dict[str, int] = {}
+        for item in self._results:
+            if not item.correct and item.failure_class:
+                failure_class_totals[item.failure_class] = failure_class_totals.get(item.failure_class, 0) + 1
 
         return {
             "total": total,
@@ -257,6 +295,7 @@ class MetricsAccumulator:
             "p50_latency_ms": percentile(latencies, 0.5),
             "p95_latency_ms": percentile(latencies, 0.95),
             "failure_reasons": dict(sorted(reason_totals.items(), key=lambda item: item[1], reverse=True)),
+            "failure_classes": dict(sorted(failure_class_totals.items(), key=lambda item: item[1], reverse=True)),
             "per_skill": {skill: metrics.as_dict() for skill, metrics in per_skill.items()},
         }
 

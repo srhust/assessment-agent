@@ -12,9 +12,17 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from ..pipeline import Pipeline, PipelineError
 from ..schemas import QuestionOption
+from .diagnosis import classify_case_failure, classify_exception
 from .metrics import CaseResult, MetricsAccumulator, answers_match
+from .vision_metrics import aggregate_vision, compare_extraction_detail, render_region_overlay
 
-SPLITS = ("train", "dev", "test", "screens")
+SPLITS = ("train", "dev", "test", "screens", "bench_dev", "bench_holdout")
+
+# split → 数据集目录（benchmark_real 独立泛化基准：dev 可调参、holdout 冻结）
+_SPLIT_DIRS = {
+    "bench_dev": "benchmark_real/dev",
+    "bench_holdout": "benchmark_real/holdout",
+}
 
 EVAL_MODES = ("oracle_solver", "auto_router", "image_only")
 
@@ -45,6 +53,7 @@ class EvaluationSummary:
     duration_s: float
     results: List[CaseResult] = field(default_factory=list)
     eval_mode: str = "oracle_solver"
+    eval_batch: str = ""  # 批次唯一标识：image_only 的 runs 产物按批次隔离，不覆盖历史证据
 
 
 def _load_options(raw: Any) -> List[QuestionOption]:
@@ -130,7 +139,7 @@ def _load_grid(raw: Any) -> Optional[List[int]]:
 def load_cases(data_dir: Path, split: str, skills: Optional[Sequence[str]] = None) -> List[Case]:
     if split not in SPLITS:
         raise ValueError(f"split 必须是 {SPLITS} 之一，收到 {split!r}")
-    split_dir = Path(data_dir) / split
+    split_dir = Path(data_dir) / _SPLIT_DIRS.get(split, split)
     if not split_dir.is_dir():
         raise FileNotFoundError(f"数据集目录不存在: {split_dir}")
     cases: List[Case] = []
@@ -216,6 +225,7 @@ class EvaluationRunner:
         skills: Optional[Sequence[str]] = None,
         route_mode: str = "oracle",
         eval_mode: Optional[str] = None,
+        eval_batch: Optional[str] = None,
     ) -> EvaluationSummary:
         # 三种评测输入模式（R2a）：
         #   oracle_solver：标准题干/区域/题型 → 只测 Solver
@@ -224,15 +234,21 @@ class EvaluationRunner:
         mode = eval_mode or ("oracle_solver" if route_mode == "oracle" else "auto_router")
         if mode not in EVAL_MODES:
             raise ValueError(f"eval_mode 必须是 {EVAL_MODES} 之一，收到 {mode!r}")
+        # R2b：批次唯一标识——image_only 的 runs 产物按批次隔离，重复评测不覆盖历史证据
+        batch = eval_batch or run_name or datetime.now().strftime("%Y%m%dT%H%M%S")
         cases = load_cases(self.data_dir, split, skills=skills)
         accumulator = MetricsAccumulator()
         started = time.perf_counter()
         for case in cases:
-            result = self._run_case(case, mode)
+            result = self._run_case(case, mode, eval_batch=batch)
             accumulator.add(result)
         duration = time.perf_counter() - started
 
         metrics = accumulator.summary(route_mode=mode)
+        metrics["eval_batch"] = batch
+        vision_agg = aggregate_vision([item.vision for item in accumulator.results if item.vision])
+        if vision_agg:
+            metrics["vision"] = vision_agg
         output_dir: Optional[Path] = None
         if save:
             output_dir = self.results_dir / split / (run_name or datetime.now().strftime("%Y%m%dT%H%M%S"))
@@ -247,15 +263,41 @@ class EvaluationRunner:
             duration_s=round(duration, 3),
             results=accumulator.results,
             eval_mode=mode,
+            eval_batch=batch,
         )
 
     # ------------------------------------------------------------------ 内部
-    def _run_case(self, case: Case, mode: str = "oracle_solver") -> CaseResult:
+    def _usage(self) -> Dict[str, Any]:
+        """真实模型用量（客户端可获取时），否则空 dict。"""
+        fn = getattr(self.pipeline.llm, "usage_snapshot", None)
+        return fn() if callable(fn) else {}
+
+    @staticmethod
+    def _gold_payload(case: Case) -> Dict[str, Any]:
+        """把 Case 金标准转成 VisionParser v2 payload 形状，供逐内容项比较。"""
+        gold: Dict[str, Any] = {}
+        if isinstance(case.regions, dict):
+            gold.update(json.loads(json.dumps(case.regions)))  # deep copy
+        gold["stem_text"] = case.stem
+        if case.options:
+            gold.setdefault("option_regions", [])
+            known = {str(o.get("label", "")).upper() for o in gold["option_regions"]}
+            for option in case.options:
+                if option.label.upper() not in known:
+                    gold["option_regions"].append({"label": option.label, "text": option.text})
+        if case.grid:
+            gold.setdefault("stem_matrix_grid", list(case.grid))
+        return gold
+
+    def _run_case(self, case: Case, mode: str = "oracle_solver", *, eval_batch: str = "") -> CaseResult:
         started = time.perf_counter()
         extraction_accurate: Optional[bool] = None
         region_iou: Optional[float] = None
         option_map_ok: Optional[bool] = None
         run_ref: Optional[str] = None
+        vision_detail: Dict[str, Any] = {}
+        usage: Dict[str, Any] = {}
+        gold_payload = self._gold_payload(case)
         try:
             if mode == "image_only":
                 # 端到端：只给原始截图，禁止注入 stem / options / skill / grid / 区域标注
@@ -272,11 +314,17 @@ class EvaluationRunner:
                         latency_ms=round(latency, 3),
                         expected_status=case.expected_status,
                         failure_reason="missing_image_for_e2e",
+                        failure_class="vision_parse_error",
                         tags=list(case.tags),
                         input_mode=mode,
+                        vision=compare_extraction_detail(gold_payload, None),
                     )
-                run = self.pipeline.run(image_path=case.image, save=True, run_id=f"e2e-{case.id}")
+                usage_before = self._usage()
+                run_id = f"e2e-{eval_batch}-{case.id}" if eval_batch else f"e2e-{case.id}"
+                run = self.pipeline.run(image_path=case.image, save=True, run_id=run_id)
+                usage = self._usage_delta(usage_before, self._usage())
                 extraction_accurate, region_iou, option_map_ok = _compare_extraction(case, run.extraction)
+                vision_detail = compare_extraction_detail(gold_payload, run.extraction)
                 run_ref = run.run_id
             else:
                 skill_for_pipeline = case.skill if mode == "oracle_solver" else None
@@ -285,6 +333,7 @@ class EvaluationRunner:
                     meta["grid"] = case.grid
                 if case.regions:
                     meta["vision"] = case.regions
+                usage_before = self._usage()
                 run = self.pipeline.run(
                     text=case.stem,
                     image_path=case.image,
@@ -293,6 +342,7 @@ class EvaluationRunner:
                     save=False,
                     meta=meta or None,
                 )
+                usage = self._usage_delta(usage_before, self._usage())
             solution = run.solution
             verification = run.verification
             route = run.route
@@ -307,9 +357,28 @@ class EvaluationRunner:
             elif case.expected_status == "failed":
                 # 合规性样本：必须严格匹配 failed 状态（不猜答案）才算正确
                 correct = solution.status == "failed"
+            elif case.expected_status == "undecidable":
+                # R2b 独立基准：信息不足以唯一确定答案（构造时即如此），
+                # 系统必须不给通过校验的答案（failed/unsupported 均算诚实处理）
+                correct = solution.status in {"failed", "unsupported"}
             else:
                 correct = solution.status == "solved" and answers_match(predicted, case.answer)
             latency = (time.perf_counter() - started) * 1000.0
+            failure_class = classify_case_failure(
+                case=case,
+                mode=mode,
+                correct=correct,
+                status=solution.status,
+                action=verification.action,
+                predicted=predicted,
+                solution_answer=solution.answer,
+                solution_error=solution.error,
+                solution_meta=solution.meta,
+                routed_skill=route.skill,
+                extraction_present=run.extraction is not None,
+                extraction_stem_ok=extraction_accurate,
+                option_map_ok=option_map_ok,
+            )
             return CaseResult(
                 case_id=case.id,
                 skill=case.skill,
@@ -321,6 +390,7 @@ class EvaluationRunner:
                 latency_ms=round(latency, 3),
                 expected_status=case.expected_status,
                 failure_reason=None if correct else _failure_reason(solution.status, verification.action, solution.error),
+                failure_class=failure_class,
                 predicted_option=solution.answer,
                 tags=list(case.tags),
                 routed_skill=route.skill,
@@ -331,9 +401,12 @@ class EvaluationRunner:
                 region_iou=region_iou,
                 option_map_ok=option_map_ok,
                 run_ref=run_ref,
+                vision=vision_detail,
+                usage=usage,
             )
         except PipelineError as exc:
             latency = (time.perf_counter() - started) * 1000.0
+            detail = compare_extraction_detail(gold_payload, None) if mode == "image_only" else {}
             return CaseResult(
                 case_id=case.id,
                 skill=case.skill,
@@ -345,8 +418,11 @@ class EvaluationRunner:
                 latency_ms=round(latency, 3),
                 expected_status=case.expected_status,
                 failure_reason=f"pipeline_error: {exc}",
+                failure_class=classify_exception(str(exc)),
                 tags=list(case.tags),
                 input_mode=mode,
+                extraction_accurate=False if mode == "image_only" else None,
+                vision=detail,
             )
         except Exception as exc:  # noqa: BLE001 - 评测需要记录单题崩溃而不是中断
             latency = (time.perf_counter() - started) * 1000.0
@@ -361,9 +437,19 @@ class EvaluationRunner:
                 latency_ms=round(latency, 3),
                 expected_status=case.expected_status,
                 failure_reason=f"exception: {type(exc).__name__}: {exc}",
+                failure_class="pipeline_error",
                 tags=list(case.tags),
                 input_mode=mode,
             )
+
+    @staticmethod
+    def _usage_delta(before: Dict[str, Any], after: Dict[str, Any]) -> Dict[str, Any]:
+        if not before or not after:
+            return {}
+        delta = {key: after.get(key, 0) - before.get(key, 0) for key in ("calls", "prompt_tokens", "completion_tokens", "total_tokens")}
+        if after.get("model"):
+            delta["model"] = after["model"]
+        return delta
 
     def _write_outputs(
         self,
@@ -392,10 +478,51 @@ class EvaluationRunner:
             ),
             encoding="utf-8",
         )
+        # R2b：每题独立诊断记录 + 区域叠加可视化（仅 image_only 且有 run 产物）
+        self._write_case_records(output_dir, cases, results)
         (output_dir / "summary.md").write_text(
             self._render_summary(split, len(cases), metrics, duration),
             encoding="utf-8",
         )
+
+    def _write_case_records(self, output_dir: Path, cases: List[Case], results: List[CaseResult]) -> None:
+        by_id = {case.id: case for case in cases}
+        records_dir = output_dir / "cases"
+        overlays_dir = output_dir / "overlays"
+        for result in results:
+            case = by_id.get(result.case_id)
+            if case is None or result.input_mode != "image_only":
+                continue
+            records_dir.mkdir(parents=True, exist_ok=True)
+            record = result.as_dict()
+            record["gold"] = {
+                "stem": case.stem,
+                "options": {option.label: option.text for option in case.options},
+                "answer": case.answer,
+                "regions": case.regions,
+            }
+            if result.run_ref:
+                record["run_dir"] = str(self.pipeline.settings.runs_dir / result.run_ref)
+            (records_dir / f"{case.id}.json").write_text(
+                json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
+            extraction_path = self.pipeline.settings.runs_dir / (result.run_ref or "") / "extraction.json"
+            predicted = None
+            if extraction_path.is_file():
+                try:
+                    predicted = json.loads(extraction_path.read_text(encoding="utf-8"))
+                except json.JSONDecodeError:
+                    predicted = None
+            overlays_dir.mkdir(parents=True, exist_ok=True)
+            rendered = render_region_overlay(
+                str(case.image or ""),
+                self._gold_payload(case),
+                predicted,
+                str(overlays_dir / f"{case.id}.png"),
+            )
+            if rendered is None:
+                (overlays_dir / f"{case.id}.txt").write_text("可视化叠加图生成失败（不影响指标）", encoding="utf-8")
+
 
     @staticmethod
     def _render_summary(split: str, sample_count: int, metrics: Dict[str, Any], duration: float) -> str:
@@ -434,18 +561,43 @@ class EvaluationRunner:
                     return "N/A"
                 return f"{value:.2%}" if value <= 1.0 else str(value)
 
+            def _scored(key: str) -> str:
+                value = e2e.get(key)
+                n = e2e.get(f"{key}_scored")
+                return f"{_fmt(value)}" + (f"（分母 {n}）" if isinstance(n, int) else "")
+
             lines.extend(
                 [
                     "",
                     "## E2E（image_only）模块级归因指标",
                     "",
                     f"- 仅截图样本数：{e2e.get('cases', 0)}",
-                    f"- **Extraction Accuracy**（题干解析与金标准一致率）：{_fmt(e2e.get('extraction_accuracy'))}",
-                    f"- **Region IoU**（题干矩阵区域均值）：{_fmt(e2e.get('region_iou_mean'))}",
-                    f"- **Option Mapping Accuracy**（选项标号映射正确率）：{_fmt(e2e.get('option_mapping_accuracy'))}",
-                    f"- **End-to-End Accuracy**（仅截图输入下最终答案正确率）：{_fmt(e2e.get('end_to_end_accuracy'))}",
+                    f"- **Extraction Accuracy**（题干精确解析率）：{_scored('extraction_accuracy')}；题干 CER 见 vision 段",
+                    f"- **Region IoU**（题干矩阵，漏检记 0）：{_fmt(e2e.get('region_iou_mean'))}（分母 {e2e.get('region_iou_scored', 0)}）",
+                    f"- **Option Mapping Accuracy**（标号序列完全一致）：{_fmt(e2e.get('option_mapping_accuracy'))}",
+                    f"- **Image-only Answer Accuracy（可答题口径，R2b）**：{_scored('answer_accuracy')}；分母=有标准答案样本",
+                    f"- **Image-only Answerable Coverage**：{_scored('answerable_coverage')}",
+                    f"- **Abstention Accuracy（应拒答口径）**：{_scored('abstention_accuracy')}；分母=标注 unsupported/failed 样本",
+                    f"- 旧混合口径 E2E（含拒答样本，仅历史对照）：{_fmt(e2e.get('end_to_end_accuracy_mixed'))}",
                 ]
             )
+
+        vision = metrics.get("vision") or {}
+        if vision:
+            lines.extend(["", "## 视觉内容指标（image_only，全部注明分母）", ""])
+            for key, entry in vision.items():
+                if not isinstance(entry, dict) or "value" not in entry:
+                    continue
+                value = entry["value"]
+                note = f"，{entry['note']}" if entry.get("note") else ""
+                shown = f"{value:.4f}" if isinstance(value, float) else "N/A"
+                lines.append(f"- **{key}**：{shown}（分母 {entry['denominator']}）{note}")
+
+        failure_classes = metrics.get("failure_classes") or {}
+        if failure_classes:
+            lines.extend(["", "## 失败归因分布（按最上游失效环节）", ""])
+            for key, value in failure_classes.items():
+                lines.append(f"- {key}：{value}")
 
         lines.extend(
             [

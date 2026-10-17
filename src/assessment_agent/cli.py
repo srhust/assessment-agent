@@ -39,7 +39,13 @@ def build_parser() -> argparse.ArgumentParser:
     solve.add_argument("--json", action="store_true", help="以 JSON 输出结果")
 
     evaluate = subparsers.add_parser("eval", help="运行数据集评测")
-    evaluate.add_argument("--split", default="test", choices=["train", "dev", "test", "screens"])
+    evaluate.add_argument(
+        "--split",
+        default="test",
+        choices=["train", "dev", "test", "screens", "bench_dev", "bench_holdout"],
+        help="screens=合成截图回归基线；bench_dev/bench_holdout=独立泛化基准（可调参/冻结）",
+    )
+    evaluate.add_argument("--eval-batch", help="评测批次标识（image_only runs 产物按批次隔离，默认使用时间戳）")
     evaluate.add_argument("--skills", help="只评测指定题型，逗号分隔")
     evaluate.add_argument("--run-name", help="结果目录名")
     evaluate.add_argument("--no-save", action="store_true", help="不写 results/ 产物")
@@ -149,6 +155,7 @@ def _cmd_eval(args: argparse.Namespace, settings: Settings) -> int:
             skills=skills,
             route_mode=args.route_mode,
             eval_mode=getattr(args, "eval_mode", None),
+            eval_batch=getattr(args, "eval_batch", None),
         )
     except (FileNotFoundError, ValueError) as exc:
         print(f"[错误] {exc}", file=sys.stderr)
@@ -180,7 +187,8 @@ def _cmd_eval(args: argparse.Namespace, settings: Settings) -> int:
             print(
                 f"E2E(image_only)：题干解析 {e2e.get('extraction_accuracy')!s}｜"
                 f"区域IoU {e2e.get('region_iou_mean')!s}｜选项映射 {e2e.get('option_mapping_accuracy')!s}｜"
-                f"端到端 {e2e.get('end_to_end_accuracy')!s}"
+                f"可答题准确率 {e2e.get('answer_accuracy')!s}（分母 {e2e.get('answer_scored')}）｜"
+                f"拒答准确率 {e2e.get('abstention_accuracy')!s}（分母 {e2e.get('abstention_scored')}）"
             )
         print(f"{'题型':<24}{'正确/总数':<14}{'准确率':<10}{'平均ms':<10}{'p95ms':<10}失败原因")
         for skill, stats in metrics["per_skill"].items():

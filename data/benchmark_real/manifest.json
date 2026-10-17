@@ -1,0 +1,141 @@
+{
+  "name": "benchmark_real",
+  "data_class": "independent-synthetic（独立自编模拟测评页面；不是真实招聘平台截图）",
+  "created_at": "2026-10-17T18:31:00",
+  "authorship": "assessment-agent 项目原创（题目文字、图形与答案均为原创构造）",
+  "license": "内部评估使用（自创内容，无第三方版权）",
+  "contains_real_exam": false,
+  "contains_pii": false,
+  "independence_declaration": "样本按内容表独立选择，未按当前 Solver 是否解对进行筛选；包含已知超出现有规则能力的题型（旋转/翻转/半径外推/缺口九宫格/质数）与未实现题型（资料分析/言语理解/性格），这些样本的失败是基准要测量的信号。",
+  "splits": {
+    "dev": {
+      "count": 16,
+      "file": "dev/independent.jsonl",
+      "sha256": "5ec0a1f0def1f5b062ce6f8597604f2eeaf94f9cfb041e945bad9ddc2f5059bf"
+    },
+    "holdout": {
+      "count": 16,
+      "file": "holdout/independent.jsonl",
+      "sha256": "886d0aaa2d6e45ac81716efd2498b18d525b67fa174360e78a908c20062c0930",
+      "frozen": true,
+      "frozen_date": "2026-10-17",
+      "freeze_policy": "冻结后不得根据求解结果增删样本；扩充只能新建版本目录"
+    }
+  },
+  "leakage_groups": {
+    "g-arith-pct": [
+      "bi-arith-pct-01",
+      "bi-arith-pct-02"
+    ],
+    "g-arith-speed": [
+      "bi-arith-speed-03"
+    ],
+    "g-series-lin": [
+      "bi-series-lin-04"
+    ],
+    "g-series-geo": [
+      "bi-series-geo-05"
+    ],
+    "g-series-sq": [
+      "bi-series-sq-06"
+    ],
+    "g-series-prime": [
+      "bi-series-prime-07"
+    ],
+    "g-fig-count": [
+      "bi-fig-count-08",
+      "bi-fig-mixopt-11"
+    ],
+    "g-fig-sides": [
+      "bi-fig-sides-09"
+    ],
+    "g-fig-rotation": [
+      "bi-fig-rot-10"
+    ],
+    "g-fig-ambiguous": [
+      "bi-fig-ambig-12"
+    ],
+    "g-fig-count2": [
+      "bi-fig-count2-13"
+    ],
+    "g-grid-xor": [
+      "bi-grid-xor-14"
+    ],
+    "g-da-table": [
+      "bi-table-total-15"
+    ],
+    "g-vu-blank": [
+      "bi-verbal-blank-16"
+    ],
+    "g-arith-frac": [
+      "bi-arith-frac-17"
+    ],
+    "g-arith-pctdiff": [
+      "bi-arith-pctdiff-18"
+    ],
+    "g-series-pow": [
+      "bi-series-cube-19"
+    ],
+    "g-series-fib": [
+      "bi-series-fib-20"
+    ],
+    "g-series-alter": [
+      "bi-series-alter-21"
+    ],
+    "g-series-secdiff": [
+      "bi-series-secdiff-22"
+    ],
+    "g-series-ambiguous": [
+      "bi-series-ambig-23"
+    ],
+    "g-fig-trans": [
+      "bi-fig-trans-24",
+      "bi-fig-trans-25"
+    ],
+    "g-fig-flip": [
+      "bi-fig-flip-26"
+    ],
+    "g-fig-scale": [
+      "bi-fig-scale-27"
+    ],
+    "g-grid-notch": [
+      "bi-grid-notch-28"
+    ],
+    "g-da-chart": [
+      "bi-chart-bar-29"
+    ],
+    "g-vu-read": [
+      "bi-verbal-read-30"
+    ],
+    "g-pers": [
+      "bi-pers-scale-31"
+    ],
+    "g-log-judge": [
+      "bi-log-judge-32"
+    ]
+  },
+  "skill_coverage": [
+    "data_analysis",
+    "figure_reasoning",
+    "logical_reasoning",
+    "number_series",
+    "numeric_calculation",
+    "personality",
+    "verbal_understanding"
+  ],
+  "layout_coverage": [
+    "chart",
+    "grid_3x3",
+    "mixed_fig_text_options",
+    "row4_text",
+    "single_row_options",
+    "table",
+    "two_row_options",
+    "twocol_text"
+  ],
+  "expected_status_coverage": [
+    "solved",
+    "undecidable",
+    "unsupported"
+  ]
+}

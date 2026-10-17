@@ -12,6 +12,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from ..schemas import Question, Solution, ToolInvocation, Verification, VerificationCheck
@@ -69,6 +70,38 @@ class FigureReasoningSkill(BaseSkill):
                 "grid": tuple(vision["stem_matrix_grid"]) if vision.get("stem_matrix_grid") else None,
             }
         return None
+
+    def _region_incomplete(self, question: Question) -> Solution:
+        """v2 区域证据不完整：说明缺什么，返回结构化失败（不猜测、不回退整图）。"""
+        vision = (question.meta or {}).get("vision") or {}
+        problems: List[str] = []
+        stem_crop = vision.get("stem_matrix_crop")
+        if not stem_crop:
+            problems.append("缺少题干矩阵裁剪")
+        elif not Path(stem_crop).is_file():
+            problems.append(f"题干矩阵裁剪文件不存在: {stem_crop}")
+        figure_options = [
+            region for region in (vision.get("option_regions") or []) if region.get("has_figure")
+        ]
+        with_crop = [region for region in figure_options if region.get("crop_path")]
+        lost = [region for region in with_crop if not Path(str(region.get("crop_path"))).is_file()]
+        if len(figure_options) < 2:
+            problems.append(f"带图形的选项仅 {len(figure_options)} 个（至少需要 2 个）")
+        if len(with_crop) < 2:
+            problems.append("选项图形裁剪不足 2 份")
+        if lost:
+            problems.append(f"选项裁剪文件丢失: {[region.get('label') for region in lost]}")
+        detail = "；".join(problems) or "区域信息不足以定位图形"
+        return Solution(
+            status="failed",
+            skill=self.id,
+            answer=None,
+            confidence=0.0,
+            method=ADAPTER_ID,
+            error=f"图形区域证据不完整：{detail}（不回退整图求解，避免在网页截图上产生假证据）",
+            steps=[f"[区域检查] {detail}"],
+            meta={"stage": self.stage, "reason": "region_incomplete", "problems": problems},
+        )
 
     def _run_adapter(self, inputs: Dict[str, Any], *, threshold: Optional[float] = None, canvas_path: Optional[str] = None) -> Dict[str, Any]:
         from ..tools.figure_adapter import solve_figure_regions
@@ -174,11 +207,14 @@ class FigureReasoningSkill(BaseSkill):
             )
 
         # R2a：区域裁剪证据优先（不再假定整图最后一行是选项，也不需要整图 grid）
-        region_inputs = self._region_inputs(question)
+        vision_present = isinstance((question.meta or {}).get("vision"), dict)
+        region_inputs = self._region_inputs(question) if vision_present else None
         if region_inputs is not None:
-            region_solution = self._solve_regions(question, ctx, region_inputs)
-            if region_solution is not None:
-                return region_solution
+            return self._solve_regions(question, ctx, region_inputs)
+        if vision_present:
+            # 区域输入存在但不完整（缺题干矩阵裁剪 / 可用选项裁剪 < 2 / 裁剪文件丢失）：
+            # 返回结构化失败，禁止把整张网页截图当作旧式标准题图静默回退（R2b P1）
+            return self._region_incomplete(question)
 
         grid = self._grid(question)
         invocation = ctx.toolbox.run(TOOL_ID, path=question.image_path, grid=grid)

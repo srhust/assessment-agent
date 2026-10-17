@@ -32,3 +32,9 @@ data/**/*.png
 data/**/*.jpg
 !data/**/samples/*.png
 !data/figure/images/*.png
+# 评测基准的图片与区域裁剪**必须入库**：数据集要求"原始截图+金标准+哈希"可整体复现/审计
+!data/screens/images/*.png
+!data/screens/regions/**/*.png
+!data/benchmark_real/**/*.png
+!data/screens/images/*.png
+!data/screens/regions/**/*.png

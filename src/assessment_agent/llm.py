@@ -111,6 +111,10 @@ class OpenAICompatibleClient:
         self.settings = settings
         self._json_mode_supported = settings.json_mode
         self._transport = transport
+        # R2b 用量聚合
+        self._call_count = 0
+        self._usage_totals: Dict[str, int] = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+        self.last_model: Optional[str] = None
 
     # ------------------------------------------------------------------ 基础
     def _headers(self) -> Dict[str, str]:
@@ -192,13 +196,32 @@ class OpenAICompatibleClient:
             raise LLMError(f"模型响应结构异常: {str(raw)[:300]}") from exc
         if isinstance(content, list):  # 少数服务返回分段内容
             content = "".join(part.get("text", "") for part in content if isinstance(part, dict))
-        return ChatResponse(
+        response = ChatResponse(
             text=str(content),
             model=str(raw.get("model") or payload["model"]),
             usage=dict(raw.get("usage") or {}),
             latency_ms=latency_ms,
             raw=raw,
         )
+        # R2b：聚合真实模型用量（评测时记录 token/调用数；网关未返回 usage 则计数为 0）
+        self._call_count += 1
+        self.last_model = response.model
+        usage = response.usage or {}
+        for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
+            value = usage.get(key)
+            if isinstance(value, (int, float)):
+                self._usage_totals[key] = self._usage_totals.get(key, 0) + int(value)
+        return response
+
+    def usage_snapshot(self) -> Dict[str, Any]:
+        """当前累计用量（评测逐题取差分即可得到单题 token/调用数）。"""
+        return {
+            "calls": self._call_count,
+            "model": self.last_model,
+            "prompt_tokens": self._usage_totals.get("prompt_tokens", 0),
+            "completion_tokens": self._usage_totals.get("completion_tokens", 0),
+            "total_tokens": self._usage_totals.get("total_tokens", 0),
+        }
 
     def complete_json(
         self,

@@ -65,11 +65,12 @@ assessment-agent/
 │   ├── skills/            # 八个题型 Skill（4 个 MVP + 4 个声明式接口）
 │   ├── tools/             # SymPy 计算、数列规律、Z3 约束、图形布局/规律引擎、图形布局适配层
 │   ├── knowledge/         # 知识库加载器（Markdown）
-│   └── evaluation/        # 数据集加载、指标、评测执行器（oracle/auto/image 三模式）
+│   └── evaluation/        # 数据集加载、指标、评测执行器（oracle/auto/image 三模式）+ 视觉内容指标 + 失败归因 + mock 视觉后端
 ├── data/{train,dev,test}/ # 按题型分文件的 JSONL 数据集
-├── data/screens/          # R2a 合成截图基准（images + regions 裁剪 + screens.jsonl 金标准）
+├── data/screens/          # R2a 合成截图基准（regression）：images + regions 裁剪 + screens.jsonl 金标准
+├── data/benchmark_real/   # R2b 独立泛化基准：dev + 冻结 holdout + manifest.json（sha256/防泄漏分组/来源授权）
 ├── knowledge/             # 八个题型的方法论笔记
-├── tests/                 # 143 个 pytest 单元测试（+1 真实模型用例，未配置时显式 skip）
+├── tests/                 # pytest 单元测试（+1 真实模型用例，未配置时显式 skip）
 ├── runs/                  # 运行产物（gitignore）
 ├── results/               # 评测结果（gitignore）
 ├── .env.example
@@ -221,8 +222,19 @@ image/original.png  # 原始题图，原样保存
 
 ```
 data/train/  data/dev/  data/test/     # 文本/整图样本
-data/screens/                          # R2a 合成截图基准（截图 + 区域金标准）
+data/screens/                          # R2a 合成截图基准（截图 + 区域金标准）→ 定位为 regression 回归集
+data/benchmark_real/                   # R2b 独立泛化基准（dev + 冻结 holdout + manifest.json）
 ```
+
+**数据五分类（口径必须分开，不可混用）：**
+
+| 类别 | 位置 | 用途与限制 |
+| --- | --- | --- |
+| regression 回归集 | `data/screens/`、`data/train|dev|test` | 允许根据求解结果调参/自校验，代表"别弄坏基线"，不代表真实场景能力 |
+| 独立合成基准 | `data/benchmark_real/` | 样本按内容表独立选择，**未按当前 Solver 是否解对筛选**；dev 可调参，holdout 冻结 |
+| 授权真实截图 | （本轮无） | 只有拿到授权真实测评页面截图后才存在此类结论；当前一切指标都来自合成页面 |
+| mock-vlm | 评测/报告中的 mock 行 | payload 由金标准区域构造，仅验证解析→适配→求解→验证**链路机制**，不代表真实识别能力 |
+| real-vlm | 配置 `LLM_VISION_MODEL` 后的 image_only | 唯一能证明真实截图识别能力的证据；未执行时必须明确写"未执行" |
 
 样本为一题一行的 JSONL，字段见 [`data/README.md`](data/README.md)。评测强制路由到样本声明的题型，
 并统计多维度指标：
@@ -243,14 +255,19 @@ python -m assessment_agent eval --split test
 | **Extraction Accuracy** | image_only 下解析题干与金标准一致的比例 | 衡量 Vision Parser |
 | **Region IoU** | 题干矩阵识别区域与标注框的平均 IoU | 衡量区域定位质量 |
 | **Option Mapping Accuracy** | 选项标号（A/B/C/D/E）映射正确的比例 | 衡量选项布局解析 |
-| **End-to-End Accuracy** | 仅截图输入下最终答案正确的比例 | 全链路能力 |
+| **Answer Accuracy (E2E)** | image_only 下**可答题样本**的正确答案率，分母=有标准答案样本 | R2b：不与拒答样本混分母 |
+| **Answerable Coverage** | 给出通过校验答案的可答题数 / 全部可答题数 | E2E 与总口径均给出 |
+| **Abstention Accuracy** | 应拒答样本（unsupported/failed/undecidable）中正确弃权的比例 | 与 Answer Accuracy 分开计算 |
+| **End-to-End Accuracy (mixed)** | 旧 R2a 混合口径（可答+弃权同一分母） | 仅历史对照，报告中显式标注 mixed 口径 |
 
-### 6.1 截图基准与三模式评测（R2a）
+### 6.1 截图基准与三模式评测（R2a，定位为 regression 回归集）
 
 `data/screens/` 由 `scripts/make_screenshot_benchmark.py` 生成——**合成评估页面截图**
 （纯文字题、数字序列、图形序列/两行选项/九宫格、低分辨率缩放、干扰页眉页脚、诚实失败、
 未实现题型弃权），每题带像素坐标金标准（`regions` 字段 + 题干/选项裁剪图）。
 生成时即用生产适配层自校验，杜绝"意外构造的坏基准"。
+R2b 起该集合**明确为回归数据**：可以用来自校验与调参，其满分只代表基线未退化，
+真实场景泛化结论一律以 `data/benchmark_real/`（下文）为准。
 
 评测按输入信息量分三级（`--eval-mode`）：
 
@@ -297,13 +314,56 @@ python -m assessment_agent eval --split test --json
 > 注意：`test` 集只用于最终评估。当前样本量小，准确率不代表真实测评难度上限；
 > 请按 `data/README.md` 的约束自行补充样本（不要提交企业真题与个人信息）。
 
+### 6.2 独立泛化基准与真实 VLM 验证（R2b）
+
+目标不是把 9 张合成图的满分继续刷高，而是**测量真实截图下的视觉解析与端到端解题能力**。
+`data/benchmark_real/`（由 `scripts/make_independent_benchmark.py` 生成）是与回归集**严格隔离**的独立集：
+
+- **独立选择**：样本内容与标准答案写在手工内容表里（百分比/折扣/幂次/斐波那契/差分等由构造算术确定），
+  生成过程**不调用任何求解器**决定样本去留。已知超出现有六类图形规则的题型（旋转、翻转、半径外推、
+  缺口九宫格、质数）与未实现题型（资料分析、言语理解、性格）都保留——它们的失败正是基准要测的信号。
+- **dev / holdout**：`dev/`（16）可调参；`holdout/`（16）冻结，`manifest.json` 记录其 `sha256`、冻结日期与"冻结后不得按结果增删"政策。
+- **防泄漏分组**：同题/同模板（含重排、缩放变体）共享 `group`，整组只进一个 split；脚本与测试双重断言。
+- **来源与授权**：全部为**自编模拟测评页面（independent-synthetic），非真实招聘平台截图**；
+  每条记录带 `source`（provenance/license/构造方法）与 `image_sha256`。本轮无授权真实截图，故不声称真实平台结论。
+
+**新增样本字段**：`expected_status ∈ {solved, unsupported, failed, undecidable}`。`undecidable` 表示信息不足以
+唯一确定答案（构造时即如此，`answer=null`）——系统**必须弃权**，作答即判错并归因，不得强答。
+
+**区域完整性（P1）**：VisionParser v2 图形题若区域裁剪不完整（缺题干矩阵 / 带图选项 < 2 / 裁剪文件丢失），
+`figure_reasoning` 返回结构化 `region_incomplete` 失败并列出丢失项，**禁止静默回退整张网页截图的旧图形求解器**。
+无 `vision` 元数据的旧输入仍走兼容整图路径。
+
+**扩展视觉指标**（`image_only`，`--json` 的 `metrics.vision`，全部注明分母、漏检计入分母不剔除）：
+Stem OCR Exact Match / CER、Option Label Recall、Option Text Accuracy/CER、Option Region IoU（每题+合并）、
+Diagram Region Recall/IoU、Table Cell Accuracy、Region Detection Failure Rate。
+
+**逐题失败归因**（`metrics.failure_classes`，按"最上游失效环节"归类，不再统一记 `pipeline_error`）：
+`model_api_error` / `vision_parse_error` / `extraction_text_error` / `region_missing_or_shifted` /
+`option_mapping_error` / `routing_error` / `unsupported_skill` / `solver_error` / `verifier_false_reject` /
+`verifier_false_accept` / `pipeline_error`（兜底，必须显式可见）。每题独立诊断记录与红（金标准）绿（预测）
+区域叠加图写入 `results/<split>/<run>/cases/` 与 `overlays/`。
+
+**批次隔离**：`eval --eval-batch NAME` 使 `image_only` 的 `runs/e2e-<batch>-<case>/` 按批次命名，
+重复评测不覆盖历史证据；真实模型的模型名 / token 用量 / 调用延迟在可获取时逐题记录（`predictions.jsonl` 的 `usage`）。
+
+```bash
+python -X utf8 scripts/make_independent_benchmark.py                                   # 重建独立基准
+python -m assessment_agent eval --split bench_dev     --eval-mode image_only --json     # 开发集
+python -m assessment_agent eval --split bench_holdout --eval-mode image_only --eval-batch r2b --json  # 冻结集
+python -X utf8 scripts/run_screenshot_modes_report.py                                   # 回归+独立 三模式对照报告
+```
+
+> 真实 VLM 实验状态：本机未配置 `LLM_API_KEY`/`LLM_VISION_MODEL` 时，报告与测试都**明确报告"真实模型实验未执行"**，
+> 绝不允许用金标准生成的 Fake/mock 响应冒充真实识别结果。mock-vlm 只验证解析→适配→求解→验证链路机制。
+
 ---
 
 ## 7. 测试
 
 ```bash
 python -m pytest -q
-# 143 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
+# 170 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
 ```
 
 覆盖范围：
@@ -319,6 +379,7 @@ python -m pytest -q
 - Vision Parser（区域协议、越界/过小/空白/重复标号丢弃、裁剪像素证据、旧 payload 兼容、结构化失败）
 - 图形布局适配层（题干矩阵+选项裁剪→原六类规律引擎、标号映射保持、题干专属 grid、空白选项诚实失败）
 - 截图基准（oracle_solver/auto_router 全离线通过；image_only 用 mock 视觉后端验证全链路机制与产物落盘；真实模型用例未配置时显式 skip）
+- R2b 独立基准（region_incomplete 拦截静默整图回退、旧输入兼容、失败归因映射与最上游次序、CER/IoU 单元、漏检留在分母、批次 run_id 隔离、用量快照、benchmark_real 结构/防泄漏/manifest sha256、undecidable 判分链路）
 - DSH / MCP 接入（清单结构、`tools/call` 形状、未知工具与非法参数、能力输出脱敏、`save=false` 不落盘）
 - CLI（solve / eval / skills / doctor / mcp-manifest / call 的返回码与输出）
 

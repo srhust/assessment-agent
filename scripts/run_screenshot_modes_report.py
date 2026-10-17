@@ -1,12 +1,12 @@
-"""三模式截图评测对照报告（oracle_solver / auto_router / image_only）。
+"""R2b 三模式评测对照报告：regression（screens）+ 独立基准（benchmark_real dev/holdout）。
 
-- oracle_solver、auto_router：完全离线，注入金标准题干/区域，只测 Solver、Router+Solver；
-- image_only（真实模型）：仅当配置 LLM_API_KEY + LLM_VISION_MODEL 才运行；
-- image_only（mock 视觉后端）：合成截图 + 由金标准区域构造的 mock VLM payload，
-  只验证 VisionParser→Router→Adapter→Verifier 的**链路机制**，
-  不代表真实模型识别能力，产物目录与报告均显式标注。
+- oracle_solver / auto_router：完全离线，注入金标准题干/区域，只测 Solver、Router+Solver；
+- image_only（真实模型）：仅当配置 LLM_API_KEY + LLM_VISION_MODEL 才运行；未配置则**明确报告未执行**；
+- image_only（mock 视觉后端）：payload 由金标准区域构造——只验证
+  VisionParser→Router→Adapter→Verifier 的**链路机制**，永远不代表真实识别能力。
 
 运行：``python -X utf8 scripts/run_screenshot_modes_report.py``
+产物：results/modes_<stamp>/mode_comparison.{json,md}
 """
 
 from __future__ import annotations
@@ -15,25 +15,32 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Dict
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-sys.path.insert(0, str(ROOT / "scripts"))
-sys.path.insert(0, str(ROOT / "tests"))
 
 from assessment_agent.config import LLMSettings, Settings  # noqa: E402
+from assessment_agent.evaluation.mock_vision import MockVisionClient, payload_from_record  # noqa: E402
 from assessment_agent.evaluation.runner import EvaluationRunner  # noqa: E402
 from assessment_agent.pipeline import Pipeline  # noqa: E402
-from assessment_agent.tools.base import ToolUnavailable  # noqa: E402  # noqa: F401  - 保持错误类型可用
-import test_screens_benchmark as bench  # noqa: E402
+
+CORPORA = (
+    ("screens", "screens（regression 合成截图集）", "R2a 合成回归集"),
+    ("bench_dev", "benchmark_real/dev（独立基准·开发集）", "独立合成集，非真实平台截图"),
+    ("bench_holdout", "benchmark_real/holdout（独立基准·冻结集）", "独立合成集，非真实平台截图"),
+)
 
 
 def _mode_rows(summary) -> dict:
     m = summary.metrics
     return {
         "eval_mode": summary.eval_mode,
+        "eval_batch": summary.eval_batch,
         "total": m["total"],
         "answer_accuracy": m["answer_accuracy"],
+        "answer_scored": m.get("answerable"),
+        "abstention_scored": m.get("abstention_total"),
         "answerable_coverage": m["answerable_coverage"],
         "selective_accuracy": m["selective_accuracy"],
         "route_accuracy": m["route_accuracy"],
@@ -41,90 +48,155 @@ def _mode_rows(summary) -> dict:
         "mean_latency_ms": m["mean_latency_ms"],
         "p95_latency_ms": m["p95_latency_ms"],
         "failure_reasons": m["failure_reasons"],
+        "failure_classes": m.get("failure_classes") or {},
         "e2e": m.get("e2e") or {},
+        "vision": m.get("vision") or {},
+        "usage_total": m.get("llm_usage") or {},
     }
+
+
+def _pct(value, digits: int = 1) -> str:
+    return "—" if value is None else f"{value * 100:.{digits}f}%"
 
 
 def main() -> int:
     data_dir = ROOT / "data"
     results_dir = ROOT / "results"
     stamp = datetime.now().strftime("%Y%m%dT%H%M%S")
-    out = results_dir / "screens" / f"modes_{stamp}"
+    out = results_dir / f"modes_{stamp}"
     out.mkdir(parents=True, exist_ok=True)
-    rows = []
+    report: Dict = {}
 
     offline = Settings(offline=True, data_dir=data_dir, results_dir=out / "offline")
-    for mode in ("oracle_solver", "auto_router"):
-        runner = EvaluationRunner(Pipeline(offline), data_dir=data_dir, results_dir=out / "offline")
-        summary = runner.run("screens", eval_mode=mode, save=True, run_name=mode)
-        rows.append(_mode_rows(summary))
-
-    # image_only（真实模型）——未配置则明确记录未执行
     live = Settings.from_env()
-    real_status = "NOT EXECUTED: 未配置 LLM_API_KEY/LLM_VISION_MODEL（不得以 mock 结果冒充）"
-    if live.llm.vision_configured and not live.offline:
-        runner = EvaluationRunner(Pipeline(live), data_dir=data_dir, results_dir=out / "real_vlm")
-        summary = runner.run("screens", eval_mode="image_only", save=True, run_name="image_only_real_vlm")
-        row = _mode_rows(summary)
-        row["vision_backend"] = "real-model"
-        rows.append(row)
-        real_status = "EXECUTED"
+    real_status = "NOT EXECUTED：本机未配置 LLM_API_KEY/LLM_VISION_MODEL，真实模型实验未执行（不得以 mock 结果冒充）"
 
-    # image_only（mock 视觉后端）：只测链路机制
-    cases = bench._cases()
-    payloads = {Path(c["image"]).stem: bench._payload_from_case(c) for c in cases}
-    fake = bench._MultiImageFake(payloads)
-    mock_settings = Settings(
-        offline=True,
-        llm=LLMSettings(api_key="sk-offline-fake", vision_model="mock-vlm"),
-        data_dir=data_dir,
-        results_dir=out / "mock_vlm",
-        runs_dir=out / "mock_vlm_runs",
-    )
-    runner = EvaluationRunner(Pipeline(mock_settings, llm=fake), data_dir=data_dir, results_dir=out / "mock_vlm")
-    summary = runner.run("screens", eval_mode="image_only", save=True, run_name="image_only_mock_vlm")
-    row = _mode_rows(summary)
-    row["vision_backend"] = "mock-vlm (synthetic payload from gold regions; mechanism check only)"
-    rows.append(row)
+    for split, label, provenance in CORPORA:
+        corpora_rows = []
+        for mode in ("oracle_solver", "auto_router"):
+            runner = EvaluationRunner(Pipeline(offline), data_dir=data_dir, results_dir=out / "offline")
+            summary = runner.run(split, eval_mode=mode, save=True, run_name=f"{split}_{mode}", eval_batch=f"{split}-offline-{stamp}")
+            row = _mode_rows(summary)
+            row["vision_backend"] = "无（不经过视觉解析）"
+            corpora_rows.append(row)
+
+        if live.llm.vision_configured and not live.offline:
+            runner = EvaluationRunner(Pipeline(live), data_dir=data_dir, results_dir=out / "real_vlm")
+            summary = runner.run(split, eval_mode="image_only", save=True, run_name=f"{split}_image_only_real_vlm", eval_batch=f"{split}-realvlm-{stamp}")
+            row = _mode_rows(summary)
+            row["vision_backend"] = "real-model"
+            corpora_rows.append(row)
+            real_status = "EXECUTED（见 real_vlm 各行）"
+
+        records = [
+            json.loads(line)
+            for json_file in sorted((data_dir / {"bench_dev": "benchmark_real/dev", "bench_holdout": "benchmark_real/holdout"}.get(split, split)).glob("*.jsonl"))
+            for line in json_file.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        payloads = {Path(r["image"]).stem: payload_from_record(r) for r in records if r.get("image")}
+        fake = MockVisionClient(payloads)
+        mock_settings = Settings(
+            offline=True,
+            llm=LLMSettings(api_key="sk-offline-mock", vision_model="mock-vlm"),
+            data_dir=data_dir,
+            results_dir=out / "mock_vlm",
+            runs_dir=out / "mock_vlm_runs",
+        )
+        runner = EvaluationRunner(Pipeline(mock_settings, llm=fake), data_dir=data_dir, results_dir=out / "mock_vlm")
+        summary = runner.run(split, eval_mode="image_only", save=True, run_name=f"{split}_image_only_mock_vlm", eval_batch=f"{split}-mockvlm-{stamp}")
+        row = _mode_rows(summary)
+        row["vision_backend"] = "mock-vlm（金标准构造 payload：仅机制检查，不代表真实识别能力）"
+        corpora_rows.append(row)
+
+        failures = [
+            {
+                "case_id": result.case_id,
+                "expected": result.expected,
+                "expected_status": result.expected_status,
+                "predicted": result.predicted,
+                "status": result.status,
+                "failure_class": result.failure_class,
+                "failure_reason": result.failure_reason,
+                "routed_skill": result.routed_skill,
+            }
+            for result in summary.results
+            if not result.correct
+        ]
+        report[split] = {
+            "label": label,
+            "provenance": provenance,
+            "sample_count": len(records),
+            "modes": corpora_rows,
+            "image_only_mock_failures": failures,
+        }
 
     comparison = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
-        "data_provenance": "全部样本为合成截图（scripts/make_screenshot_benchmark.py 生成），非真实招聘平台数据",
         "real_vision_model": real_status,
-        "warning": "样本量 9，oracle/auto 满分只说明合成回归基线通过，不代表真实场景准确率",
-        "modes": rows,
+        "data_policy": (
+            "screens=regression（允许自校验/调参）；benchmark_real=独立合成基准（不自校验，"
+            "holdout 冻结）；两者均非真实招聘平台截图。本轮无授权真实截图。"
+        ),
+        "note": "mock-vlm 各行仅验证链路机制；真实模型实验状态见 real_vision_model 字段",
+        "corpora": report,
     }
     (out / "mode_comparison.json").write_text(json.dumps(comparison, ensure_ascii=False, indent=2), encoding="utf-8")
 
     lines = [
-        "# R2a 三模式截图评测对照",
+        "# R2b 三模式评测对照（regression + 独立基准）",
         "",
         f"- 生成时间：{comparison['generated_at']}",
-        f"- 数据来源：{comparison['data_provenance']}",
         f"- 真实视觉模型端到端：**{real_status}**",
-        f"- ⚠️ {comparison['warning']}",
+        f"- 数据政策：{comparison['data_policy']}",
         "",
-        "| 模式 | 视觉后端 | 答案准确率 | 可答题覆盖率 | 选择性准确率 | 路由准确率 | 拒答处理 | E2E题干解析 | 区域IoU | 选项映射 | E2E准确率 | 平均耗时ms |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
-    for item in rows:
-        e2e = item["e2e"]
-        route = "N/A(oracle)" if item["eval_mode"] == "oracle_solver" else f"{item['route_accuracy']:.2%}"
-        lines.append(
-            f"| {item['eval_mode']} | {item.get('vision_backend', '无（不经过 Vision）')} | {item['answer_accuracy']:.2%} | "
-            f"{item['answerable_coverage']:.2%} | {item['selective_accuracy']:.2%} | {route} | "
-            f"{item['abstention_accuracy']:.2%} | {e2e.get('extraction_accuracy', '—')} | {e2e.get('region_iou_mean', '—')} | "
-            f"{e2e.get('option_mapping_accuracy', '—')} | {e2e.get('end_to_end_accuracy', '—')} | {item['mean_latency_ms']:.1f} |"
-        )
-    lines += ["", "## 失败归因（按模式）", ""]
-    for item in rows:
-        reasons = item["failure_reasons"] or {"（无失败）": 0}
-        lines.append(f"- **{item['eval_mode']}**：{json.dumps(reasons, ensure_ascii=False)}")
-    lines.append("")
-    lines.append("说明：mock-vlm 行仅验证解析→适配→求解→验证的链路机制；真实模型识别能力必须在配置 LLM_API_KEY/LLM_VISION_MODEL 后重跑 image_only 才有结论。")
+    for split in report:
+        info = report[split]
+        lines += [
+            f"## {info['label']}（{info['sample_count']} 样本 · {info['provenance']}）",
+            "",
+            "| 模式 | 视觉后端 | 可答题准确率 | 覆盖率 | 拒答准确率 | 路由准确率 | 混合口径* | E2E题干解析 | 选项映射 | 平均耗时ms |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        ]
+        for item in info["modes"]:
+            e2e = item["e2e"]
+            route = "N/A(oracle)" if item["eval_mode"] == "oracle_solver" else _pct(item["route_accuracy"])
+            ans_den = e2e.get("answer_scored", item["answer_scored"])
+            abst_den = e2e.get("abstention_scored", item["abstention_scored"])
+            lines.append(
+                f"| {item['eval_mode']} | {item['vision_backend']} | "
+                f"{_pct(item['answer_accuracy'])}（分母 {ans_den}） | "
+                f"{_pct(item['answerable_coverage'])} | {_pct(item['abstention_accuracy'])}（分母 {abst_den}） | {route} | "
+                f"{_pct(e2e.get('end_to_end_accuracy_mixed'))} | {e2e.get('extraction_accuracy', '—') if e2e else '—'} | "
+                f"{e2e.get('option_mapping_accuracy', '—') if e2e else '—'} | {item['mean_latency_ms']:.1f} |"
+            )
+        lines.append("")
+        lines.append("*混合口径=旧 R2a 定义（可答+弃权混分母），仅作历史对照。")
+        mock_row = next(i for i in info["modes"] if i["e2e"])
+        if mock_row["vision"]:
+            v = mock_row["vision"]
+            lines += [
+                "",
+                "image_only(mock) 视觉内容指标（全部注明分母，漏检计入）：",
+                "",
+                f"- 题干精确匹配 {_pct(v['stem_exact_match']['value'])}（{v['stem_exact_match']['denominator']}） · 题干 CER {v['stem_cer']['value']}（{v['stem_cer']['denominator']}）",
+                f"- 选项标号召回 {_pct(v['option_label_recall']['value'])} · 选项文本精确 {_pct(v['option_text_accuracy']['value'])}（{v['option_text_accuracy']['denominator']}）",
+                f"- 选项区域 IoU 均值 {_pct(v['option_region_iou_mean']['value'])}（题数 {v['option_region_iou_mean']['denominator']}；框数 {v['option_region_iou_pooled']['denominator']}） · 图形区域 Recall {_pct(v['diagram_region_recall']['value'])}（{v['diagram_region_recall']['denominator']}）",
+                f"- 表格单元格准确率 {_pct(v['table_cell_accuracy']['value'])}（{v['table_cell_accuracy']['denominator']}） · 区域检测失败率 {_pct(v['region_detection_failure_rate']['value'])}（{v['region_detection_failure_rate']['denominator']}）",
+            ]
+        lines += ["", "失败归因分布（image_only mock，按最上游失效环节）：", ""]
+        for item in info["modes"]:
+            if item["failure_classes"]:
+                lines.append(f"- {item['eval_mode']}：`{json.dumps(item['failure_classes'], ensure_ascii=False)}`")
+        lines.append("")
+        lines.append(f"失败样本清单（image_only mock，共 {len(info['image_only_mock_failures'])} 条）：见 mode_comparison.json `{split}.image_only_mock_failures`")
+        lines.append("")
+
+    lines.append("说明：mock-vlm 行只验证解析→适配→求解→验证的链路机制；真实模型识别能力必须在配置 LLM_API_KEY/LLM_VISION_MODEL 后重跑 image_only 才有结论。")
     (out / "mode_comparison.md").write_text("\n".join(lines), encoding="utf-8")
     print(f"[OK] 对照报告 → {out / 'mode_comparison.md'}")
-    print("\n".join(lines[:12]))
+    print(f"     真实视觉模型：{real_status}")
     return 0
 
 

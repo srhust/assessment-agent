@@ -150,7 +150,18 @@ def test_screens_image_only_with_fake_vision(tmp_path: Path):
     assert metrics["e2e"]["extraction_accuracy"] == 1.0, "Fake 场景题干解析必须与金标准一致"
     assert metrics["e2e"]["region_iou_mean"] == 1.0, "Fake 场景区域坐标必须与标注完全重合"
     assert metrics["e2e"]["option_mapping_accuracy"] == 1.0
-    assert metrics["e2e"]["end_to_end_accuracy"] == 1.0, metrics["failure_reasons"]
+    # R2b 口径：可答题准确率与拒答准确率分别计算（旧混合口径保留）
+    assert metrics["e2e"]["answer_accuracy"] == 1.0, metrics["failure_reasons"]
+    assert metrics["e2e"]["abstention_accuracy"] == 1.0, metrics["failure_reasons"]
+    assert metrics["e2e"]["end_to_end_accuracy_mixed"] == 1.0, metrics["failure_reasons"]
+    # R2b 逐内容视觉指标：Fake 场景全部满分，且分母显式可见
+    vision = metrics["vision"]
+    assert vision["stem_exact_match"]["value"] == 1.0
+    assert vision["stem_cer"]["value"] == 0.0
+    assert vision["option_text_accuracy"]["value"] == 1.0
+    assert vision["option_region_iou_mean"]["value"] == 1.0
+    assert vision["region_detection_failure_rate"]["value"] == 0.0
+    assert vision["stem_exact_match"]["denominator"] == len(cases)
     assert all(call in payloads for call in fake.calls) and len(fake.calls) == len(cases)
 
     # 裁剪证据 + 原图 + 抽取 JSON 均落盘可追溯（以图形样本为准）
