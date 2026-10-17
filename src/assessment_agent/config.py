@@ -112,6 +112,7 @@ class Settings(BaseModel):
     router_rule_threshold: float = 1.0
     verifier_use_llm: bool = False
     verifier_min_confidence: float = 0.5
+    vision_parser: bool = True  # True：截图走区域化 VisionParser（schema v2）；False：旧版纯文本抽取
 
     @property
     def llm_enabled(self) -> bool:
@@ -162,6 +163,7 @@ class Settings(BaseModel):
             router_rule_threshold=_as_float(merged.get("ROUTER_RULE_THRESHOLD"), 1.0),
             verifier_use_llm=_as_bool(merged.get("VERIFIER_USE_LLM"), False),
             verifier_min_confidence=_as_float(merged.get("VERIFIER_MIN_CONFIDENCE"), 0.5),
+            vision_parser=_as_bool(merged.get("VISION_PARSER"), True),
         )
 
     def describe(self) -> Dict[str, object]:
@@ -176,4 +178,5 @@ class Settings(BaseModel):
             "runs_dir": str(self.runs_dir),
             "results_dir": str(self.results_dir),
             "data_dir": str(self.data_dir),
+            "vision_parser": self.vision_parser,
         }

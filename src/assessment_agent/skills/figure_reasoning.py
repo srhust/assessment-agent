@@ -14,10 +14,11 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-from ..schemas import Question, Solution, Verification, VerificationCheck
+from ..schemas import Question, Solution, ToolInvocation, Verification, VerificationCheck
 from .base import BaseSkill, SkillContext
 
 TOOL_ID = "figure_rules"
+ADAPTER_ID = "figure_rules_adapter"
 
 
 class FigureReasoningSkill(BaseSkill):
@@ -49,6 +50,116 @@ class FigureReasoningSkill(BaseSkill):
             return "图形推理需要 OpenCV：pip install opencv-python-headless"
         return None
 
+    # ------------------------------------------------------ 区域模式（R2a）
+    @staticmethod
+    def _region_inputs(question: Question) -> Optional[Dict[str, Any]]:
+        """从 VisionParser 的区域 meta 中提取题干矩阵裁剪与选项裁剪。"""
+        vision = (question.meta or {}).get("vision") or {}
+        stem_crop = vision.get("stem_matrix_crop")
+        option_regions = vision.get("option_regions") or []
+        options = [
+            (str(region.get("label")), str(region.get("crop_path")))
+            for region in option_regions
+            if region.get("has_figure") and region.get("crop_path")
+        ]
+        if stem_crop and len(options) >= 2:
+            return {
+                "stem_crop": stem_crop,
+                "options": options,
+                "grid": tuple(vision["stem_matrix_grid"]) if vision.get("stem_matrix_grid") else None,
+            }
+        return None
+
+    def _run_adapter(self, inputs: Dict[str, Any], *, threshold: Optional[float] = None, canvas_path: Optional[str] = None) -> Dict[str, Any]:
+        from ..tools.figure_adapter import solve_figure_regions
+
+        return solve_figure_regions(
+            inputs["stem_crop"],
+            inputs["options"],
+            grid=inputs.get("grid"),
+            threshold=threshold,
+            canvas_path=canvas_path,
+        )
+
+    def _solve_regions(self, question: Question, ctx: SkillContext, inputs: Dict[str, Any]) -> Solution:
+        """有区域裁剪证据时走适配层；适配异常 → 结构化失败（不回退整图猜测）。"""
+        try:
+            payload = self._run_adapter(inputs)
+        except Exception as exc:  # noqa: BLE001 - 区域异常记录为失败，不猜答案
+            return Solution(
+                status="failed",
+                skill=self.id,
+                answer=None,
+                confidence=0.0,
+                method=ADAPTER_ID,
+                error=f"区域适配失败：{type(exc).__name__}: {exc}",
+                tool_calls=[
+                    ToolInvocation(
+                        tool=ADAPTER_ID,
+                        args={"stem_crop": inputs["stem_crop"], "labels": [label for label, _ in inputs["options"]]},
+                        ok=False,
+                        error=f"{type(exc).__name__}: {exc}",
+                    )
+                ],
+                meta={"stage": self.stage, "reason": "adapter_error"},
+            )
+        return self._finalize_regions(question, payload, inputs)
+
+    def _finalize_regions(self, question: Question, payload: Dict[str, Any], inputs: Dict[str, Any]) -> Solution:
+        invocation = ToolInvocation(
+            tool=ADAPTER_ID,
+            args={
+                "stem_crop": inputs["stem_crop"],
+                "option_labels": [label for label, _ in inputs["options"]],
+                "grid": list(inputs["grid"]) if inputs.get("grid") else None,
+            },
+            ok=True,
+            result={key: payload.get(key) for key in ("status", "mode", "rule", "answer", "reason", "agreement")},
+        )
+        meta: Dict[str, Any] = {
+            "stage": self.stage,
+            "image": question.image_path,
+            "mode": payload.get("mode"),
+            "rule": payload.get("rule"),
+            "agreement": payload.get("agreement") or [],
+            "layout": payload.get("layout") or {},
+            "predicted": payload.get("predicted"),
+            "options_from_image": payload.get("options") or [],
+            "candidates": payload.get("candidates") or [],
+            "regions": {
+                "stem_crop": inputs["stem_crop"],
+                "option_labels": [label for label, _ in inputs["options"]],
+                "option_crops": [path for _, path in inputs["options"]],
+                "stem_grid": list(inputs["grid"]) if inputs.get("grid") else None,
+            },
+            "tool": ADAPTER_ID,
+        }
+        steps = list(payload.get("steps") or [])
+        if payload.get("status") != "solved":
+            return Solution(
+                status="failed",
+                skill=self.id,
+                answer=None,
+                confidence=0.0,
+                method=ADAPTER_ID,
+                error=payload.get("reason") or "区域图形规律未能确定唯一答案",
+                steps=steps,
+                tool_calls=[invocation],
+                meta=meta,
+            )
+        answer = payload.get("answer")
+        return Solution(
+            status="solved",
+            skill=self.id,
+            answer=answer,
+            answer_text=(question.option_text(answer) if answer else "") or "",
+            steps=steps,
+            confidence=float(payload.get("confidence") or 0.85),
+            method=ADAPTER_ID,
+            tool_calls=[invocation],
+            meta=meta,
+        )
+
     # ------------------------------------------------------------------ 求解
     def solve(self, question: Question, ctx: SkillContext) -> Solution:
         if not question.image_path:
@@ -61,6 +172,14 @@ class FigureReasoningSkill(BaseSkill):
                 error="图形推理需要题目截图：请用 --image 传入题图（纯文本无法还原图形）",
                 meta={"stage": self.stage, "reason": "missing_image"},
             )
+
+        # R2a：区域裁剪证据优先（不再假定整图最后一行是选项，也不需要整图 grid）
+        region_inputs = self._region_inputs(question)
+        if region_inputs is not None:
+            region_solution = self._solve_regions(question, ctx, region_inputs)
+            if region_solution is not None:
+                return region_solution
+
         grid = self._grid(question)
         invocation = ctx.toolbox.run(TOOL_ID, path=question.image_path, grid=grid)
         if not invocation.ok:
@@ -129,6 +248,9 @@ class FigureReasoningSkill(BaseSkill):
         if solution.status != "solved":
             return None
         meta = solution.meta or {}
+        regions = meta.get("regions")
+        if regions:
+            return self._verify_regions(question, solution, regions)
         image = meta.get("image") or question.image_path
         grid = tuple(meta["grid"]) if meta.get("grid") else None
         layout = meta.get("layout") or {}
@@ -193,4 +315,77 @@ class FigureReasoningSkill(BaseSkill):
             checks=checks,
             final_answer=solution.answer if passed else None,
             notes="换阈值独立复算 + 唯一匹配检查（不做答案修补，避免猜测）",
+        )
+
+    # ------------------------------------------------------ 区域模式独立复核
+    def _verify_regions(self, question: Question, solution: Solution, regions: Dict[str, Any]) -> Optional[Verification]:
+        """区域裁剪证据重放：用不同阈值重跑适配层，比对答案与规律。"""
+        meta = solution.meta or {}
+        labels = regions.get("option_labels") or []
+        crops = regions.get("option_crops") or []
+        stem_crop = regions.get("stem_crop")
+        if not stem_crop or len(labels) != len(crops) or len(labels) < 2:
+            return None
+        layout = meta.get("layout") or {}
+        threshold = layout.get("threshold")
+        alternative = 127 if threshold == "otsu" else 160
+        inputs = {
+            "stem_crop": stem_crop,
+            "options": list(zip(labels, crops)),
+            "grid": tuple(regions["stem_grid"]) if regions.get("stem_grid") else None,
+        }
+        checks: List[VerificationCheck] = []
+        try:
+            rerun = self._run_adapter(inputs, threshold=alternative)
+            same = rerun.get("status") == "solved" and rerun.get("answer") == solution.answer
+            checks.append(
+                VerificationCheck(
+                    name="figure.rerun_consistent",
+                    passed=same,
+                    detail=(
+                        f"区域模式阈值 {threshold} → {alternative} 独立复算："
+                        f"{rerun.get('answer') or rerun.get('reason')}（Solver 记录 {solution.answer}）"
+                    ),
+                )
+            )
+            if same:
+                checks.append(
+                    VerificationCheck(
+                        name="figure.rule_stable",
+                        passed=rerun.get("rule") == meta.get("rule"),
+                        severity="warning",
+                        detail=f"两次阈值命中的规律：{meta.get('rule')} vs {rerun.get('rule')}",
+                    )
+                )
+        except Exception as exc:  # noqa: BLE001
+            checks.append(
+                VerificationCheck(
+                    name="figure.rerun_consistent",
+                    passed=False,
+                    detail=f"区域模式阈值 {alternative} 独立复算失败：{type(exc).__name__}: {exc}",
+                )
+            )
+
+        checks.append(
+            VerificationCheck(
+                name="figure.unique_match",
+                passed=len(meta.get("agreement") or []) >= 1,
+                detail=f"能唯一匹配选项的规律：{meta.get('agreement')}（命中规律 {meta.get('rule')}）",
+            )
+        )
+        checks.append(
+            VerificationCheck(
+                name="figure.labels_from_regions",
+                passed=bool(regions.get("option_labels")) and solution.answer in labels,
+                detail=f"答案 {solution.answer} 是否来自区域标号 {labels}（裁剪证据 {len(crops)} 份）",
+            )
+        )
+
+        passed = all(check.passed for check in checks if check.severity == "blocking")
+        return Verification(
+            passed=passed,
+            action="accept" if passed else "reject",
+            checks=checks,
+            final_answer=solution.answer if passed else None,
+            notes="区域裁剪重放 + 换阈值独立复算（不做答案修补，避免猜测）",
         )

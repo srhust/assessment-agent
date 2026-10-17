@@ -110,14 +110,25 @@ class Pipeline:
 
         if image_path and not stem:
             extraction_started = time.perf_counter()
-            extraction = self._extract(image_path, hint)
+            extraction = self._extract(image_path, hint, artifacts=artifacts if save else None)
             latency["extraction_ms"] = round((time.perf_counter() - extraction_started) * 1000.0, 3)
             stem = extraction.stem
             if not question_options:
                 question_options = list(extraction.options)
             if save:
                 artifacts.save_json("extraction", extraction.model_dump(mode="json"))
-                artifacts.append_trace("extraction", confidence=extraction.confidence, warnings=extraction.warnings)
+                artifacts.append_trace(
+                    "extraction",
+                    confidence=extraction.confidence,
+                    warnings=extraction.warnings,
+                    schema_version=extraction.schema_version,
+                    regions={
+                        "text": len(extraction.text_regions),
+                        "diagram": len(extraction.diagram_regions),
+                        "option": len(extraction.option_regions),
+                        "table": len(extraction.table_regions),
+                    },
+                )
             if not stem:
                 raise PipelineError("截图抽取未得到题干文本；请改用 --text 显式提供题目")
         elif stem and not question_options:
@@ -125,6 +136,7 @@ class Pipeline:
             if parsed_options:
                 stem, question_options = parsed_stem, parsed_options
 
+        vision_meta = extraction.vision_meta() if extraction is not None else {}
         question = Question(
             stem=stem,
             options=question_options,
@@ -134,6 +146,8 @@ class Pipeline:
             meta={
                 "extraction_confidence": extraction.confidence if extraction else None,
                 "has_diagram": extraction.has_diagram if extraction else False,
+                **({"vision": vision_meta} if vision_meta else {}),
+                **({"grid": vision_meta["stem_matrix_grid"]} if vision_meta.get("stem_matrix_grid") else {}),
                 **(meta or {}),
             },
         )
@@ -255,13 +269,25 @@ class Pipeline:
         return result
 
     # ------------------------------------------------------------------ 辅助
-    def _extract(self, image_path: str, hint: Optional[str]) -> ExtractionResult:
+    def _extract(self, image_path: str, hint: Optional[str], *, artifacts: Optional[RunArtifacts] = None) -> ExtractionResult:
         if self.llm is None:
             raise PipelineError(
                 "截图输入需要视觉模型：请配置 LLM_API_KEY 与 LLM_VISION_MODEL（见 .env.example）"
             )
         if not self.settings.llm.vision_configured:
             raise PipelineError("未配置 LLM_VISION_MODEL，无法进行截图抽取")
+        if self.settings.vision_parser:
+            from .vision_parser import VisionParseError, VisionParser
+
+            parser = VisionParser(
+                self.llm,
+                self.settings.llm.vision_model,
+                crops_dir=(artifacts.dir / "regions") if artifacts is not None else None,
+            )
+            try:
+                return parser.parse(image_path, hint=hint or "")
+            except VisionParseError as exc:
+                raise PipelineError(f"视觉结构化解析失败：{exc}") from exc
         extractor = VisionExtractor(self.llm, self.settings.llm.vision_model)
         try:
             return extractor.extract(image_path, hint=hint or "")

@@ -116,8 +116,59 @@ class RouteDecision(BaseModel):
     notes: str = ""
 
 
+class DiagramGrid(BaseModel):
+    """图形矩阵的行列标注（VLM 给出的布局提示，可空，由适配器自动推断兜底）。"""
+
+    rows: int = Field(ge=1, le=12)
+    cols: int = Field(ge=1, le=12)
+
+
+class TextRegion(BaseModel):
+    """题干文字区域。bbox 为原图像素坐标 [x, y, w, h]，左上角原点。"""
+
+    region_id: str
+    bbox: List[int] = Field(min_length=4, max_length=4)
+    text: str = ""
+
+
+class DiagramRegion(BaseModel):
+    """题干图形区域（矩阵 / 单图）。crop_path 由 VisionParser 裁剪后回填。"""
+
+    region_id: str
+    role: Literal["stem_matrix", "stem_figure", "option_figure", "other"] = "stem_figure"
+    bbox: List[int] = Field(min_length=4, max_length=4)
+    grid: Optional[DiagramGrid] = None
+    crop_path: Optional[str] = None
+
+
+class OptionRegion(BaseModel):
+    """选项区域：标号 + 文本 + 可选图形子区域（不含 A. 标号文字）。"""
+
+    label: str
+    bbox: List[int] = Field(min_length=4, max_length=4)
+    text: str = ""
+    has_figure: bool = False
+    figure_bbox: Optional[List[int]] = None
+    crop_path: Optional[str] = None
+
+
+class TableRegion(BaseModel):
+    """表格 / 图表区域（本轮只记录结构与文本，不做求解）。"""
+
+    region_id: str
+    bbox: List[int] = Field(min_length=4, max_length=4)
+    rows: int = 0
+    cols: int = 0
+    cells: List[List[str]] = Field(default_factory=list)
+
+
 class ExtractionResult(BaseModel):
-    """题图抽取结果（视觉模型 -> 结构化字段）。"""
+    """题图抽取结果（视觉模型 -> 结构化字段）。
+
+    ``schema_version=1``：旧版纯文本抽取（stem/options/confidence），保持兼容；
+    ``schema_version=2``：VisionParser 区域化抽取，附带像素坐标区域、阅读顺序与裁剪证据。
+    bbox 统一为原图像素坐标 ``[x, y, w, h]``（左上角原点，x+w ≤ 图像宽，y+h ≤ 图像高）。
+    """
 
     stem: str = ""
     options: List[QuestionOption] = Field(default_factory=list)
@@ -128,6 +179,44 @@ class ExtractionResult(BaseModel):
     model: Optional[str] = None
     confidence: float = 0.0
     warnings: List[str] = Field(default_factory=list)
+    # ---- schema v2：视觉结构化区域（全部可空，兼容旧 JSON）----
+    schema_version: int = 1
+    bbox_format: str = "pixel_xywh"
+    image_width: Optional[int] = None
+    image_height: Optional[int] = None
+    text_regions: List[TextRegion] = Field(default_factory=list)
+    diagram_regions: List[DiagramRegion] = Field(default_factory=list)
+    option_regions: List[OptionRegion] = Field(default_factory=list)
+    table_regions: List[TableRegion] = Field(default_factory=list)
+    reading_order: List[str] = Field(default_factory=list)
+    parser: Optional[str] = None
+
+    @property
+    def has_regions(self) -> bool:
+        return self.schema_version >= 2 and bool(self.diagram_regions or self.option_regions)
+
+    def vision_meta(self) -> Dict[str, Any]:
+        """注入 ``Question.meta["vision"]`` 的精简结构（供 Skill / 适配器消费）。"""
+        if not self.has_regions:
+            return {}
+        stem_matrix = next(
+            (region for region in self.diagram_regions if region.role == "stem_matrix"),
+            self.diagram_regions[0] if self.diagram_regions else None,
+        )
+        return {
+            "bbox_format": self.bbox_format,
+            "image_size": [self.image_width, self.image_height],
+            "stem_matrix_bbox": stem_matrix.bbox if stem_matrix else None,
+            "stem_matrix_grid": (
+                [stem_matrix.grid.rows, stem_matrix.grid.cols] if stem_matrix and stem_matrix.grid else None
+            ),
+            "stem_matrix_crop": stem_matrix.crop_path if stem_matrix else None,
+            "diagram_regions": [region.model_dump(mode="json") for region in self.diagram_regions],
+            "option_regions": [region.model_dump(mode="json") for region in self.option_regions],
+            "reading_order": self.reading_order,
+            "parser": self.parser,
+            "confidence": self.confidence,
+        }
 
 
 class RunResult(BaseModel):
