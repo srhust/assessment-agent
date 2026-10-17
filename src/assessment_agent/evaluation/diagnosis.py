@@ -116,3 +116,146 @@ def classify_case_failure(
     if status == "failed":
         return "solver_error"
     return "solver_error"
+
+
+# ---------------------------------------------------------------------------
+# R2c：归因拆分——verification_outcome（验证结果标签）与 root_cause（最初出错位置）
+# ---------------------------------------------------------------------------
+
+#: 逐题验证结果（对全部样本计算，不只失败样本）
+VERIFICATION_OUTCOMES = (
+    "correct_accept",       # 客观有答案：答案通过验证且与金标准一致
+    "false_accept",         # 客观有答案：答案通过验证但与金标准不一致（误放）
+    "false_reject",         # Solver 曾给出正确答案，却被 Verifier 拒绝（误杀）
+    "correct_reject",       # 客观有答案：Solver 给了错答被拦下，Verifier 正确拒绝（拦截有效）
+    "no_answer",            # 客观有答案：Solver 本身无解（诚实失败/能力缺口）
+    "unverified_answerable",  # 独立复核无法确认（可答题）→ 受控弃权
+    "correct_abstention",   # 不可判定/无客观答案：未输出通过校验的答案（诚实弃权）
+    "unverified_abstention",  # 不可判定样本被 Solver 作答但复核未确认（仍属诚实处理）
+    "over_answer",          # 不可判定/主观样本却输出了通过校验的答案（越权作答）
+    "answered_unlabeled",   # 客观可答但数据集无金标注：作答不计分仅记录
+    "abstained_unlabeled",  # 同上，未作答
+)
+
+#: root_cause：最初失效环节（谁先坏），与 verification_outcome（验证表现）正交
+ROOT_CAUSES = (
+    "none",                 # 正确作答
+    "extraction_ocr",       # 视觉抽取文本错误
+    "region_crop",          # 区域裁剪缺失/错位
+    "visual_feature",       # 图形感知特征测量错误
+    "option_mapping",       # 选项标号/图形映射错误
+    "router",               # 题型路由错误
+    "capability_gap",       # 题型未实现（有客观答案，安全拒答但仍是能力缺口）
+    "word_problem_parse",   # 自然语言数量关系抽取失败
+    "solver_coverage",      # 已支持题型但规律不覆盖（无解）
+    "solver_rule_selection",  # 弱规律压过强规律 / 规律误选（答案错）
+    "solver_arithmetic",    # 算术/数列求解错误
+    "solver_overreach",     # 本应弃权却强行作答
+    "verifier",             # 验证器误杀（false reject）
+    "pipeline",             # 框架/接口异常
+    "unresolved",           # 无法可靠定位（显式承认可见，不伪装归因）
+)
+
+_UNVERIFIED_MARK = "unverified"
+
+
+def derive_verification_outcome(
+    *,
+    answerability: str,
+    action: str,
+    predicted: Optional[str],
+    solution_answer: Optional[str],
+    gold: Optional[str],
+) -> str:
+    """逐题验证结果标签（从 CaseResult 字段直接派生，纯函数、可单测）。"""
+    answered = predicted is not None and action in {"accept", "repair"}
+    if action == _UNVERIFIED_MARK:
+        if answerability in {"undecidable", "subjective"}:
+            return "unverified_abstention"
+        return "unverified_answerable"
+    if answered:
+        if answerability == "has_unique_answer":
+            from .metrics import answers_match
+
+            return "correct_accept" if answers_match(predicted, gold) else "false_accept"
+        if answerability == "objective_unlabeled":
+            return "answered_unlabeled"
+        return "over_answer"
+    # 未输出通过校验的答案（reject / failed / unsupported / unverified 已在上分支）
+    if answerability in {"undecidable", "subjective"}:
+        return "correct_abstention"
+    if answerability == "objective_unlabeled":
+        return "abstained_unlabeled"
+    if gold is not None and solution_answer is not None:
+        return "false_reject" if str(solution_answer) == str(gold) else "correct_reject"
+    return "no_answer"
+
+
+def derive_root_cause(
+    *,
+    outcome: str,
+    failure_class: Optional[str],
+    capability_status: str = "",
+    skill: str = "",
+    solution_error: Optional[str] = None,
+    solver_rule: Optional[str] = None,
+    routed_skill: Optional[str] = None,
+) -> str:
+    """root_cause：最初失效环节。false_accept ≠ Verifier 的错——先问答案为什么错。"""
+    if outcome in {"correct_accept", "correct_abstention", "unverified_abstention", "answered_unlabeled", "abstained_unlabeled"}:
+        return "none"
+    error = solution_error or ""
+    if outcome == "false_reject":
+        return "verifier"
+    if outcome == "over_answer":
+        return "solver_overreach"
+    if outcome == "unverified_answerable":
+        # 独立复核确认不了答案：错误在 Solver 的规则选择/感知特征，不在 Verifier
+        if skill == "figure_reasoning" or solver_rule:
+            return "solver_rule_selection"
+        return "solver_coverage"
+    if outcome == "no_answer" and capability_status == "unsupported":
+        # 客观有答案但当前未支持该题型：安全拒答是合规行为，能力缺口是根因
+        return "capability_gap"
+    if outcome in {"correct_reject", "false_accept"}:
+        # 答案本身错误（无论被拦还是被放）：根因在求解/感知侧，不在 Verifier。
+        # 有解即规则选择错误；无解才是覆盖缺口。
+        if skill == "figure_reasoning" or routed_skill == "figure_reasoning":
+            return "solver_rule_selection" if solver_rule else "solver_coverage"
+        if "解析出算术表达式" in error or "未能从题干" in error:
+            return "word_problem_parse"
+        if solver_rule:
+            return "solver_rule_selection"
+        return "solver_arithmetic"
+    if failure_class == "extraction_text_error":
+        return "extraction_ocr"
+    if failure_class == "region_missing_or_shifted":
+        return "region_crop"
+    if failure_class == "option_mapping_error":
+        return "option_mapping"
+    if failure_class == "model_api_error":
+        return "pipeline"
+    if failure_class == "vision_parse_error":
+        return "pipeline"
+    if failure_class == "routing_error":
+        return "router"
+    if failure_class == "unsupported_skill":
+        return "capability_gap" if capability_status != "supported" else "router"
+    if failure_class == "verifier_false_accept":
+        # 误放的根因在求解侧：图形题几乎总是弱规律（fill/centroid/symmetry）压过强规律
+        if skill == "figure_reasoning":
+            if solver_rule in {"fill", "centroid", "symmetry"}:
+                return "solver_rule_selection"
+            return "visual_feature" if solver_rule in {"count", "sides"} else "solver_rule_selection"
+        if "解析出算术表达式" in error:
+            return "word_problem_parse"
+        return "solver_arithmetic"
+    if failure_class == "solver_error":
+        if "解析出算术表达式" in error or "未能从题干" in error:
+            return "word_problem_parse"
+        if skill == "figure_reasoning":
+            return "solver_coverage" if solver_rule is None else "solver_rule_selection"
+        return "solver_coverage"
+    if failure_class == "pipeline_error":
+        return "pipeline"
+    return "unresolved"

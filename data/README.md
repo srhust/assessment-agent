@@ -29,6 +29,8 @@ data/
 | `image` | 否 | 题图路径，相对 `data/` 目录；图形推理必填 |
 | `grid` | 否 | 显式网格 `[行, 列]`：整图按该行列等分，空白格也会被识别；用于位置/叠加类图形题 |
 | `tags` | 否 | 标签，便于失败归因 |
+| `answerability` | 否（R2c） | 客观可答性显式标注：`has_unique_answer` / `undecidable` / `subjective` / `objective_unlabeled`；**缺省由 loader 派生**（有 `answer`→客观可答；`expected_status∈{undecidable,failed}`→信息不足；性格/自评→主观；无答案且非上述→客观可答未标注），**已有数据集无需回填**，冻结集不受影响 |
+| `capability_status` | 否（R2c） | 当前支持声明 `supported` / `unsupported`；缺省按 `skill ∈ {numeric_calculation, number_series, figure_reasoning, logical_reasoning}` 派生 |
 
 ## 图形推理子集
 

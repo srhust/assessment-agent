@@ -1,17 +1,32 @@
-"""数字计算 Skill：题干 -> 算术表达式 -> SymPy 精确求值 -> 选项匹配。"""
+"""数字计算 Skill：题干 -> 算术表达式 -> SymPy 精确求值 -> 选项匹配。
+
+R2c：直接表达式抽取失败时，先过**自然语言数量关系理解层**
+（``tools.word_problem``：百分比/折扣/速时距/单价/比例/逆百分比），
+计算计划只是"关系→表达式"的结构化，数值一律由 Fraction/SymPy 确定性求值，
+支持范围外如实失败——不允许猜答案。
+"""
 
 from __future__ import annotations
 
 import math
+import re as _re
+from fractions import Fraction
 from typing import List, Optional
 
 from ..schemas import Question, Solution, Verification, VerificationCheck
 from ..tools.math_tool import fraction_eval, match_option, option_value
+from ..tools.word_problem import evaluate_plan, extract_word_problem
 from .base import BaseSkill, SkillContext
 
 
 def _close(left: float, right: float) -> bool:
     return math.isclose(left, right, rel_tol=1e-6, abs_tol=1e-9)
+
+
+def _format_fraction(value: Fraction) -> str:
+    if value.denominator == 1:
+        return str(value.numerator)
+    return f"{float(value):g}"
 
 
 class NumericCalculationSkill(BaseSkill):
@@ -25,6 +40,11 @@ class NumericCalculationSkill(BaseSkill):
         options = self.option_pairs(question)
         invocation = ctx.toolbox.run("python_math", text=question.stem, options=options)
         if not invocation.ok:
+            # 直接表达式抽取失败 → 自然语言数量关系理解层（R2c），计算仍走 Fraction
+            word_solution = self._solve_word_problem(question, ctx, options)
+            if word_solution is not None:
+                word_solution.tool_calls = [invocation] + list(word_solution.tool_calls or [])
+                return word_solution
             return Solution(
                 status="failed",
                 skill=self.id,
@@ -44,6 +64,12 @@ class NumericCalculationSkill(BaseSkill):
         if question.options:
             label = payload.get("matched_label")
             if label is None:
+                # 直接抽取的算式可能本身抽错（如把"比…便宜20%"读成减 20）：
+                # 结果与所有选项不匹配时，再走自然语言数量关系理解层（R2c）
+                word_solution = self._solve_word_problem(question, ctx, options)
+                if word_solution is not None:
+                    word_solution.tool_calls = [invocation] + list(word_solution.tool_calls or [])
+                    return word_solution
                 return Solution(
                     status="failed",
                     skill=self.id,
@@ -78,6 +104,66 @@ class NumericCalculationSkill(BaseSkill):
             meta={"expression": expression, "value": value, "exact": exact},
         )
 
+    # ------------------------------------------------ 应用题理解层（R2c）
+    def _solve_word_problem(self, question: Question, ctx: SkillContext, options) -> Optional[Solution]:
+        if not getattr(ctx.settings, "r2c_word_problem", True):
+            return None
+        plan = extract_word_problem(question.stem)
+        if plan is None:
+            return None  # 支持范围外：由上层返回原有诚实失败
+        env, error = evaluate_plan(plan)
+        if error or env is None:
+            return Solution(
+                status="failed",
+                skill=self.id,
+                method=f"word_problem:{plan['kind']}",
+                error=f"数量关系抽取成功但确定性求值失败：{error}",
+                meta={"word_problem": plan},
+            )
+        final = env[plan["final_var"]]
+        # 把中间变量代入最后一步表达式，得到可独立复核的单一算式
+        expression = plan["steps"][-1][1]
+        for name, value in env.items():
+            if name != plan["final_var"]:
+                expression = _re.sub(rf"\b{name}\b", f"({value.numerator}/{value.denominator})", expression)
+        steps = [f"关系抽取（{plan['kind']}）：{desc}" for _var, _expr, desc in plan["steps"]]
+        steps.append(f"Fraction 精确求值 = {_format_fraction(final)}（数值 {float(final):g}）")
+        if question.options:
+            label = match_option(float(final), options)
+            if label is None:
+                return Solution(
+                    status="failed",
+                    skill=self.id,
+                    method=f"word_problem:{plan['kind']}",
+                    error=f"应用题计算结果 {_format_fraction(final)} 与所有选项均不匹配",
+                    steps=steps,
+                    meta={"word_problem": plan, "expression": expression, "value": float(final),
+                          "exact": _format_fraction(final)},
+                )
+            steps.append(f"与选项比对，匹配到 {label}")
+            return Solution(
+                status="solved",
+                skill=self.id,
+                answer=label,
+                answer_text=question.option_text(label) or "",
+                steps=steps,
+                confidence=0.9,
+                method=f"word_problem:{plan['kind']}",
+                meta={"word_problem": plan, "expression": expression, "value": float(final),
+                      "exact": _format_fraction(final), "matched_label": label},
+            )
+        answer_text = _format_fraction(final)
+        return Solution(
+            status="solved",
+            skill=self.id,
+            answer=answer_text,
+            answer_text=answer_text,
+            steps=steps,
+            confidence=0.85,
+            method=f"word_problem:{plan['kind']}",
+            meta={"word_problem": plan, "expression": expression, "value": float(final), "exact": answer_text},
+        )
+
     # ------------------------------------------------------------ 独立复核
     def verify(self, question: Question, solution: Solution, ctx: SkillContext) -> Optional[Verification]:
         expression = solution.meta.get("expression")
@@ -85,6 +171,36 @@ class NumericCalculationSkill(BaseSkill):
             return None
         checks: List[VerificationCheck] = []
         repaired: Optional[str] = None
+        plan = solution.meta.get("word_problem")
+        if plan:
+            # R2c：应用题计划链独立重放（关系步骤 → Fraction 重算），
+            # 与下面的单一表达式 Fraction 求值是两条独立计算路径
+            env, chain_error = evaluate_plan(plan)
+            chain_ok = (
+                chain_error is None
+                and env is not None
+                and solution.meta.get("value") is not None
+                and _close(float(env[plan["final_var"]]), float(solution.meta["value"]))
+            )
+            checks.append(
+                VerificationCheck(
+                    name="word_problem.chain_recompute",
+                    passed=chain_ok,
+                    severity="blocking",
+                    detail=(
+                        f"计划链重放 {'=' if chain_ok else '≠'} Solver 结果（{plan['kind']}，"
+                        f"{len(plan['steps'])} 步）" + ("" if chain_ok else f"：{chain_error or '数值不一致'}")
+                    ),
+                )
+            )
+            if not chain_ok:
+                return Verification(
+                    passed=False,
+                    action="reject",
+                    checks=checks,
+                    final_answer=None,
+                    notes="应用题计划链复核未通过，拒绝输出（不猜测）",
+                )
         try:
             recomputed = float(fraction_eval(str(expression)))
             checks.append(

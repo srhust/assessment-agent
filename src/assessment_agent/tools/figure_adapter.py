@@ -135,9 +135,18 @@ def solve_figure_regions(
 
     canvas_file: Optional[str] = None
     if canvas_path is None:
-        # 叠加规律需要按 bbox 从同一张掩码文件重读选项区域——必须保证画布存在，
-        # 未指定路径时默认落在题干裁剪同目录，命名可追溯
-        canvas_path = Path(stem).parent / f"{Path(stem).stem}_adapter_canvas.png"
+        # 叠加规律需要按 bbox 从同一张掩码画布重读选项区域——画布必须存在，
+        # 但**绝不默认写入数据/裁剪目录**（R2c：数据集必须保持生成器产物纯净，
+        # 画布是每次调用的中间证据，落到可追溯的临时目录；调用方可显式指定 runs/ 路径）
+        import hashlib as _hl
+        import tempfile as _tf
+
+        signature = _hl.sha1(
+            "|".join([str(stem), str(grid), str(threshold)] + [str(p) for _, p in option_images]).encode("utf-8")
+        ).hexdigest()[:16]
+        tmp_root = Path(_tf.gettempdir()) / "assessment-agent-figure"
+        tmp_root.mkdir(parents=True, exist_ok=True)
+        canvas_path = tmp_root / f"{Path(stem).stem}_{signature}_adapter_canvas.png"
     canvas_file = _save_canvas(canvas, Path(canvas_path))
     if canvas_file is None:
         raise ToolError("合成证据画布落盘失败，无法执行叠加规律复核")

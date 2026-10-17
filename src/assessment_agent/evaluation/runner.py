@@ -12,7 +12,12 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from ..pipeline import Pipeline, PipelineError
 from ..schemas import QuestionOption
-from .diagnosis import classify_case_failure, classify_exception
+from .diagnosis import (
+    classify_case_failure,
+    classify_exception,
+    derive_root_cause,
+    derive_verification_outcome,
+)
 from .metrics import CaseResult, MetricsAccumulator, answers_match
 from .vision_metrics import aggregate_vision, compare_extraction_detail, render_region_overlay
 
@@ -25,6 +30,32 @@ _SPLIT_DIRS = {
 }
 
 EVAL_MODES = ("oracle_solver", "auto_router", "image_only")
+
+# R2c：标注双维度（题目标注可显式给出 answerability/capability_status，缺省时按
+# 客观事实派生——金标准答案是否存在决定 answerability，题型是否已实现决定 capability）
+IMPLEMENTED_SKILLS = {"numeric_calculation", "number_series", "figure_reasoning", "logical_reasoning"}
+SUBJECTIVE_SKILLS = {"personality"}
+
+
+def derive_answerability(answer: Optional[str], expected_status: str, skill: str) -> str:
+    """answerability（客观属性，与系统能力无关）：
+    - has_unique_answer：存在唯一客观标准答案（哪怕当前 Skill 未实现该题型）
+    - undecidable：信息不足以唯一确定（含构造性歧义/合规弃权样本）
+    - subjective：无客观标准答案（性格/自评量表类）
+    - objective_unlabeled：客观可答但本数据集未标注答案（不进答题分母，单独上报）
+    """
+    if answer is not None:
+        return "has_unique_answer"
+    if expected_status in ("undecidable", "failed"):
+        return "undecidable"
+    if skill in SUBJECTIVE_SKILLS:
+        return "subjective"
+    return "objective_unlabeled"
+
+
+def derive_capability_status(skill: str) -> str:
+    """capability_status（当前系统能力声明）：supported / unsupported。"""
+    return "supported" if skill in IMPLEMENTED_SKILLS else "unsupported"
 
 
 @dataclass
@@ -41,6 +72,9 @@ class Case:
     grid: Optional[List[int]] = None
     # 金标准区域（oracle region）：VisionParser v2 结构的 dict，crop_path 已解析为绝对路径
     regions: Optional[Dict[str, Any]] = None
+    # R2c：标注双维度（显式标注优先，缺省派生）
+    answerability: str = ""
+    capability_status: str = ""
 
 
 @dataclass
@@ -155,19 +189,26 @@ def load_cases(data_dir: Path, split: str, skills: Optional[Sequence[str]] = Non
                 payload = json.loads(line)
             except json.JSONDecodeError as exc:
                 raise ValueError(f"{path}:{line_number} JSON 解析失败: {exc}") from exc
+            answer = _load_answer(payload)
+            skill = str(payload.get("skill") or path.stem)
+            expected_status = str(payload.get("expected_status") or "solved")
             cases.append(
                 Case(
                     id=str(payload.get("id") or f"{path.stem}-{line_number}"),
-                    skill=str(payload.get("skill") or path.stem),
+                    skill=skill,
                     stem=str(payload.get("stem") or ""),
                     options=_load_options(payload.get("options")),
-                    answer=_load_answer(payload),
-                    expected_status=str(payload.get("expected_status") or "solved"),
+                    answer=answer,
+                    expected_status=expected_status,
                     tags=[str(tag) for tag in payload.get("tags") or []],
                     source_file=str(path.name),
                     image=_resolve_image(data_dir, payload.get("image"), path, line_number),
                     grid=_load_grid(payload.get("grid")),
                     regions=_load_regions(payload.get("regions"), path),
+                    answerability=str(payload.get("answerability") or "")
+                    or derive_answerability(answer, expected_status, skill),
+                    capability_status=str(payload.get("capability_status") or "")
+                    or derive_capability_status(skill),
                 )
             )
     if not cases:
@@ -303,6 +344,10 @@ class EvaluationRunner:
                 # 端到端：只给原始截图，禁止注入 stem / options / skill / grid / 区域标注
                 if not case.image:
                     latency = (time.perf_counter() - started) * 1000.0
+                    miss_outcome = derive_verification_outcome(
+                        answerability=case.answerability, action="reject",
+                        predicted=None, solution_answer=None, gold=case.answer,
+                    )
                     return CaseResult(
                         case_id=case.id,
                         skill=case.skill,
@@ -318,6 +363,13 @@ class EvaluationRunner:
                         tags=list(case.tags),
                         input_mode=mode,
                         vision=compare_extraction_detail(gold_payload, None),
+                        answerability=case.answerability,
+                        capability_status=case.capability_status,
+                        verification_outcome=miss_outcome,
+                        root_cause=derive_root_cause(
+                            outcome=miss_outcome, failure_class="vision_parse_error",
+                            capability_status=case.capability_status, skill=case.skill,
+                        ),
                     )
                 usage_before = self._usage()
                 run_id = f"e2e-{eval_batch}-{case.id}" if eval_batch else f"e2e-{case.id}"
@@ -359,8 +411,9 @@ class EvaluationRunner:
                 correct = solution.status == "failed"
             elif case.expected_status == "undecidable":
                 # R2b 独立基准：信息不足以唯一确定答案（构造时即如此），
-                # 系统必须不给通过校验的答案（failed/unsupported 均算诚实处理）
-                correct = solution.status in {"failed", "unsupported"}
+                # 系统必须不给通过校验的答案——含 Solver 作答但被独立复核拦截
+                # （reject/unverified）的受控弃权（R2c：与注释语义一致）
+                correct = predicted is None
             else:
                 correct = solution.status == "solved" and answers_match(predicted, case.answer)
             latency = (time.perf_counter() - started) * 1000.0
@@ -378,6 +431,23 @@ class EvaluationRunner:
                 extraction_present=run.extraction is not None,
                 extraction_stem_ok=extraction_accurate,
                 option_map_ok=option_map_ok,
+            )
+            # R2c：verification_outcome（验证表现）与 root_cause（最初失效环节）分开记录
+            outcome = derive_verification_outcome(
+                answerability=case.answerability,
+                action=verification.action,
+                predicted=predicted,
+                solution_answer=solution.answer,
+                gold=case.answer,
+            )
+            root_cause = derive_root_cause(
+                outcome=outcome,
+                failure_class=failure_class,
+                capability_status=case.capability_status,
+                skill=case.skill,
+                solution_error=solution.error,
+                solver_rule=(solution.meta or {}).get("rule"),
+                routed_skill=route.skill,
             )
             return CaseResult(
                 case_id=case.id,
@@ -403,10 +473,18 @@ class EvaluationRunner:
                 run_ref=run_ref,
                 vision=vision_detail,
                 usage=usage,
+                answerability=case.answerability,
+                capability_status=case.capability_status,
+                root_cause=root_cause,
+                verification_outcome=outcome,
             )
         except PipelineError as exc:
             latency = (time.perf_counter() - started) * 1000.0
             detail = compare_extraction_detail(gold_payload, None) if mode == "image_only" else {}
+            perr_outcome = derive_verification_outcome(
+                answerability=case.answerability, action="reject",
+                predicted=None, solution_answer=None, gold=case.answer,
+            )
             return CaseResult(
                 case_id=case.id,
                 skill=case.skill,
@@ -423,9 +501,21 @@ class EvaluationRunner:
                 input_mode=mode,
                 extraction_accurate=False if mode == "image_only" else None,
                 vision=detail,
+                answerability=case.answerability,
+                capability_status=case.capability_status,
+                verification_outcome=perr_outcome,
+                root_cause=derive_root_cause(
+                    outcome=perr_outcome, failure_class=classify_exception(str(exc)),
+                    capability_status=case.capability_status, skill=case.skill, solution_error=str(exc),
+                ),
             )
         except Exception as exc:  # noqa: BLE001 - 评测需要记录单题崩溃而不是中断
             latency = (time.perf_counter() - started) * 1000.0
+            xerr_class = "pipeline_error"
+            xerr_outcome = derive_verification_outcome(
+                answerability=case.answerability, action="reject",
+                predicted=None, solution_answer=None, gold=case.answer,
+            )
             return CaseResult(
                 case_id=case.id,
                 skill=case.skill,
@@ -437,9 +527,16 @@ class EvaluationRunner:
                 latency_ms=round(latency, 3),
                 expected_status=case.expected_status,
                 failure_reason=f"exception: {type(exc).__name__}: {exc}",
-                failure_class="pipeline_error",
+                failure_class=xerr_class,
                 tags=list(case.tags),
                 input_mode=mode,
+                answerability=case.answerability,
+                capability_status=case.capability_status,
+                verification_outcome=xerr_outcome,
+                root_cause=derive_root_cause(
+                    outcome=xerr_outcome, failure_class=xerr_class,
+                    capability_status=case.capability_status, skill=case.skill, solution_error=str(exc),
+                ),
             )
 
     @staticmethod
@@ -554,6 +651,43 @@ class EvaluationRunner:
             f"p50 {metrics['p50_latency_ms']:.1f} ms，p95 {metrics['p95_latency_ms']:.1f} ms",
         ])
 
+        capability = metrics.get("capability") or {}
+        if capability:
+            def _pct(entry: Any) -> str:
+                if not isinstance(entry, dict) or entry.get("value") is None:
+                    return "N/A"
+                return f"{entry['value']:.2%}（{entry['hit']}/{entry['denominator']}）"
+
+            unl = capability.get("objective_unlabeled") or {}
+            lines.extend(
+                [
+                    "",
+                    "## 客观可答性与能力口径（R2c，分母=所有有唯一客观答案样本，含未实现题型）",
+                    "",
+                    f"- **总体答题准确率 overall_answer_accuracy**：{_pct(capability.get('overall_answer_accuracy'))}"
+                    "；分母含当前 Skill 未实现但客观有答案的题型",
+                    f"- **已支持题型准确率 supported_answer_accuracy**：{_pct(capability.get('supported_answer_accuracy'))}",
+                    f"- **能力覆盖 capability_coverage**：{_pct(capability.get('capability_coverage'))}"
+                    "（静态：客观可答样本中当前已支持题型的比例）",
+                    f"- **作答覆盖 answered_coverage**：{_pct(capability.get('overall_answered_coverage'))}"
+                    "（客观可答样本中实际给出通过校验答案的比例）",
+                    f"- **诚实弃权（不可判定+主观）**：{_pct(capability.get('honest_abstention'))}；"
+                    f"不可判定子集 {_pct(capability.get('undecidable_abstention'))}，"
+                    f"主观子集 {_pct(capability.get('subjective_abstention'))}",
+                    f"- **有答案未实现而安全拒答（能力缺口，不计入诚实弃权）**："
+                    f"{capability.get('unsupported_answerable_refusals', 0)} 题",
+                    f"- **无标注客观可答样本（不计入答题分母，单独上报）**："
+                    f"{unl.get('total', 0)} 题（其中作答 {unl.get('answered', 0)}）",
+                    f"- **验证结果计数**：误放 false_accept={capability.get('false_accept_total', 0)}，"
+                    f"误杀 false_reject={capability.get('false_reject_total', 0)}，"
+                    f"未验证受控弃权 unverified={capability.get('unverified_answerable_total', 0)}，"
+                    f"越权作答 over_answer={capability.get('over_answer_total', 0)}",
+                    "",
+                    "注：旧 `answer_accuracy`/`abstention_accuracy` 为 R2b 兼容口径"
+                    "（分母只含标注 solved；弃权集混入有答案未实现样本），仅供历史对照。",
+                ]
+            )
+
         e2e = metrics.get("e2e") or {}
         if e2e:
             def _fmt(value: Any) -> str:
@@ -598,6 +732,18 @@ class EvaluationRunner:
             lines.extend(["", "## 失败归因分布（按最上游失效环节）", ""])
             for key, value in failure_classes.items():
                 lines.append(f"- {key}：{value}")
+
+        if capability:
+            outcomes = capability.get("verification_outcomes") or {}
+            roots = capability.get("root_causes") or {}
+            if outcomes:
+                lines.extend(["", "## 逐题验证结果（verification_outcome，与 root_cause 正交）", ""])
+                for key, value in outcomes.items():
+                    lines.append(f"- {key}：{value}")
+            if roots:
+                lines.extend(["", "## 根因分布（root_cause：最初失效位置）", ""])
+                for key, value in roots.items():
+                    lines.append(f"- {key}：{value}")
 
         lines.extend(
             [

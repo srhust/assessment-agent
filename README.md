@@ -63,9 +63,10 @@ assessment-agent/
 │   ├── cli.py             # solve / eval / skills / doctor / inspect / mcp-manifest / call
 │   ├── integration.py     # DSH / MCP 接入层（工具清单 + tools/call 形状调用）
 │   ├── skills/            # 八个题型 Skill（4 个 MVP + 4 个声明式接口）
-│   ├── tools/             # SymPy 计算、数列规律、Z3 约束、图形布局/规律引擎、图形布局适配层
+│   ├── tools/             # SymPy 计算、数列规律、Z3 约束、图形布局/规律引擎、图形布局适配层、
+│   │                      #   figure_verify（R2c 候选代入独立复核）、word_problem（R2c 数量关系理解层）
 │   ├── knowledge/         # 知识库加载器（Markdown）
-│   └── evaluation/        # 数据集加载、指标、评测执行器（oracle/auto/image 三模式）+ 视觉内容指标 + 失败归因 + mock 视觉后端
+│   └── evaluation/        # 数据集加载、指标（R2c 双维度口径）、评测执行器（oracle/auto/image 三模式）+ 视觉内容指标 + 失败归因（outcome×root_cause）+ mock 视觉后端
 ├── data/{train,dev,test}/ # 按题型分文件的 JSONL 数据集
 ├── data/screens/          # R2a 合成截图基准（regression）：images + regions 裁剪 + screens.jsonl 金标准
 ├── data/benchmark_real/   # R2b 独立泛化基准：dev + 冻结 holdout + manifest.json（sha256/防泄漏分组/来源授权）
@@ -259,6 +260,11 @@ python -m assessment_agent eval --split test
 | **Answerable Coverage** | 给出通过校验答案的可答题数 / 全部可答题数 | E2E 与总口径均给出 |
 | **Abstention Accuracy** | 应拒答样本（unsupported/failed/undecidable）中正确弃权的比例 | 与 Answer Accuracy 分开计算 |
 | **End-to-End Accuracy (mixed)** | 旧 R2a 混合口径（可答+弃权同一分母） | 仅历史对照，报告中显式标注 mixed 口径 |
+| **Overall Answer Accuracy**（R2c） | 正确解答数 / **所有有唯一客观标准答案的样本** | R2c 主口径：分母含当前未实现但客观有答案的题型（答不出如实计错） |
+| **Supported Answer Accuracy**（R2c） | 正确 / 客观可答**且**当前已支持题型样本 | ≈ 旧 Answer Accuracy 口径，保留兼容 |
+| **Capability Coverage**（R2c） | 已支持题型样本 / 客观可答样本 | 静态能力覆盖，与运行结果无关 |
+| **Honest Abstention**（R2c） | 正确弃权 / （undecidable + subjective）样本 | 与"有答案未实现的安全拒答"（能力缺口）**分开统计**，不再混为同一 abstention 指标 |
+| **verification_outcome / root_cause**（R2c） | 逐题正交记录：验证表现 vs 最初失效环节 | 误放 false_accept ≠ Verifier 的错；先问答案为什么错 |
 
 ### 6.1 截图基准与三模式评测（R2a，定位为 regression 回归集）
 
@@ -357,13 +363,62 @@ python -X utf8 scripts/run_screenshot_modes_report.py                           
 > 真实 VLM 实验状态：本机未配置 `LLM_API_KEY`/`LLM_VISION_MODEL` 时，报告与测试都**明确报告"真实模型实验未执行"**，
 > 绝不允许用金标准生成的 Fake/mock 响应冒充真实识别结果。mock-vlm 只验证解析→适配→求解→验证链路机制。
 
+### 6.3 错误接受治理与真实可答口径（R2c）
+
+方向从"让 Agent 支持更多功能"转向"**扩大真实可答覆盖率，同时降低错误答案被接受的概率**"。
+
+**标注双维度（口径修复的根基）**——由 loader 派生，**不修改任何已有 JSONL 题目/答案**
+（Holdout 冻结哈希不受影响；数据格式保留显式 `answerability`/`capability_status` 字段入口供未来标注）：
+
+- `answerability`（客观属性）：`has_unique_answer`（有唯一客观标准答案，哪怕题型未实现）/
+  `undecidable`（信息不足）/ `subjective`（无客观答案）/ `objective_unlabeled`（客观可答但本数据集无标注，单独上报）；
+- `capability_status`（系统声明）：`supported` / `unsupported`。
+- 由此 **Dev 客观分母 13→15、Holdout 12→14**；"有答案但没实现"从旧 abstention 指标里剥离，
+  计为能力缺口；诚实弃权（undecidable+subjective）单独度量。
+
+**图形候选代入独立复核**（`tools/figure_verify.py`，Verifier 与 Solver 不共享最终规则决策）：
+对题干独立重建约束（个数等差/等比、边数、对称、墨迹、真实平移、九宫格格框归一化叠加算子），
+把**被选选项单独复测**后代入——候选违反约束 `contradicted`（拒）；约束无法重建、只有弱恒定量、
+唯一性不成立或裁剪不完整一律 `unverified`（受控弃权，**绝不默认通过**）；全部满足且判别性唯一才 `confirmed`。
+"换阈值重跑同一规则"降级为 warning 记录（自我一致性，不能发现共享的系统性错误）。
+九宫格目标格 `？` 印字改为**目标格标记检测**（感知修复，不新增规律类别）。
+
+**自然语言数量关系层**（`tools/word_problem.py`，numeric_calculation 前置兜底）：
+百分比/折扣/速时距（含分钟↔小时换算）/单价数量/比例分配/逆向百分比 → **结构化计算计划**
+（中间变量分步），数值一律 Fraction 精确求值并由计划链独立重放复核；支持范围外/信息不足返回 None，
+**不允许猜答案**。未来资料分析 Skill 复用同一确定性闸门。
+
+**Router 冲突修复**：图形结构证据（≥2 个含图选项裁剪+题干矩阵）优先于"按规律"关键词；
+表格/图表区域 → data_analysis；空括号+词语选项不再误判 number_series；ambiguous 置信度封顶 0.6
+（**不允许把不确定分类伪装成高置信度**）；无规则命中返回 `unknown` 且 `classified=False`
+（unknown≠unsupported）。
+
+**归因拆分**：`verification_outcome`（correct_accept / false_accept / false_reject / correct_reject /
+unverified_answerable / correct_abstention / over_answer / …）与 `root_cause`（solver_rule_selection /
+visual_feature / word_problem_parse / router / capability_gap / verifier / …）逐题**正交记录**；
+误放/误杀计数进 `metrics.capability`，任何被接受的错误答案不再笼统记在 Verifier 名下。
+
+**消融开关**（`ASSESSMENT_R2C_DISABLE=word_problem,figure_verify,router_structure`）：
+`scripts/run_r2c_ablation.py` 跑 baseline/+word/+router/+verifier/full 五臂 × Dev 双模式，
+输出分题型准确率、能力/作答覆盖、selective accuracy、false-accept rate 与 outcome/root_cause 分布——
+验证的是**失败机制**（如：关复核时 Dev 图形误放 4 起、开复核后 0 起且 screens 不受影响）。
+
+```bash
+python -X utf8 scripts/run_r2c_ablation.py        # 五臂消融矩阵（results/r2c_ablation_*/）
+python -m assessment_agent eval --split bench_dev --eval-mode auto_router --json   # 含 capability 块
+```
+
+> 数据卫生修复（自查披露）：R2b 提交中曾把 adapter 合成画布 `*_adapter_canvas.png` 写入 `data/`
+> （17 个文件）。R2c 已把画布默认落盘移到系统临时目录（内容寻址文件名）并删除污染文件，
+> 测试断言 `data/` 不再出现画布。
+
 ---
 
 ## 7. 测试
 
 ```bash
 python -m pytest -q
-# 170 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
+# 197 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
 ```
 
 覆盖范围：

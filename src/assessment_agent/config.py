@@ -113,6 +113,11 @@ class Settings(BaseModel):
     verifier_use_llm: bool = False
     verifier_min_confidence: float = 0.5
     vision_parser: bool = True  # True：截图走区域化 VisionParser（schema v2）；False：旧版纯文本抽取
+    # R2c 消融开关（env ASSESSMENT_R2C_DISABLE 逗号分隔：word_problem / figure_verify / router_structure）。
+    # 默认全部启用；消融脚本按臂关闭，用于量化每类改进的独立贡献。
+    r2c_word_problem: bool = True  # 自然语言数量关系理解层（numeric_calculation 前置）
+    r2c_figure_verify: bool = True  # 图形候选代入独立复核（与 Solver 不共享最终规则决策）
+    r2c_router_structure: bool = True  # Router 结构证据优先（图形裁剪/表格区域压过关键词冲突）
 
     @property
     def llm_enabled(self) -> bool:
@@ -153,6 +158,11 @@ class Settings(BaseModel):
             organization=_as_optional(merged.get("LLM_ORGANIZATION")),
         )
         offline = _as_bool(merged.get("ASSESSMENT_OFFLINE"), default=not bool(api_key))
+        disabled = {
+            item.strip()
+            for item in (merged.get("ASSESSMENT_R2C_DISABLE") or "").split(",")
+            if item.strip()
+        }
         return cls(
             llm=llm,
             offline=offline,
@@ -164,6 +174,9 @@ class Settings(BaseModel):
             verifier_use_llm=_as_bool(merged.get("VERIFIER_USE_LLM"), False),
             verifier_min_confidence=_as_float(merged.get("VERIFIER_MIN_CONFIDENCE"), 0.5),
             vision_parser=_as_bool(merged.get("VISION_PARSER"), True),
+            r2c_word_problem="word_problem" not in disabled,
+            r2c_figure_verify="figure_verify" not in disabled,
+            r2c_router_structure="router_structure" not in disabled,
         )
 
     def describe(self) -> Dict[str, object]:
@@ -179,4 +192,9 @@ class Settings(BaseModel):
             "results_dir": str(self.results_dir),
             "data_dir": str(self.data_dir),
             "vision_parser": self.vision_parser,
+            "r2c_flags": {
+                "word_problem": self.r2c_word_problem,
+                "figure_verify": self.r2c_figure_verify,
+                "router_structure": self.r2c_router_structure,
+            },
         }

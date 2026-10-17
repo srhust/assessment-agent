@@ -62,6 +62,7 @@ class Verifier:
             )
         )
 
+        skill_action: Optional[str] = None
         if solution.status == "solved":
             skill = self.registry.get(solution.skill) if self.registry is not None else None
             if skill is not None:
@@ -79,8 +80,19 @@ class Verifier:
                     skill_verification = None
                 if skill_verification is not None:
                     checks.extend(skill_verification.checks)
+                    skill_action = skill_verification.action
                     if skill_verification.repaired_answer:
                         repaired = skill_verification.repaired_answer
+                    if skill_action == "unverified":
+                        # R2c：独立复核无法确认时明确标记 unverified——绝不默认通过，
+                        # 也不按普通 reject 冒充“验证器发现了错误”，两者归因不同
+                        checks.append(
+                            VerificationCheck(
+                                name="verify.unverified_action",
+                                passed=False,
+                                detail="独立复核无法确认候选答案，按未验证处理（不通过、不计入误放）",
+                            )
+                        )
             else:
                 checks.append(
                     VerificationCheck(
@@ -111,6 +123,10 @@ class Verifier:
         if passed:
             action = "accept"
             final_answer = solution.answer
+        elif skill_action == "unverified":
+            # R2c：独立复核未确认 → 受控弃权（不输出答案、不谎称验证纠错）
+            action = "unverified"
+            final_answer = None
         elif repaired is not None and (not question.options or repaired in question.option_labels()):
             action = "repair"
             final_answer = repaired

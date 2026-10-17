@@ -144,6 +144,33 @@ def _symmetry_score(crop: np.ndarray, axis: str, max_shift: int = SYMMETRY_SHIFT
 
 
 # --------------------------------------------------------------- 单元格特征
+def _question_mark_like(mask: np.ndarray, component_ids, cell_h: int, cell_w: int, holes: int = 0) -> bool:
+    """格内内容是否只是一个“问号”类细高符号（？/?）——九宫格的目标格标记。
+
+    判定刻意保守：1~2 个有效连通域、整体窄而高、墨迹占比低、笔画稀疏（填充率≤0.45）、
+    **无封闭孔**（问号是开放笔画，任何环形/多边形图形都有孔——这一条把"单个圆环"
+    这类细高但真实存在的图形坚决排除在目标格之外）。
+    """
+    if not component_ids or len(component_ids) > 2 or cell_h <= 0 or cell_w <= 0:
+        return False
+    if holes > 0:
+        return False
+    ys, xs = np.nonzero(mask)
+    if len(ys) == 0:
+        return False
+    union_w = int(xs.max()) - int(xs.min()) + 1
+    union_h = int(ys.max()) - int(ys.min()) + 1
+    total = float(cell_h * cell_w)
+    ink_ratio = len(ys) / total
+    fill = len(ys) / float(max(1, union_w * union_h))
+    return bool(
+        ink_ratio <= 0.08
+        and union_w <= 0.35 * cell_w
+        and union_h >= 0.2 * cell_h
+        and fill <= 0.45
+    )
+
+
 def cell_features(mask: np.ndarray, *, symmetry_min: float = 0.82) -> Dict[str, Any]:
     """单个单元格（统一网格切出的图块）的几何特征。"""
     cv2 = _require_cv2()
@@ -153,6 +180,7 @@ def cell_features(mask: np.ndarray, *, symmetry_min: float = 0.82) -> Dict[str, 
     if ink < MIN_INK_PIXELS:
         return {
             "blank": True,
+            "target_marker": False,
             "ink_pixels": ink,
             "shape_count": 0,
             "sides": 0,
@@ -172,6 +200,7 @@ def cell_features(mask: np.ndarray, *, symmetry_min: float = 0.82) -> Dict[str, 
     min_area = max(MIN_INK_PIXELS, int(0.002 * total))
     component_ids = [index + 1 for index in range(count - 1) if stats[index + 1, cv2.CC_STAT_AREA] >= min_area]
     shape_count = len(component_ids)
+    target_marker = False  # 在 holes 计算后回填（问号检测必须有"无封闭孔"这一条）
 
     sides: List[int] = []
     holes = 0
@@ -190,6 +219,8 @@ def cell_features(mask: np.ndarray, *, symmetry_min: float = 0.82) -> Dict[str, 
         if hierarchy is not None:
             holes += sum(1 for entry in hierarchy[0] if entry[3] != -1)
 
+    target_marker = _question_mark_like(mask, component_ids, height, width, holes)
+
     ys, xs = np.nonzero(mask)
     y0, y1 = int(ys.min()), int(ys.max()) + 1
     x0, x1 = int(xs.min()), int(xs.max()) + 1
@@ -199,6 +230,7 @@ def cell_features(mask: np.ndarray, *, symmetry_min: float = 0.82) -> Dict[str, 
     bbox_area = float(max(1, (y1 - y0) * (x1 - x0)))
     return {
         "blank": False,
+        "target_marker": target_marker,
         "ink_pixels": ink,
         "shape_count": shape_count,
         "sides": int(np.median(sides)) if sides else 0,

@@ -349,7 +349,12 @@ def _aligned(band: Dict[str, Any], columns: int) -> List[Optional[Dict[str, Any]
 
 
 def _is_blank(cell: Optional[Dict[str, Any]]) -> bool:
-    return cell is None or bool(cell["features"]["blank"])
+    if cell is None:
+        return True
+    features = cell["features"]
+    # R2c：真实考题的九宫格目标格通常印着“？”而不是留白——问号类标记同样视为空缺，
+    # 否则叠加规律在带问号标记的截图上完全失效（这是目标格检测，不是新增规律类别）
+    return bool(features["blank"] or features.get("target_marker"))
 
 
 def _failed(

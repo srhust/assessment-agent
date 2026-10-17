@@ -96,7 +96,7 @@ class VerificationCheck(BaseModel):
 
 class Verification(BaseModel):
     passed: bool = False
-    action: Literal["accept", "repair", "reject"] = "reject"
+    action: Literal["accept", "repair", "reject", "unverified"] = "reject"
     checks: List[VerificationCheck] = Field(default_factory=list)
     final_answer: Optional[str] = None
     repaired_answer: Optional[str] = None
@@ -110,9 +110,11 @@ class Verification(BaseModel):
 class RouteDecision(BaseModel):
     skill: str
     confidence: float = 0.0
-    source: Literal["explicit", "rules", "llm", "fallback"] = "rules"
+    source: Literal["explicit", "rules", "structure", "llm", "fallback"] = "rules"
     scores: Dict[str, float] = Field(default_factory=dict)
     ambiguous: bool = False
+    # R2c：区分“无法归类”（classified=False → unknown）与“归类到当前未实现题型”
+    classified: bool = True
     notes: str = ""
 
 

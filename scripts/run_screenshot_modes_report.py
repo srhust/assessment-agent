@@ -34,6 +34,7 @@ CORPORA = (
 
 def _mode_rows(summary) -> dict:
     m = summary.metrics
+    cap = m.get("capability") or {}
     return {
         "eval_mode": summary.eval_mode,
         "eval_batch": summary.eval_batch,
@@ -52,6 +53,22 @@ def _mode_rows(summary) -> dict:
         "e2e": m.get("e2e") or {},
         "vision": m.get("vision") or {},
         "usage_total": m.get("llm_usage") or {},
+        # R2c 双维度口径
+        "capability": {
+            "overall_answer_accuracy": (cap.get("overall_answer_accuracy") or {}).get("value"),
+            "overall_hit": (cap.get("overall_answer_accuracy") or {}).get("hit"),
+            "objective_total": cap.get("objective_total"),
+            "supported_answer_accuracy": (cap.get("supported_answer_accuracy") or {}).get("value"),
+            "capability_coverage": (cap.get("capability_coverage") or {}).get("value"),
+            "answered_coverage": (cap.get("overall_answered_coverage") or {}).get("value"),
+            "honest_abstention": (cap.get("honest_abstention") or {}).get("value"),
+            "false_accept": cap.get("false_accept_total", 0),
+            "false_reject": cap.get("false_reject_total", 0),
+            "unverified_answerable": cap.get("unverified_answerable_total", 0),
+            "over_answer": cap.get("over_answer_total", 0),
+            "outcomes": cap.get("verification_outcomes") or {},
+            "root_causes": cap.get("root_causes") or {},
+        },
     }
 
 
@@ -119,6 +136,10 @@ def main() -> int:
                 "failure_class": result.failure_class,
                 "failure_reason": result.failure_reason,
                 "routed_skill": result.routed_skill,
+                "answerability": result.answerability,
+                "capability_status": result.capability_status,
+                "root_cause": result.root_cause,
+                "verification_outcome": result.verification_outcome,
             }
             for result in summary.results
             if not result.correct
@@ -144,11 +165,16 @@ def main() -> int:
     (out / "mode_comparison.json").write_text(json.dumps(comparison, ensure_ascii=False, indent=2), encoding="utf-8")
 
     lines = [
-        "# R2b 三模式评测对照（regression + 独立基准）",
+        "# R2c 三模式评测对照（regression + 独立基准，双维度口径）",
         "",
         f"- 生成时间：{comparison['generated_at']}",
         f"- 真实视觉模型端到端：**{real_status}**",
         f"- 数据政策：{comparison['data_policy']}",
+        "",
+        "口径说明（R2c）：**总体答题准确率（overall）**分母=所有有唯一客观标准答案的样本，"
+        "含当前 Skill 未实现但客观有答案的题型（答不出如实计错，不再混入\"诚实弃权\"）；"
+        "**已支持准确率（supported）**≈旧 answer_accuracy 口径；能力覆盖=已支持/客观可答；"
+        "误放 false_accept=接受的答案与金标准不一致，误杀 false_reject=Solver 曾给对却被拒。",
         "",
     ]
     for split in report:
@@ -173,6 +199,23 @@ def main() -> int:
             )
         lines.append("")
         lines.append("*混合口径=旧 R2a 定义（可答+弃权混分母），仅作历史对照。")
+        lines += [
+            "",
+            "R2c 双维度口径（objective=有唯一客观答案样本，含未实现题型）：",
+            "",
+            "| 模式 | 总体准确率 overall | 已支持准确率 supported | 能力覆盖 | 作答覆盖 | 诚实弃权 | 误放 | 误杀 | unverified | 越权 |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        ]
+        for item in info["modes"]:
+            cap = item["capability"]
+            lines.append(
+                f"| {item['eval_mode']} | {_pct(cap['overall_answer_accuracy'])}"
+                f"（{cap['overall_hit']}/{cap['objective_total']}） "
+                f"| {_pct(cap['supported_answer_accuracy'])} | {_pct(cap['capability_coverage'])} "
+                f"| {_pct(cap['answered_coverage'])} | {_pct(cap['honest_abstention'])} "
+                f"| {cap['false_accept']} | {cap['false_reject']} | {cap['unverified_answerable']} | {cap['over_answer']} |"
+            )
+        lines.append("")
         mock_row = next(i for i in info["modes"] if i["e2e"])
         if mock_row["vision"]:
             v = mock_row["vision"]
@@ -185,10 +228,15 @@ def main() -> int:
                 f"- 选项区域 IoU 均值 {_pct(v['option_region_iou_mean']['value'])}（题数 {v['option_region_iou_mean']['denominator']}；框数 {v['option_region_iou_pooled']['denominator']}） · 图形区域 Recall {_pct(v['diagram_region_recall']['value'])}（{v['diagram_region_recall']['denominator']}）",
                 f"- 表格单元格准确率 {_pct(v['table_cell_accuracy']['value'])}（{v['table_cell_accuracy']['denominator']}） · 区域检测失败率 {_pct(v['region_detection_failure_rate']['value'])}（{v['region_detection_failure_rate']['denominator']}）",
             ]
-        lines += ["", "失败归因分布（image_only mock，按最上游失效环节）：", ""]
+        lines += ["", "失败归因分布（按最上游失效环节 / R2c 验证结果与根因）：", ""]
         for item in info["modes"]:
             if item["failure_classes"]:
-                lines.append(f"- {item['eval_mode']}：`{json.dumps(item['failure_classes'], ensure_ascii=False)}`")
+                lines.append(f"- {item['eval_mode']} failure_class：`{json.dumps(item['failure_classes'], ensure_ascii=False)}`")
+            cap = item["capability"]
+            if cap["outcomes"]:
+                lines.append(f"- {item['eval_mode']} verification_outcome：`{json.dumps(cap['outcomes'], ensure_ascii=False)}`")
+            if cap["root_causes"]:
+                lines.append(f"- {item['eval_mode']} root_cause：`{json.dumps(cap['root_causes'], ensure_ascii=False)}`")
         lines.append("")
         lines.append(f"失败样本清单（image_only mock，共 {len(info['image_only_mock_failures'])} 条）：见 mode_comparison.json `{split}.image_only_mock_failures`")
         lines.append("")

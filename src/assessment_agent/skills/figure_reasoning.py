@@ -286,7 +286,7 @@ class FigureReasoningSkill(BaseSkill):
         meta = solution.meta or {}
         regions = meta.get("regions")
         if regions:
-            return self._verify_regions(question, solution, regions)
+            return self._verify_regions(question, solution, regions, settings=getattr(ctx, "settings", None))
         image = meta.get("image") or question.image_path
         grid = tuple(meta["grid"]) if meta.get("grid") else None
         layout = meta.get("layout") or {}
@@ -354,8 +354,26 @@ class FigureReasoningSkill(BaseSkill):
         )
 
     # ------------------------------------------------------ 区域模式独立复核
-    def _verify_regions(self, question: Question, solution: Solution, regions: Dict[str, Any]) -> Optional[Verification]:
-        """区域裁剪证据重放：用不同阈值重跑适配层，比对答案与规律。"""
+    def _verify_regions(
+        self,
+        question: Question,
+        solution: Solution,
+        regions: Dict[str, Any],
+        *,
+        settings: Any = None,
+    ) -> Optional[Verification]:
+        """区域裁剪证据重放：候选代入独立复核（R2c）+ 换阈值重跑（兼容保留）。
+
+        R2c 核心：换阈值重跑只验证同一规则引擎的自我一致性，发现不了系统性规则
+        误选（独立基准里的 verifier_false_accept 全部来自这种"自证"）。现在必须先
+        通过 ``figure_verify.substitution_check``——逐选项单独感知复测 + 从题干独立
+        重建约束 + 候选代入：
+
+        - ``confirmed``：全部约束满足且唯一 → 才可能 accept；
+        - ``contradicted``：候选违反可独立复测的约束 → reject（验证器确实发现了错误）；
+        - ``unverified``：约束无法重建/唯一性不成立 → 受控拒答，**绝不默认通过**，
+          也不冒充"验证纠错"（上层归因区分二者）。
+        """
         meta = solution.meta or {}
         labels = regions.get("option_labels") or []
         crops = regions.get("option_crops") or []
@@ -371,6 +389,29 @@ class FigureReasoningSkill(BaseSkill):
             "grid": tuple(regions["stem_grid"]) if regions.get("stem_grid") else None,
         }
         checks: List[VerificationCheck] = []
+        independent_enabled = bool(getattr(settings, "r2c_figure_verify", True))
+        verdict: Optional[str] = None
+        if independent_enabled:
+            from ..tools.figure_verify import substitution_check
+
+            try:
+                report = substitution_check(
+                    stem_crop,
+                    list(zip(labels, crops)),
+                    solution.answer or "",
+                    meta.get("rule"),
+                    grid=inputs["grid"],
+                )
+            except Exception as exc:  # noqa: BLE001 - 复核自身异常按未验证处理，不默认通过
+                report = {"verdict": "unverified", "reasons": [f"独立复核执行异常：{type(exc).__name__}: {exc}"]}
+            verdict = str(report.get("verdict") or "unverified")
+            checks.append(
+                VerificationCheck(
+                    name="figure.independent_substitution",
+                    passed=verdict == "confirmed",
+                    detail=f"[{verdict}] " + "；".join(str(r) for r in report.get("reasons") or []),
+                )
+            )
         try:
             rerun = self._run_adapter(inputs, threshold=alternative)
             same = rerun.get("status") == "solved" and rerun.get("answer") == solution.answer
@@ -378,9 +419,11 @@ class FigureReasoningSkill(BaseSkill):
                 VerificationCheck(
                     name="figure.rerun_consistent",
                     passed=same,
+                    severity="warning" if verdict == "confirmed" else "blocking",
                     detail=(
-                        f"区域模式阈值 {threshold} → {alternative} 独立复算："
+                        f"区域模式阈值 {threshold} → {alternative} 自我一致性重跑："
                         f"{rerun.get('answer') or rerun.get('reason')}（Solver 记录 {solution.answer}）"
+                        + ("；独立复核已确认，此项仅作阈值鲁棒性记录" if verdict == "confirmed" else "")
                     ),
                 )
             )
@@ -417,11 +460,16 @@ class FigureReasoningSkill(BaseSkill):
             )
         )
 
-        passed = all(check.passed for check in checks if check.severity == "blocking")
+        blocking_ok = all(check.passed for check in checks if check.severity == "blocking")
+        if blocking_ok:
+            passed, action = True, "accept"
+        else:
+            passed = False
+            action = "unverified" if verdict == "unverified" else "reject"
         return Verification(
             passed=passed,
-            action="accept" if passed else "reject",
+            action=action,
             checks=checks,
             final_answer=solution.answer if passed else None,
-            notes="区域裁剪重放 + 换阈值独立复算（不做答案修补，避免猜测）",
+            notes="R2c 候选代入独立复核 + 换阈值自我一致性重跑 + 唯一匹配检查（不确认不通过，不做答案修补）",
         )

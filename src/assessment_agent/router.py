@@ -9,6 +9,7 @@ from .config import Settings
 from .llm import ChatModel, LLMError
 from .prompts import ROUTER_SYSTEM, router_user_prompt
 from .schemas import Question, RouteDecision
+from .tools.math_tool import option_value
 
 Rule = Tuple[re.Pattern, float]
 
@@ -98,12 +99,21 @@ class Router:
                 notes="题型由调用方显式指定",
             )
         scores = score_rules(question)
+        # R2c：结构证据优先于关键词——图形题的"按规律/问号处"话术会与数列规则撞车，
+        # 但"2 个以上选项区域含图形 + 题干有矩阵裁剪"是更强的客观证据。
+        if getattr(self.settings, "r2c_router_structure", True):
+            structural = self._structure_route(question, scores)
+            if structural is not None:
+                return structural
         if scores:
             ranked = list(scores.items())
             top_skill, top_score = ranked[0]
             second_score = ranked[1][1] if len(ranked) > 1 else 0.0
             ambiguous = second_score >= top_score * 0.85 and top_score > 0
             confidence = min(0.95, 0.55 + 0.1 * top_score)
+            if ambiguous:
+                # 不确定分类不允许伪装成高置信度
+                confidence = min(confidence, 0.6)
             if top_score >= self.settings.router_rule_threshold:
                 return RouteDecision(
                     skill=top_skill,
@@ -111,9 +121,74 @@ class Router:
                     source="rules",
                     scores=scores,
                     ambiguous=ambiguous,
-                    notes=f"规则得分 {scores}",
+                    notes=f"规则得分 {scores}" + ("（多规则冲突，置信度封顶 0.6）" if ambiguous else ""),
                 )
         return self._llm_route(question, scores)
+
+    # ------------------------------------------------------------ 结构证据路由
+    def _structure_route(self, question: Question, scores: Dict[str, float]) -> Optional[RouteDecision]:
+        vision = (question.meta or {}).get("vision") if question.meta else None
+        if not isinstance(vision, dict):
+            vision = {}
+        option_regions = [r for r in (vision.get("option_regions") or []) if isinstance(r, dict)]
+        figure_options = [r for r in option_regions if r.get("has_figure") or r.get("crop_path")]
+        stem_matrix = bool(vision.get("stem_matrix_crop") or vision.get("stem_matrix_grid"))
+        stem_diagram = bool((question.meta or {}).get("has_diagram"))
+        if len(figure_options) >= 2 and (stem_matrix or stem_diagram):
+            competing = sorted(k for k, v in scores.items() if k != "figure_reasoning" and v >= 2.0)
+            ambiguous = bool(competing)
+            return RouteDecision(
+                skill="figure_reasoning",
+                confidence=0.6 if ambiguous else 0.85,
+                source="structure",
+                scores=scores,
+                ambiguous=ambiguous,
+                notes=(
+                    f"结构证据：{len(figure_options)} 个选项区域含独立图形裁剪"
+                    + ("，题干有矩阵/图形区域" if stem_matrix or stem_diagram else "")
+                    + (f"；与文本线索 {competing} 冲突，置信度封顶 0.6（不伪装高置信）" if ambiguous else "")
+                ),
+            )
+        tables = [t for t in (vision.get("table_regions") or []) if isinstance(t, dict)]
+        table = vision.get("table")
+        if isinstance(table, dict) and table.get("cells"):
+            tables = tables + [table]
+        if tables:
+            competing = sorted(k for k, v in scores.items() if k != "data_analysis" and v >= 2.0)
+            return RouteDecision(
+                skill="data_analysis",
+                confidence=0.6 if competing else 0.8,
+                source="structure",
+                scores=scores,
+                ambiguous=bool(competing),
+                notes=f"结构证据：检出 {len(tables)} 个表格/图表区域，路由到资料分析（当前未实现则按能力缺口如实失败）"
+                + (f"；文本线索 {competing} 冲突，置信度封顶 0.6" if competing else ""),
+            )
+        # 反例守卫：空括号（ ）像数列占位符，但选项若是**词语**（≥2 个汉字、非数值），
+        # 那是语言填空/阅读理解信号——不能仅凭括号判成 number_series（结构优先于弱关键词）。
+        # 只在关键词规则未能明确定论时兜底，不压过明确的"数列 2,4,8"/"下列图形"题干信号。
+        if re.search(r"[（(]\s*[)）]", question.render()) and figure_options == []:
+            if max(scores.values(), default=0.0) >= self.settings.router_rule_threshold:
+                return None
+            texts = [str((r.get("text") or "").strip()) for r in option_regions if isinstance(r, dict)]
+            if not texts:
+                texts = [option.text.strip() for option in question.options]
+            def _wordy(text: str) -> bool:
+                return (
+                    bool(re.search(r"[\u4e00-\u9fff]{2,}", text))
+                    and option_value(text) is None
+                    and not re.search(r"\d", text)
+                )
+            if texts and sum(1 for t in texts if _wordy(t)) >= 2:
+                return RouteDecision(
+                    skill="verbal_understanding",
+                    confidence=0.6,
+                    source="structure",
+                    scores=scores,
+                    ambiguous=True,
+                    notes="空括号疑似数列占位，但选项为词语而非数值：路由言语理解，置信度 0.6（不伪装高置信）",
+                )
+        return None
 
     # ------------------------------------------------------------ LLM 兜底
     def _llm_route(self, question: Question, scores: Dict[str, float]) -> RouteDecision:
@@ -125,7 +200,10 @@ class Router:
                 source="fallback",
                 scores=scores,
                 ambiguous=True,
-                notes="规则未达阈值且未启用模型分类，请用 --skill 显式指定题型",
+                # unknown ≠ unsupported：未分类如实置 classified=False
+                classified=best_guess != "unknown",
+                notes="规则未达阈值且未启用模型分类，请用 --skill 显式指定题型"
+                if scores else "无任何规则命中且未启用模型分类：判为 unknown（未分类，而非'不支持'）",
             )
         try:
             payload = self.llm.complete_json(
