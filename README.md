@@ -59,13 +59,13 @@ assessment-agent/
 │   ├── text_utils.py      # 题干/选项拆分
 │   ├── cli.py             # solve / eval / skills / doctor / inspect / mcp-manifest / call
 │   ├── integration.py     # DSH / MCP 接入层（工具清单 + tools/call 形状调用）
-│   ├── skills/            # 八个题型 Skill（3 个 MVP + 5 个声明式接口）
-│   ├── tools/             # SymPy 计算、数列规律、Z3 约束、图形工具接口
+│   ├── skills/            # 八个题型 Skill（4 个 MVP + 4 个声明式接口）
+│   ├── tools/             # SymPy 计算、数列规律、Z3 约束、图形布局与规律引擎
 │   ├── knowledge/         # 知识库加载器（Markdown）
 │   └── evaluation/        # 数据集加载、指标、评测执行器
 ├── data/{train,dev,test}/ # 按题型分文件的 JSONL 数据集
 ├── knowledge/             # 八个题型的方法论笔记
-├── tests/                 # 87 个 pytest 单元测试
+├── tests/                 # 114 个 pytest 单元测试
 ├── runs/                  # 运行产物（gitignore）
 ├── results/               # 评测结果（gitignore）
 ├── .env.example
@@ -82,7 +82,7 @@ assessment-agent/
 | `numeric_calculation` | 数字计算 | ✅ 已实现 | 题干 → 表达式 → SymPy 精确求值 → 选项数值匹配 |
 | `number_series` | 数字推理 | ✅ 已实现 | 7 类规律检测（等差/等比/差分/奇偶分组/递推/幂次偏移/常数），要求解释全部已知项 |
 | `logical_reasoning` | 逻辑推理 | ✅ 已实现 | 排序比较语句 → Z3 约束 → 必然性/可能性判定 |
-| `figure_reasoning` | 图形推理 | 🚧 仅接口 | `figure_tools` 已有真实图像观测；规律识别接口显式 `NotImplementedError` |
+| `figure_reasoning` | 图形推理 | ✅ 已实现 | 网格解析 + 六类规律（个数/边数/面积/平移/对称/叠加）+ 选项匹配；失败时给出原因 |
 | `verbal_understanding` | 言语理解 | 🚧 仅接口 | 返回 `unsupported`，不编造答案 |
 | `language_reasoning` | 语言推理 | 🚧 仅接口 | 同上 |
 | `data_analysis` | 资料分析 | 🚧 仅接口 | 同上 |
@@ -114,7 +114,7 @@ pip install -r requirements.txt
 copy .env.example .env         # 填入你自己的模型服务地址与密钥（.env 已被 gitignore）
 ```
 
-即使**不配置任何模型**也能使用三个 MVP 题型（离线确定性模式）：
+即使**不配置任何模型**也能使用四个 MVP 题型（离线确定性模式）：
 
 ```bash
 $env:PYTHONPATH="src"          # 或 pip install -e .
@@ -157,7 +157,8 @@ base_url=https://api.openai.com/v1  text_model=gpt-4o-mini  vision_model=None
 python_math     stage=1  可用
 number_series   stage=1  可用
 z3_logic        stage=1  可用
-figure_tools    stage=2  可用
+figure_tools    stage=1  可用（布局与特征）
+figure_rules    stage=1  可用（规律引擎）
 ```
 
 ---
@@ -226,12 +227,13 @@ python -m assessment_agent eval --split test
 ```
 
 ```
-split=test  样本 15  准确率 100.00%  用时 0.82s
+split=test  样本 19  准确率 100.00%  用时 1.02s
 题型                      正确/总数    准确率    平均ms   p95ms   失败原因
-logical_reasoning       3/3        100.00%   73.0    100.9   -
-number_series           5/5        100.00%   0.9     1.1     -
-numeric_calculation     5/5        100.00%   88.5    352.1   -
-figure_reasoning        1/1        100.00%   149.0   149.0   -        # expected_status=unsupported 的合规性样本
+figure_reasoning        5/5        100.00%   38.5    74.4    -
+logical_reasoning       3/3        100.00%   72.2    96.4    -
+number_series           5/5        100.00%   1.1     1.5     -
+numeric_calculation     5/5        100.00%   120.5   479.7   -
+verbal_understanding    1/1        100.00%   1.0     1.0     -
 ```
 
 结果写入 `results/<split>/<时间戳>/`：`metrics.json`、`predictions.jsonl`、`summary.md`。
@@ -248,19 +250,19 @@ figure_reasoning        1/1        100.00%   149.0   149.0   -        # expected
 
 ```bash
 python -m pytest -q
-# 87 passed
+# 114 passed
 ```
 
 覆盖范围：
 
 - 配置与密钥安全（`.env` 不入库、无密钥字面量、`describe()` 不泄露 key）
 - 路由（7 类规则命中、显式指定、离线回退、LLM 兜底、未知技能拒绝）
-- 工具（SymPy 精确计算与非法输入、Fraction 独立求值、选项匹配、7 类数列规律、Z3 蕴含/否定/矛盾/带数值差拒绝）
-- 校验（数值篡改 → repair、数列篡改 → repair、逻辑复核、unsupported → reject）
-- Skill（8 个注册、3 个 MVP、声明式 Skill 绝不返回答案）
+- 工具（SymPy 精确计算与非法输入、Fraction 独立求值、选项匹配、7 类数列规律、Z3 蕴含/否定/矛盾/带数值差拒绝、图形布局解析、六类规律推断、Skill 端到端与诚实失败）
+- 校验（数值篡改 → repair、数列篡改 → repair、逻辑复核、unsupported → reject、图形换阈值复算）
+- Skill（8 个注册、4 个 MVP、声明式 Skill 绝不返回答案）
 - 流水线（文本端到端、内联选项解析、截图 + 假视觉模型端到端、缺视觉模型报错、产物完整性）
 - 评测（数据集加载、指标统计、失败归因、结果落盘）
-- 图形工具接口（能力查询可用、规律识别显式抛 `NotImplementedError`）
+- 图形工具接口（布局解析、特征提取、规律引擎、Skill 端到端、诚实失败、换阈值复核）
 - DSH / MCP 接入（清单结构、`tools/call` 形状、未知工具与非法参数、能力输出脱敏、`save=false` 不落盘）
 - CLI（solve / eval / skills / doctor / mcp-manifest / call 的返回码与输出）
 
@@ -285,7 +287,7 @@ python -m pytest -q
 
 | 题型 | 计划实现 | 依赖 |
 | --- | --- | --- |
-| 图形推理 | 轮廓 → 边数/顶点/对称轴/墨迹密度特征；旋转/翻转/叠加匹配；规律外推 | OpenCV + NumPy（接口已预留） |
+| 图形推理 | ✅ 已实现：网格解析 + 六类规律（个数/边数/面积/平移/对称/叠加）；待实现：旋转/翻转匹配、曲线图形、非叠加九宫格规律 | OpenCV + NumPy |
 | 资料分析 | 截图表格 → Markdown 表 + 行列/合计校验；指标公式复用 `python_math` | 视觉模型 + 表格校验器 |
 | 言语理解 | 选词填空四维排除、语句排序关联词链、主旨论题-论点提取 | 带证据的 LLM 输出 + 校验器 |
 | 语言推理 | 词关系类型知识库 + 关系一致性/方向/词性校验 | 知识库检索 + LLM |

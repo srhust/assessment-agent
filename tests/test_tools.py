@@ -198,4 +198,4 @@ def test_figure_tools_expose_capabilities_but_not_fake_solving():
     capabilities = tool.run(operation="capabilities")
     assert "implemented" in capabilities and "planned" in capabilities
     with pytest.raises(NotImplementedError):
-        tool.run(operation="grid_rule_inference")
+        tool.run(operation="rotation_match")

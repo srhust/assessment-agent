@@ -12,4 +12,3 @@
 {"id": "logic-test-002", "skill": "logical_reasoning", "stem": "甲、乙、丙三人的体重关系如下：乙比甲重，丙比乙重。以下哪项一定为真？", "options": {"A": "甲比丙重", "B": "丙比甲重", "C": "乙最重", "D": "甲比乙重"}, "answer": "B", "tags": ["排序"]}
 {"id": "logic-test-003", "skill": "logical_reasoning", "stem": "甲乙丙三人分数各不相同。甲比乙高，丙不是最高。以下哪项一定为真？", "options": {"A": "甲最高", "B": "乙最高", "C": "丙最低", "D": "甲最低"}, "answer": "A", "tags": ["排序", "否定条件"]}
 {"id": "verb-test-001", "skill": "verbal_understanding", "stem": "依次填入下列横线处最恰当的一项是（ ）：会议纪要应当________，避免冗长。", "options": {"A": "简明", "B": "简单", "C": "简陋", "D": "简短"}, "answer": null, "expected_status": "unsupported", "tags": ["未实现题型"]}
-{"id": "fig-test-001", "skill": "figure_reasoning", "stem": "下列图形序列中，符合规律的下一个图形是（ ）", "options": {"A": "图形A", "B": "图形B", "C": "图形C", "D": "图形D"}, "answer": null, "expected_status": "unsupported", "tags": ["未实现题型"]}

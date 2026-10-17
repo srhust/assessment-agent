@@ -27,7 +27,8 @@ venv/
 .coverage
 htmlcov/
 
-# 图片缓存（原始题图默认随 runs/ 忽略，示例图除外）
+# 图片缓存（原始题图默认随 runs/ 忽略，示例图与合成数据集除外）
 data/**/*.png
 data/**/*.jpg
 !data/**/samples/*.png
+!data/figure/images/*.png

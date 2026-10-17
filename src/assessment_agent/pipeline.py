@@ -85,6 +85,7 @@ class Pipeline:
         run_id: Optional[str] = None,
         save: bool = True,
         hint: Optional[str] = None,
+        meta: Optional[Dict[str, Any]] = None,
     ) -> RunResult:
         if not (text and text.strip()) and not image_path:
             raise PipelineError("需要提供题干文本（--text）或题目截图（--image）")
@@ -133,6 +134,7 @@ class Pipeline:
             meta={
                 "extraction_confidence": extraction.confidence if extraction else None,
                 "has_diagram": extraction.has_diagram if extraction else False,
+                **(meta or {}),
             },
         )
 

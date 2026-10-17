@@ -26,6 +26,8 @@ class Case:
     expected_status: str = "solved"
     tags: List[str] = field(default_factory=list)
     source_file: str = ""
+    image: Optional[str] = None
+    grid: Optional[List[int]] = None
 
 
 @dataclass
@@ -63,6 +65,37 @@ def _load_options(raw: Any) -> List[QuestionOption]:
     return []
 
 
+def _load_answer(payload: Dict[str, Any]) -> Optional[str]:
+    """标注答案：支持 ``answer`` 与 ``expected_answer`` 两种写法。"""
+    for key in ("answer", "expected_answer"):
+        value = payload.get(key)
+        if value is not None and str(value) != "":
+            return str(value)
+    return None
+
+
+def _resolve_image(data_dir: Path, raw: Any, source: Path, line_number: int) -> Optional[str]:
+    """题图路径：相对路径按 data/ 目录解析；缺失时直接报错，而不是静默跳过。"""
+    if not raw:
+        return None
+    candidate = Path(str(raw))
+    resolved = candidate if candidate.is_absolute() else Path(data_dir) / candidate
+    if not resolved.is_file():
+        raise FileNotFoundError(f"{source.name}:{line_number} 题图不存在: {resolved}")
+    return str(resolved)
+
+
+def _load_grid(raw: Any) -> Optional[List[int]]:
+    if isinstance(raw, (list, tuple)) and len(raw) == 2:
+        try:
+            rows, cols = int(raw[0]), int(raw[1])
+        except (TypeError, ValueError):
+            return None
+        if rows > 0 and cols > 0:
+            return [rows, cols]
+    return None
+
+
 def load_cases(data_dir: Path, split: str, skills: Optional[Sequence[str]] = None) -> List[Case]:
     if split not in SPLITS:
         raise ValueError(f"split 必须是 {SPLITS} 之一，收到 {split!r}")
@@ -73,7 +106,8 @@ def load_cases(data_dir: Path, split: str, skills: Optional[Sequence[str]] = Non
     for path in sorted(split_dir.glob("*.jsonl")):
         if skills and path.stem not in skills:
             continue
-        for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        # utf-8-sig：兼容 Windows PowerShell 写出的 BOM 文件
+        for line_number, line in enumerate(path.read_text(encoding="utf-8-sig").splitlines(), start=1):
             line = line.strip()
             if not line or line.startswith("#"):
                 continue
@@ -87,10 +121,12 @@ def load_cases(data_dir: Path, split: str, skills: Optional[Sequence[str]] = Non
                     skill=str(payload.get("skill") or path.stem),
                     stem=str(payload.get("stem") or ""),
                     options=_load_options(payload.get("options")),
-                    answer=(str(payload["answer"]) if payload.get("answer") is not None else None),
+                    answer=_load_answer(payload),
                     expected_status=str(payload.get("expected_status") or "solved"),
                     tags=[str(tag) for tag in payload.get("tags") or []],
                     source_file=str(path.name),
+                    image=_resolve_image(data_dir, payload.get("image"), path, line_number),
+                    grid=_load_grid(payload.get("grid")),
                 )
             )
     if not cases:
@@ -167,15 +203,20 @@ class EvaluationRunner:
         try:
             run = self.pipeline.run(
                 text=case.stem,
+                image_path=case.image,
                 options=case.options,
                 skill=case.skill,
                 save=False,
+                meta={"grid": case.grid} if case.grid else None,
             )
             solution = run.solution
             verification = run.verification
             predicted = verification.final_answer or solution.answer
             if case.expected_status == "unsupported":
                 correct = solution.status == "unsupported"
+            elif case.expected_status == "failed":
+                # 合规性样本：必须明确失败（不猜答案）才算正确
+                correct = solution.status != "solved"
             else:
                 correct = solution.status == "solved" and answers_match(predicted, case.answer)
             latency = (time.perf_counter() - started) * 1000.0

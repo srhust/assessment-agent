@@ -1,0 +1,2 @@
+{"id": "fig-dev-fill", "skill": "figure_reasoning", "stem": "观察图形的变化规律，选出括号处应填入的图形。", "image": "figure/images/fill_dev.png", "answer": "A", "expected_status": "solved"}
+{"id": "fig-dev-symmetry", "skill": "figure_reasoning", "stem": "观察图形的变化规律，选出括号处应填入的图形。", "image": "figure/images/symmetry_dev.png", "answer": "D", "expected_status": "solved"}

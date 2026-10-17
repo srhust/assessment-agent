@@ -80,8 +80,12 @@ def test_cli_call_reports_errors(capsys):
 
 
 def test_cli_eval_runs_against_repository_dataset(capsys):
+    from assessment_agent.evaluation.runner import load_cases
+
+    expected_cases = load_cases(Path(__file__).resolve().parents[1] / "data", "test")
     code = main(["eval", "--split", "test", "--no-save", "--json"])
     assert code == 0
     payload = json.loads(capsys.readouterr().out)
-    assert payload["total"] == 15
+    assert payload["total"] == len(expected_cases)
     assert payload["accuracy"] == pytest.approx(1.0)
+    assert "figure_reasoning" in payload["metrics"]["per_skill"]

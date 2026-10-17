@@ -1,0 +1,6 @@
+{"id": "fig-train-count", "skill": "figure_reasoning", "stem": "观察图形的变化规律，选出括号处应填入的图形。", "image": "figure/images/count_train.png", "answer": "A", "expected_status": "solved"}
+{"id": "fig-train-sides", "skill": "figure_reasoning", "stem": "观察图形的变化规律，选出括号处应填入的图形。", "image": "figure/images/sides_train.png", "answer": "C", "expected_status": "solved"}
+{"id": "fig-train-fill", "skill": "figure_reasoning", "stem": "观察图形的变化规律，选出括号处应填入的图形。", "image": "figure/images/fill_train.png", "answer": "A", "expected_status": "solved"}
+{"id": "fig-train-position", "skill": "figure_reasoning", "stem": "观察图形的变化规律，选出括号处应填入的图形。", "image": "figure/images/position_train.png", "answer": "A", "expected_status": "solved", "grid": [2, 4]}
+{"id": "fig-train-symmetry", "skill": "figure_reasoning", "stem": "观察图形的变化规律，选出括号处应填入的图形。", "image": "figure/images/symmetry_train.png", "answer": "A", "expected_status": "solved"}
+{"id": "fig-train-overlay", "skill": "figure_reasoning", "stem": "观察图形的变化规律，选出括号处应填入的图形。", "image": "figure/images/overlay_train.png", "answer": "A", "expected_status": "solved", "grid": [4, 3]}

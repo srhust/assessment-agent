@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import List
 
 from .base import Tool, ToolBox, ToolError, ToolUnavailable, json_safe
+from .figure_rules import FigureRuleTool
 from .figure_tools import FigureTools
 from .logic_tool import Z3LogicTool
 from .math_tool import PythonMathTool
@@ -12,7 +13,7 @@ from .series import NumberSeriesTool
 
 
 def default_tools() -> List[Tool]:
-    return [PythonMathTool(), NumberSeriesTool(), Z3LogicTool(), FigureTools()]
+    return [PythonMathTool(), NumberSeriesTool(), Z3LogicTool(), FigureTools(), FigureRuleTool()]
 
 
 def default_toolbox() -> ToolBox:
@@ -20,6 +21,7 @@ def default_toolbox() -> ToolBox:
 
 
 __all__ = [
+    "FigureRuleTool",
     "FigureTools",
     "NumberSeriesTool",
     "PythonMathTool",
