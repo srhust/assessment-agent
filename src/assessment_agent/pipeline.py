@@ -226,7 +226,12 @@ class Pipeline:
                     "skill": route.skill,
                     "route_source": route.source,
                     "status": solution.status,
-                    "answer": verification.final_answer or solution.answer,
+                    "answer": (
+                        verification.final_answer
+                        if verification.action in {"accept", "repair"}
+                        else None
+                    ),
+                    "solver_answer": solution.answer,
                     "verification": {
                         "passed": verification.passed,
                         "action": verification.action,
@@ -237,7 +242,15 @@ class Pipeline:
             )
             artifacts_map["run"] = artifacts.relative(summary_path)
             result.artifacts = artifacts_map
-            artifacts.append_trace("run_end", answer=verification.final_answer or solution.answer, artifacts=artifacts_map)
+            artifacts.append_trace(
+                "run_end",
+                answer=(
+                    verification.final_answer
+                    if verification.action in {"accept", "repair"}
+                    else None
+                ),
+                artifacts=artifacts_map,
+            )
 
         return result
 

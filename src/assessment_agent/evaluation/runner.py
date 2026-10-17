@@ -211,7 +211,12 @@ class EvaluationRunner:
             )
             solution = run.solution
             verification = run.verification
-            predicted = verification.final_answer or solution.answer
+            # 只在 Verifier 接受或修复答案时使用 final_answer，拒绝时不输出未验证答案
+            predicted = (
+                verification.final_answer
+                if verification.action in {"accept", "repair"}
+                else None
+            )
             if case.expected_status == "unsupported":
                 correct = solution.status == "unsupported"
             elif case.expected_status == "failed":
@@ -229,6 +234,7 @@ class EvaluationRunner:
                 status=solution.status,
                 verification_action=verification.action,
                 latency_ms=round(latency, 3),
+                expected_status=case.expected_status,
                 failure_reason=None if correct else _failure_reason(solution.status, verification.action, solution.error),
                 predicted_option=solution.answer,
                 tags=list(case.tags),
@@ -244,6 +250,7 @@ class EvaluationRunner:
                 status="failed",
                 verification_action="reject",
                 latency_ms=round(latency, 3),
+                expected_status=case.expected_status,
                 failure_reason=f"pipeline_error: {exc}",
                 tags=list(case.tags),
             )
@@ -258,6 +265,7 @@ class EvaluationRunner:
                 status="failed",
                 verification_action="reject",
                 latency_ms=round(latency, 3),
+                expected_status=case.expected_status,
                 failure_reason=f"exception: {type(exc).__name__}: {exc}",
                 tags=list(case.tags),
             )

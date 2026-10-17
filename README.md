@@ -220,11 +220,21 @@ data/train/  data/dev/  data/test/
 ```
 
 样本为一题一行的 JSONL，字段见 [`data/README.md`](data/README.md)。评测强制路由到样本声明的题型，
-并统计 **准确率、耗时（mean/p50/p95）、失败原因**：
+并统计多维度指标：
 
 ```bash
 python -m assessment_agent eval --split test
 ```
+
+**评测指标说明：**
+
+| 指标 | 定义 | 说明 |
+| --- | --- | --- |
+| **Answer Accuracy** | 正确解答数 / 有标准答案的题目数 | 衡量解题能力 |
+| **Coverage** | 提供通过校验答案的题目数 / 全部可评分题目数 | 衡量系统覆盖率 |
+| **Selective Accuracy** | 已通过校验的答案中，真正正确的比例 | 衡量答案可信度 |
+| **Abstention Accuracy** | 应当拒答的样本中，正确拒答的比例 | 衡量诚实拒答能力 |
+| **Router Accuracy** | 自动选择正确 Skill 的比例 | 衡量路由准确率 |
 
 ```
 split=test  样本 19  准确率 100.00%  用时 1.02s
@@ -234,6 +244,12 @@ logical_reasoning       3/3        100.00%   72.2    96.4    -
 number_series           5/5        100.00%   1.1     1.5     -
 numeric_calculation     5/5        100.00%   120.5   479.7   -
 verbal_understanding    1/1        100.00%   1.0     1.0     -
+```
+
+使用 `--json` 参数可输出完整指标（含 answerable、coverage、abstention 等）：
+
+```bash
+python -m assessment_agent eval --split test --json
 ```
 
 结果写入 `results/<split>/<时间戳>/`：`metrics.json`、`predictions.jsonl`、`summary.md`。
