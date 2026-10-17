@@ -126,7 +126,7 @@ def render_report(result: RunResult) -> str:
             f"- 生成时间：{result.started_at.isoformat()}",
             f"- 题型：{result.route.skill}（路由来源 {result.route.source}，置信度 {result.route.confidence:.2f}）",
             f"- 求解状态：{solution.status}",
-            f"- 最终答案：{verification.final_answer or solution.answer or '无'}",
+            f"- 最终答案：{verification.final_answer if verification.action in {'accept', 'repair'} else '无'}",
             f"- 校验结论：{'通过' if verification.passed else '未通过'}（action={verification.action}）",
             "",
             "## 题目",

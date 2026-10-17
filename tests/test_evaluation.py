@@ -131,3 +131,75 @@ def test_metrics_percentile_and_failure_reason_aggregation():
     metrics = compute_metrics(results)
     assert metrics["accuracy"] == pytest.approx(0.5)
     assert metrics["per_skill"]["number_series"]["failure_reasons"] == {"wrong_answer": 1}
+
+
+def test_route_mode_oracle_and_auto(tmp_path: Path):
+    """回归测试：验证 oracle 和 auto 模式都能正常工作。"""
+    data_dir = _dataset(tmp_path)
+    settings = make_settings(tmp_path)
+    pipeline = Pipeline(settings)
+    runner = EvaluationRunner(pipeline, data_dir=data_dir, results_dir=tmp_path / "results")
+    
+    # 测试 oracle 模式
+    summary_oracle = runner.run(split="test", save=False, route_mode="oracle")
+    assert summary_oracle.total == 4
+    assert "route_accuracy" in summary_oracle.metrics
+    assert summary_oracle.metrics["route_accuracy"] == 1.0  # oracle 模式应该 100% 路由正确
+    
+    # 测试 auto 模式
+    summary_auto = runner.run(split="test", save=False, route_mode="auto")
+    assert summary_auto.total == 4
+    assert "route_accuracy" in summary_auto.metrics
+    # auto 模式的路由准确率可能不是 100%，但应该有值
+    assert summary_auto.metrics["route_accuracy"] >= 0.0
+
+
+def test_new_metrics_coverage_and_selective_accuracy(tmp_path: Path):
+    """回归测试：验证新指标 covered_count、coverage_ratio、selective_accuracy 正确计算。"""
+    data_dir = _dataset(tmp_path)
+    settings = make_settings(tmp_path)
+    pipeline = Pipeline(settings)
+    runner = EvaluationRunner(pipeline, data_dir=data_dir, results_dir=tmp_path / "results")
+    summary = runner.run(split="test", save=False)
+    
+    metrics = summary.metrics
+    # 检查全局指标
+    assert "covered_count" in metrics
+    assert "coverage_ratio" in metrics
+    assert "selective_accuracy" in metrics
+    assert metrics["covered_count"] >= 0
+    assert 0.0 <= metrics["coverage_ratio"] <= 1.0
+    assert 0.0 <= metrics["selective_accuracy"] <= 1.0
+    
+    # 检查每个 skill 的指标
+    for skill_stats in metrics["per_skill"].values():
+        assert "covered_count" in skill_stats
+        assert "coverage_ratio" in skill_stats
+        assert "selective_accuracy" in skill_stats
+
+
+def test_failed_status_strict_matching(tmp_path: Path):
+    """回归测试：验证 expected_status=failed 必须严格匹配 failed 状态。"""
+    # 创建一个 expected_status=failed 但实际 solved 的测试用例
+    rows_with_failed = [
+        {
+            "id": "should-fail",
+            "skill": "numeric_calculation",
+            "stem": "计算 2 + 2",
+            "options": {"A": "4", "B": "5"},
+            "answer": "A",
+            "expected_status": "failed",  # 期望失败，但实际会成功
+        },
+    ]
+    data_dir = tmp_path / "data"
+    write_jsonl(data_dir / "test" / "cases.jsonl", rows_with_failed)
+    
+    settings = make_settings(tmp_path)
+    pipeline = Pipeline(settings)
+    runner = EvaluationRunner(pipeline, data_dir=data_dir, results_dir=tmp_path / "results")
+    summary = runner.run(split="test", save=False)
+    
+    # 由于期望 failed 但实际 solved，应该算作不正确
+    assert summary.total == 1
+    assert summary.metrics["correct"] == 0
+    assert summary.metrics["accuracy"] == 0.0

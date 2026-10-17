@@ -47,9 +47,111 @@ class NumberSeriesSkill(BaseSkill):
                 steps.append(
                     f"{candidate['name']}：{candidate['explanation']}（下一项 {candidate['next_value']}）"
                 )
-        steps.append(f"取优先级最高的规律，得到下一项 = {next_text}")
-        if not agreement:
+        
+        # 检查是否存在歧义
+        is_ambiguous = not agreement and len(candidates) > 1
+        
+        if is_ambiguous:
             steps.append(f"注意：{payload['note']}")
+            # 收集所有候选答案
+            candidate_answers = set()
+            for candidate in candidates:
+                candidate_answers.add(float(candidate["next_value_float"]))
+            
+            # 如果有选项，检查哪些候选答案匹配选项
+            if question.options:
+                matching_labels = []
+                for cand_value in candidate_answers:
+                    label = match_option(cand_value, [(option.label, option.text) for option in question.options])
+                    if label:
+                        matching_labels.append((label, cand_value))
+                
+                # 如果只有一个候选答案匹配选项，使用该答案但标记为 ambiguous
+                if len(matching_labels) == 1:
+                    label, matched_value = matching_labels[0]
+                    steps.append(f"虽然存在歧义，但只有一个候选答案匹配选项：{label}")
+                    return Solution(
+                        status="solved",
+                        skill=self.id,
+                        answer=label,
+                        answer_text=question.option_text(label) or "",
+                        steps=steps,
+                        confidence=0.5,  # 降低置信度
+                        method="series_pattern",
+                        tool_calls=[invocation],
+                        meta={
+                            "sequence": payload["sequence"],
+                            "next_value": str(matched_value),
+                            "agreement": agreement,
+                            "ambiguous": True,
+                            "candidates": [
+                                {"name": c["name"], "next_value": c["next_value"], "priority": c["priority"]}
+                                for c in candidates
+                            ],
+                        },
+                    )
+                elif len(matching_labels) > 1:
+                    # 多个候选答案都匹配选项，无法确定
+                    steps.append(f"存在歧义：{len(matching_labels)} 个候选答案都匹配选项")
+                    return Solution(
+                        status="failed",
+                        skill=self.id,
+                        method="series_pattern",
+                        error=f"数列存在歧义，{len(matching_labels)} 个候选答案都匹配选项，无法确定唯一答案",
+                        steps=steps,
+                        tool_calls=[invocation],
+                        meta={
+                            "sequence": payload["sequence"],
+                            "agreement": agreement,
+                            "ambiguous": True,
+                            "candidates": [
+                                {"name": c["name"], "next_value": c["next_value"], "priority": c["priority"]}
+                                for c in candidates
+                            ],
+                        },
+                    )
+                else:
+                    # 没有候选答案匹配选项
+                    steps.append("存在歧义，且没有候选答案匹配选项")
+                    return Solution(
+                        status="failed",
+                        skill=self.id,
+                        method="series_pattern",
+                        error="数列存在歧义，且没有候选答案匹配选项",
+                        steps=steps,
+                        tool_calls=[invocation],
+                        meta={
+                            "sequence": payload["sequence"],
+                            "agreement": agreement,
+                            "ambiguous": True,
+                            "candidates": [
+                                {"name": c["name"], "next_value": c["next_value"], "priority": c["priority"]}
+                                for c in candidates
+                            ],
+                        },
+                    )
+            else:
+                # 没有选项，但存在歧义
+                steps.append("存在歧义，且没有选项可供参考")
+                return Solution(
+                    status="failed",
+                    skill=self.id,
+                    method="series_pattern",
+                    error="数列存在歧义，无法确定唯一答案",
+                    steps=steps,
+                    tool_calls=[invocation],
+                    meta={
+                        "sequence": payload["sequence"],
+                        "agreement": agreement,
+                        "ambiguous": True,
+                        "candidates": [
+                            {"name": c["name"], "next_value": c["next_value"], "priority": c["priority"]}
+                            for c in candidates
+                        ],
+                    },
+                )
+        
+        steps.append(f"取优先级最高的规律，得到下一项 = {next_text}")
 
         labels = question.option_labels()
         label: Optional[str] = None
@@ -81,6 +183,7 @@ class NumberSeriesSkill(BaseSkill):
                 "sequence": payload["sequence"],
                 "next_value": next_text,
                 "agreement": agreement,
+                "ambiguous": is_ambiguous,
                 "candidates": [candidate["name"] for candidate in candidates],
             },
         )

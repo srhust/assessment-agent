@@ -65,7 +65,7 @@ assessment-agent/
 │   └── evaluation/        # 数据集加载、指标、评测执行器
 ├── data/{train,dev,test}/ # 按题型分文件的 JSONL 数据集
 ├── knowledge/             # 八个题型的方法论笔记
-├── tests/                 # 114 个 pytest 单元测试
+├── tests/                 # 120 个 pytest 单元测试
 ├── runs/                  # 运行产物（gitignore）
 ├── results/               # 评测结果（gitignore）
 ├── .env.example
@@ -266,7 +266,7 @@ python -m assessment_agent eval --split test --json
 
 ```bash
 python -m pytest -q
-# 114 passed
+# 120 passed
 ```
 
 覆盖范围：
@@ -274,15 +274,25 @@ python -m pytest -q
 - 配置与密钥安全（`.env` 不入库、无密钥字面量、`describe()` 不泄露 key）
 - 路由（7 类规则命中、显式指定、离线回退、LLM 兜底、未知技能拒绝）
 - 工具（SymPy 精确计算与非法输入、Fraction 独立求值、选项匹配、7 类数列规律、Z3 蕴含/否定/矛盾/带数值差拒绝、图形布局解析、六类规律推断、Skill 端到端与诚实失败）
-- 校验（数值篡改 → repair、数列篡改 → repair、逻辑复核、unsupported → reject、图形换阈值复算）
-- Skill（8 个注册、4 个 MVP、声明式 Skill 绝不返回答案）
-- 流水线（文本端到端、内联选项解析、截图 + 假视觉模型端到端、缺视觉模型报错、产物完整性）
-- 评测（数据集加载、指标统计、失败归因、结果落盘）
+- 校验（数值篡改 → repair、数列篡改 → repair、逻辑复核、unsupported → reject、图形换阈值复算、Skill 复核异常 → blocking 失败）
+- Skill（8 个注册、4 个 MVP、声明式 Skill 绝不返回答案、数列歧义标记 ambiguous）
+- 流水线（文本端到端、内联选项解析、截图 + 假视觉模型端到端、缺视觉模型报错、产物完整性、拒答不暴露原始答案）
+- 评测（数据集加载、指标统计、失败归因、结果落盘、oracle/auto 路由模式、新指标计算、failed 状态严格匹配）
 - 图形工具接口（布局解析、特征提取、规律引擎、Skill 端到端、诚实失败、换阈值复核）
 - DSH / MCP 接入（清单结构、`tools/call` 形状、未知工具与非法参数、能力输出脱敏、`save=false` 不落盘）
 - CLI（solve / eval / skills / doctor / mcp-manifest / call 的返回码与输出）
 
 截图流程的测试使用 `FakeChatModel` 注入，无需真实 API Key。
+
+> **重要说明**：当前 120 个测试和评测数据集仅使用**小规模合成数据**（19 道测试题），
+> 主要用于验证系统架构、模块接口和核心逻辑的正确性。**这些测试结果不代表系统在真实招聘测评场景下的表现**。
+> 真实场景需要：
+> - 真实视觉模型（而非 FakeChatModel）
+> - 真实招聘测评截图（而非合成图片）
+> - 更大规模、更多样化的测试数据集
+> - 端到端的路由、求解、校验全链路验证
+>
+> 下一步计划（R2）：打通真实截图理解链路，建立真实场景评测能力。
 
 ---
 

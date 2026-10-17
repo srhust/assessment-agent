@@ -202,3 +202,40 @@ def test_numeric_skill_fails_honestly_on_unparseable_text(settings):
     solution = registry.require("numeric_calculation").solve(_question("这段文字里没有算式"), ctx)
     assert solution.status == "failed"
     assert "解析" in (solution.error or "")
+
+
+def test_verifier_skill_exception_blocks_acceptance(tmp_path):
+    """回归测试：Skill 复核异常时应标记为 blocking 失败，而不是 warning 放行。"""
+    from assessment_agent.skills.base import BaseSkill, SkillContext
+    
+    settings = make_settings(tmp_path)
+    
+    # 创建一个会抛出异常的 Skill
+    class BrokenSkill(BaseSkill):
+        id = "broken_skill"
+        name_zh = "故障技能"
+        stage = 1
+        
+        def solve(self, question, ctx):
+            return Solution(status="solved", skill=self.id, answer="A", confidence=0.9)
+        
+        def verify(self, question, solution, ctx):
+            raise RuntimeError("模拟复核异常")
+    
+    # 注册故障 Skill
+    from assessment_agent.skills import SkillRegistry
+    registry = SkillRegistry()
+    registry._skills["broken_skill"] = BrokenSkill()
+    
+    verifier = Verifier(settings, registry=registry)
+    question = _question("测试题目", [("A", "选项A")])
+    solution = Solution(status="solved", skill="broken_skill", answer="A", confidence=0.9)
+    
+    verification = verifier.verify(question, solution)
+    
+    # 应该因为复核异常而失败
+    assert verification.passed is False
+    # 应该有 blocking 级别的失败检查
+    blocking_failures = [c for c in verification.checks if c.severity == "blocking" and not c.passed]
+    assert len(blocking_failures) > 0
+    assert any("复核异常" in c.detail for c in blocking_failures)

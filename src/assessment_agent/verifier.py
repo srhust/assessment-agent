@@ -67,13 +67,13 @@ class Verifier:
             if skill is not None:
                 try:
                     skill_verification = skill.verify(question, solution, ctx if ctx is not None else _ctx_stub(self))
-                except Exception as exc:  # noqa: BLE001 - 复核异常不改变求解结果，但记录
+                except Exception as exc:  # noqa: BLE001 - 复核异常必须记录为失败
                     checks.append(
                         VerificationCheck(
                             name=f"{skill.id}.verify_error",
-                            passed=True,
-                            detail=f"题型复核执行异常（不阻断）：{type(exc).__name__}: {exc}",
-                            severity="warning",
+                            passed=False,
+                            detail=f"题型复核执行异常：{type(exc).__name__}: {exc}",
+                            severity="blocking",
                         )
                     )
                     skill_verification = None
@@ -94,8 +94,17 @@ class Verifier:
             crosscheck = self._llm_crosscheck(question, solution)
             if crosscheck is not None:
                 checks.append(crosscheck)
-                if not crosscheck.passed:
-                    repaired = repaired or _extract_suggested(crosscheck.detail)
+                # LLM 判定错误时记录为失败，但不自动采纳 LLM 建议的答案
+                # 只有当确定性工具复核也提供了 repaired_answer 时才修复
+                if not crosscheck.passed and crosscheck.name == "llm.crosscheck" and "模型判定错误" in crosscheck.detail:
+                    checks.append(
+                        VerificationCheck(
+                            name="llm.suggestion_ignored",
+                            passed=False,
+                            detail="LLM 判定错误，但不会自动采纳其建议答案（需确定性工具复核支持）",
+                            severity="warning",
+                        )
+                    )
 
         blocking_failures = [check for check in checks if check.severity == "blocking" and not check.passed]
         passed = not blocking_failures
@@ -133,8 +142,8 @@ class Verifier:
         except LLMError as exc:
             return VerificationCheck(
                 name="llm.crosscheck",
-                passed=True,
-                detail=f"交叉校验跳过：{exc}",
+                passed=False,
+                detail=f"交叉校验不可用：{exc}",
                 severity="warning",
             )
         verdict = str(payload.get("verdict") or "uncertain").strip().lower()

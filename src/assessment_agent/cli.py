@@ -44,6 +44,12 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate.add_argument("--run-name", help="结果目录名")
     evaluate.add_argument("--no-save", action="store_true", help="不写 results/ 产物")
     evaluate.add_argument("--json", action="store_true", help="以 JSON 输出指标")
+    evaluate.add_argument(
+        "--route-mode",
+        default="oracle",
+        choices=["oracle", "auto"],
+        help="路由模式：oracle 使用标注题型，auto 由 Router 自动判断（默认 oracle）",
+    )
 
     subparsers.add_parser("skills", help="列出题型 Skill")
 
@@ -84,7 +90,12 @@ def _print_solution(result: Any) -> None:
     for call in solution.tool_calls:
         status = "ok" if call.ok else f"failed: {call.error}"
         print(f"工具 {call.tool}: {status} ({call.duration_ms} ms)")
-    print(f"答案：{solution.answer}   校验：{'通过' if verification.passed else '未通过'}（{verification.action}）")
+    final_answer = (
+        verification.final_answer
+        if verification.action in {"accept", "repair"}
+        else None
+    )
+    print(f"答案：{final_answer or '无'}   校验：{'通过' if verification.passed else '未通过'}（{verification.action}）")
     if verification.repaired_answer:
         print(f"校验修正答案：{verification.repaired_answer}")
     if solution.error:
@@ -124,7 +135,13 @@ def _cmd_eval(args: argparse.Namespace, settings: Settings) -> int:
     runner = EvaluationRunner(pipeline, data_dir=settings.data_dir, results_dir=settings.results_dir)
     skills = [item.strip() for item in args.skills.split(",") if item.strip()] if args.skills else None
     try:
-        summary = runner.run(split=args.split, save=not args.no_save, run_name=args.run_name, skills=skills)
+        summary = runner.run(
+            split=args.split,
+            save=not args.no_save,
+            run_name=args.run_name,
+            skills=skills,
+            route_mode=args.route_mode,
+        )
     except (FileNotFoundError, ValueError) as exc:
         print(f"[错误] {exc}", file=sys.stderr)
         return 2

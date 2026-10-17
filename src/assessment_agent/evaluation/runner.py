@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional, Sequence
 
 from ..pipeline import Pipeline, PipelineError
 from ..schemas import QuestionOption
-from .metrics import CaseResult, MetricsAccumulator
+from .metrics import CaseResult, MetricsAccumulator, answers_match
 
 SPLITS = ("train", "dev", "test")
 
@@ -134,21 +134,6 @@ def load_cases(data_dir: Path, split: str, skills: Optional[Sequence[str]] = Non
     return cases
 
 
-def answers_match(predicted: Optional[str], expected: Optional[str]) -> bool:
-    if predicted is None or expected is None:
-        return False
-    left = str(predicted).strip()
-    right = str(expected).strip()
-    if left == right:
-        return True
-    if left.upper() == right.upper():
-        return True
-    try:
-        return abs(float(left) - float(right)) <= max(1e-9, abs(float(right)) * 1e-6)
-    except ValueError:
-        return False
-
-
 def _failure_reason(status: str, action: str, error: Optional[str]) -> Optional[str]:
     if status == "unsupported":
         return "unsupported_skill"
@@ -172,12 +157,13 @@ class EvaluationRunner:
         save: bool = True,
         run_name: Optional[str] = None,
         skills: Optional[Sequence[str]] = None,
+        route_mode: str = "oracle",
     ) -> EvaluationSummary:
         cases = load_cases(self.data_dir, split, skills=skills)
         accumulator = MetricsAccumulator()
         started = time.perf_counter()
         for case in cases:
-            result = self._run_case(case)
+            result = self._run_case(case, route_mode=route_mode)
             accumulator.add(result)
         duration = time.perf_counter() - started
 
@@ -198,19 +184,22 @@ class EvaluationRunner:
         )
 
     # ------------------------------------------------------------------ 内部
-    def _run_case(self, case: Case) -> CaseResult:
+    def _run_case(self, case: Case, route_mode: str = "oracle") -> CaseResult:
         started = time.perf_counter()
         try:
+            # oracle 模式使用标注题型，auto 模式由 Router 自动判断
+            skill_for_pipeline = case.skill if route_mode == "oracle" else None
             run = self.pipeline.run(
                 text=case.stem,
                 image_path=case.image,
                 options=case.options,
-                skill=case.skill,
+                skill=skill_for_pipeline,
                 save=False,
                 meta={"grid": case.grid} if case.grid else None,
             )
             solution = run.solution
             verification = run.verification
+            route = run.route
             # 只在 Verifier 接受或修复答案时使用 final_answer，拒绝时不输出未验证答案
             predicted = (
                 verification.final_answer
@@ -220,8 +209,8 @@ class EvaluationRunner:
             if case.expected_status == "unsupported":
                 correct = solution.status == "unsupported"
             elif case.expected_status == "failed":
-                # 合规性样本：必须明确失败（不猜答案）才算正确
-                correct = solution.status != "solved"
+                # 合规性样本：必须严格匹配 failed 状态（不猜答案）才算正确
+                correct = solution.status == "failed"
             else:
                 correct = solution.status == "solved" and answers_match(predicted, case.answer)
             latency = (time.perf_counter() - started) * 1000.0
@@ -238,6 +227,9 @@ class EvaluationRunner:
                 failure_reason=None if correct else _failure_reason(solution.status, verification.action, solution.error),
                 predicted_option=solution.answer,
                 tags=list(case.tags),
+                routed_skill=route.skill,
+                route_source=route.source,
+                route_confidence=route.confidence,
             )
         except PipelineError as exc:
             latency = (time.perf_counter() - started) * 1000.0

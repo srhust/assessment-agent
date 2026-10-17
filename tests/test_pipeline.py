@@ -103,3 +103,20 @@ def test_default_run_id_shape():
     run_id = default_run_id()
     assert "_" in run_id
     assert len(run_id) > 15
+
+
+def test_reject_does_not_expose_solver_answer(tmp_path: Path):
+    """回归测试：Verifier 拒绝时不应暴露 Solver 原始答案。"""
+    settings = make_settings(tmp_path)
+    pipeline = Pipeline(settings)
+    # 使用一个会导致 Verifier 拒绝的题目（unsupported skill）
+    result = pipeline.run(text="依次填入下列横线处最恰当的一项是（ ）", skill="verbal_understanding")
+    assert result.solution.status == "unsupported"
+    assert result.verification.action == "reject"
+    # 检查 run.json 中的 answer 字段
+    run_dir = Path(result.run_dir)
+    run_meta = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))
+    assert run_meta["answer"] is None
+    # 检查 report.md 中的答案显示
+    report = (run_dir / "report.md").read_text(encoding="utf-8")
+    assert "最终答案：无" in report

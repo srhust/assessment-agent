@@ -7,6 +7,22 @@ from statistics import mean
 from typing import Any, Dict, List, Optional
 
 
+def answers_match(predicted: Optional[str], expected: Optional[str]) -> bool:
+    """判断预测答案与期望答案是否匹配（支持字符串和数值比较）。"""
+    if predicted is None or expected is None:
+        return False
+    left = str(predicted).strip()
+    right = str(expected).strip()
+    if left == right:
+        return True
+    if left.upper() == right.upper():
+        return True
+    try:
+        return abs(float(left) - float(right)) <= max(1e-9, abs(float(right)) * 1e-6)
+    except ValueError:
+        return False
+
+
 @dataclass
 class CaseResult:
     case_id: str
@@ -21,6 +37,10 @@ class CaseResult:
     failure_reason: Optional[str] = None
     predicted_option: Optional[str] = None
     tags: List[str] = field(default_factory=list)
+    # 路由信息
+    routed_skill: Optional[str] = None  # Router 预测的题型
+    route_source: Optional[str] = None  # 路由来源（rules/llm/explicit）
+    route_confidence: Optional[float] = None  # 路由置信度
 
     def as_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -31,15 +51,20 @@ class SkillMetrics:
     skill: str
     total: int = 0
     correct: int = 0
-    accuracy: float = 0.0
+    accuracy: float = 0.0  # legacy: 混合准确率（包含拒答样本）
     # 新指标：分离准确率与拒答率
     answerable: int = 0  # 有标准答案的题目数
     answer_accuracy: float = 0.0  # 正确解答数 / answerable
-    coverage: int = 0  # 提供通过校验答案的题目数（predicted 不为 None 且 action in accept/repair）
+    covered_count: int = 0  # 提供通过校验答案的题目数（predicted 不为 None 且 action in accept/repair）
+    coverage_ratio: float = 0.0  # covered_count / total
     selective_accuracy: float = 0.0  # coverage 中真正正确的比例
     abstention_total: int = 0  # 应当拒答的样本数（expected_status in unsupported/failed）
     abstention_correct: int = 0  # 正确拒答的样本数
     abstention_accuracy: float = 0.0  # abstention_correct / abstention_total
+    # 路由指标
+    route_total: int = 0  # 有路由信息的样本数
+    route_correct: int = 0  # 路由正确的样本数（routed_skill == skill）
+    route_accuracy: float = 0.0  # route_correct / route_total
     # 原有指标
     solved: int = 0
     unsupported: int = 0
@@ -101,10 +126,13 @@ class MetricsAccumulator:
                 if item.predicted is not None and item.verification_action in {"accept", "repair"}
             ]
             abstention_items = [item for item in items if item.expected_status in {"unsupported", "failed"}]
+            route_items = [item for item in items if item.routed_skill is not None]
 
             answerable_correct = sum(1 for item in answerable if item.correct)
-            coverage_correct = sum(1 for item in coverage_items if item.expected == item.predicted)
+            # 使用 answers_match() 判断 coverage 中的答案是否正确
+            coverage_correct = sum(1 for item in coverage_items if answers_match(item.predicted, item.expected))
             abstention_correct = sum(1 for item in abstention_items if item.correct)
+            route_correct = sum(1 for item in route_items if item.routed_skill == item.skill)
 
             metrics[skill] = SkillMetrics(
                 skill=skill,
@@ -114,11 +142,15 @@ class MetricsAccumulator:
                 # 新指标
                 answerable=len(answerable),
                 answer_accuracy=round(answerable_correct / len(answerable), 4) if answerable else 0.0,
-                coverage=len(coverage_items),
+                covered_count=len(coverage_items),
+                coverage_ratio=round(len(coverage_items) / len(items), 4) if items else 0.0,
                 selective_accuracy=round(coverage_correct / len(coverage_items), 4) if coverage_items else 0.0,
                 abstention_total=len(abstention_items),
                 abstention_correct=abstention_correct,
                 abstention_accuracy=round(abstention_correct / len(abstention_items), 4) if abstention_items else 0.0,
+                route_total=len(route_items),
+                route_correct=route_correct,
+                route_accuracy=round(route_correct / len(route_items), 4) if route_items else 0.0,
                 # 原有指标
                 solved=sum(1 for item in items if item.status == "solved"),
                 unsupported=sum(1 for item in items if item.status == "unsupported"),
@@ -149,23 +181,30 @@ class MetricsAccumulator:
             if item.predicted is not None and item.verification_action in {"accept", "repair"}
         ]
         abstention_items = [item for item in self._results if item.expected_status in {"unsupported", "failed"}]
+        route_items = [item for item in self._results if item.routed_skill is not None]
 
         answerable_correct = sum(1 for item in answerable if item.correct)
-        coverage_correct = sum(1 for item in coverage_items if item.expected == item.predicted)
+        # 使用 answers_match() 判断 coverage 中的答案是否正确
+        coverage_correct = sum(1 for item in coverage_items if answers_match(item.predicted, item.expected))
         abstention_correct = sum(1 for item in abstention_items if item.correct)
+        route_correct = sum(1 for item in route_items if item.routed_skill == item.skill)
 
         return {
             "total": total,
             "correct": correct,
-            "accuracy": round(correct / total, 4) if total else 0.0,
+            "accuracy": round(correct / total, 4) if total else 0.0,  # legacy: 混合准确率
             # 新指标
             "answerable": len(answerable),
             "answer_accuracy": round(answerable_correct / len(answerable), 4) if answerable else 0.0,
-            "coverage": len(coverage_items),
+            "covered_count": len(coverage_items),
+            "coverage_ratio": round(len(coverage_items) / total, 4) if total else 0.0,
             "selective_accuracy": round(coverage_correct / len(coverage_items), 4) if coverage_items else 0.0,
             "abstention_total": len(abstention_items),
             "abstention_correct": abstention_correct,
             "abstention_accuracy": round(abstention_correct / len(abstention_items), 4) if abstention_items else 0.0,
+            "route_total": len(route_items),
+            "route_correct": route_correct,
+            "route_accuracy": round(route_correct / len(route_items), 4) if route_items else 0.0,
             # 原有指标
             "unsupported": sum(1 for item in self._results if item.status == "unsupported"),
             "failed": sum(1 for item in self._results if item.status == "failed"),

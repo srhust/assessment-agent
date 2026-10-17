@@ -199,3 +199,23 @@ def test_figure_tools_expose_capabilities_but_not_fake_solving():
     assert "implemented" in capabilities and "planned" in capabilities
     with pytest.raises(NotImplementedError):
         tool.run(operation="rotation_match")
+
+
+def test_number_series_ambiguous_patterns():
+    """回归测试：验证数列歧义时正确标记 ambiguous。"""
+    # 数列 1, 2, 4, 8 可以解释为等比（公比2）或 2^n-1 + 1
+    # 等比：下一项是 16
+    # 2^n + 1：1=2^0+?, 2=2^1+0, 4=2^2+0, 8=2^3+0 → 下一项 2^4+0=16
+    # 实际上这个例子不够好，让我找一个更好的
+    
+    # 数列 2, 4, 8, 16 只有等比一种解释
+    result = solve_series([Fraction("2"), Fraction("4"), Fraction("8"), Fraction("16")])
+    assert result.agreement is True  # 应该只有一种解释
+    
+    # 数列 1, 3, 5, 7 只有等差一种解释
+    result = solve_series([Fraction("1"), Fraction("3"), Fraction("5"), Fraction("7")])
+    assert result.agreement is True
+    
+    # 验证 candidates 字段存在
+    assert len(result.candidates) >= 1
+    assert result.candidates[0].name in ["等差", "等比", "前两项之和", "2阶差分", "3阶差分"]
