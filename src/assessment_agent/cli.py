@@ -52,6 +52,17 @@ def build_parser() -> argparse.ArgumentParser:
 
     inspect = subparsers.add_parser("inspect", help="查看运行产物")
     inspect.add_argument("run", help="运行 ID 或 runs/ 下的目录路径")
+
+    manifest = subparsers.add_parser("mcp-manifest", help="输出 MCP / DSH 工具清单")
+    manifest.add_argument("--out", help="写入文件路径（默认打印到标准输出）")
+
+    call = subparsers.add_parser("call", help="按 MCP tools/call 形状调用工具")
+    call.add_argument("--tool", required=True, help="工具名，如 assessment_solve")
+    call.add_argument("--args", default="{}", help='JSON 参数，如 \'{"text": "2+2=?"}\'')
+    call.add_argument(
+        "--args-file",
+        help="从文件读取 JSON 参数（Windows PowerShell 会吞掉内层双引号，建议改用本参数）",
+    )
     return parser
 
 
@@ -196,6 +207,46 @@ def _cmd_inspect(args: argparse.Namespace, settings: Settings) -> int:
     return 0
 
 
+def _cmd_mcp_manifest(args: argparse.Namespace) -> int:
+    from .integration import tool_manifest
+
+    payload = json.dumps(tool_manifest(), ensure_ascii=False, indent=2)
+    if args.out:
+        path = Path(args.out)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(payload + "\n", encoding="utf-8")
+        print(f"已写入 {path}")
+    else:
+        print(payload)
+    return 0
+
+
+def _cmd_call(args: argparse.Namespace, settings: Settings) -> int:
+    from .integration import AssessmentAgentService
+
+    raw = args.args or "{}"
+    if args.args_file:
+        path = Path(args.args_file)
+        if not path.is_file():
+            print(f"[错误] 参数文件不存在: {path}", file=sys.stderr)
+            return 2
+        # utf-8-sig：兼容 Windows PowerShell 写出的 BOM 文件
+        raw = path.read_text(encoding="utf-8-sig")
+    try:
+        arguments = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        print(f"[错误] 参数不是合法 JSON: {exc}", file=sys.stderr)
+        return 2
+    if not isinstance(arguments, dict):
+        print("[错误] --args 必须是 JSON 对象", file=sys.stderr)
+        return 2
+    service = AssessmentAgentService(settings)
+    result = service.call_tool(args.tool, arguments)
+    for item in result["content"]:
+        print(item["text"])
+    return 1 if result.get("isError") else 0
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -210,6 +261,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         return _cmd_doctor(settings, as_json=args.json)
     if args.command == "inspect":
         return _cmd_inspect(args, settings)
+    if args.command == "mcp-manifest":
+        return _cmd_mcp_manifest(args)
+    if args.command == "call":
+        return _cmd_call(args, settings)
     parser.error(f"未知命令: {args.command}")
     return 2
 

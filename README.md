@@ -57,14 +57,15 @@ assessment-agent/
 │   ├── pipeline.py        # 端到端编排与产物落盘
 │   ├── artifacts.py       # 运行目录、trace、Markdown 报告
 │   ├── text_utils.py      # 题干/选项拆分
-│   ├── cli.py             # solve / eval / skills / doctor / inspect
+│   ├── cli.py             # solve / eval / skills / doctor / inspect / mcp-manifest / call
+│   ├── integration.py     # DSH / MCP 接入层（工具清单 + tools/call 形状调用）
 │   ├── skills/            # 八个题型 Skill（3 个 MVP + 5 个声明式接口）
 │   ├── tools/             # SymPy 计算、数列规律、Z3 约束、图形工具接口
 │   ├── knowledge/         # 知识库加载器（Markdown）
 │   └── evaluation/        # 数据集加载、指标、评测执行器
 ├── data/{train,dev,test}/ # 按题型分文件的 JSONL 数据集
 ├── knowledge/             # 八个题型的方法论笔记
-├── tests/                 # 72 个 pytest 单元测试
+├── tests/                 # 87 个 pytest 单元测试
 ├── runs/                  # 运行产物（gitignore）
 ├── results/               # 评测结果（gitignore）
 ├── .env.example
@@ -247,7 +248,7 @@ figure_reasoning        1/1        100.00%   149.0   149.0   -        # expected
 
 ```bash
 python -m pytest -q
-# 72 passed
+# 87 passed
 ```
 
 覆盖范围：
@@ -260,6 +261,8 @@ python -m pytest -q
 - 流水线（文本端到端、内联选项解析、截图 + 假视觉模型端到端、缺视觉模型报错、产物完整性）
 - 评测（数据集加载、指标统计、失败归因、结果落盘）
 - 图形工具接口（能力查询可用、规律识别显式抛 `NotImplementedError`）
+- DSH / MCP 接入（清单结构、`tools/call` 形状、未知工具与非法参数、能力输出脱敏、`save=false` 不落盘）
+- CLI（solve / eval / skills / doctor / mcp-manifest / call 的返回码与输出）
 
 截图流程的测试使用 `FakeChatModel` 注入，无需真实 API Key。
 
@@ -293,13 +296,33 @@ python -m pytest -q
 
 ## 10. 接入 DSH / MCP 与蒸馏
 
-- **MCP**：`tools/base.py` 的 `Tool` 已有 `id / description / requires / run(**kwargs)`，
-  可直接包装成 MCP tool；`ToolBox.describe()` 已输出工具清单。
-- **DSH / Agent 集成**：`Pipeline.run(...) -> RunResult` 是稳定的单题入口，
-  `Pipeline.capabilities()` 可作能力声明；`registry.describe()` 输出八个 Skill 的状态。
-- **蒸馏**：`trace.jsonl` 记录路由、求解、工具调用与校验结论，`solution.json` 含结构化步骤；
-  `predicted`/`expected` 配对后可筛选“校验通过 + 与标注一致”的样本作为 SFT 数据。
-  建议只在自有或授权数据上做蒸馏。
+**已实现**（[`integration.py`](src/assessment_agent/integration.py)）：
+
+- `tool_manifest()` → MCP 风格清单 `{"protocolVersion", "serverInfo", "tools": [...]}`，
+  含四个工具：`assessment_solve`、`assessment_list_skills`、`assessment_list_tools`、
+  `assessment_capabilities`，每个都带完整 `inputSchema`。
+- `AssessmentAgentService.call_tool(name, arguments)` → MCP `tools/call` 形状返回
+  `{"content": [{"type": "text", "text": ...}], "isError": bool}`；参数非法或工具未知时
+  `isError=true` 并给出原因，不会返回伪造答案。
+- `AssessmentAgentService.solve(payload)` → 纯 JSON 结果，供 DSH / 其它 Agent 直接调用。
+
+```bash
+# 输出工具清单（可交给 MCP server 或 DSH 注册）
+python -m assessment_agent mcp-manifest --out manifest.json
+
+# 按 MCP tools/call 形状调用（Windows PowerShell 会吞内层双引号，建议用 --args-file）
+python -m assessment_agent call --tool assessment_solve --args-file args.json
+
+# 参数文件示例 args.json
+# {"text": "数列 2, 5, 8, 11, ( ) 的下一项是？", "options": {"A": "13", "B": "14"}, "save": false}
+```
+
+接入 DSH 时只需把 `call_tool` 包成本地工具处理器，或直接把 `TOOL_DEFINITIONS`
+注册到你的能力表；核心求解逻辑无需改动。
+
+**蒸馏**：`trace.jsonl` 记录路由、求解、工具调用与校验结论，`solution.json` 含结构化步骤；
+`predicted`/`expected` 配对后可筛选“校验通过 + 与标注一致”的样本作为 SFT 数据。
+建议只在自有或授权数据上做蒸馏。
 
 ---
 
