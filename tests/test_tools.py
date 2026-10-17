@@ -219,3 +219,129 @@ def test_number_series_ambiguous_patterns():
     # 验证 candidates 字段存在
     assert len(result.candidates) >= 1
     assert result.candidates[0].name in ["等差", "等比", "前两项之和", "2阶差分", "3阶差分"]
+
+
+def test_number_series_ambiguous_with_mock():
+    """回归测试：使用 mock 测试歧义处理逻辑。
+    
+    由于现有的规律检测器很难产生 agreement=False 的情况，
+    我们直接测试 number_series.py 中的歧义处理逻辑。
+    """
+    from assessment_agent.skills.number_series import NumberSeriesSkill
+    from assessment_agent.skills.base import SkillContext
+    from assessment_agent.tools.base import ToolBox, ToolInvocation
+    from assessment_agent.schemas import Question, Solution
+    from unittest.mock import Mock
+    
+    # 创建一个 mock 的工具调用，返回歧义结果
+    mock_invocation = ToolInvocation(
+        tool="number_series",
+        args={"text": "1, 2, 4, 8, ( )"},
+        ok=True,
+        result={
+            "sequence": ["1", "2", "4", "8"],
+            "candidates": [
+                {
+                    "name": "等比",
+                    "priority": 20,
+                    "next_value": "16",
+                    "explanation": "公比为 2",
+                    "detail": {},
+                },
+                {
+                    "name": "2^n±常数",
+                    "priority": 60,
+                    "next_value": "17",  # 不同的预测值
+                    "explanation": "2^n + 1",
+                    "detail": {},
+                },
+            ],
+            "next_value": "17",  # 优先级最高的
+            "next_value_float": 17.0,
+            "agreement": False,  # 存在歧义
+            "note": "存在 2 种可能答案，取优先级最高者",
+        },
+        error=None,
+        duration_ms=1.0,
+    )
+    
+    # 创建 Skill 和 Context
+    skill = NumberSeriesSkill()
+    settings = Mock()
+    settings.data_dir = "."
+    toolbox = Mock(spec=ToolBox)
+    toolbox.run = Mock(return_value=mock_invocation)
+    toolbox.invocations = []
+    ctx = SkillContext(settings=settings, llm=None, toolbox=toolbox)
+    
+    # 创建问题（有选项）
+    question = Question(
+        stem="数列 1, 2, 4, 8, ( ) 的下一项是？",
+        options=[
+            {"label": "A", "text": "16"},
+            {"label": "B", "text": "17"},
+        ],
+    )
+    
+    # 求解
+    solution = skill.solve(question, ctx)
+    
+    # 验证：应该标记为 ambiguous
+    assert solution.meta.get("ambiguous") is True
+    # 当多个候选答案都匹配选项时，应该返回 failed 状态
+    assert solution.status == "failed"
+    assert "歧义" in solution.error
+    # 答案应该为 None（不猜测）
+    assert solution.answer is None
+    
+    # 测试场景2：只有一个候选答案匹配选项
+    mock_invocation2 = ToolInvocation(
+        tool="number_series",
+        args={"text": "1, 2, 4, 8, ( )"},
+        ok=True,
+        result={
+            "sequence": ["1", "2", "4", "8"],
+            "candidates": [
+                {
+                    "name": "等比",
+                    "priority": 20,
+                    "next_value": "16",
+                    "explanation": "公比为 2",
+                    "detail": {},
+                },
+                {
+                    "name": "2^n±常数",
+                    "priority": 60,
+                    "next_value": "17",
+                    "explanation": "2^n + 1",
+                    "detail": {},
+                },
+            ],
+            "next_value": "17",
+            "next_value_float": 17.0,
+            "agreement": False,
+            "note": "存在 2 种可能答案，取优先级最高者",
+        },
+        error=None,
+        duration_ms=1.0,
+    )
+    
+    toolbox.run = Mock(return_value=mock_invocation2)
+    
+    # 只有 16 在选项中
+    question2 = Question(
+        stem="数列 1, 2, 4, 8, ( ) 的下一项是？",
+        options=[
+            {"label": "A", "text": "16"},
+            {"label": "B", "text": "15"},
+        ],
+    )
+    
+    solution2 = skill.solve(question2, ctx)
+    
+    # 验证：应该标记为 ambiguous，但只有一个候选匹配，所以可以给出答案
+    assert solution2.meta.get("ambiguous") is True
+    assert solution2.status == "solved"
+    assert solution2.answer == "A"
+    # 置信度应该降低
+    assert solution2.confidence == 0.5

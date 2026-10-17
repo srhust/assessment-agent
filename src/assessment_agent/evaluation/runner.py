@@ -167,7 +167,7 @@ class EvaluationRunner:
             accumulator.add(result)
         duration = time.perf_counter() - started
 
-        metrics = accumulator.summary()
+        metrics = accumulator.summary(route_mode=route_mode)
         output_dir: Optional[Path] = None
         if save:
             output_dir = self.results_dir / split / (run_name or datetime.now().strftime("%Y%m%dT%H%M%S"))
@@ -296,22 +296,44 @@ class EvaluationRunner:
 
     @staticmethod
     def _render_summary(split: str, sample_count: int, metrics: Dict[str, Any], duration: float) -> str:
+        route_mode = metrics.get("route_mode", "unknown")
         lines = [
-            f"# 评测报告 · split={split}",
+            f"# 评测报告 · split={split} · route_mode={route_mode}",
             "",
             f"- 样本数：{sample_count}",
-            f"- 总体准确率：{metrics['accuracy']:.2%}（{metrics['correct']}/{metrics['total']}）",
-            f"- 未实现（unsupported）：{metrics['unsupported']}；求解失败：{metrics['failed']}",
+            f"- 路由模式：{route_mode}",
+            "",
+            "## 核心指标",
+            "",
+            f"- **答案准确率**：{metrics['answer_accuracy']:.2%}（{metrics['answerable']} 道可答题中答对 {int(metrics['answer_accuracy'] * metrics['answerable'])} 道）",
+            f"- **可答题覆盖率**：{metrics['answerable_coverage']:.2%}（{metrics['covered_count']}/{metrics['answerable']}）",
+            f"- **选择性准确率**：{metrics['selective_accuracy']:.2%}（通过验证的答案中正确的比例）",
+        ]
+        
+        # 路由准确率：oracle 模式下标注为 N/A
+        if route_mode == "oracle":
+            lines.append(f"- **路由准确率**：N/A（oracle 模式直接使用标注题型）")
+        else:
+            lines.append(f"- **路由准确率**：{metrics['route_accuracy']:.2%}（{metrics['route_correct']}/{metrics['route_total']}）")
+        
+        lines.extend([
+            "",
+            f"- **拒答准确率**：{metrics['abstention_accuracy']:.2%}（{metrics['abstention_correct']}/{metrics['abstention_total']}）",
             f"- 耗时：总 {duration:.2f}s，平均 {metrics['mean_latency_ms']:.1f} ms，"
             f"p50 {metrics['p50_latency_ms']:.1f} ms，p95 {metrics['p95_latency_ms']:.1f} ms",
             "",
-            "| 题型 | 正确/总数 | 准确率 | 平均耗时(ms) | p95(ms) | unsupported | failed | 主要失败原因 |",
-            "| --- | --- | --- | --- | --- | --- | --- | --- |",
-        ]
+            "## 各题型详情",
+            "",
+            "| 题型 | 答案准确率 | 可答题覆盖率 | 选择性准确率 | 路由准确率 | 平均耗时(ms) | p95(ms) | unsupported | failed | 主要失败原因 |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        ])
         for skill, stats in metrics["per_skill"].items():
             reasons = ", ".join(f"{key}×{value}" for key, value in stats["failure_reasons"].items()) or "-"
+            # 路由准确率：oracle 模式下标注为 N/A
+            route_acc = "N/A" if route_mode == "oracle" else f"{stats['route_accuracy']:.2%}"
             lines.append(
-                f"| {skill} | {stats['correct']}/{stats['total']} | {stats['accuracy']:.2%} | "
+                f"| {skill} | {stats['answer_accuracy']:.2%} | {stats['answerable_coverage']:.2%} | "
+                f"{stats['selective_accuracy']:.2%} | {route_acc} | "
                 f"{stats['mean_latency_ms']:.1f} | {stats['p95_latency_ms']:.1f} | "
                 f"{stats['unsupported']} | {stats['failed']} | {reasons} |"
             )

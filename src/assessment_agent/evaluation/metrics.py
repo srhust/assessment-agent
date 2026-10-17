@@ -56,7 +56,8 @@ class SkillMetrics:
     answerable: int = 0  # 有标准答案的题目数
     answer_accuracy: float = 0.0  # 正确解答数 / answerable
     covered_count: int = 0  # 提供通过校验答案的题目数（predicted 不为 None 且 action in accept/repair）
-    coverage_ratio: float = 0.0  # covered_count / total
+    coverage_ratio: float = 0.0  # covered_count / total (overall_answer_yield)
+    answerable_coverage: float = 0.0  # covered_count / answerable (answerable_coverage)
     selective_accuracy: float = 0.0  # coverage 中真正正确的比例
     abstention_total: int = 0  # 应当拒答的样本数（expected_status in unsupported/failed）
     abstention_correct: int = 0  # 正确拒答的样本数
@@ -65,6 +66,7 @@ class SkillMetrics:
     route_total: int = 0  # 有路由信息的样本数
     route_correct: int = 0  # 路由正确的样本数（routed_skill == skill）
     route_accuracy: float = 0.0  # route_correct / route_total
+    route_mode: str = "oracle"  # 路由模式（oracle/auto）
     # 原有指标
     solved: int = 0
     unsupported: int = 0
@@ -107,7 +109,7 @@ class MetricsAccumulator:
     def results(self) -> List[CaseResult]:
         return list(self._results)
 
-    def skill_metrics(self) -> Dict[str, SkillMetrics]:
+    def skill_metrics(self, route_mode: str = "oracle") -> Dict[str, SkillMetrics]:
         buckets: Dict[str, List[CaseResult]] = {}
         for result in self._results:
             buckets.setdefault(result.skill, []).append(result)
@@ -134,6 +136,11 @@ class MetricsAccumulator:
             abstention_correct = sum(1 for item in abstention_items if item.correct)
             route_correct = sum(1 for item in route_items if item.routed_skill == item.skill)
 
+            # 计算 answerable_coverage
+            answerable_coverage = (
+                round(len(coverage_items) / len(answerable), 4) if answerable else 0.0
+            )
+
             metrics[skill] = SkillMetrics(
                 skill=skill,
                 total=len(items),
@@ -144,6 +151,7 @@ class MetricsAccumulator:
                 answer_accuracy=round(answerable_correct / len(answerable), 4) if answerable else 0.0,
                 covered_count=len(coverage_items),
                 coverage_ratio=round(len(coverage_items) / len(items), 4) if items else 0.0,
+                answerable_coverage=answerable_coverage,
                 selective_accuracy=round(coverage_correct / len(coverage_items), 4) if coverage_items else 0.0,
                 abstention_total=len(abstention_items),
                 abstention_correct=abstention_correct,
@@ -151,6 +159,7 @@ class MetricsAccumulator:
                 route_total=len(route_items),
                 route_correct=route_correct,
                 route_accuracy=round(route_correct / len(route_items), 4) if route_items else 0.0,
+                route_mode=route_mode,
                 # 原有指标
                 solved=sum(1 for item in items if item.status == "solved"),
                 unsupported=sum(1 for item in items if item.status == "unsupported"),
@@ -164,8 +173,8 @@ class MetricsAccumulator:
             )
         return metrics
 
-    def summary(self) -> Dict[str, Any]:
-        per_skill = self.skill_metrics()
+    def summary(self, route_mode: str = "oracle") -> Dict[str, Any]:
+        per_skill = self.skill_metrics(route_mode=route_mode)
         total = len(self._results)
         correct = sum(1 for item in self._results if item.correct)
         latencies = [item.latency_ms for item in self._results]
@@ -189,15 +198,22 @@ class MetricsAccumulator:
         abstention_correct = sum(1 for item in abstention_items if item.correct)
         route_correct = sum(1 for item in route_items if item.routed_skill == item.skill)
 
+        # 计算 answerable_coverage
+        answerable_coverage = (
+            round(len(coverage_items) / len(answerable), 4) if answerable else 0.0
+        )
+
         return {
             "total": total,
             "correct": correct,
             "accuracy": round(correct / total, 4) if total else 0.0,  # legacy: 混合准确率
+            "route_mode": route_mode,
             # 新指标
             "answerable": len(answerable),
             "answer_accuracy": round(answerable_correct / len(answerable), 4) if answerable else 0.0,
             "covered_count": len(coverage_items),
-            "coverage_ratio": round(len(coverage_items) / total, 4) if total else 0.0,
+            "coverage_ratio": round(len(coverage_items) / total, 4) if total else 0.0,  # overall_answer_yield
+            "answerable_coverage": answerable_coverage,
             "selective_accuracy": round(coverage_correct / len(coverage_items), 4) if coverage_items else 0.0,
             "abstention_total": len(abstention_items),
             "abstention_correct": abstention_correct,
