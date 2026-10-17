@@ -57,7 +57,7 @@ class SkillMetrics:
     answer_accuracy: float = 0.0  # 正确解答数 / answerable
     covered_count: int = 0  # 提供通过校验答案的题目数（predicted 不为 None 且 action in accept/repair）
     coverage_ratio: float = 0.0  # covered_count / total (overall_answer_yield)
-    answerable_coverage: float = 0.0  # covered_count / answerable (answerable_coverage)
+    answerable_coverage: float = 0.0  # covered_answerable / answerable（分母分子都限定在可答题样本内，≤100%）
     selective_accuracy: float = 0.0  # coverage 中真正正确的比例
     abstention_total: int = 0  # 应当拒答的样本数（expected_status in unsupported/failed）
     abstention_correct: int = 0  # 正确拒答的样本数
@@ -136,10 +136,14 @@ class MetricsAccumulator:
             abstention_correct = sum(1 for item in abstention_items if item.correct)
             route_correct = sum(1 for item in route_items if item.routed_skill == item.skill)
 
-            # 计算 answerable_coverage
-            answerable_coverage = (
-                round(len(coverage_items) / len(answerable), 4) if answerable else 0.0
+            # 计算 answerable_coverage：分子只统计 **可答题样本中** 给出有效答案的数量，
+            # 避免错误接受了应拒答样本时分子混入分母之外导致 >100%
+            covered_answerable = sum(
+                1
+                for item in answerable
+                if item.predicted is not None and item.verification_action in {"accept", "repair"}
             )
+            answerable_coverage = round(covered_answerable / len(answerable), 4) if answerable else 0.0
 
             metrics[skill] = SkillMetrics(
                 skill=skill,
@@ -198,10 +202,13 @@ class MetricsAccumulator:
         abstention_correct = sum(1 for item in abstention_items if item.correct)
         route_correct = sum(1 for item in route_items if item.routed_skill == item.skill)
 
-        # 计算 answerable_coverage
-        answerable_coverage = (
-            round(len(coverage_items) / len(answerable), 4) if answerable else 0.0
+        # 计算 answerable_coverage：分子只统计可答题样本中获得有效答案的数量
+        covered_answerable = sum(
+            1
+            for item in answerable
+            if item.predicted is not None and item.verification_action in {"accept", "repair"}
         )
+        answerable_coverage = round(covered_answerable / len(answerable), 4) if answerable else 0.0
 
         return {
             "total": total,

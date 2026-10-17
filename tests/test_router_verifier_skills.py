@@ -239,3 +239,149 @@ def test_verifier_skill_exception_blocks_acceptance(tmp_path):
     blocking_failures = [c for c in verification.checks if c.severity == "blocking" and not c.passed]
     assert len(blocking_failures) > 0
     assert any("复核异常" in c.detail for c in blocking_failures)
+
+
+# ---------------------------------------------------------------- R2a 回归（R1c 遗留边界）
+def test_number_series_no_pattern_returns_structured_failure(tmp_path, monkeypatch):
+    """P0 回归：没有匹配规律时不得 float(None) 抛 TypeError，必须返回结构化失败。"""
+    from assessment_agent.skills import SkillContext
+    from assessment_agent.tools.base import ToolInvocation
+
+    settings = make_settings(tmp_path)
+    ctx = SkillContext(settings=settings, llm=None)
+    no_pattern_invocation = ToolInvocation(
+        tool="number_series",
+        args={"text": "数列 1, 3, 4, 9, ( )"},
+        ok=True,
+        result={
+            "sequence": ["1", "3", "4", "9"],
+            "candidates": [],
+            "next_value": None,
+            "next_value_float": None,
+            "agreement": False,
+            "note": "没有匹配到任何已知规律",
+        },
+    )
+    monkeypatch.setattr(ctx.toolbox, "run", lambda *args, **kwargs: no_pattern_invocation)
+
+    question = _question("数列 1, 3, 4, 9, ( ) 的下一项是？", [("A", "10"), ("B", "12")])
+    solution = SkillRegistry().require("number_series").solve(question, ctx)
+
+    assert solution.status == "failed"
+    assert solution.answer is None
+    assert "没有匹配到任何已知规律" in (solution.error or "")
+    assert solution.meta.get("no_pattern") is True
+
+
+def _fake_ambiguous_solve_series():
+    """构造一个真实会产生**不同预测值**的歧义复算环境（候选 16 与 17）。"""
+    from fractions import Fraction
+
+    from assessment_agent.tools.series import SeriesCandidate, SeriesSolution
+
+    def fake_solve(sequence):
+        values = [Fraction(str(item)) for item in sequence]
+        return SeriesSolution(
+            values,
+            [
+                SeriesCandidate("等比", 10, Fraction(16), "公比为 2", {}),
+                SeriesCandidate("2ⁿ±常数", 20, Fraction(17), "近似 2ⁿ+1", {}),
+            ],
+            next_value=Fraction(16),
+            agreement=False,
+            note="存在 2 种可能答案，取优先级最高者",
+        )
+
+    return fake_solve
+
+
+def test_number_series_ambiguous_solver_verifier_full_chain(tmp_path, monkeypatch):
+    """P1 回归：完整 Solver→Verifier 链路。
+
+    歧义数列中 Solver 基于选项匹配选择**非最高优先级**候选（17），
+    Verifier 必须按候选集合一致性接受它，而不是要求等于最高优先级结果（16）。
+    """
+    from assessment_agent.skills import SkillContext
+    from assessment_agent.tools.base import ToolInvocation
+
+    monkeypatch.setattr(
+        "assessment_agent.skills.number_series.solve_series", _fake_ambiguous_solve_series()
+    )
+    settings = make_settings(tmp_path)
+    ctx = SkillContext(settings=settings, llm=None)
+    invocation = ToolInvocation(
+        tool="number_series",
+        args={"text": "数列 1, 2, 4, 8, ( )"},
+        ok=True,
+        result={
+            "sequence": ["1", "2", "4", "8"],
+            "candidates": [
+                {"name": "等比", "priority": 10, "next_value": "16", "explanation": "公比为 2", "detail": {}},
+                {"name": "2ⁿ±常数", "priority": 20, "next_value": "17", "explanation": "近似 2ⁿ+1", "detail": {}},
+            ],
+            "next_value": "16",
+            "next_value_float": 16.0,
+            "agreement": False,
+            "note": "存在 2 种可能答案，取优先级最高者",
+        },
+    )
+    monkeypatch.setattr(ctx.toolbox, "run", lambda *args, **kwargs: invocation)
+
+    # 只有候选 17 出现在选项中 → Solver 选择 B
+    question = _question("数列 1, 2, 4, 8, ( ) 的下一项是？", [("A", "15"), ("B", "17"), ("C", "18"), ("D", "19")])
+    solution = SkillRegistry().require("number_series").solve(question, ctx)
+    assert solution.status == "solved"
+    assert solution.answer == "B"
+    assert solution.meta.get("ambiguous") is True
+    assert str(solution.meta.get("next_value")) == "17"
+
+    verifier = Verifier(settings, registry=SkillRegistry())
+    verification = verifier.verify(question, solution)
+    recompute = next(check for check in verification.checks if check.name == "series.recompute")
+    assert recompute.passed, recompute.detail  # 关键断言：17 ∈ 候选集合 → 不能按“≠最高优先级 16”拒绝
+    assert verification.passed is True
+    assert verification.action == "accept"
+    assert verification.final_answer == "B"
+
+
+def test_number_series_ambiguous_invalid_candidate_rejected(tmp_path, monkeypatch):
+    """P1 回归：歧义数列中不在候选集合内的答案必须被 Verifier 拒绝。"""
+    from assessment_agent.skills import SkillContext
+    from assessment_agent.tools.base import ToolInvocation
+
+    monkeypatch.setattr(
+        "assessment_agent.skills.number_series.solve_series", _fake_ambiguous_solve_series()
+    )
+    settings = make_settings(tmp_path)
+    ctx = SkillContext(settings=settings, llm=None)
+    invocation = ToolInvocation(
+        tool="number_series",
+        args={"text": "数列 1, 2, 4, 8, ( )"},
+        ok=True,
+        result={
+            "sequence": ["1", "2", "4", "8"],
+            "candidates": [
+                {"name": "等比", "priority": 10, "next_value": "16", "explanation": "公比为 2", "detail": {}},
+                {"name": "2ⁿ±常数", "priority": 20, "next_value": "17", "explanation": "近似 2ⁿ+1", "detail": {}},
+            ],
+            "next_value": "16",
+            "next_value_float": 16.0,
+            "agreement": False,
+            "note": "存在 2 种可能答案，取优先级最高者",
+        },
+    )
+    monkeypatch.setattr(ctx.toolbox, "run", lambda *args, **kwargs: invocation)
+    question = _question("数列 1, 2, 4, 8, ( ) 的下一项是？", [("A", "15"), ("B", "17"), ("C", "18"), ("D", "19")])
+    solution = SkillRegistry().require("number_series").solve(question, ctx)
+
+    # 人为把复算值改成不在候选集合内的 19（模拟 Solver 记录被篡改）
+    tampered = solution.model_copy(deep=True)
+    tampered.meta["next_value"] = "19"
+
+    verifier = Verifier(settings, registry=SkillRegistry())
+    verification = verifier.verify(question, tampered)
+    assert verification.passed is False
+    assert verification.action == "reject"
+    assert verification.final_answer is None
+    recompute = next(check for check in verification.checks if check.name == "series.recompute")
+    assert not recompute.passed

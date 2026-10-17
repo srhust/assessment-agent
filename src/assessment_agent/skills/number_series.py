@@ -36,10 +36,35 @@ class NumberSeriesSkill(BaseSkill):
                 tool_calls=[invocation],
             )
         payload = invocation.result
-        next_text = str(payload["next_value"])
-        next_value = float(payload["next_value_float"])
         agreement = bool(payload["agreement"])
         candidates = payload.get("candidates") or []
+        raw_next = payload.get("next_value")
+        raw_next_float = payload.get("next_value_float")
+
+        # P0 边界：没有任何规律匹配时，工具返回 next_value=None；
+        # 显式结构化失败，保留工具给出的具体原因，而不是 float(None) 抛 TypeError
+        if raw_next is None or raw_next_float is None:
+            reason = str(payload.get("note") or "没有匹配到任何已知规律")
+            return Solution(
+                status="failed",
+                skill=self.id,
+                method="series_pattern",
+                error=f"数列求解失败：{reason}",
+                steps=[f"解析数列：{', '.join(payload.get('sequence') or [])}"],
+                tool_calls=[invocation],
+                meta={
+                    "sequence": payload.get("sequence") or [],
+                    "agreement": agreement,
+                    "no_pattern": True,
+                    "candidates": [
+                        {"name": c.get("name"), "next_value": c.get("next_value"), "priority": c.get("priority")}
+                        for c in candidates
+                    ],
+                },
+            )
+
+        next_text = str(raw_next)
+        next_value = float(raw_next_float)
         steps: List[str] = [f"解析数列：{', '.join(payload['sequence'])}"]
         if candidates:
             steps.append(f"匹配到 {len(candidates)} 条规律：")
@@ -54,7 +79,6 @@ class NumberSeriesSkill(BaseSkill):
         if is_ambiguous:
             steps.append(f"注意：{payload['note']}")
             # 收集所有候选答案（使用 Fraction 保持精确性）
-            from fractions import Fraction
             candidate_answers = set()
             for candidate in candidates:
                 try:
@@ -254,39 +278,33 @@ class NumberSeriesSkill(BaseSkill):
         try:
             full = solve_series(sequence)
             claimed = Fraction(str(solution.meta.get("next_value")))
-            consistent = full.next_value == claimed
-            
-            # 检查是否标记为歧义
-            is_ambiguous = solution.meta.get("ambiguous", False)
-            
-            checks.append(
-                VerificationCheck(
-                    name="series.recompute",
-                    passed=consistent,
-                    detail=f"独立复算下一项 = {full.next_value}，Solver 记录 = {claimed}",
-                )
-            )
-            
-            # 如果不一致，检查是否应该修补
-            if not consistent and full.next_value is not None:
-                # 如果标记为歧义，检查 Solver 的答案是否在候选列表中
-                if is_ambiguous:
-                    # 从 meta 中获取候选答案列表
-                    candidate_names = solution.meta.get("candidates", [])
-                    # 如果 Solver 的答案在候选中，说明是有意的选择，不修补
-                    # 这里我们假设 Solver 的选择是合理的，只要它匹配某个候选
-                    # 但由于我们没有存储完整的候选值，只能检查是否标记为 ambiguous
-                    # 如果标记为 ambiguous，说明 Solver 已经处理了歧义，不修补
-                    checks.append(
-                        VerificationCheck(
-                            name="series.ambiguous_no_repair",
-                            passed=True,
-                            detail="数列存在歧义，Solver 已处理歧义并做出选择，不进行修补",
-                            severity="warning",
-                        )
+            candidate_values = {candidate.next_value for candidate in full.candidates}
+            is_ambiguous = bool(solution.meta.get("ambiguous"))
+
+            if is_ambiguous:
+                # 歧义题校验：所选答案必须是独立复算得到的**有效候选之一**，
+                # 不要求等于最高优先级结果（合理的非首选候选不应被拒）
+                in_candidates = claimed in candidate_values
+                checks.append(
+                    VerificationCheck(
+                        name="series.recompute",
+                        passed=in_candidates,
+                        detail=(
+                            f"歧义数列：独立复算候选集合 = {sorted(str(value) for value in candidate_values)}，"
+                            f"Solver 记录 = {claimed}（{'在候选内，接受 Solver 基于选项匹配的选择' if in_candidates else '不在候选集合内，答案无效'}）"
+                        ),
                     )
-                else:
-                    # 没有标记为歧义，但复算结果不一致，尝试修补
+                )
+            else:
+                consistent = full.next_value == claimed
+                checks.append(
+                    VerificationCheck(
+                        name="series.recompute",
+                        passed=consistent,
+                        detail=f"独立复算下一项 = {full.next_value}，Solver 记录 = {claimed}",
+                    )
+                )
+                if not consistent and full.next_value is not None:
                     label = match_option(
                         float(full.next_value), [(option.label, option.text) for option in question.options]
                     ) if question.options else None

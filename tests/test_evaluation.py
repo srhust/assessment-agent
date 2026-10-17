@@ -7,7 +7,12 @@ from pathlib import Path
 
 import pytest
 
-from assessment_agent.evaluation.metrics import CaseResult, compute_metrics, percentile
+from assessment_agent.evaluation.metrics import (
+    CaseResult,
+    MetricsAccumulator,
+    compute_metrics,
+    percentile,
+)
 from assessment_agent.evaluation.runner import EvaluationRunner, answers_match, load_cases
 from assessment_agent.pipeline import Pipeline
 from tests.conftest import make_settings, write_jsonl
@@ -203,3 +208,45 @@ def test_failed_status_strict_matching(tmp_path: Path):
     assert summary.total == 1
     assert summary.metrics["correct"] == 0
     assert summary.metrics["accuracy"] == 0.0
+
+
+def test_answerable_coverage_excludes_wrongly_accepted_abstention():
+    """P1 口径测试：错误接受应拒答样本时，answerable_coverage 不得超过 100%。
+
+    分母 = 可答题样本数；分子 = **可答题样本中** 给出有效答案的数量。
+    被错误接受的拒答样本可以抬高 covered_count / coverage_ratio，
+    但绝不能混入 answerable_coverage 的分子。
+    """
+    results = [
+        CaseResult(
+            case_id="answerable-covered",
+            skill="number_series",
+            expected="B",
+            predicted="B",
+            correct=True,
+            status="solved",
+            verification_action="accept",
+            latency_ms=1.0,
+        ),
+        CaseResult(
+            case_id="abstention-wrongly-accepted",
+            skill="number_series",
+            expected=None,
+            predicted="A",
+            correct=False,
+            status="solved",
+            verification_action="accept",
+            latency_ms=1.0,
+            expected_status="unsupported",
+        ),
+    ]
+    accumulator = MetricsAccumulator()
+    for result in results:
+        accumulator.add(result)
+    summary = accumulator.summary()
+
+    assert summary["answerable"] == 1
+    assert summary["covered_count"] == 2  # 总体覆盖确实包含错误接受
+    assert summary["answerable_coverage"] == 1.0  # 但可答题覆盖率不被污染、不超 100%
+    for stats in summary["per_skill"].values():
+        assert stats["answerable_coverage"] <= 1.0
