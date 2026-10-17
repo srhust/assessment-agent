@@ -1,0 +1,8 @@
+{"id": "num-train-001", "skill": "numeric_calculation", "stem": "计算 24 + 36 ÷ 6 的结果", "options": {"A": "10", "B": "30", "C": "36", "D": "40"}, "answer": "B", "tags": ["四则运算", "运算顺序"]}
+{"id": "num-train-002", "skill": "numeric_calculation", "stem": "计算 80 的 25% 是多少", "options": {"A": "16", "B": "20", "C": "24", "D": "25"}, "answer": "B", "tags": ["百分比"]}
+{"id": "num-train-003", "skill": "numeric_calculation", "stem": "计算 3/4 + 1/8 等于多少", "options": {"A": "4/12", "B": "7/8", "C": "1", "D": "5/8"}, "answer": "B", "tags": ["分数"]}
+{"id": "series-train-001", "skill": "number_series", "stem": "数列 4, 7, 10, 13, ( ) 的下一项是", "options": {"A": "15", "B": "16", "C": "17", "D": "18"}, "answer": "B", "tags": ["等差"]}
+{"id": "series-train-002", "skill": "number_series", "stem": "数列 2, 6, 18, 54, ( ) 的下一项是", "options": {"A": "108", "B": "162", "C": "216", "D": "1080"}, "answer": "B", "tags": ["等比"]}
+{"id": "series-train-003", "skill": "number_series", "stem": "数列 1, 4, 9, 16, ( ) 的下一项是", "options": {"A": "20", "B": "24", "C": "25", "D": "36"}, "answer": "C", "tags": ["平方数", "差分"]}
+{"id": "logic-train-001", "skill": "logical_reasoning", "stem": "甲乙丙三人参加考试，成绩各不相同。已知：甲比乙高，乙比丙高。以下哪项一定为真？", "options": {"A": "丙比甲高", "B": "甲比丙高", "C": "乙最高", "D": "丙最高"}, "answer": "B", "tags": ["排序"]}
+{"id": "logic-train-002", "skill": "logical_reasoning", "stem": "甲乙丙三人的年龄各不相同。甲比乙大，丙比乙大。以下哪项一定为真？", "options": {"A": "乙最小", "B": "甲最大", "C": "丙比甲大", "D": "甲比丙小"}, "answer": "A", "tags": ["排序"]}

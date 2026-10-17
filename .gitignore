@@ -1,0 +1,33 @@
+# 密钥与本地配置：任何情况下都不进仓库
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets/
+
+# 运行产物
+runs/
+results/
+data/private/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# 图片缓存（原始题图默认随 runs/ 忽略，示例图除外）
+data/**/*.png
+data/**/*.jpg
+!data/**/samples/*.png

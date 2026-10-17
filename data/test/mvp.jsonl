@@ -1,0 +1,15 @@
+{"id": "num-test-001", "skill": "numeric_calculation", "stem": "计算 (3.5 + 2.4) × 4 的结果是多少？", "options": {"A": "23.6", "B": "22.6", "C": "24.0", "D": "19.6"}, "answer": "A", "tags": ["四则运算", "小数"]}
+{"id": "num-test-002", "skill": "numeric_calculation", "stem": "250 的 40% 是多少？", "options": {"A": "90", "B": "100", "C": "110", "D": "120"}, "answer": "B", "tags": ["百分比"]}
+{"id": "num-test-003", "skill": "numeric_calculation", "stem": "计算 12.5 × 8 - 36 ÷ 4", "options": {"A": "90", "B": "91", "C": "92", "D": "93"}, "answer": "B", "tags": ["四则运算"]}
+{"id": "num-test-004", "skill": "numeric_calculation", "stem": "1/3 + 1/6 等于多少？", "options": {"A": "1/2", "B": "2/3", "C": "1/4", "D": "3/4"}, "answer": "A", "tags": ["分数"]}
+{"id": "num-test-005", "skill": "numeric_calculation", "stem": "计算 15% × 240", "options": {"A": "36", "B": "32", "C": "40", "D": "30"}, "answer": "A", "tags": ["百分比"]}
+{"id": "series-test-001", "skill": "number_series", "stem": "数列 2, 5, 8, 11, ( ) 的下一项是？", "options": {"A": "13", "B": "14", "C": "15", "D": "16"}, "answer": "B", "tags": ["等差"]}
+{"id": "series-test-002", "skill": "number_series", "stem": "数列 1, 3, 9, 27, 81, ( ) 的下一项是？", "options": {"A": "162", "B": "234", "C": "243", "D": "270"}, "answer": "C", "tags": ["等比"]}
+{"id": "series-test-003", "skill": "number_series", "stem": "数列 3, 7, 15, 31, ( ) 的下一项是？", "options": {"A": "47", "B": "63", "C": "65", "D": "127"}, "answer": "B", "tags": ["幂次偏移"]}
+{"id": "series-test-004", "skill": "number_series", "stem": "数列 1, 1, 2, 3, 5, 8, ( ) 的下一项是？", "options": {"A": "11", "B": "12", "C": "13", "D": "14"}, "answer": "C", "tags": ["递推"]}
+{"id": "series-test-005", "skill": "number_series", "stem": "数列 1, 10, 3, 20, 5, 30, ( ) 的下一项是？", "options": {"A": "6", "B": "7", "C": "35", "D": "40"}, "answer": "B", "tags": ["奇偶分组"]}
+{"id": "logic-test-001", "skill": "logical_reasoning", "stem": "甲乙丙三人参加比赛，名次各不相同。已知：甲比乙高，乙比丙高。以下哪项一定为真？", "options": {"A": "甲比丙矮", "B": "丙比甲矮", "C": "乙最高", "D": "丙最高"}, "answer": "B", "tags": ["排序", "必然为真"]}
+{"id": "logic-test-002", "skill": "logical_reasoning", "stem": "甲、乙、丙三人的体重关系如下：乙比甲重，丙比乙重。以下哪项一定为真？", "options": {"A": "甲比丙重", "B": "丙比甲重", "C": "乙最重", "D": "甲比乙重"}, "answer": "B", "tags": ["排序"]}
+{"id": "logic-test-003", "skill": "logical_reasoning", "stem": "甲乙丙三人分数各不相同。甲比乙高，丙不是最高。以下哪项一定为真？", "options": {"A": "甲最高", "B": "乙最高", "C": "丙最低", "D": "甲最低"}, "answer": "A", "tags": ["排序", "否定条件"]}
+{"id": "verb-test-001", "skill": "verbal_understanding", "stem": "依次填入下列横线处最恰当的一项是（ ）：会议纪要应当________，避免冗长。", "options": {"A": "简明", "B": "简单", "C": "简陋", "D": "简短"}, "answer": null, "expected_status": "unsupported", "tags": ["未实现题型"]}
+{"id": "fig-test-001", "skill": "figure_reasoning", "stem": "下列图形序列中，符合规律的下一个图形是（ ）", "options": {"A": "图形A", "B": "图形B", "C": "图形C", "D": "图形D"}, "answer": null, "expected_status": "unsupported", "tags": ["未实现题型"]}

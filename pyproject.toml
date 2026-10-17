@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "assessment-agent"
+version = "0.1.0"
+description = "多模态招聘测评解题 Agent（北森 / SHL 类练习与模拟测试）"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pydantic>=2.5",
+    "httpx>=0.27",
+    "sympy>=1.12",
+]
+
+[project.optional-dependencies]
+logic = ["z3-solver>=4.12"]
+vision = ["pillow>=10.0", "numpy>=1.24"]
+figures = ["opencv-python-headless>=4.8"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+assessment-agent = "assessment_agent.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+filterwarnings = ["error::DeprecationWarning:assessment_agent.*"]

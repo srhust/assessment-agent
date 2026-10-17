@@ -1,0 +1,12 @@
+# 运行 MVP 所需的最小依赖
+pydantic>=2.5
+httpx>=0.27
+sympy>=1.12
+z3-solver>=4.12          # 逻辑推理（若缺失，逻辑 Skill 会明确返回 unsupported）
+pillow>=10.0             # 截图尺寸/格式处理
+numpy>=1.24              # 图形推理工具接口预留
+
+# 开发与测试
+pytest>=8.0
+
+# 可选扩展（第二阶段）：opencv-python-headless>=4.8

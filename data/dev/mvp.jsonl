@@ -1,0 +1,6 @@
+{"id": "num-dev-001", "skill": "numeric_calculation", "stem": "计算 (18 + 12) × 3 的结果", "options": {"A": "60", "B": "84", "C": "90", "D": "96"}, "answer": "C", "tags": ["四则运算"]}
+{"id": "num-dev-002", "skill": "numeric_calculation", "stem": "计算 360 的 15% 是多少", "options": {"A": "44", "B": "48", "C": "54", "D": "60"}, "answer": "C", "tags": ["百分比"]}
+{"id": "series-dev-001", "skill": "number_series", "stem": "数列 5, 10, 20, 40, ( ) 的下一项是", "options": {"A": "60", "B": "70", "C": "80", "D": "100"}, "answer": "C", "tags": ["等比"]}
+{"id": "series-dev-002", "skill": "number_series", "stem": "数列 1, 2, 4, 7, 11, ( ) 的下一项是", "options": {"A": "14", "B": "15", "C": "16", "D": "17"}, "answer": "C", "tags": ["二阶差分"]}
+{"id": "logic-dev-001", "skill": "logical_reasoning", "stem": "甲乙丙三人身高不同。甲比乙高，乙比丙高。谁最高？", "options": {"A": "甲", "B": "乙", "C": "丙"}, "answer": "A", "tags": ["排序", "最高"]}
+{"id": "verb-dev-001", "skill": "verbal_understanding", "stem": "依次填入下列横线处最恰当的一项是（ ）：他的建议虽然________，但确实解决了问题。", "options": {"A": "平淡", "B": "朴素", "C": "简陋", "D": "普通"}, "answer": null, "expected_status": "unsupported", "tags": ["未实现题型"]}
