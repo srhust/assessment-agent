@@ -1,6 +1,6 @@
 {
-  "phase": "R4c real-VLM image_only smoke（调用审计凭证判定）",
-  "generated_at": "2026-10-18T23:06:46+08:00",
+  "phase": "R4d real-VLM image_only smoke 3 题（分阶段审计 + 每题三段记录判定，与 run_real_vlm_experiment 共用 execution_status）",
+  "generated_at": "2026-10-19T01:03:27+08:00",
   "provider": "api.openai.com",
   "vision_model": null,
   "text_model": "gpt-4o-mini",
@@ -39,13 +39,14 @@
   },
   "report_fields_on_executed": [
     "audit.requests_sent/requests_succeeded",
+    "audit.by_phase(vision_parse/router/…)",
     "audit.http_status_counts",
     "audit.error_types",
     "audit.echoed_models",
     "audit.request_ids_sample",
     "usage",
     "latency_ms P50/P95",
-    "per-case parse_failed",
+    "per-case vision_http_success/vision_schema_valid/vision_extraction_valid/evidence_complete",
     "run_dir（不写密钥与响应正文）"
   ]
 }

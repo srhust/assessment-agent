@@ -318,6 +318,7 @@ class EvaluationRunner:
         eval_batch: Optional[str] = None,
         case_ids: Optional[Sequence[str]] = None,
         limit: Optional[int] = None,
+        no_overwrite: bool = False,
     ) -> EvaluationSummary:
         # 三种评测输入模式（R2a）：
         #   oracle_solver：标准题干/区域/题型 → 只测 Solver
@@ -328,6 +329,13 @@ class EvaluationRunner:
             raise ValueError(f"eval_mode 必须是 {EVAL_MODES} 之一，收到 {mode!r}")
         # R2b：批次唯一标识——image_only 的 runs 产物按批次隔离，重复评测不覆盖历史证据
         batch = eval_batch or run_name or datetime.now().strftime("%Y%m%dT%H%M%S")
+        # R4d P1：no_overwrite=True 时，已存在且非空的输出目录直接报错——
+        # 静默重跑会覆盖上一份调用凭证，实验报告之间必须可区分。
+        if no_overwrite and save:
+            _probe = self.results_dir / split / (run_name or batch)
+            if _probe.is_dir() and any(_probe.iterdir()):
+                raise FileExistsError(
+                    f"输出目录已存在且非空，拒绝静默覆盖（用唯一 run_name 或去掉 --no-overwrite）: {_probe}")
         cases = load_cases(
             self.data_dir, split, skills=skills,
             capability_ids=[s.id for s in self.pipeline.registry.supported()],
@@ -382,6 +390,48 @@ class EvaluationRunner:
         fn = getattr(self.pipeline.llm, "usage_snapshot", None)
         return fn() if callable(fn) else {}
 
+    def _audit(self) -> Dict[str, Any]:
+        fn = getattr(self.pipeline.llm, "audit_snapshot", None)
+        return fn() if callable(fn) else {}
+
+    @staticmethod
+    def _vision_stages(audit_before: Dict[str, Any], audit_after: Dict[str, Any],
+                       extraction: Any, vision_detail: Dict[str, Any]) -> Dict[str, bool]:
+        """每题视觉链路三段（R4d）：HTTP 2xx → JSON/schema 合法 → 结构化产物可用；
+        再加证据完整（必需区域全命中）。差分口径避免把 router/solver 请求混计。
+
+        ``VisionParser.parse`` 把 HTTP/JSON 失败也抛成 VisionParseError（被
+        pipeline 转为 PipelineError），因此**不能只看 parse_failed**——那会把
+        "根本没发出请求"与"JSON 不合法"混为一谈。三段分别取：客户端分阶段
+        审计差分（HTTP/schema 层级）与**区域证据**（结构化层级）。
+        结构化不能只看 `parser` 字段——schemas.ExtractionResult 的 parser
+        默认值就是 vision_parser，v1 纯文本抽取（VISION_PARSER=0）产物同样
+        带该值；因此要求 v2 区域数组**真实非空**（全被 bbox 校验丢弃 = 无
+        证据，不算结构化成功）。
+        """
+        def _p(a: Dict[str, Any], key: str) -> int:
+            return int(((a.get("by_phase") or {}).get("vision_parse") or {}).get(key, 0))
+        d_http = _p(audit_after, "http_succeeded") - _p(audit_before, "http_succeeded")
+        d_json = _p(audit_after, "json_output_valid") - _p(audit_before, "json_output_valid")
+        parser = getattr(extraction, "parser", None) if extraction is not None else None
+        has_regions = bool(extraction is not None and any(
+            getattr(extraction, attr, None) for attr in
+            ("text_regions", "diagram_regions", "option_regions", "table_regions")))
+        http_ok = d_http > 0
+        schema_ok = d_json > 0
+        extraction_valid = bool(extraction is not None and parser == "vision_parser"
+                                and has_regions)
+        return {
+            "vision_http_success": http_ok,
+            "vision_schema_valid": schema_ok,
+            "vision_extraction_valid": extraction_valid,
+            "vision_payload_source": parser,
+            "legacy_payload_fallback": bool(extraction is not None and d_json > 0
+                                            and not extraction_valid),
+            "evidence_complete": bool(http_ok and extraction_valid
+                                      and not vision_detail.get("region_detection_failure", True)),
+        }
+
     @staticmethod
     def _gold_payload(case: Case) -> Dict[str, Any]:
         """把 Case 金标准转成 VisionParser v2 payload 形状，供逐内容项比较。"""
@@ -407,6 +457,7 @@ class EvaluationRunner:
         run_ref: Optional[str] = None
         vision_detail: Dict[str, Any] = {}
         usage: Dict[str, Any] = {}
+        _pre_audit = self._audit()  # R4d：题前阶段审计快照（异常路径也要差分）
         gold_payload = self._gold_payload(case)
         try:
             if mode == "image_only":
@@ -431,7 +482,9 @@ class EvaluationRunner:
                         failure_class="vision_parse_error",
                         tags=list(case.tags),
                         input_mode=mode,
-                        vision=compare_extraction_detail(gold_payload, None),
+                        vision=compare_extraction_detail(gold_payload, None)
+                        | self._vision_stages(_pre_audit, self._audit(), None,
+                                              compare_extraction_detail(gold_payload, None)),
                         answerability=case.answerability,
                         capability_status=case.capability_status,
                         verification_outcome=miss_outcome,
@@ -441,11 +494,19 @@ class EvaluationRunner:
                         ),
                     )
                 usage_before = self._usage()
+                audit_before = self._audit()
                 run_id = f"e2e-{eval_batch}-{case.id}" if eval_batch else f"e2e-{case.id}"
+                # image_only 输入契约：仅原始整页图片进求解链路
                 run = self.pipeline.run(image_path=case.image, save=True, run_id=run_id)
                 usage = self._usage_delta(usage_before, self._usage())
                 extraction_accurate, region_iou, option_map_ok = _compare_extraction(case, run.extraction)
                 vision_detail = compare_extraction_detail(gold_payload, run.extraction)
+                # 三段判定以 VisionParser **协议来源字段**为准：合法 payload 走
+                # vision_parser；旧版纯文本降级为 legacy_payload（不算结构化成功）；
+                # 由 client 分阶段审计补 HTTP/schema 层级
+                stages = self._vision_stages(_pre_audit, self._audit(),
+                                             run.extraction, vision_detail)
+                vision_detail.update(stages)
                 run_ref = run.run_id
             else:
                 skill_for_pipeline = case.skill if mode == "oracle_solver" else None
@@ -561,6 +622,10 @@ class EvaluationRunner:
         except PipelineError as exc:
             latency = (time.perf_counter() - started) * 1000.0
             detail = compare_extraction_detail(gold_payload, None) if mode == "image_only" else {}
+            if mode == "image_only":
+                # R4d：异常路径也要写真实三段（HTTP 可能成功但解析抛错——
+                # 层级区分正是 EXECUTED 判定的原料），缺省初值防未定义
+                detail.update(self._vision_stages(_pre_audit, self._audit(), None, detail))
             perr_outcome = derive_verification_outcome(
                 answerability=case.answerability, action="reject",
                 predicted=None, solution_answer=None, gold=case.answer,

@@ -271,7 +271,8 @@ def test_image_only_input_contract_is_image_only():
     src = inspect.getsource(runner_mod)
     i = src.find('if mode == "image_only"')
     assert i >= 0, "runner 无 image_only 分支"
-    block = src[i:i + 2000]
+    # 窗口 3200：覆盖缺图短路 + R4d 审计前快照到 pipeline.run 调用点
+    block = src[i:i + 3200]
     j = block.find(".run(")
     assert j >= 0, "image_only 分支未调用 pipeline.run"
     call = block[j:block.find(")", j)]

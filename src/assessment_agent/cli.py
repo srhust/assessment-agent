@@ -59,6 +59,8 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate.add_argument("--case-ids", help="R4c 冒烟：只评测指定题号，逗号分隔（运行前显式声明）")
     evaluate.add_argument("--limit", type=int, help="R4c 冒烟：只评测前 N 题（顺序=数据集行序，不按结果筛选）")
     evaluate.add_argument("--run-name", help="结果目录名")
+    evaluate.add_argument("--no-overwrite", action="store_true",
+                          help="R4d：输出目录已存在且非空时报错退出（保护历史调用凭证）")
     evaluate.add_argument("--no-save", action="store_true", help="不写 results/ 产物")
     evaluate.add_argument("--json", action="store_true", help="以 JSON 输出指标")
     evaluate.add_argument(
@@ -170,8 +172,9 @@ def _cmd_eval(args: argparse.Namespace, settings: Settings) -> int:
             case_ids=([q.strip() for q in args.case_ids.split(",") if q.strip()]
                       if getattr(args, "case_ids", None) else None),
             limit=getattr(args, "limit", None),
+            no_overwrite=bool(getattr(args, "no_overwrite", False)),
         )
-    except (FileNotFoundError, ValueError) as exc:
+    except (FileNotFoundError, ValueError, FileExistsError) as exc:
         print(f"[错误] {exc}", file=sys.stderr)
         return 2
     if args.json:

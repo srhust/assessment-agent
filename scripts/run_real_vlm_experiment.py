@@ -32,7 +32,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from phase6_vlm_smoke import classify_status  # noqa: E402
+# R4d：执行状态判定与 smoke **同源**（禁止两套脚本对 EXECUTED 各说各话）
+from assessment_agent.evaluation.execution_status import (  # noqa: E402
+    classify_status, health_gate, vision_stage_summary,
+)
 
 SMOKE_IDS = ["ft-rot90-01", "ft-grid-10", "ft-overlay-12"]
 FIGSPLITS = "figshots_dev"
@@ -54,17 +57,34 @@ def sha_file(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
-def lock_manifest() -> Dict[str, Any]:
+def lock_manifest(exp_id: str) -> Dict[str, Any]:
     from assessment_agent.config import Settings
     from assessment_agent.prompts import VISION_PARSE_SYSTEM
     st = Settings.from_env()
     images = sorted((ROOT / "data/benchmark_figshots/images/dev").glob("*.png"))
+    dirty = sh("git", "status", "--porcelain")
+    code_files = ("src/assessment_agent/llm.py",
+                  "src/assessment_agent/evaluation/runner.py",
+                  "src/assessment_agent/evaluation/vision_metrics.py",
+                  "src/assessment_agent/evaluation/execution_status.py",
+                  "src/assessment_agent/vision_parser.py",
+                  "src/assessment_agent/tools/figure_transform.py",
+                  "src/assessment_agent/tools/figure_transform_tools.py",
+                  "src/assessment_agent/tools/figure_adapter.py",
+                  "src/assessment_agent/skills/figure_reasoning.py")
+    env_names = sorted(k for k in
+                       ("LLM_API_KEY", "OPENAI_API_KEY", "LLM_VISION_MODEL",
+                        "LLM_BASE_URL", "OPENAI_BASE_URL", "LLM_MODEL", "OPENAI_MODEL",
+                        "LLM_TEXT_MODEL", "ASSESSMENT_OFFLINE")
+                       if os.environ.get(k))  # 只记**哪些变量存在**，绝不记值
     return {
+        "experiment_id": exp_id,
         "locked_at": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
         "git_commit": sh("git", "rev-parse", "HEAD"),
-        "git_dirty": bool(sh("git", "status", "--porcelain")),
-        "dirty_digest_sha256": hashlib.sha256(
-            sh("git", "status", "--porcelain").encode("utf-8")).hexdigest()[:16],
+        "git_dirty": bool(dirty),
+        "dirty_digest_sha256": hashlib.sha256(dirty.encode("utf-8")).hexdigest()[:16],
+        "code_sha256": {f: sha_file(ROOT / f) for f in code_files},
+        "config_env_names_present": env_names,
         "provider_host": st.llm.base_url.split("//")[-1].split("/")[0],
         "vision_model": st.llm.vision_model,
         "text_model": st.llm.text_model,
@@ -75,10 +95,11 @@ def lock_manifest() -> Dict[str, Any]:
         "vision_prompt_sha256": sha_text(VISION_PARSE_SYSTEM),
         "image_sha256": {p.name: sha_file(p) for p in images},
         "selection_rules_declared_before_run": {
-            "smoke": SMOKE_IDS,
-            "full": "figshots_dev 全部 15 题（数据集行序）",
-            "cross_split": "bench_dev 全部截图样本（不按 skills 文件筛、更不按解析结果筛）；"
-                           "题型对比在报告内按 skill 字段分组",
+            "stage1_smoke": SMOKE_IDS,
+            "stage2_full": "figshots_dev 全部 15 题（数据集行序，全部成功与失败保留）",
+            "stage3_cross": "bench_dev 全部 35 张截图（不按 skills 文件筛、更不按解析结果筛）",
+            "gating": "stage2 仅当 stage1 通过 API+Schema 健康检查；stage3 仅当 stage2 健康；"
+                      "--force-continue 显式越级",
         },
         "note": "密钥不落盘；本 manifest 是实验配置唯一凭证",
     }
@@ -89,9 +110,10 @@ def sha_text(s: str) -> str:
 
 
 def run_eval(split: str, mode: str, run_name: str, *, skills: Optional[str] = None,
-             case_ids: Optional[str] = None, direct: bool = False) -> Dict[str, Any]:
+             case_ids: Optional[str] = None, direct: bool = False,
+             eval_batch: Optional[str] = None) -> Dict[str, Any]:
     """direct=True 时进程内调用 runner（跨 split 目录基准需要 runner 自带的
-    _SPLIT_DIRS 映射，CLI 无 --data-dir；同一解释器、同一代码态，凭证一致）。"""
+    _SPLIT_DIRS 映射；同一解释器、同一代码态，凭证一致）。"""
     if direct:
         import io
         import contextlib
@@ -109,6 +131,8 @@ def run_eval(split: str, mode: str, run_name: str, *, skills: Optional[str] = No
         try:
             with contextlib.redirect_stdout(buf):
                 summary = runner.run(split, eval_mode=mode, run_name=run_name,
+                                     eval_batch=eval_batch or run_name,
+                                     no_overwrite=True,
                                      route_mode="oracle" if mode == "oracle_solver" else "auto",
                                      skills=[s.strip() for s in (skills or "").split(",") if s.strip()] or None,
                                      case_ids=[q.strip() for q in (case_ids or "").split(",") if q.strip()] or None)
@@ -124,7 +148,10 @@ def run_eval(split: str, mode: str, run_name: str, *, skills: Optional[str] = No
 
     cmd = [sys.executable, "-X", "utf8", "-m", "assessment_agent.cli", "eval",
            "--split", split, "--eval-mode", mode, "--route-mode",
-           "oracle" if mode == "oracle_solver" else "auto", "--run-name", run_name]
+           "oracle" if mode == "oracle_solver" else "auto", "--run-name", run_name,
+           "--no-overwrite"]
+    if eval_batch:
+        cmd += ["--eval-batch", eval_batch]
     if skills:
         cmd += ["--skills", skills]
     if case_ids:
@@ -148,8 +175,14 @@ def run_eval(split: str, mode: str, run_name: str, *, skills: Optional[str] = No
 
 def _keep_env() -> Dict[str, str]:
     import os
+    # R4d P1：父/子进程**同一配置事实源**。config.Settings.from_env 支持
+    # OPENAI_API_KEY/OPENAI_BASE_URL/OPENAI_MODEL 别名，故子进程必须原样继承，
+    # 否则会出现"父进程已配置、子进程判 NOT_CONFIGURED"的分裂口径。
+    # 只透传变量本身——密钥不写入任何报告文件。
     keys = ("LLM_API_KEY", "LLM_MODEL", "LLM_VISION_MODEL", "LLM_BASE_URL",
-            "ASSESSMENT_OFFLINE",
+            "LLM_TEXT_MODEL", "LLM_TEMPERATURE", "LLM_MAX_TOKENS",
+            "OPENAI_API_KEY", "OPENAI_BASE_URL", "OPENAI_MODEL",
+            "ASSESSMENT_OFFLINE", "VERIFIER_USE_LLM", "VISION_PARSER",
             "PATH", "HOME", "USERPROFILE", "SYSTEMROOT", "TEMP", "TMP")
     # ASSESSMENT_OFFLINE 透传：离线开关必须与主 manifest 同一事实源；审计的
     # offline_mode/requests_sent 字段负责区分"被离线拦截"与"配置存在但未调用"。
@@ -161,14 +194,20 @@ def attribute_case(row: Dict[str, Any]) -> Dict[str, Any]:
 
     字段来源是 predictions.jsonl 的 ``vision`` 明细（compare_extraction_detail，
     R2b 起内容级、R4c 补 grid/裁剪），全部保留在分母中，不按结果筛题。
+
+    R4d 口径分离（评审 P0-2 第二处）：
+      solver_proposed_answer = predicted_option（Solver 内部提议，即使未对外）
+      final_answer           = predicted（Verifier accept/repair 后实际对外输出）
+      answered_out_loud      = final_answer 非空
     """
     v = row.get("vision") or {}
     api_failed = row.get("failure_class") in ("model_api_error", "llm_unavailable")
     parse_failed = bool(v.get("parse_failed"))
     perception_dead = api_failed or parse_failed or not v
     gold = row.get("expected")
-    answered = row.get("predicted_option") is not None
-    verified_accept = row.get("verification_action") == "accept"
+    final_answer = row.get("predicted")
+    action = row.get("verification_action")
+    answered = final_answer is not None and action in ("accept", "repair")
     routed_ok = None
     if row.get("input_mode") in ("auto_router", "image_only") and row.get("routed_skill"):
         routed_ok = row.get("routed_skill") == row.get("skill")
@@ -186,11 +225,13 @@ def attribute_case(row: Dict[str, Any]) -> Dict[str, Any]:
         "router_correct": routed_ok,
         "solver_proposed_gold": _solver_proposed_gold(row, gold)
             if not perception_dead else None,
-        "verifier_accepted": verified_accept if answered else None,
+        "verifier_accepted": action in ("accept", "repair"),
+        "solver_proposed_answer": row.get("predicted_option"),
+        "final_answer": final_answer,
         "answered_out_loud": answered,
         "correct": row.get("correct"),
         "failure_class": row.get("failure_class"),
-        "verification_action": row.get("verification_action"),
+        "verification_action": action,
     }
     err = None
     if api_failed:
@@ -207,10 +248,11 @@ def attribute_case(row: Dict[str, Any]) -> Dict[str, Any]:
         err = "grid_error"
     elif fields["router_correct"] is False:
         err = "router_error"
-    elif answered and verified_accept and row.get("correct") is False:
-        err = "verifier_error" if fields["solver_proposed_gold"] is False else "solver_error"
-    elif answered and not verified_accept and row.get("correct") is False:
-        err = "solver_error"
+    elif answered and row.get("correct") is False:
+        # 答错还对外作答：solver 提议本来就错 → solver_error；
+        # 提议正确却被 verifier accept/repair 输出错值 → verifier_error
+        err = ("solver_error" if fields["solver_proposed_gold"] is not True
+               else "verifier_error")
     elif (not answered) and row.get("correct") is False and gold is not None \
             and fields["solver_proposed_gold"] is True:
         err = "verifier_error"  # solver 提出正解但未对外作答（验证拒/未验）
@@ -223,8 +265,10 @@ def attribute_case(row: Dict[str, Any]) -> Dict[str, Any]:
 
 def _false_accept_rank(row: Dict[str, Any]) -> int:
     """false accept（答错却 accept）时，按归因链最上游环节标记错误类别；
-    其余情形返回 -1 不参与排序。"""
-    if row.get("correct") is not False or row.get("verification_action") != "accept":
+    其余情形返回 -1 不参与排序。对外输出以 final_answer（predicted）为准。"""
+    if (row.get("correct") is not False
+            or row.get("verification_action") not in ("accept", "repair")
+            or row.get("predicted") is None):
         return -1
     v = row.get("vision") or {}
     if row.get("failure_class") in ("model_api_error", "llm_unavailable"):
@@ -240,7 +284,7 @@ def _false_accept_rank(row: Dict[str, Any]) -> int:
         return FALSE_ACCEPT_PRIORITY["grid_error"]
     if row.get("routed_skill") and row["routed_skill"] != row.get("skill"):
         return FALSE_ACCEPT_PRIORITY["router_error"]
-    if row.get("predicted_option") != row.get("expected"):
+    if row.get("predicted") != row.get("expected"):
         return FALSE_ACCEPT_PRIORITY["solver_error"]
     return FALSE_ACCEPT_PRIORITY["verifier_error"]
 
@@ -259,22 +303,31 @@ def _solver_proposed_gold(row: Dict[str, Any], gold: Optional[str]) -> Optional[
 
 def _mode_execution(mode: str, preds: List[Dict[str, Any]],
                     audit: Optional[Dict[str, Any]]) -> str:
-    """模式感知的执行状态：oracle/auto 是离线可完全执行的 Solver 层模式；
-    image_only 必须看真实调用审计——凭证缺失或 API 全失败不得标 EXECUTED。"""
+    """R4d：与 smoke **同源**的 execution_status（共享 classify_status）：
+    oracle/auto 是离线可完全执行的 Solver 层模式（真实网络不需要）；
+    image_only 的 EXECUTED 必须指定样本全部完成真实视觉解析——
+    HTTP 总数（混有 router/solver 请求）不再直接当视觉成功数。"""
     if not preds:
         return "NOT_EXECUTED"
     if mode != "image_only":
         return "EXECUTED"
     a = (audit or {}).get("audit") or {}
-    if not a.get("requests_sent"):
-        return "NOT_EXECUTED（真实调用凭证缺失）"
-    if not a.get("requests_succeeded"):
-        return "API_FAILED（全部请求失败）"
-    return "EXECUTED"
+    configured = bool(a.get("vision_model_configured")) and not a.get("offline_mode")
+    st, _reason = classify_status(configured, bool(a.get("offline_mode")), a,
+                                  preds, len(preds))
+    return st
 
 
 def stratified(run: Dict[str, Any], mode: str) -> Dict[str, Any]:
-    """分层指标：分子/分母齐备；未执行=None、缺失="missing"、真零=0。"""
+    """分层指标：分子/分母齐备；未执行=None、缺失="missing"、真零=0。
+
+    R4d 口径修正（评审 P0-2）：
+    - end_to_end_objective_accuracy 完整取 overall_answer_accuracy 的
+      hit/denominator/value 三元组（旧 answer_accuracy 是分母口径不同的 legacy，
+      禁止 value 用 A、分子分母用 B 的混用）；
+    - answered_out_loud 只统计**最终对外答案**（predicted 非空且 accept/repair），
+      Solver 提议但被 unverified/reject 拦截的不算作答。
+    """
     preds = run.get("predictions") or []
     m = run.get("metrics") or {}
     n = len(preds)
@@ -283,13 +336,13 @@ def stratified(run: Dict[str, Any], mode: str) -> Dict[str, Any]:
                 "value": (round(hit / total, 4) if total else None)}
     def count(pred_fn):
         return [p for p in preds if pred_fn(p)]
-    answered = count(lambda p: p.get("predicted_option") is not None)
+    def is_final_answered(p: Dict[str, Any]) -> bool:
+        return (p.get("predicted") is not None
+                and p.get("verification_action") in ("accept", "repair"))
+    answered = count(is_final_answered)
     api_fail = count(lambda p: p.get("failure_class") in ("model_api_error", "llm_unavailable"))
     parsed = count(lambda p: bool(p.get("vision")) and not p["vision"].get("parse_failed"))
     with_vision = count(lambda p: bool(p.get("vision")))
-    def ratio_on(key, cmp_fn, denom):
-        hits = count(lambda p: p.get(key) is not None and cmp_fn(p[key]))
-        return frac(len(hits), len(denom))
     ious = [p["vision"].get("diagram_iou_mean") for p in with_vision
             if isinstance(p["vision"].get("diagram_iou_mean"), (int, float))]
     oious = [p["vision"].get("option_iou_mean") for p in with_vision
@@ -298,15 +351,22 @@ def stratified(run: Dict[str, Any], mode: str) -> Dict[str, Any]:
     omaps_den = count(lambda p: p.get("option_map_ok") is not None)
     lat = [p.get("latency_ms") for p in preds if isinstance(p.get("latency_ms"), (int, float))]
     cap = m.get("capability") or {}
-    obj = m.get("answer_accuracy")
+    # 主客观口径：R2c 确立的 overall_answer_accuracy（全部客观可答题分母）
+    objective = m.get("overall_answer_accuracy") or {}
     return {
         "mode": mode,
         "cases": n,
         "execution_status": _mode_execution(mode, preds, run.get("audit")),
         "per_skill": _group_by_skill(preds),
-        "extraction_accuracy": (ratio_on_stem := frac(
+        "vision_parse_success": frac(
+            sum(1 for p in preds if bool((p.get("vision") or {}).get("vision_extraction_valid"))),
+            n) if with_vision else "not_applicable",
+        "evidence_completeness": frac(
+            sum(1 for p in preds if bool((p.get("vision") or {}).get("evidence_complete"))),
+            n) if with_vision else "not_applicable",
+        "extraction_accuracy": frac(
             sum(1 for p in with_vision if p["vision"].get("stem_exact")), len(with_vision))
-            if with_vision else "not_applicable"),
+            if with_vision else "not_applicable",
         "region_iou": ({"stem_mean": round(sum(ious) / len(ious), 4),
                         "per_option_mean": round(sum(oious) / len(oious), 4),
                         "numerator_cases": len(ious),
@@ -320,16 +380,21 @@ def stratified(run: Dict[str, Any], mode: str) -> Dict[str, Any]:
         "solver_with_gold_extraction": ("not_applicable" if mode == "image_only"
                                         else frac(sum(1 for p in preds if p.get("correct")),
                                                   sum(1 for p in preds if p.get("expected") is not None))),
-        "end_to_end_objective_accuracy": ({"value": obj,
-            "numerator": (m.get("overall_answer_accuracy") or {}).get("hit"),
-            "denominator": (m.get("overall_answer_accuracy") or {}).get("denominator")}
-            if obj is not None else "missing"),
+        "end_to_end_objective_accuracy": ({"value": objective.get("value"),
+            "numerator": objective.get("hit"),
+            "denominator": objective.get("denominator"),
+            "caliber": "overall_answer_accuracy (R2c objective denominator)"}
+            if objective else "missing"),
+        "legacy_answer_accuracy_for_reference_only": m.get("answer_accuracy"),
         "answerable_coverage": m.get("answerable_coverage"),
         "selective_accuracy": m.get("selective_accuracy"),
         "false_accept": cap.get("false_accept_total", 0),
         "over_answer": cap.get("over_answer_total", 0),
         "unverified_abstention": m.get("abstention_total", 0),
         "answered_out_loud": frac(len(answered), n),
+        "verified_answer_yield": frac(
+            sum(1 for p in preds if p.get("correct") is True and is_final_answered(p)),
+            int(objective.get("denominator") or 0)) if objective.get("denominator") else None,
         "api_failure_rate": frac(len(api_fail), n) if mode == "image_only" else "not_applicable",
         "parse_success": frac(len(parsed), len(with_vision)) if with_vision else "not_applicable",
         "latency": ({"p50_ms": round(statistics.median(lat), 1),
@@ -349,7 +414,7 @@ def _group_by_skill(preds: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
         g = grouped.setdefault(key, {"cases": 0, "answered": 0, "correct": 0,
                                      "api_failure": 0, "parse_failed": 0, "false_accept": 0})
         g["cases"] += 1
-        if p.get("predicted_option") is not None:
+        if p.get("predicted") is not None and p.get("verification_action") in ("accept", "repair"):
             g["answered"] += 1
         if p.get("correct") is True:
             g["correct"] += 1
@@ -377,125 +442,221 @@ def _router_hits(preds: List[Dict[str, Any]], n: int) -> tuple:
 
 
 def main() -> None:
-    manifest = lock_manifest()
+    force = "--force-continue" in sys.argv
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    exp_dir = ROOT / "results" / "real_vlm" / ts
-    exp_dir.mkdir(parents=True, exist_ok=True)
+    exp_id = f"{ts}-{os.getpid()}-{hashlib.sha256(str(ts).encode()).hexdigest()[:4]}"
+    manifest = lock_manifest(exp_id)
+    exp_dir = ROOT / "results" / "real_vlm" / exp_id
+    if exp_dir.exists():  # R4d：禁止静默覆盖历史实验凭证
+        raise FileExistsError(f"实验目录已存在，拒绝覆盖: {exp_dir}")
+    exp_dir.mkdir(parents=True)
 
-    configured = manifest["api_key_present"] and manifest["vision_model"] and not manifest["offline_flag"]
+    configured = bool(manifest["api_key_present"] and manifest["vision_model"]
+                      and not manifest["offline_flag"])
+    offline = bool(manifest["offline_flag"])
 
     experiments: Dict[str, Any] = {}
     audits: List[Dict[str, Any]] = []
-    # 1) 冒烟（3 题）→ 全量（15 题）× 三模式
-    for mode in ("oracle_solver", "auto_router", "image_only"):
-        smoke = run_eval(FIGSPLITS, mode, f"smoke_{mode}", case_ids=",".join(SMOKE_IDS))
-        full = run_eval(FIGSPLITS, mode, f"full_{mode}")
-        experiments[f"figshots_{mode}"] = {"smoke": _slim(smoke), "full": _slim(full)}
-        if smoke.get("audit"):
-            audits.append(smoke["audit"].get("audit") or {})
-        if full.get("audit"):
-            audits.append(full["audit"].get("audit") or {})
-        experiments[f"figshots_{mode}"]["stratified_smoke"] = stratified(smoke, mode) if "predictions" in smoke else {"error": smoke.get("error")}
-        experiments[f"figshots_{mode}"]["stratified_full"] = stratified(full, mode) if "predictions" in full else {"error": full.get("error")}
-        # 归因明细单独大文件（不进主报告以控体积）
-        if full.get("predictions"):
-            att = [attribute_case(r) for r in full["predictions"]]
-            (exp_dir / f"attribution_figshots_{mode}.json").write_text(
-                json.dumps(att, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    # 2) 跨题型感知（不筛样本）。split→目录映射：bench_dev 的截图独立集在
-    #    benchmark_real/dev（--data-dir 必须显式指定，默认 data_dir 会错误拼到 data/dev）
-    cross = run_eval("bench_dev", "image_only", "cross_bench", direct=True)
-    # 不按题型文件筛样本：bench_dev 全部截图题都进入真实 VLM 感知评测，
-    # 资料分析/数学/图形/言语子集的对比在报告里按 skill 字段分组呈现
-    if "error" in cross:
-        experiments["cross_skill_image_only"] = {"error": cross["error"],
-                                                 "stratified": None}
+    def _merge_audit(run: Dict[str, Any]) -> None:
+        if run.get("audit"):
+            audits.append(run["audit"].get("audit") or {})
+
+    def stage1() -> Dict[str, Any]:
+        """Smoke：3 张完整 figshots 页面。真实 API 只在 image_only 模式被消耗。"""
+        out: Dict[str, Any] = {}
+        for mode in ("oracle_solver", "auto_router", "image_only"):
+            run = run_eval(FIGSPLITS, mode, f"{exp_id}_smoke_{mode}",
+                           case_ids=",".join(SMOKE_IDS),
+                           eval_batch=f"{exp_id}_smoke_{mode}")
+            out[mode] = run
+            _merge_audit(run)
+            if run.get("predictions"):
+                (exp_dir / f"attribution_smoke_{mode}.json").write_text(
+                    json.dumps([attribute_case(r) for r in run["predictions"]],
+                               ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        io = out.get("image_only") or {}
+        rows = io.get("predictions") or []
+        summary = vision_stage_summary(rows, io.get("audit"))
+        audit = (io.get("audit") or {}).get("audit")
+        status, reason = classify_status(configured, offline, audit, rows, len(SMOKE_IDS))
+        ok, msg = health_gate(status, summary)
+        return {"status": status, "reason": reason, "vision_stage_summary": summary,
+                "health_gate": {"ok": ok, "message": msg},
+                "stratified": {m: (stratified(r, m) if "predictions" in r
+                                   else {"error": r.get("error")})
+                               for m, r in out.items()}}
+
+    def stage2(api_allowed: bool) -> Dict[str, Any]:
+        """figshots_dev 全量 15 题（全部成功与失败保留）。
+        熔断时 image_only（真实消耗 API 的模式）不执行，记 BLOCKED；
+        oracle/auto 零 API 成本，保留用于基础设施回归（但不得称真实验证）。"""
+        out: Dict[str, Any] = {}
+        modes = ("oracle_solver", "auto_router", "image_only") if api_allowed \
+            else ("oracle_solver", "auto_router")
+        for mode in modes:
+            run = run_eval(FIGSPLITS, mode, f"{exp_id}_full_{mode}",
+                           eval_batch=f"{exp_id}_full_{mode}")
+            out[mode] = run
+            _merge_audit(run)
+            if run.get("predictions"):
+                att = [attribute_case(r) for r in run["predictions"]]
+                (exp_dir / f"attribution_figshots_{mode}.json").write_text(
+                    json.dumps(att, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8")
+        if not api_allowed:
+            out["image_only"] = {"error": "BLOCKED_BY_CIRCUIT_BREAKER（stage1 未过健康检查，"
+                                          "不发起真实 API 消耗）"}
+        io = out.get("image_only") or {}
+        rows = io.get("predictions") or []
+        audit = (io.get("audit") or {}).get("audit")
+        summary = vision_stage_summary(rows, audit)
+        status, reason = classify_status(configured, offline, audit, rows, 15)
+        ok, msg = health_gate(status, summary)
+        return {"status": status, "reason": reason, "vision_stage_summary": summary,
+                "health_gate": {"ok": ok, "message": msg},
+                "stratified": {m: (stratified(r, m) if "predictions" in r
+                                   else {"error": r.get("error")})
+                               for m, r in out.items()}}
+
+    def stage3() -> Dict[str, Any]:
+        """跨题型感知：bench_dev 全部 35 张截图，不按解析结果筛样本。"""
+        run = run_eval("bench_dev", "image_only", f"{exp_id}_cross_bench",
+                       eval_batch=f"{exp_id}_cross_bench", direct=True)
+        _merge_audit(run)
+        if "error" in run:
+            return {"status": "EXECUTION_FAILED", "reason": run["error"],
+                    "error": run["error"], "stratified": None}
+        rows = run.get("predictions") or []
+        skill_by_id = {p["case_id"]: str(p.get("skill") or "?") for p in rows}
+        att = [attribute_case(r) for r in rows]
+        (exp_dir / "attribution_cross_bench_image_only.json").write_text(
+            json.dumps(att, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        by_skill: Dict[str, Dict[str, int]] = {}
+        for a in att:
+            g = by_skill.setdefault(skill_by_id.get(a["case_id"], "?"), {})
+            g["cases"] = g.get("cases", 0) + 1
+            if a["error_type"]:
+                g[a["error_type"]] = g.get(a["error_type"], 0) + 1
+        audit = (run.get("audit") or {}).get("audit")
+        summary = vision_stage_summary(rows, audit)
+        status, reason = classify_status(configured, offline, audit, rows, len(rows) or 35)
+        return {"status": status, "reason": reason, "vision_stage_summary": summary,
+                "per_skill": by_skill, "stratified": stratified(run, "image_only")}
+
+    # ---- 分阶段熔断（R4d P1）：stage1 API/Schema 不健康 → stage2/3 的
+    #      **真实视觉调用不发起**（oracle/auto 零成本模式仍运行作基础设施回归，
+    #      但报告不得把任何后续称为"真实验证完成"）----
+    experiments["stage1_smoke"] = stage1()
+    gate1 = experiments["stage1_smoke"]["health_gate"]
+    if not gate1["ok"] and not force:
+        experiments["stage2_figshots_full"] = stage2(api_allowed=False)
+        experiments["stage2_figshots_full"]["circuit_breaker"] = {
+            "blocked_image_only": True,
+            "reason": f"stage1 未过健康检查：{gate1['message']}——不发起后续真实调用，"
+                      f"避免重复失败与费用。显式 --force-continue 可越级。"}
+        experiments["stage3_cross_skill"] = {
+            "status": "BLOCKED_BY_CIRCUIT_BREAKER", "stage": "3",
+            "reason": "stage1 熔断：跨题型真实感知评测未发起",
+            "vision_stage_summary": None, "stratified": None}
+        status = experiments["stage1_smoke"]["status"]
+        reason = experiments["stage1_smoke"]["reason"]
     else:
-        experiments["cross_skill_image_only"] = {"run": _slim(cross)}
-        if cross.get("predictions"):
-            skill_by_id = {p["case_id"]: str(p.get("skill") or "?")
-                           for p in cross["predictions"]}
-            att = [attribute_case(r) for r in cross["predictions"]]
-            (exp_dir / "attribution_cross_bench_image_only.json").write_text(
-                json.dumps(att, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-            by_skill: Dict[str, Dict[str, int]] = {}
-            for a in att:
-                g = by_skill.setdefault(skill_by_id.get(a["case_id"], "?"), {})
-                g["cases"] = g.get("cases", 0) + 1
-                if a["error_type"]:
-                    g[a["error_type"]] = g.get(a["error_type"], 0) + 1
-            experiments["cross_skill_image_only"]["stratified"] = stratified(cross, "image_only")
-            experiments["cross_skill_image_only"]["per_skill"] = by_skill
+        experiments["stage2_figshots_full"] = stage2(api_allowed=True)
+        gate2 = experiments["stage2_figshots_full"]["health_gate"]
+        if not gate2["ok"] and not force:
+            experiments["stage3_cross_skill"] = {
+                "status": "BLOCKED_BY_CIRCUIT_BREAKER",
+                "reason": f"stage2 未过健康检查：{gate2['message']}",
+                "vision_stage_summary": None, "stratified": None}
+            status = experiments["stage2_figshots_full"]["status"]
+            reason = experiments["stage2_figshots_full"]["reason"]
         else:
-            experiments["cross_skill_image_only"]["stratified"] = None
+            experiments["stage3_cross_skill"] = stage3()
+            status = experiments["stage3_cross_skill"]["status"]
+            reason = experiments["stage3_cross_skill"]["reason"]
 
-    # 3) Δ_vision 初步指标（auto − image_only，客观口径；逐题归因另行核对）
-    def objv(key):
-        s = experiments.get(key, {}).get("stratified_full", {})
+    # ---- Δ_vision：与 stratified 同源（overall_answer_accuracy 主口径）----
+    def objv(stage_key: str, mode_key: str):
+        s = (experiments.get(stage_key, {}).get("stratified") or {}).get(mode_key) or {}
         v = s.get("end_to_end_objective_accuracy")
-        if isinstance(v, dict):  # 分层块存的是 {value,numerator,denominator}
-            return v.get("value") if isinstance(v.get("value"), (int, float)) else None
-        return v if isinstance(v, (int, float)) else None
+        if isinstance(v, dict):
+            val = v.get("value")
+            return val if isinstance(val, (int, float)) else None
+        return None
+    auto_obj = objv("stage2_figshots_full", "auto_router")
+    io_obj = objv("stage2_figshots_full", "image_only")
+    io_exec = str((experiments.get("stage2_figshots_full", {})
+                   .get("stratified") or {}).get("image_only", {})
+                  .get("execution_status", ""))
+    if io_exec != "EXECUTED":
+        io_obj = None  # 未真实执行的 0.0 不得进入差值（否则会冒充 image_only_objective）
     dv = {
-        "formula": "Δ_vision = Acc(auto_router) − Acc(image_only)，同一数据集",
-        "auto_objective": objv("figshots_auto_router"),
-        "image_only_objective": objv("figshots_image_only"),
+        "formula": "Δ_vision = Acc_auto − Acc_image_only（同一数据集、同一主指标结构 "
+                   "overall_answer_accuracy，分子/分母/value 三者同源）",
+        "auto_objective": auto_obj,
+        "image_only_objective": io_obj,
         "delta": None,
         "valid_only_with_real_vlm": True,
-        "caveat": "本次 image_only 真实调用凭证缺失：其 0.0 是**未执行**而非能力，"
-                  "Δ 数值无意义，必须重跑带真实 VLM 后才能解读；视觉错误还会级联"
-                  "改变路由与求解过程，逐题归因见 attribution_*.json",
+        "caveat": "视觉错误会级联改变路由与求解过程；Δ 只是端到端损失初步指标，"
+                  "逐题差异须核对 attribution_*.json 后才能解读",
     }
-    io_exec = "EXECUTED" == str(experiments.get("figshots_image_only", {})
-                                 .get("stratified_full", {}).get("execution_status", ""))
-    if io_exec and dv["auto_objective"] is not None and dv["image_only_objective"] is not None:
-        dv["delta"] = round(dv["auto_objective"] - dv["image_only_objective"], 4)
+    if io_exec == "EXECUTED" and isinstance(auto_obj, (int, float)) \
+            and isinstance(io_obj, (int, float)):
+        dv["delta"] = round(auto_obj - io_obj, 4)
         dv["valid_only_with_real_vlm"] = False
     else:
-        dv["delta"] = "not_meaningful（image_only 未真实执行）"
+        dv["delta"] = "not_meaningful（image_only 未达 EXECUTED）"
     experiments["delta_vision"] = dv
 
-    # 4) 执行状态（以审计计数判定，退出码不算证据）
-    sent = sum(a.get("requests_sent", 0) for a in audits)
-    succ = sum(a.get("requests_succeeded", 0) for a in audits)
+    # ---- 合并审计（by_phase 也在内：vision 成功数与总响应数分开呈现）----
+    def _sum_phase(key: str) -> int:
+        return sum(int((a.get("by_phase") or {}).get("vision_parse", {}).get(key, 0))
+                   for a in audits)
     audit_merged = {
-        "requests_sent": sent, "requests_succeeded": succ,
-        "error_types": {}, "echoed_models": sorted({m for a in audits for m in (a.get("echoed_models") or [])}),
+        "requests_sent": sum(a.get("requests_sent", 0) for a in audits),
+        "requests_succeeded": sum(a.get("requests_succeeded", 0) for a in audits),
+        "vision_parse_http_success": _sum_phase("http_succeeded"),
+        "vision_parse_schema_valid": _sum_phase("json_output_valid"),
+        "error_types": {},
+        "echoed_models": sorted({m for a in audits for m in (a.get("echoed_models") or [])}),
         "mock_or_injected_transport": any(a.get("mock_or_injected_transport") for a in audits),
+        "note": "requests_succeeded 为全部阶段总数；EXECUTED 判定只看 vision_parse 阶段",
     }
-    io_full = experiments.get("figshots_image_only", {}).get("stratified_full", {})
-    parse_ok = ((io_full.get("parse_success") or {}).get("numerator", 0)
-                if isinstance(io_full.get("parse_success"), dict) else 0)
-    # 有效样本数 = 实际跑了多少题（冒烟阶段可能只有部分集，选择规则已预先声明）
-    n_ran = io_full.get("cases") or 0
-    status, reason = classify_status(configured, manifest["offline_flag"],
-                                     audit_merged if sent else None, parse_ok, n_ran or 15)
 
     report = {
-        "experiment": "R4c real-VLM end-to-end with layered attribution",
+        "experiment": "R4d real-VLM staged experiment with unified execution status",
+        "experiment_id": exp_id,
         "manifest": manifest,
         "status": status,
         "status_reason": reason,
+        "force_continue": force,
         "audit_merged": audit_merged,
         "experiments": experiments,
+        "topline_questions": {
+            "vision_parse_success": "VLM 能否稳定输出符合 Schema 的区域化结果？",
+            "evidence_completeness": "Schema 合法之外，题干/全部选项/图形/网格是否真被识别？",
+            "verified_answer_yield": "客观可答题中多少得到**正确且通过验证的最终答案**？",
+        },
         "blind_test_plan": {
             "status": "PLANNED_NOT_BUILT",
             "precondition": "真实模型 Dev 实验完成并冻结模型与算法配置后构建",
-            "layers": ["自编程序合成页面", "独立人工编写页面", "授权真实页面截图（当前缺失，不得以合成替代）"],
+            "layers": ["自编程序合成页面", "独立人工编写页面",
+                       "授权真实页面截图（当前缺失，不得以合成替代）"],
             "non_sharing": "不与开发集共享模板、图形原型、表格内容或选项排列",
         },
         "honesty": [
             "小调用量不得宣称已证明真实部署的误放概率",
             "所有失败保留在分母中；未执行(None)/缺失(missing)/零值(0)三态区分",
             "oracle/auto/image_only 同题对比的逐题差异必须人工核对归因后才能解读",
+            "首次真实运行允许记录原始失败，不针对冻结 Test 调整模型 Prompt 或 Solver",
         ],
     }
     (exp_dir / "experiment.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     _write_md(exp_dir / "report.md", report)
-    print(json.dumps({"status": status, "reason": reason, "dir": str(exp_dir)},
-                     ensure_ascii=False))
+    print(json.dumps({"experiment_id": exp_id, "status": status, "reason": reason,
+                      "dir": str(exp_dir)}, ensure_ascii=False))
 
 
 def _slim(run: Dict[str, Any]) -> Dict[str, Any]:
@@ -507,7 +668,7 @@ def _slim(run: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _write_md(path: Path, report: Dict[str, Any]) -> None:
-    lines = [f"# R4c 真实 VLM 端到端实验报告",
+    lines = [f"# R4d 真实 VLM 分阶段实验报告（{report['experiment_id']}）",
              f"- 状态：**{report['status']}**（{report['status_reason']}）",
              f"- commit: {report['manifest']['git_commit']}"
              f"（dirty={report['manifest']['git_dirty']}）",
@@ -515,26 +676,44 @@ def _write_md(path: Path, report: Dict[str, Any]) -> None:
              f"vision: {report['manifest']['vision_model']} / "
              f"temp: {report['manifest']['temperature']} / "
              f"prompt sha: {report['manifest']['vision_prompt_sha256'][:16]}",
-             "", "## 分层指标", ""]
-    for key, blk in report["experiments"].items():
-        if key == "delta_vision" or not isinstance(blk, dict):
-            continue
-        for tag in ("stratified_smoke", "stratified_full", "stratified"):
-            s = blk.get(tag)
-            if isinstance(s, dict) and "cases" in s:
-                lines.append(f"### {key} · {tag}（n={s['cases']}）")
-                for mk in ("extraction_accuracy", "option_map_accuracy",
-                           "end_to_end_objective_accuracy", "answerable_coverage",
-                           "selective_accuracy", "false_accept", "over_answer",
-                           "unverified_abstention", "api_failure_rate", "parse_success"):
+             f"- force_continue: {report.get('force_continue')}",
+             "", "## 分阶段执行", ""]
+    for key in ("stage1_smoke", "stage2_figshots_full", "stage3_cross_skill"):
+        blk = report["experiments"].get(key) or {}
+        gate = blk.get("health_gate") or {}
+        lines.append(f"### {key}")
+        lines.append(f"- 状态: {blk.get('status')}（{blk.get('reason')}）")
+        if gate:
+            lines.append(f"- 健康检查: {'PASS' if gate.get('ok') else 'FAIL'} · {gate.get('message')}")
+        vsum = blk.get("vision_stage_summary")
+        if vsum:
+            lines.append(f"- Vision Parse Success: {json.dumps(vsum['vision_extraction_valid'], ensure_ascii=False)}"
+                         f" · Evidence Completeness: {json.dumps(vsum['evidence_complete'], ensure_ascii=False)}")
+        strat = blk.get("stratified")
+        if isinstance(strat, dict):
+            for mkey, s in strat.items():
+                if not isinstance(s, dict) or "cases" not in s:
+                    continue
+                lines.append(f"#### {mkey}（n={s['cases']}，执行状态 {s['execution_status']}）")
+                for mk in ("vision_parse_success", "evidence_completeness",
+                           "extraction_accuracy", "option_map_accuracy",
+                           "end_to_end_objective_accuracy",
+                           "legacy_answer_accuracy_for_reference_only",
+                           "answerable_coverage", "selective_accuracy",
+                           "verified_answer_yield", "answered_out_loud",
+                           "false_accept", "over_answer", "unverified_abstention",
+                           "api_failure_rate", "parse_success"):
                     v = s.get(mk)
                     lines.append(f"- {mk}: {json.dumps(v, ensure_ascii=False)}")
-                lines.append("")
+        lines.append("")
     dv = report["experiments"].get("delta_vision", {})
-    lines += ["## Δ_vision（初步）", f"- {dv.get('formula')}",
+    lines += ["## Δ_vision（与主指标同源）", f"- {dv.get('formula')}",
               f"- auto={dv.get('auto_objective')} · image_only={dv.get('image_only_objective')}"
               f" · Δ={dv.get('delta')}",
-              f"- 注意：{dv.get('caveat')}", "", "## 诚实边界"]
+              f"- 注意：{dv.get('caveat')}", "", "## 首跑三个关注问题",]
+    for qk, qv in report.get("topline_questions", {}).items():
+        lines.append(f"- [{qk}] {qv}")
+    lines += ["", "## 诚实边界"]
     lines += [f"- {h}" for h in report["honesty"]]
     lines.append(f"- 新盲测：{report['blind_test_plan']['status']}（前提与分层见 experiment.json）")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

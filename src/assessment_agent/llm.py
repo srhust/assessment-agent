@@ -19,6 +19,12 @@ from typing import Any, Dict, List, Mapping, Optional, Protocol, Sequence, runti
 import httpx
 
 from .config import LLMSettings
+from .prompts import (
+    ROUTER_SYSTEM,
+    VERIFIER_SYSTEM,
+    VISION_EXTRACT_SYSTEM,
+    VISION_PARSE_SYSTEM,
+)
 
 
 class LLMError(RuntimeError):
@@ -130,6 +136,12 @@ class OpenAICompatibleClient:
         self._echoed_models: set = set()
         self._request_ids: List[str] = []
         self._transport_is_fake = transport is not None
+        self._phase_counts: Dict[str, Dict[str, int]] = {}
+
+    def _phase(self, name: str) -> Dict[str, int]:
+        return self._phase_counts.setdefault(
+            name, {"http_succeeded": 0, "http_failed": 0, "malformed_envelope": 0,
+                   "json_output_valid": 0, "json_output_invalid": 0, "latency_ms_sum": 0.0})
 
     # ------------------------------------------------------------------ 基础
     def _headers(self) -> Dict[str, str]:
@@ -191,6 +203,36 @@ class OpenAICompatibleClient:
         raise LLMError(f"模型调用重试后仍失败: {last_error}")
 
     # ------------------------------------------------------------------ 对话
+    def _classify_phase(self, messages: Sequence[Mapping[str, Any]]) -> str:
+        """R4d：按 system prompt 归类请求阶段（vision_parse/router/verifier/
+        solver_or_skill）。规则来自 prompts.py 常量的稳定前缀，不依赖调用点传参
+        （调用方签名保持不变，避免侵入各 Skill）。"""
+        try:
+            first = messages[0] if messages else {}
+            sys_text = first.get("content") if isinstance(first, dict) else None
+            if isinstance(sys_text, list):  # 多段 content
+                sys_text = "".join(p.get("text", "") for p in sys_text if isinstance(p, dict))
+            sys_text = str(sys_text or "")
+        except Exception:  # noqa: BLE001 - 归类失败不影响调用
+            return "unknown"
+        head = sys_text[:24]
+        # 完整 system 前缀匹配优先（防 24 字符巧合）；再退回稳定长前缀。
+        for cand, name in ((VISION_PARSE_SYSTEM, "vision_parse"),
+                           (VISION_EXTRACT_SYSTEM, "vision_parse"),
+                           (ROUTER_SYSTEM, "router"),
+                           (VERIFIER_SYSTEM, "verifier")):
+            if sys_text.startswith(cand):
+                return name
+        if head.startswith(VISION_PARSE_SYSTEM[:24]) or head.startswith(VISION_EXTRACT_SYSTEM[:24]):
+            return "vision_parse"
+        if head.startswith(ROUTER_SYSTEM[:24]):
+            return "router"
+        if head.startswith(VERIFIER_SYSTEM[:24]):
+            return "verifier"
+        if "你是" in head or head.startswith("你"):
+            return "solver_or_skill"
+        return "unknown"
+
     def chat(
         self,
         messages: Sequence[Mapping[str, Any]],
@@ -199,6 +241,7 @@ class OpenAICompatibleClient:
         json_mode: Optional[bool] = None,
         temperature: Optional[float] = None,
     ) -> ChatResponse:
+        phase = self._classify_phase(messages)
         payload: Dict[str, Any] = {
             "model": model or self.settings.text_model,
             "messages": list(messages),
@@ -218,12 +261,14 @@ class OpenAICompatibleClient:
                 payload.pop("response_format", None)
                 raw = self._post(payload)
             else:
+                self._phase(phase)["http_failed"] += 1
                 raise
         latency_ms = (time.perf_counter() - started) * 1000.0
         try:
             choice = raw["choices"][0]
             content = choice.get("message", {}).get("content") or ""
         except (KeyError, IndexError, TypeError) as exc:
+            self._phase(phase)["malformed_envelope"] += 1
             raise LLMError(f"模型响应结构异常: {str(raw)[:300]}") from exc
         if isinstance(content, list):  # 少数服务返回分段内容
             content = "".join(part.get("text", "") for part in content if isinstance(part, dict))
@@ -237,6 +282,9 @@ class OpenAICompatibleClient:
         # R2b：聚合真实模型用量（评测时记录 token/调用数；网关未返回 usage 则计数为 0）
         self._call_count += 1
         self.last_model = response.model
+        ph = self._phase(phase)
+        ph["http_succeeded"] += 1
+        ph["latency_ms_sum"] = round(ph["latency_ms_sum"] + latency_ms, 1)
         usage = response.usage or {}
         for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
             value = usage.get(key)
@@ -269,6 +317,10 @@ class OpenAICompatibleClient:
             "vision_model_configured": self.settings.vision_model,
             "mock_or_injected_transport": bool(self._transport_is_fake),
             "offline_mode": not self.settings.configured,
+            # R4d：按请求阶段的审计（vision_parse ≠ 全部 HTTP 成功；
+            # requests_succeeded 是总数，不得直接当视觉成功数使用）
+            "by_phase": {name: dict(counts) for name, counts in
+                         sorted(self._phase_counts.items())},
         }
 
     def usage_snapshot(self) -> Dict[str, Any]:
@@ -302,7 +354,14 @@ class OpenAICompatibleClient:
             ],
             model=model,
         )
-        return extract_json_object(response.text)
+        phase = self._classify_phase([{"role": "system", "content": system}])
+        try:
+            parsed = extract_json_object(response.text)
+        except LLMError:
+            self._phase(phase)["json_output_invalid"] += 1
+            raise
+        self._phase(phase)["json_output_valid"] += 1
+        return parsed
 
     def close(self) -> None:  # 便于上下文管理器使用
         return None

@@ -777,13 +777,94 @@ per_skill 分组含 false_accept 及最上游归因链；报告显式声明小�
 当前离线回归：`373 passed, 2 skipped`（新增 R4c 11 项 + 真实路径审计凭证 1 项
 skip；原 362 全保留，真实端到端用例仍未配置时双双显式 skip）。
 
+### 6.10 R4d：真实模型首跑前的指标修复与分阶段执行（2026-10-19，当前 HEAD）
+
+R4c 静态验收后，评审点出三个首跑前必须修的洞，R4d 全部落地——**本环境无
+API 密钥，真实 VLM 实验仍未执行**，以下全部是"预检"证据；
+**不新增 Skill、不扩大图形规则、不蒸馏、不修改冻结基准**。
+
+- **统一真实执行状态（P0-1）**：五态判定唯一实现移入包内
+  `assessment_agent.evaluation.execution_status`（`classify_status/health_gate/
+  vision_stage_summary`），冒烟与实验脚本同源导入（测试从源码层面禁止第二套
+  `classify_status` 存在）。客户端审计新增**分阶段计数** `by_phase`
+  （vision_parse/router/verifier/solver_or_skill：http_succeeded/http_failed/
+  json_output_valid/json_output_invalid）；`requests_succeeded` 是全部阶段
+  HTTP 2xx 总数，**明确不得冒充视觉成功数**（测试断言分阶段计数与总数区分）。
+  逐题三段记录写进 `predictions.jsonl` 的 `vision` 明细：
+  `vision_http_success / vision_schema_valid / vision_extraction_valid`，
+  外加 `evidence_complete`。**EXECUTED = 指定样本全部完成真实视觉解析**：
+  HTTP 全成功但 JSON 结构错误 → PARTIAL（"API 成功不等于视觉解析成功"写进
+  reason）；1/15 成功 → PARTIAL；mock/注入 transport/离线一律不得 EXECUTED。
+  预检探针（注入 transport + 显式披露 mock 标记，只验判定链，不是模型能力
+  证据）实证三种链路形态逐级区分：合法 v2 → 三段 True；HTTP 200 但输出
+  非 JSON → schema False；旧版纯文本 payload → 结构化 False +
+  `legacy_payload_fallback`。结构化判据要求 v2 **区域数组真实非空**，不接受
+  `parser` 字段默认值——schemas 默认值就是 `vision_parser`，v1 产物同样带
+  该值，这个口径洞正是探针暴露的。
+- **统一客观准确率与最终答案口径（P0-2）**：`end_to_end_objective_accuracy`
+  只取 `overall_answer_accuracy` 的 value/hit/denominator 三元组（同分母，
+  字段附 `caliber` 标注；旧 `answer_accuracy` 改名
+  `legacy_answer_accuracy_for_reference_only` 仅供对照，禁止混用）；
+  Δ_vision 与 `verified_answer_yield` 同源，且 image_only 未达 EXECUTED 时
+  `image_only_objective=None`——未执行的 0.0 禁止进入差值。严格三分：
+  `solver_proposed_answer`（=predicted_option，Solver 内部提议）、
+  `final_answer`（=predicted，Verifier accept/repair 后实际对外输出）、
+  `answered_out_loud`（final_answer 非空且动作∈{accept,repair}）；
+  覆盖率/选择性/归因/false_accept 全部只用最终答案。两个反例进测试：
+  ①Solver 提议 A + unverified + 无最终答案 → 已作答 False；②旧口径 5/12 与
+  新口径 5/14 并存 → 主指标 value==5/14 且 value=hit/denominator 一致。
+  bench_holdout 真实数据恰好是该形态（新 6/16 vs 旧 5/14），修复前 value 与
+  分子分母来自两套口径。
+- **运行隔离与配置一致性（P1）**：每次实验生成唯一
+  `experiment_id = UTC 时间戳-pid-摘要`，**贯穿所有子运行的 run_name 与
+  eval_batch**（结果目录、`e2e-<batch>-<case>` runs 产物、报告互不重叠）；
+  runner/CLI 新增 `no_overwrite / --no-overwrite`：输出目录已存在且非空
+  **报错**而非静默覆盖（多次运行保留全部历史凭证）；实验目录同样拒绝覆盖
+  （FileExistsError）。manifest 新增 9 个核心代码文件 sha256 + 配置环境
+  **变量名清单**（只记哪些存在、绝不记值）；父/子进程配置事实源统一：
+  `OPENAI_API_KEY/OPENAI_BASE_URL/OPENAI_MODEL` 别名随 `LLM_*` 一起透传
+  （测试实证别名生效且密钥值不落任何产物）。
+- **分阶段熔断（P1）**：Stage1 Smoke（3 题，选择标准运行前声明并锁进
+  manifest）→ API+Schema 健康检查 → Stage2 figshots_dev 全量 15 题
+  （成功与失败全保留）→ 健康检查 → Stage3 bench_dev 跨题型 35 题
+  （不按技能/解析结果/准确率筛样）。任一门失败 → **后续真实调用不发起**，
+  报告记录 `BLOCKED_BY_CIRCUIT_BREAKER` 与诊断信息；零样本分母视为
+  不可判定，同样熔断；`--force-continue` 是唯一显式越级方式。离线模式
+  （oracle/auto）零 API 成本，熔断时仍运行做基础设施回归，但不会被称作
+  "真实验证完成"。
+- **首跑三个关注指标**入报告顶线：Vision Parse Success（三段全通题数/指定
+  样本）、Evidence Completeness（schema 合法之外，金标必需区域全命中——
+  漏两个选项或 3×3 识别成一行**不算**成功）、Verified Answer Yield
+  （客观可答题中得到正确且通过验证**最终答案**的比例，分母=overall 客观
+  分母）。三者决定首跑后的优先级判断（VisionParser / 图形 Solver /
+  Verifier），本轮不做任何该层面的调参。
+- **预检实跑（本环境，离线）**：`results/real_vlm/20261018T170237Z-23644-5268/`
+  ——status=**NOT_CONFIGURED**、audit requests_sent=0、stage1 熔断、stage2 的
+  image_only 与 stage3 全部 BLOCKED、Δ_vision=`None/not_meaningful`；
+  oracle/auto 的 10/13 等只是 Solver 层离线回归证据。仓库
+  `data/benchmark_figshots/phase6_vlm_smoke.json` 重新生成，仍为 NOT_CONFIGURED
+  五态语义（what_would_run 指向真实链路口径）。
+- 测试：`tests/test_r4d_status_metrics.py` 14 项——同源源码锁、HTTP 全成功
+  +schema 非法≠EXECUTED、1/15=PARTIAL、14/15≠EXECUTED、健康门语义（含零
+  分母熔断）、三段分子分母与嵌套字段、两反例（unverified 不作答 / 5-12 vs
+  5-14）、MockTransport 分阶段计数（200 非 JSON → http_succeeded=1 且
+  json_output_invalid=1，且 ≠ requests_succeeded）、no-overwrite 报错、
+  隔离源码锁（run_name/eval_batch 贯穿 exp_id、别名透传、熔断标记）、
+  manifest 无密钥值有代码哈希、runner 逐题三段字段离线实跑全 False，以及
+  **判定链探针**（注入 transport，审计自动披露 mock）实证三种链路形态分层：
+  合法 v2=三段 True、HTTP200 非 JSON=schema False、纯文本 payload=结构化
+  False+`legacy_payload_fallback`；探针自身永远被判 CONFIGURED_NOT_CALLED，
+  不构成任何真实执行证据。
+  全量 **387 passed / 2 skipped**（373 项 R4c 基线零退化 + 14 新增；
+  1 项 R4b 契约测试的源码窗口从 2000 字符扩到 3200 以覆盖新增审计快照行）。
+
 ---
 
 ## 7. 测试
 
 ```bash
 python -m pytest -q
-# 373 passed, 2 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
+# 387 passed, 2 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
 ```
 
 覆盖范围：
@@ -812,6 +893,7 @@ python -m pytest -q
 - R4a 变换回归锁定（4 项：FV 等价类不择一、R180 自对称步进不可区分、容差贴边不放宽、稳定子披露）+ figtrans 基准守护（6 项：manifest sha、诚实 failed 保留、test 冻结+首评对账、split 注册、Phase6 NOT_EXECUTED 语义、消融四臂底线）
 - R4b 可靠性（13 项：完整页面 bbox 有界+crop 像素再导出+字母/说明文字像素存在、figtrans 冻结集字节不变、部分确认→unverified 反例、all_confirm 政策断言、无全局 FRAME 突变、并发/中断/顺序调换一致、parameter_stable 与 independently_verified 分离且代入未过不作答、layout 标签零影响（四取值逐位一致）、image_only 输入合同源码断言、Phase6 figshots NOT_EXECUTED）
 - R4c 真实 VLM 凭证与归因（11 项：五状态分类纯函数全分支（含"退出码 0+run_ref 非空≠EXECUTED"与"全 401 绝不 EXECUTED"反例）、mock transport 拒绝、客户端审计结构与非敏感（密钥不落审计）、runner 恒产 llm_evidence（离线 requests_sent=0）、仓库冒烟报告 configured 分支零写盘（源码断言）、冒烟 case_ids/limit 运行前声明、归因字段消费 compare_extraction_detail 的 grid/裁剪新字段（None≠0）、冻结报告 NOT_CONFIGURED+无 figtrans_dev 残留）
+- R4d 指标修复与分阶段执行（14 项：smoke/实验**同源**判定源码锁（包内唯一实现，脚本禁私有 classify_status）、HTTP 全成功+JSON 非法=PARTIAL（"API 成功不等于视觉解析成功"）、1/15 与 14/15 均不得 EXECUTED、健康门（含零样本分母=不可判定熔断）、三段分子分母与嵌套 vision 字段消费、反例①unverified 提议不作答、反例②5/12 旧口径 vs 5/14 新口径 value 同分母、MockTransport 分阶段计数与 requests_succeeded 区分、no-overwrite 二次运行报错、隔离源码锁（exp_id 贯穿 run_name/eval_batch、OPENAI_* 别名透传、熔断/越级标记）、manifest 无密钥值 + 代码/环境变量名哈希锁、runner 离线逐题三段全 False、注入探针三形态分层（v2=三段 True/非 JSON=schema False/纯文本=结构化 False+降级标志，探针自身必判 CONFIGURED_NOT_CALLED 不构成真实执行证据））
 - DSH / MCP 接入（清单结构、`tools/call` 形状、未知工具与非法参数、能力输出脱敏、`save=false` 不落盘）
 - CLI（solve / eval / skills / doctor / mcp-manifest / call 的返回码与输出）
 
@@ -848,7 +930,7 @@ mock 结果只证明链路机制，不用于宣称模型识别能力。
 | 题型 | 计划实现 | 依赖 |
 | --- | --- | --- |
 | 图形推理 | ✅ R2~R4b：网格解析 + 六类规律 + **离散旋转/镜像/平移/缩放/组合/九宫格/叠加变换通道**（D4 群 + 画布级叠加判别 + 单因子 all_confirm 扫描 + 几何候选替代独立验证 + parameter_stable/independently_verified 分账 + **完整页面截图基准 figshots**）；R4b 已封堵扫描计数洞、layout 决策耦合与题图缺选项三项 P0；待实现：曲线/交点数量律、多步复合链规律、真实截图 VLM 端到端（Phase6 仍 NOT_EXECUTED） | OpenCV + NumPy |
-| 下一步顺序（评审确认） | ① **R4c 已完成基础设施（状态 NOT_CONFIGURED）**：用户配置 `LLM_API_KEY`/`LLM_VISION_MODEL`（及必要时 `LLM_BASE_URL`）并确认 `ASSESSMENT_OFFLINE≠1` 后，运行 `python scripts/run_real_vlm_experiment.py` 即产出带真实调用审计的首份端到端报告（results/real_vlm/<run_id>/）→ ② 冻结模型与算法配置后构建新跨题型盲测（合成/人工/授权真实三层，第三类缺失如实标注）→ ③ 才评估 R5 蒸馏（先回答：真实视觉解析是否破坏题干信息/表格结构/选项映射、错误解题轨迹会不会被验证器误收） | LLM_VISION_MODEL 配置 |
+| 下一步顺序（评审确认） | ① **R4d 预检完成（状态 NOT_CONFIGURED，分阶段熔断与统一口径已落地）**：用户配置 `LLM_API_KEY`/`LLM_VISION_MODEL`（及必要时 `LLM_BASE_URL`/OPENAI_* 别名）并确认 `ASSESSMENT_OFFLINE≠1` 后，运行 `python scripts/run_real_vlm_experiment.py`——Stage1 先真实跑 3 题冒烟，按验收要求**先交每题日志+分阶段审计+错误分析，人工决定后才扩到 15/35**；无配置则只产出预检，绝不把下一阶段称真实验证完成 → ② 首跑按三顶线指标（Vision Parse Success/Evidence Completeness/Verified Answer Yield）的归因决定优先修 VisionParser、图形 Solver 还是 Verifier → ③ 冻结模型与算法配置后构建新跨题型盲测（合成/人工/授权真实三层，第三类缺失如实标注）→ ④ 才评估 R5 蒸馏（先回答：真实视觉解析是否破坏题干信息/表格结构/选项映射、错误解题轨迹会不会被验证器误收） | 真实 VLM 密钥配置 + 首跑人工核对 |
 | 资料分析 | ✅ R3a 已实现：表格/柱状图结构化 + 计算计划 + Fraction 求值 + 六步独立验证；待实现：折线/多图复合表格、更复杂表头合并与真实截图 OCR 端到端验证 | OpenCV + 表格校验器 +（真实 VLM 待配置） |
 | 言语理解 | ✅ R3b+R3c：选词搭配、主旨结论覆盖、推断否定/量词/情态核对 + **命题归属层**（传闻/假设/否认不升格为事实）、字面条件链 Z3；待实现：跨句指代、近义重表述主旨、预设/蕴含（"否认说法⇒说法存在"）形式化、肯后式推断 | 带证据的 LLM 输出 + 校验器 |
 | 语言推理 | ✅ R3c：词典七类方向关系 + 判别性覆盖 + 六项验证；待实现：词库规模化（当前 ~120 中文词条）、程度关系、词性/语义角色校验、真实 LLM 提议通道验证 | 知识库检索 + LLM |
