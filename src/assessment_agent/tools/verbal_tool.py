@@ -115,6 +115,13 @@ _HEAD_ATT = re.compile(r"^(?:据[\u4e00-\u9fa5]{0,10}(?:报道|称|说|了解|�
 _BELIEVE_HEAD = re.compile(r"(?:认为|相信|觉得|主张|观点|看法)")
 _HYPOTH = re.compile(r"(假设|假如|倘若|要是|如果|若|一旦|设想)")
 _UNCERTAIN = re.compile(r"(可能|或许|也许|大概|估计|预计|似乎|据说|传闻)")
+# R4a：预报/预测是"对未来命题的估计性报道"——Forecast(P) ⊬ P（最小对比：同 P 换成
+# 断言/传闻/假设/预报 四种外层，期望行为各异）。仅当来源词为预报类且后跟断言式引导
+# （显示/称/说），或句首"预计/预测…"时，取 predicted；早于其他标记则优先。
+_PREDICT = re.compile(r"(?:气象|天气|台风|雨情)?(?:预报|预测)(?:显示|称|说|指出|表明)?"
+                      r"|^(?:预计|预测|预报)")
+_HYPOTH = re.compile(r"(假设|假如|倘若|要是|如果|若|一旦|设想)")
+_UNCERTAIN = re.compile(r"(可能|或许|也许|大概|估计|预计|似乎|据说|传闻)")
 _DENIAL_OBJ = re.compile(r"(?:否认|驳斥|反驳|澄清|质疑)[^，。；]{0,20}(?:说法|报道|消息|传闻|言论|指控)"
                          r"|(?:说法|报道|传闻|言论|指控)[^，。；]{0,12}(?:被|遭到|予以|受到)[^，。；]{0,8}(?:否认|驳斥|澄清|质疑)"
                          r"|(?:没有|尚无|并无)证据(?:表明|显示)?|无法证实|不足以证明|尚待(?:验证|证实)|存疑")
@@ -130,15 +137,15 @@ def epistemics(text: str) -> Dict[str, Any]:
     if m:
         kind = "believed" if _BELIEVE_HEAD.search(m.group(0)) else "reported"
         hits.append((0, kind, m.group(0)))
-    for rx, kind in ((_DENIAL_OBJ, "denied_attribution"), (_HYPOTH, "hypothetical"),
-                     (_UNCERTAIN, "uncertain")):
+    for rx, kind in ((_DENIAL_OBJ, "denied_attribution"), (_PREDICT, "predicted"),
+                     (_HYPOTH, "hypothetical"), (_UNCERTAIN, "uncertain")):
         mm = rx.search(text)
         if mm:
             hits.append((mm.start(), kind, mm.group(0)))
     if not hits:
         return {"status": "asserted", "marker": "", "proposition": text, "nested": []}
     hits.sort(key=lambda h: (h[0], ["denied_attribution", "reported", "believed",
-                                    "hypothetical", "uncertain"].index(h[1])))
+                                    "predicted", "hypothetical", "uncertain"].index(h[1])))
     pos, kind, marker = hits[0]
     nested = [h[2] for h in hits[1:]]
     prop = (text[pos + len(marker):].strip("，,、；;：: ") if pos == 0 else text)
@@ -219,7 +226,8 @@ def split_clauses(text: str) -> List[Tuple[int, int, str]]:
     return out
 
 
-_ATT_TAIL = re.compile(r"(?:称|表示|指出|报道|认为|相信|觉得|说|介绍|透露|消息|流传|传闻|传)$")
+_ATT_TAIL = re.compile(r"(?:称|表示|指出|报道|认为|相信|觉得|说|介绍|透露|消息|流传|传闻|传"
+                       r"|预报|预测|预计|显示|表明)$")   # R4a：预报/数据显示引导句并入辖域
 
 
 def evidence_units(text: str) -> List[Tuple[int, int, str]]:
@@ -276,14 +284,21 @@ def classify_inference_option(label: str, text: str, sentences: List[Tuple[int, 
             ana.notes = "归属内容不得当作事实（reported(P) ⊬ P；否认归属谓词时 P 真值未定）"
             ana.new_terms = new_terms
             return ana
-        if se["status"] == "asserted" and oe["status"] in {"reported", "believed", "hypothetical"}:
+        if se["status"] == "asserted" and oe["status"] in {"reported", "believed", "hypothetical",
+                                                             "predicted"}:
             ana.relation = "insufficient"
-            ana.notes = "原文未陈述该归属/假设本身存在，不能由 P 推出 reported(P)/believed(P)"
+            ana.notes = "原文未陈述该归属/假设/预报本身存在，不能由 P 推出 reported(P)/believed(P)"
             ana.new_terms = new_terms
             return ana
         if se["status"] == "denied_attribution" and oe["status"] == "uncertain":
             ana.relation = "insufficient"
             ana.notes = "否认针对归属谓词，P 真值未定，连可能级断言也缺乏依据"
+            ana.new_terms = new_terms
+            return ana
+        if se["status"] == "predicted" and oe["status"] == "uncertain" and best_ratio < 0.62:
+            # 预报(P) 到可能级复述仍证据不足（未同词复述"预报/可能"）
+            ana.relation = "insufficient"
+            ana.notes = "预报内容到可能级断言缺少对齐标记"
             ana.new_terms = new_terms
             return ana
     if oc["neg_parity"] != sc["neg_parity"]:
@@ -908,7 +923,8 @@ def audit(stem: str, options: Sequence[Tuple[str, str]], answer: str, task_type:
     if task_type == "inference":
         # R3c 归属层独立复核（轻量不同词表；与主实现一致才维持 confirmed）
         att_rx = re.compile(r"(报道|据称|据说|据传|声称|宣称|传媒|媒体|指出|表示|认为|以为|相信|觉得"
-                            r"|观点|主张|假设|假如|倘若|要是|如果|若|一旦|否认|驳斥|没有证据|无法证实|质疑|存疑)")
+                            r"|观点|主张|假设|假如|倘若|要是|如果|若|一旦|否认|驳斥|没有证据|无法证实|质疑|存疑"
+                            r"|预报|预测)")   # R4a：预报类归属并入独立扫描词表
         weak_rx = re.compile(r"(可能|或许|也许|大概|估计|预计|似乎)")
         ev_att = any(att_rx.search(sp) for sp in span_texts) if span_texts else False
         op_att = bool(att_rx.search(opts[answer]))

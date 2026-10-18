@@ -30,9 +30,14 @@ def load_lexicon() -> Dict[str, Dict[str, Any]]:
     return data.get("zh", {}), data.get("en", {})
 
 
+_LEX_CACHE: Dict[str, Dict[str, Dict[str, Any]]] = {}
+
+
 def _lex(lang: str = "zh") -> Dict[str, Dict[str, Any]]:
-    zh, en = load_lexicon()
-    return zh if lang == "zh" else en
+    if lang not in _LEX_CACHE:
+        zh, en = load_lexicon()
+        _LEX_CACHE["zh"], _LEX_CACHE["en"] = zh, en
+    return _LEX_CACHE[lang]
 
 
 def _as_list(v: Any) -> List[str]:
@@ -44,7 +49,11 @@ def _as_list(v: Any) -> List[str]:
 # ------------------------------------------------------------------ 关系推导
 
 def infer_relations(a: str, b: str, lang: str = "zh") -> List[Tuple[str, str, str]]:
-    """返回 [(tag, field, source_text)]：a-b 词对的全部可判定关系（含方向）。"""
+    """返回 [(tag, field, source_text)]：a-b 词对的全部可判定关系（含方向）。
+
+    字段单值/多值均可（str 或 list），列表字段语义为"a 与列表中每个词都存在该关系"；
+    SYN/ANT 按语言学的对称性做双向闭包（来源词条与字段保留在 field@source 中）。
+    """
     L = _lex(lang)
     out: List[Tuple[str, str, str]] = []
     ea, eb = L.get(a, {}), L.get(b, {})
@@ -54,32 +63,41 @@ def infer_relations(a: str, b: str, lang: str = "zh") -> List[Tuple[str, str, st
     def add(tag: str, field: str, holder: Dict[str, Any]) -> None:
         out.append((tag, field, holder.get("def", "")))
 
-    if b == ea.get("hyper") or b in _as_list(ea.get("hypers")):
+    if b in _as_list(ea.get("hyper")) or b in _as_list(ea.get("hypers")):
         add("GENUS_UP", "hyper", ea)
-    if a == eb.get("hyper"):
+    if a in _as_list(eb.get("hyper")) or a in _as_list(eb.get("hypers")):
         add("GENUS_DOWN", "hyper", eb)
-    if b == ea.get("part_of") or b in _as_list(ea.get("parts_of")) or a in _as_list(eb.get("parts")):
+    if (b in _as_list(ea.get("part_of")) or b in _as_list(ea.get("parts_of"))
+            or a in _as_list(eb.get("parts"))):
         add("PART_OF", "part_of", ea)
-    if b in _as_list(ea.get("parts")) or a == eb.get("part_of") or b in _as_list(eb.get("parts_of")):
+    if (b in _as_list(ea.get("parts")) or a in _as_list(eb.get("part_of"))
+            or b in _as_list(eb.get("parts_of"))):
         add("HAS_PART", "parts", ea)
-    if b == ea.get("made_of"):
+    if b in _as_list(ea.get("made_of")):
         add("MADE_FROM", "made_of", ea)
     if b in _as_list(ea.get("products")):
         add("PRODUCES", "products", ea)
-    if b in _as_list(ea.get("function")) or b == ea.get("function"):
+    if b in _as_list(ea.get("function")):
         add("FUNCTION", "function", ea)
-    if b == ea.get("place"):
-        add("PLACE", "place", ea)
+    if b in _as_list(ea.get("place")) or a in _as_list(eb.get("place")):
+        # PLACE 语义=活动/事物与其典型场所：场所对活动是反向同一关系（老师↔学校），
+        # 不视为方向偷换（PLACE 无对偶标签）
+        add("PLACE", "place", ea if b in _as_list(ea.get("place")) else eb)
     if b in _as_list(ea.get("tools")):
         add("TOOL", "tools", ea)
     if b in _as_list(ea.get("cause")):
         add("CAUSE", "cause", ea)
     if a in _as_list(eb.get("cause")):
         add("EFFECT", "cause", eb)
+    # R4a：SYN/ANT 语义上对称——双向闭包，来源词条与字段保留在 field@source 与 def 里
     if b in _as_list(ea.get("syn")):
-        add("SYN", "syn", ea)
+        add("SYN", "syn@a", ea)
+    elif a in _as_list(eb.get("syn")):
+        add("SYN", "syn@b", eb)
     if b in _as_list(ea.get("ant")):
-        add("ANT", "ant", ea)
+        add("ANT", "ant@a", ea)
+    elif a in _as_list(eb.get("ant")):
+        add("ANT", "ant@b", eb)
     return out
 
 
@@ -180,21 +198,24 @@ def _analogy_common(stem: str, pair: Tuple[str, str],
             swaps = sorted({rev_map[s] for s in sig if s in rev_map and rev_map[s] in tags})
             ao.missing = sorted(set(sig) - set(tags))
             if swaps:
-                # 方向反转关系：不得算同关系候选，降为 partial 并声明偷换
-                ao.verdict = "partial"
+                # R4a contradicted：有可靠证据显示方向不一致（方向偷换）——积极排除
+                ao.verdict = "contradicted"
                 ao.notes = f"仅方向反转关系成立（{swaps}）——方向偷换，不算满足"
             else:
                 ao.verdict = "mismatch"
                 ao.notes = f"关系不一致（选项关系 {tags}）"
         plan.option_analyses.append(ao)
+    plan.unresolved_competitors = [a.label for a in plan.option_analyses
+                                    if a.verdict == "unknown_pair"]
     if len(cands) == 1:
         plan.proposed_answer = cands[0]
-        unknowns = [a.label for a in plan.option_analyses if a.verdict == "unknown_pair"]
-        plan.confidence = 0.85 if not unknowns else 0.7
+        unknowns = plan.unresolved_competitors
+        plan.confidence = 0.85 if not unknowns else 0.6
         if unknowns:
             plan.uncertainty_reasons.append(
-                f"竞争项 {unknowns} 未登录词典（未被积极排除）；接受依赖唯一 match + 独立复核")
-        plan.assumptions = ["关系判定以人工词典为唯一世界观来源；词典外关系不可见"]
+                f"开放词典：竞争项 {unknowns} 未登录、无法排除；唯一已知匹配≠唯一正确答案，"
+                "仅提案，接受降级 unverified（R4a）")
+        plan.assumptions = ["关系判定以人工词典为唯一世界观来源；词典外关系不可见（未知≠不存在）"]
         return {"ok": True, "plan": plan}
     if len(cands) > 1:
         plan.conflicts.append(f"多个选项满足题干关系签名: {cands}")
@@ -232,21 +253,27 @@ def core_word_relation(stem: str, options: Sequence[Tuple[str, str]],
         own = sorted({t for t, _, _ in infer_relations(target, w, lang)})
         own2 = sorted({t for t, _, _ in infer_relations(w, target, lang)})
         ao.own_relations = sorted(set(own) | set(own2))
-        if w in rels:
+        if want.upper() in ao.own_relations:
+            # R4a：对称闭包判定——目标关系可由任一侧词条字段证实（来源保留在 evidence/field）
             ao.verdict = "match"
-            ao.matched = [key.upper()]
+            ao.matched = [want.upper()]
             cands.append(label)
         elif not ao.own_relations:
             ao.verdict = "unknown_pair"
-            ao.notes = "选项词未登录词典"
+            ao.notes = "选项词未登录词典（未知不等于不存在，不能排除）"
         else:
             ao.verdict = "mismatch"
-            ao.notes = f"可判定关系 {ao.own_relations} 不含目标 {key.upper()}"
+            ao.notes = f"可判定关系 {ao.own_relations} 不含目标 {want.upper()}"
         plan.option_analyses.append(ao)
+    plan.unresolved_competitors = [a.label for a in plan.option_analyses
+                                    if a.verdict == "unknown_pair" and a.label not in cands]
     if len(cands) == 1:
         plan.proposed_answer = cands[0]
-        plan.confidence = 0.85
-        plan.assumptions = ["近义/反义判定以人工词典 syn/ant 字段为唯一证据"]
+        plan.confidence = 0.85 if not plan.unresolved_competitors else 0.6
+        if plan.unresolved_competitors:
+            plan.uncertainty_reasons.append(
+                f"开放词典：{plan.unresolved_competitors} 无法排除，接受降级 unverified（R4a）")
+        plan.assumptions = ["近义/反义判定以人工词典 syn/ant 字段为唯一证据（对称闭包）"]
         return {"ok": True, "plan": plan}
     if len(cands) > 1:
         return _fail("ambiguous_word_relation", {"candidates": cands})

@@ -1,0 +1,54 @@
+{
+  "file": "annotation_audit_r4a",
+  "benchmark": "benchmark_language/blind",
+  "audit_date": "2026-10-18",
+  "auditor": "R4a 独立标注复核（人工语言学标准，与 Solver 运行结果无关）",
+  "frozen_data_policy": "本题集文件与 blind_firstrun_metrics.json 为冻结记录，本审计不修改任何题目/标注/首跑结果；审计意见单独版本化保存，新口径仅用于 R4a 起的重述报告。",
+  "expected_status_semantics_note": "expected_status 声明的是『离线规则子集可解性』，与『语言学客观可答性』是两个维度；本审计核查后者。",
+  "items": [
+    {
+      "id": "lngb-gen-01",
+      "annotation": {"expected_status": "failed", "answer": null},
+      "audit_verdict": "answerable_capability_gap",
+      "objective_answer": "B",
+      "rationale": "黄瓜∶蔬菜（ culinary 分类下的种属）唯一对应 大米∶食物；A 轮胎∶汽车 是组成非种属，C 桌子∶木头 材料方向反置，D 医生∶诊断 是功能。失败根因=当时词典缺 黄瓜/大米/蔬菜 词条，属能力缺口而非题目缺陷。争议备注：黄瓜的种属层（蔬菜/水果）存在植物学与烹饪学分歧，词典以 hypers 多值收录。",
+      "denominator_impact": "客观可答 +1"
+    },
+    {
+      "id": "lngb-ant-08",
+      "annotation": {"expected_status": "failed", "answer": null},
+      "audit_verdict": "genuinely_undecidable",
+      "objective_answer": null,
+      "rationale": "A 大方∶小气 与 C 高兴∶难过 都构成反义对，无唯一答案；维持 undecidable。R4a 对称闭包后规则行为（ambiguous→弃权）与审计结论一致。",
+      "denominator_impact": "无"
+    },
+    {
+      "id": "lngb-unk-09",
+      "annotation": {"expected_status": "failed", "answer": null},
+      "audit_verdict": "genuinely_undecidable",
+      "objective_answer": null,
+      "rationale": "春天∶花朵 为时间关联，七类关系与近义反义之外无唯一映射；维持。",
+      "denominator_impact": "无"
+    },
+    {
+      "id": "lngb-en-12",
+      "annotation": {"expected_status": "failed", "answer": null},
+      "audit_verdict": "answerable_capability_gap",
+      "objective_answer": "A",
+      "rationale": "Happy∶Glad 为近义，Sad∶unhappy 同为近义（其余 big/glad/fast 均非 sad 近义），客观唯一解 A；失败根因=英文词典未登录 sad.unhappy。属能力缺口。",
+      "denominator_impact": "客观可答 +1"
+    }
+  ],
+  "over_answer_item": {
+    "id": "lngb-ant-08",
+    "firstrun_behavior": "R3c 首跑曾 accept 选项 C（ANT 字段单向引用漏判 A）",
+    "status": "冻结记录保留；R4a 对称闭包已在机制上消除该越权路径（回归见 tests/test_r4a_language.py），不回溯改分。"
+  },
+  "restated_metrics_r4a": {
+    "note": "首跑原始数字（policy 11/12, objective 8/8）保留于 blind_firstrun_metrics.json，不得改写；以下为按审计口径重述。",
+    "objective_answerable": 10,
+    "firstrun_objective": "8/10 = 80.0%",
+    "capability_gap_unanswered": 2,
+    "genuinely_undecidable": 2
+  }
+}

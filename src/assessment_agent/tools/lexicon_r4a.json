@@ -1,0 +1,906 @@
+{
+ "_meta": {
+  "name": "lexicon_r3c",
+  "created": "2026-10-18",
+  "authoring": "human-written（人工编写的词条释义与关系字段，R3c 语言推理唯一世界观来源）",
+  "fields_note": "hyper=上位(子类->父类) part_of=整体 made_of=原料 products=可制成品 function=用途行为 place=典型场所 tools=常用工具 cause=常见结果 syn=近义 ant=反义；def 为人工释义，作为 verify 的 source_text 对账锚点"
+ },
+ "zh": {
+  "汽车": {
+   "def": "四轮机动车，用于道路客货运输",
+   "hyper": "交通工具",
+   "parts": [
+    "轮胎",
+    "方向盘",
+    "发动机",
+    "车窗"
+   ],
+   "place": "公路",
+   "function": [
+    "运输"
+   ]
+  },
+  "交通工具": {
+   "def": "承载人或货物往返移动的设备总称",
+   "hyper": "物品"
+  },
+  "轮胎": {
+   "def": "车辆接触地面的环形橡胶部件",
+   "part_of": "汽车",
+   "made_of": "橡胶"
+  },
+  "橡胶": {
+   "def": "高弹性高分子材料，可制轮胎等制品",
+   "products": [
+    "轮胎",
+    "鞋底",
+    "橡皮筋"
+   ]
+  },
+  "香蕉": {
+   "def": "长弧形热带水果",
+   "hyper": "水果"
+  },
+  "水果": {
+   "def": "多汁可食的植物果实类食物",
+   "hyper": "食物"
+  },
+  "食物": {
+   "def": "可供食用、维持生命的物质总称"
+  },
+  "医生": {
+   "def": "从事疾病诊断治疗的专业人员",
+   "hyper": "职业",
+   "place": "医院",
+   "tools": [
+    "听诊器",
+    "手术刀"
+   ],
+   "function": [
+    "诊断",
+    "治疗"
+   ]
+  },
+  "医院": {
+   "def": "集中进行诊疗和住院护理的机构"
+  },
+  "听诊器": {
+   "def": "医生用以听取体内声音的便携工具",
+   "hyper": "工具"
+  },
+  "页码": {
+   "def": "标注书页顺序的编号",
+   "part_of": "书本"
+  },
+  "书本": {
+   "def": "装订成册的纸张阅读物",
+   "parts": [
+    "页码",
+    "封面",
+    "书脊"
+   ],
+   "made_of": "纸张",
+   "function": [
+    "阅读"
+   ]
+  },
+  "纸张": {
+   "def": "由纤维压制成的薄片材料",
+   "products": [
+    "书本",
+    "报纸",
+    "纸盒"
+   ]
+  },
+  "司机": {
+   "def": "驾驶机动车的人员",
+   "hyper": "职业",
+   "place": "汽车",
+   "function": [
+    "驾驶"
+   ]
+  },
+  "驾驶": {
+   "def": "操纵车辆行驶的行为"
+  },
+  "木头": {
+   "def": "树木砍伐加工后的木质材料",
+   "products": [
+    "桌子",
+    "椅子",
+    "家具"
+   ]
+  },
+  "桌子": {
+   "def": "带台面的家具，用于放置物品或工作",
+   "hyper": "家具",
+   "made_of": "木头"
+  },
+  "家具": {
+   "def": "居家使用的器具总称"
+  },
+  "面粉": {
+   "def": "谷物磨成的细粉",
+   "products": [
+    "面包",
+    "馒头",
+    "面条"
+   ]
+  },
+  "面包": {
+   "def": "面粉烘焙成的主食",
+   "made_of": "面粉",
+   "hyper": "食物"
+  },
+  "笔": {
+   "def": "书写绘画工具",
+   "hyper": "文具",
+   "function": [
+    "写字"
+   ]
+  },
+  "写字": {
+   "def": "用笔记录文字的行为"
+  },
+  "文具": {
+   "def": "书写办公用品的总称"
+  },
+  "渔网": {
+   "def": "捕鱼用的网状工具",
+   "function": [
+    "捕鱼"
+   ],
+   "hyper": "工具"
+  },
+  "捕鱼": {
+   "def": "捕捉鱼类的生产活动"
+  },
+  "画家": {
+   "def": "以绘画为职业的人",
+   "tools": [
+    "颜料",
+    "画笔",
+    "画架"
+   ],
+   "place": "画室",
+   "function": [
+    "绘画"
+   ],
+   "hyper": "职业"
+  },
+  "鱼": {
+   "def": "水中生活的脊椎动物",
+   "place": "水",
+   "hyper": "动物"
+  },
+  "鸟": {
+   "def": "有羽毛会飞行的动物",
+   "place": "天空",
+   "hyper": "动物"
+  },
+  "水": {
+   "def": "无色透明液体，生命必需物质"
+  },
+  "天空": {
+   "def": "地面以上肉眼可见的高处空间"
+  },
+  "努力": {
+   "def": "尽力做事的状态",
+   "cause": [
+    "成功"
+   ],
+   "ant": "懈怠",
+   "syn": "勤奋"
+  },
+  "成功": {
+   "def": "达成预期目标",
+   "ant": "失败"
+  },
+  "懈怠": {
+   "def": "松懈怠惰的状态",
+   "cause": [
+    "失败"
+   ],
+   "ant": "努力"
+  },
+  "失败": {
+   "def": "没有达成预期目标"
+  },
+  "学习": {
+   "def": "获取知识技能的过程",
+   "cause": [
+    "进步"
+   ]
+  },
+  "进步": {
+   "def": "水平提高向前发展"
+  },
+  "炒锅": {
+   "def": "烹饪用的圆底锅具",
+   "hyper": "厨具"
+  },
+  "厨具": {
+   "def": "厨房用具的总称"
+  },
+  "厨师": {
+   "def": "以烹调为职业的人",
+   "place": "厨房",
+   "tools": [
+    "炒锅",
+    "菜刀"
+   ],
+   "function": [
+    "烹饪"
+   ],
+   "hyper": "职业"
+  },
+  "老师": {
+   "def": "传授知识的教育工作者",
+   "place": "学校",
+   "function": [
+    "教学"
+   ],
+   "syn": "教师",
+   "hyper": "职业"
+  },
+  "教师": {
+   "def": "从事教学工作的人员",
+   "syn": "老师"
+  },
+  "学生": {
+   "def": "在学校学习的人",
+   "place": "学校"
+  },
+  "学校": {
+   "def": "有组织进行教学的机构"
+  },
+  "演员": {
+   "def": "扮演角色进行表演的人",
+   "place": "剧院",
+   "hyper": "职业",
+   "function": [
+    "演出"
+   ]
+  },
+  "剧院": {
+   "def": "供演出表演的场馆"
+  },
+  "苹果": {
+   "def": "圆形常见水果",
+   "hyper": "水果"
+  },
+  "西瓜": {
+   "def": "夏季大型瓜类水果",
+   "hyper": "水果"
+  },
+  "钢笔": {
+   "def": "带金属笔尖的书写笔",
+   "hyper": "文具"
+  },
+  "芹菜": {
+   "def": "常见茎叶类蔬菜",
+   "hyper": "蔬菜"
+  },
+  "蔬菜": {
+   "def": "可做菜的草本植物",
+   "hyper": "食物"
+  },
+  "键盘": {
+   "def": "按键式输入或演奏部件",
+   "part_of": "电脑",
+   "parts_of": [
+    "钢琴"
+   ]
+  },
+  "电脑": {
+   "def": "可编程的电子设备",
+   "parts": [
+    "键盘",
+    "鼠标",
+    "显示器"
+   ],
+   "function": [
+    "办公",
+    "上网"
+   ]
+  },
+  "手表": {
+   "def": "佩戴在手腕上的计时工具",
+   "parts": [
+    "表盘",
+    "表带"
+   ],
+   "function": [
+    "计时"
+   ]
+  },
+  "表盘": {
+   "def": "显示时刻的刻度盘面",
+   "part_of": "手表"
+  },
+  "玻璃": {
+   "def": "透明的硅酸盐材料",
+   "products": [
+    "窗户",
+    "镜子",
+    "杯子"
+   ]
+  },
+  "窗户": {
+   "def": "建筑上采光通风的开口装置",
+   "made_of": "玻璃"
+  },
+  "钢材": {
+   "def": "以铁为主的合金材料",
+   "products": [
+    "桥梁",
+    "铁轨",
+    "钢筋"
+   ]
+  },
+  "桥梁": {
+   "def": "跨越障碍的通道建筑",
+   "made_of": "钢材"
+  },
+  "馒头": {
+   "def": "面粉发酵蒸制的食品",
+   "made_of": "面粉",
+   "hyper": "食物"
+  },
+  "警察": {
+   "def": "维护治安的执法人员",
+   "function": [
+    "巡逻",
+    "抓捕"
+   ],
+   "hyper": "职业"
+  },
+  "抓捕": {
+   "def": "捉拿犯罪嫌疑人的执法行为"
+  },
+  "园丁": {
+   "def": "照料花园林木的人员",
+   "function": [
+    "修剪"
+   ],
+   "place": "花园",
+   "tools": [
+    "剪刀"
+   ],
+   "hyper": "职业"
+  },
+  "修剪": {
+   "def": "整剪使整齐美观的操作"
+  },
+  "剪刀": {
+   "def": "双刃剪切工具",
+   "hyper": "工具"
+  },
+  "花园": {
+   "def": "种植花木供游赏的园地"
+  },
+  "电话": {
+   "def": "远距离通话的通信设备",
+   "function": [
+    "通讯"
+   ],
+   "hyper": "工具"
+  },
+  "通讯": {
+   "def": "传递信息联络沟通的活动"
+  },
+  "钟表": {
+   "def": "计量时间的装置总称",
+   "function": [
+    "计时"
+   ]
+  },
+  "计时": {
+   "def": "测量记录时间过程"
+  },
+  "犹豫": {
+   "def": "拿不定主意的状态",
+   "ant": "果断"
+  },
+  "果断": {
+   "def": "决断不迟疑",
+   "ant": "犹豫",
+   "syn": "干脆"
+  },
+  "干脆": {
+   "def": "直截了当不拖泥带水",
+   "syn": "果断"
+  },
+  "安静": {
+   "def": "没有吵闹声",
+   "ant": "嘈杂",
+   "syn": "寂静"
+  },
+  "寂静": {
+   "def": "非常安静没有声响",
+   "syn": "安静"
+  },
+  "嘈杂": {
+   "def": "声音杂乱喧闹",
+   "ant": "安静"
+  },
+  "高兴": {
+   "def": "愉快而兴奋的心情",
+   "syn": [
+    "喜悦",
+    "快乐"
+   ],
+   "ant": "难过"
+  },
+  "喜悦": {
+   "def": "愉快的感情",
+   "syn": "高兴"
+  },
+  "快乐": {
+   "def": "感到幸福满意",
+   "syn": "高兴"
+  },
+  "难过": {
+   "def": "心情不痛快",
+   "ant": "高兴"
+  },
+  "愤怒": {
+   "def": "因不满而激动发怒",
+   "syn": "气愤",
+   "ant": "喜悦"
+  },
+  "气愤": {
+   "def": "愤怒不平的情绪",
+   "syn": "愤怒"
+  },
+  "聪明": {
+   "def": "智力发达理解快",
+   "ant": "愚笨",
+   "syn": "聪慧"
+  },
+  "聪慧": {
+   "def": "聪明有智慧",
+   "syn": "聪明"
+  },
+  "愚笨": {
+   "def": "迟钝不聪明",
+   "ant": "聪明"
+  },
+  "勤奋": {
+   "def": "努力不懈怠",
+   "ant": "懒惰",
+   "syn": "刻苦"
+  },
+  "刻苦": {
+   "def": "肯下苦功夫",
+   "syn": "勤奋"
+  },
+  "懒惰": {
+   "def": "不爱劳动和工作",
+   "ant": "勤奋"
+  },
+  "吝啬": {
+   "def": "过分爱惜财物不舍得用",
+   "syn": "小气",
+   "ant": [
+    "慷慨",
+    "大方",
+    "挥霍"
+   ]
+  },
+  "小气": {
+   "def": "气量窄、舍得少",
+   "syn": "吝啬",
+   "ant": "大方"
+  },
+  "慷慨": {
+   "def": "大方不吝啬",
+   "ant": "吝啬",
+   "syn": "大方"
+  },
+  "大方": {
+   "def": "不计较、舍得花费",
+   "syn": "慷慨",
+   "ant": "吝啬"
+  },
+  "节俭": {
+   "def": "节省不浪费",
+   "syn": "节约"
+  },
+  "节约": {
+   "def": "节省用度",
+   "syn": "节俭"
+  },
+  "感冒": {
+   "def": "上呼吸道病毒性传染病",
+   "cause": [
+    "发烧",
+    "咳嗽"
+   ]
+  },
+  "发烧": {
+   "def": "体温高于正常范围"
+  },
+  "摩擦": {
+   "def": "物体表面接触来回作用",
+   "cause": [
+    "生热"
+   ]
+  },
+  "生热": {
+   "def": "产生热量的现象"
+  },
+  "收集": {
+   "def": "把分散的东西聚拢"
+  },
+  "整理": {
+   "def": "使有条理有秩序"
+  },
+  "猎人": {
+   "def": "以打猎为业或爱好的人",
+   "place": "森林",
+   "function": [
+    "打猎"
+   ]
+  },
+  "打猎": {
+   "def": "捕捉野兽的活动"
+  },
+  "森林": {
+   "def": "大片树木组成的植被区域"
+  },
+  "汽油": {
+   "def": "从石油提炼的燃料"
+  },
+  "诊断": {
+   "def": "判定疾病的行为"
+  },
+  "治疗": {
+   "def": "用医疗手段解除疾病"
+  },
+  "绘画": {
+   "def": "用笔等工具作画的创作活动"
+  },
+  "教学": {
+   "def": "教师把知识技能教给学生的活动"
+  },
+  "演出": {
+   "def": "向观众表演文艺节目"
+  },
+  "烹饪": {
+   "def": "烹调饭菜的手艺活动"
+  },
+  "动物": {
+   "def": "以有机物为食的多细胞生物总称"
+  },
+  "职业": {
+   "def": "个人所从事的作为主要生活来源的工作"
+  },
+  "工具": {
+   "def": "工作时使用的器具"
+  },
+  "物品": {
+   "def": "各种东西的总称"
+  },
+  "公路": {
+   "def": "城市与乡村间的道路"
+  },
+  "画室": {
+   "def": "绘画创作的工作房间"
+  },
+  "厨房": {
+   "def": "烹制食物的房间"
+  },
+  "菜刀": {
+   "def": "切菜的刀具",
+   "hyper": "工具"
+  },
+  "颜料": {
+   "def": "绘画用的着色材料"
+  },
+  "画笔": {
+   "def": "绘画用的笔",
+   "hyper": "工具"
+  },
+  "方向盘": {
+   "def": "控制行车方向的操纵部件",
+   "part_of": "汽车"
+  },
+  "发动机": {
+   "def": "把能量转为机械能的机器",
+   "part_of": "汽车"
+  },
+  "车窗": {
+   "def": "汽车上的透明窗",
+   "part_of": "汽车"
+  },
+  "鼠标": {
+   "def": "计算机指点输入设备",
+   "part_of": "电脑"
+  },
+  "显示器": {
+   "def": "显示图像信息的设备",
+   "part_of": "电脑"
+  },
+  "书脊": {
+   "def": "书籍装订处的窄边",
+   "part_of": "书本"
+  },
+  "封面": {
+   "def": "书册外衣的第一页",
+   "part_of": "书本"
+  },
+  "表带": {
+   "def": "固定手表于手腕的带子",
+   "part_of": "手表"
+  },
+  "钢琴": {
+   "def": "大型键盘弹拨乐器",
+   "parts": [
+    "键盘"
+   ],
+   "hyper": "乐器"
+  },
+  "乐器": {
+   "def": "可以发出乐音、供演奏音乐使用的器具"
+  },
+  "咳嗽": {
+   "def": "喉部受刺激时的生理反射"
+  },
+  "鞋底": {
+   "def": "鞋的着地部分",
+   "part_of": "鞋子"
+  },
+  "鞋子": {
+   "def": "穿在脚上的护足用品",
+   "hyper": "服饰"
+  },
+  "服饰": {
+   "def": "衣着与装饰用品的总称"
+  },
+  "报纸": {
+   "def": "刊载新闻的定期出版物",
+   "made_of": "纸张"
+  },
+  "杯子": {
+   "def": "盛液体的容器",
+   "made_of": "玻璃"
+  },
+  "镜子": {
+   "def": "映照形象的玻璃制品",
+   "made_of": "玻璃"
+  },
+  "面条": {
+   "def": "面粉制成的条状食品",
+   "made_of": "面粉"
+  },
+  "毛笔": {
+   "def": "以竹管兽毫制成的书写绘画工具",
+   "tools": [
+    "墨水"
+   ],
+   "hyper": "文具"
+  },
+  "墨水": {
+   "def": "书写绘画用的有色液体"
+  },
+  "笔筒": {
+   "def": "案头插放笔类文具的容器",
+   "parts": [
+    "毛笔",
+    "笔"
+   ],
+   "hyper": "文具"
+  },
+  "画架": {
+   "def": "绘画时张挂画布、陈列画作的支架"
+  },
+  "挥霍": {
+   "def": "毫无节制地浪费钱财",
+   "syn": "浪费",
+   "ant": [
+    "吝啬",
+    "节俭"
+   ]
+  },
+  "勤勉": {
+   "def": "努力不懈怠",
+   "syn": [
+    "勤奋",
+    "刻苦"
+   ],
+   "ant": [
+    "懒惰",
+    "懈怠"
+   ]
+  },
+  "粉笔": {
+   "def": "黑板书写用的条状颜料制品",
+   "place": [
+    "黑板"
+   ],
+   "made_of": "石膏",
+   "hyper": "文具"
+  },
+  "黑板": {
+   "def": "教室中书写演示用的大幅板面"
+  },
+  "石膏": {
+   "def": "可制粉笔与模型的矿物材料"
+  }
+ },
+ "en": {
+  "fork": {
+   "def": "a utensil with prongs used to hold or lift food",
+   "function": [
+    "eating"
+   ],
+   "hyper": "utensil"
+  },
+  "knife": {
+   "def": "a tool with a cutting edge",
+   "function": [
+    "cutting"
+   ],
+   "hyper": "tool",
+   "parts": [
+    "handle",
+    "blade"
+   ],
+   "made_of": "metal"
+  },
+  "spoon": {
+   "def": "a utensil with a bowl for scooping",
+   "function": [
+    "eating"
+   ],
+   "hyper": "utensil"
+  },
+  "utensil": {
+   "def": "a small tool for household tasks"
+  },
+  "eating": {
+   "def": "the act of consuming food"
+  },
+  "cutting": {
+   "def": "the act of separating with an edge"
+  },
+  "wheel": {
+   "def": "a circular part that turns on an axle",
+   "part_of": "car",
+   "parts_of": [
+    "bicycle"
+   ]
+  },
+  "car": {
+   "def": "a road vehicle with four wheels",
+   "hyper": "vehicle",
+   "parts": [
+    "wheel",
+    "engine"
+   ]
+  },
+  "bicycle": {
+   "def": "a human-powered two-wheel vehicle",
+   "parts": [
+    "wheel"
+   ]
+  },
+  "vehicle": {
+   "def": "a machine for transporting people or goods"
+  },
+  "page": {
+   "def": "one side of a sheet in a book",
+   "part_of": "book",
+   "made_of": "paper",
+   "function": [
+    "reading"
+   ]
+  },
+  "book": {
+   "def": "written or printed pages bound together",
+   "parts": [
+    "page"
+   ],
+   "function": [
+    "reading"
+   ]
+  },
+  "reading": {
+   "def": "the act of looking at and understanding written text"
+  },
+  "fish": {
+   "def": "a limbless cold-blooded aquatic animal",
+   "place": "water",
+   "hyper": "animal"
+  },
+  "bird": {
+   "def": "a warm-blooded animal with feathers and wings",
+   "place": "sky",
+   "hyper": "animal"
+  },
+  "water": {
+   "def": "the clear liquid that fills rivers, lakes, and seas"
+  },
+  "sky": {
+   "def": "the space above the earth seen from the ground"
+  },
+  "animal": {
+   "def": "a living organism that moves and feeds"
+  },
+  "doctor": {
+   "def": "a person qualified to treat disease",
+   "place": "hospital",
+   "function": [
+    "healing"
+   ]
+  },
+  "healing": {
+   "def": "the process of making healthy again"
+  },
+  "happy": {
+   "def": "feeling pleasure",
+   "syn": [
+    "glad"
+   ],
+   "ant": "sad"
+  },
+  "glad": {
+   "def": "pleased and willing",
+   "syn": "happy"
+  },
+  "sad": {
+   "def": "unhappy",
+   "ant": "happy"
+  },
+  "big": {
+   "def": "of large size",
+   "syn": "large",
+   "ant": "small"
+  },
+  "small": {
+   "def": "of little size",
+   "ant": "big"
+  },
+  "fast": {
+   "def": "moving quickly",
+   "syn": "quick",
+   "ant": "slow"
+  },
+  "slow": {
+   "def": "moving with low speed",
+   "ant": "fast"
+  },
+  "handle": {
+   "def": "the part of a tool made to be held by hand",
+   "part_of": [
+    "knife"
+   ]
+  },
+  "blade": {
+   "def": "the sharp cutting part of a knife",
+   "part_of": [
+    "knife"
+   ]
+  },
+  "metal": {
+   "def": "a hard shiny material such as iron or copper"
+  },
+  "paper": {
+   "def": "thin sheets used for writing or printing"
+  },
+  "leaf": {
+   "def": "a single page of a book or magazine",
+   "syn": [
+    "page"
+   ]
+  },
+  "forest": {
+   "def": "a large area covered with trees"
+  },
+  "hunter": {
+   "def": "a person who hunts wild animals",
+   "place": "forest"
+  }
+ }
+}

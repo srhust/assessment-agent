@@ -272,7 +272,7 @@ class LanguageRelationOption(BaseModel):
     matched: List[str] = Field(default_factory=list)       # 与题干签名同向一致的关系标签
     own_relations: List[str] = Field(default_factory=list) # 该词对全部可判定关系
     missing: List[str] = Field(default_factory=list)       # 题干签名中该选项缺失的关系
-    verdict: str = "unknown"                # match | partial | mismatch | unknown_pair
+    verdict: str = "unknown"                # match | partial | contradicted | mismatch | unknown_pair
     notes: str = ""
 
 
@@ -285,6 +285,7 @@ class LanguageRelationPlan(BaseModel):
     relation_signature: List[str] = Field(default_factory=list)   # 含方向的关系标签集
     evidence: List[RelationEvidence] = Field(default_factory=list)
     option_analyses: List[LanguageRelationOption] = Field(default_factory=list)
+    unresolved_competitors: List[str] = Field(default_factory=list)  # R4a: 词典无法排除的选项
     conflicts: List[str] = Field(default_factory=list)
     proposed_answer: str = ""
     confidence: float = 0.0

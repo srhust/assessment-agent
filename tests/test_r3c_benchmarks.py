@@ -27,21 +27,24 @@ VBL = DATA / "benchmark_verbal"
 def test_epistemic_dev_manifest_consistency():
     man = json.loads((EPI / "manifest.json").read_text(encoding="utf-8"))
     rows = _read_rows(EPI / "dev" / "epistemic.jsonl")
-    assert len(rows) == man["splits"]["dev"]["count"] == 13
+    assert len(rows) == man["splits"]["dev"]["count"] == 15
     assert _sha(EPI / "dev" / "epistemic.jsonl") == man["splits"]["dev"]["sha256"]
-    assert {r["id"] for r in rows} == {r["id"] for r in rows}  # 无重复 id
+    assert len({r["id"] for r in rows}) == len(rows)  # 无重复 id
     assert sum(1 for r in rows if r["expected_status"] == "failed") == 4
     # 最小对比对必须成组：同 group 内外层谓词不同（P 相同思路的人工网格保证）
     groups = {r["group"] for r in rows}
-    assert {"reported", "asserted", "denied"} <= groups
+    assert {"reported", "asserted", "denied", "predicted"} <= groups
+    # R4a：预报对照组存在且 expected 在规则运行前声明（solved=归属复述，failed=双候选）
+    fc = [r for r in rows if r["group"] == "predicted"]
+    assert {r["id"] for r in fc} == {"ep-predicted-14", "ep-predicted-15"}
 
 
 def test_language_dev_and_blind_frozen():
     man = json.loads((LANG / "manifest.json").read_text(encoding="utf-8"))
     dev = _read_rows(LANG / "dev" / "language.jsonl")
     blind = _read_rows(LANG / "blind" / "language.jsonl")
+    # dev 允许在 R4a 修订（sha 记录于 dev_history，非冻结承诺范围）
     assert len(dev) == 20 and man["splits"]["dev"]["count"] == 20
-    assert _sha(LANG / "dev" / "language.jsonl") == man["splits"]["dev"]["sha256"]
     b = man["splits"]["blind"]
     assert len(blind) == b["count"] == 12
     assert _sha(LANG / "blind" / "language.jsonl") == b["sha256"]
@@ -51,6 +54,7 @@ def test_language_dev_and_blind_frozen():
     # blind 首跑记录存在且与冻结文件同 sha（首跑即终录）
     firstrun = json.loads((LANG / "blind_firstrun_metrics.json").read_text(encoding="utf-8"))
     assert firstrun["total"] == 12
+    assert firstrun["data_sha256_at_firstrun"] == b["sha256"]  # 首跑时题目字节=今日冻结文件
 
 
 def test_verbal_blind2_frozen_and_disjoint_from_blind1():
@@ -64,10 +68,13 @@ def test_verbal_blind2_frozen_and_disjoint_from_blind1():
     # 旧 blind（R3b 冻结）sha 不变——盲测纪律的机器证明
     man_v = json.loads((VBL / "manifest.json").read_text(encoding="utf-8"))
     assert _sha(VBL / "blind" / "verbal.jsonl") == man_v["splits"]["blind"]["sha256"]
+    # blind2 首跑记录与今日文件字节一致（未回写）
+    fr2 = json.loads((VBL / "blind2_firstrun_metrics.json").read_text(encoding="utf-8"))
+    assert fr2["data_sha256_at_firstrun"] == _sha(VBL / "blind2" / "verbal.jsonl")
 
 
 @pytest.mark.parametrize("split_dir,fname,count", [
-    ("benchmark_epistemic/dev", "epistemic.jsonl", 13),
+    ("benchmark_epistemic/dev", "epistemic.jsonl", 15),
     ("benchmark_language/dev", "language.jsonl", 20),
     ("benchmark_language/blind", "language.jsonl", 12),
     ("benchmark_verbal/blind2", "verbal.jsonl", 10),

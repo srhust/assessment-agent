@@ -39,5 +39,6 @@
       }
     }
   },
-  "firstrun_policy": "首跑即终录；盲集冻结后禁止重评或回写"
+  "firstrun_policy": "首跑即终录；盲集冻结后禁止重评或回写",
+  "data_sha256_at_firstrun": "75eb15aaf915664593cb17247733dbdb3783baee65faa83ac2a53cb33b16a2ae"
 }

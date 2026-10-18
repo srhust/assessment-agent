@@ -52,20 +52,20 @@ DEV = [
          opt(("A", "窗户∶玻璃"), ("B", "钢材∶桥梁"), ("C", "水果∶苹果"), ("D", "渔网∶捕鱼")),
          "B", "material", ["原料→成品 PRODUCES"]),
     item("lng-fun-07", "钟表∶计时 逻辑关系相同于",
-         opt(("A", "电话∶通讯"), ("B", "画家∶颜料"), ("C", "司机∶汽车"), ("D", "轮胎∶汽车")),
-         "A", "function", ["功能用途", "工具-人/场所干扰"]),
+         opt(("A", "电话∶通讯"), ("B", "画家∶画架"), ("C", "司机∶汽车"), ("D", "轮胎∶汽车")),
+         "A", "function", ["功能用途", "TOOL/PLACE/PART_OF 可判定干扰(R4a 开放世界重设)"]),
     item("lng-fun-08", "笔∶写字 相当于",
-         opt(("A", "写字∶老师"), ("B", "渔网∶捕鱼"), ("C", "书本∶封面"), ("D", "水∶鱼")),
-         "B", "function", ["功能", "反序/部分干扰"]),
+         opt(("A", "毛笔∶墨水"), ("B", "渔网∶捕鱼"), ("C", "书本∶封面"), ("D", "笔筒∶毛笔")),
+         "B", "function", ["功能", "TOOL/PART_OF 可判定干扰(R4a 重设)"]),
     item("lng-plc-09", "演员∶剧院 与下列关系最为相似的是",
-         opt(("A", "老师∶学校"), ("B", "学校∶老师"), ("C", "医生∶听诊器"), ("D", "木头∶家具")),
-         "A", "place", ["地点对象", "反序未定义=未登录对"]),
+         opt(("A", "老师∶学校"), ("B", "厨师∶炒锅"), ("C", "医生∶听诊器"), ("D", "木头∶家具")),
+         "A", "place", ["地点对象", "TOOL/PRODUCES 可判定干扰(R4a 重设反序项)"]),
     item("lng-plc-10", "鱼∶水 关系最为相似的一组是",
          opt(("A", "猎人∶森林"), ("B", "鸟∶天空"), ("C", "厨师∶厨房"), ("D", "司机∶汽车")),
          None, "place", ["多重匹配：B/C/D 均 PLACE", "诚实保留不可判题"], expected="failed"),
     item("lng-tl-11", "医生∶听诊器 与下列哪组词语逻辑关系最为相似？",
-         opt(("A", "听诊器∶医生"), ("B", "厨师∶炒锅"), ("C", "园丁∶花园"), ("D", "警察∶抓捕")),
-         "B", "tool", ["工具关系", "反序未定义"]),
+         opt(("A", "粉笔∶黑板"), ("B", "厨师∶炒锅"), ("C", "园丁∶花园"), ("D", "警察∶抓捕")),
+         "B", "tool", ["工具关系", "PLACE/PLACE/FUNCTION 可判定干扰(R4a 重设)"]),
     item("lng-cau-12", "努力∶成功 逻辑关系与之相同的是",
          opt(("A", "摩擦∶生热"), ("B", "成功∶失败"), ("C", "医生∶医院"), ("D", "医生∶治疗")),
          "A", "cause", ["因果 CAUSE", "反义/场所/功能干扰"]),
@@ -82,17 +82,17 @@ DEV = [
          opt(("A", "苹果∶水果"), ("B", "医生∶医院"), ("C", "笔∶写字"), ("D", "鱼∶水")),
          None, "unknown_stem", ["题干词对无词典证据", "诚实 failed 样本"], expected="failed"),
     item("lng-en-17", "Fork is to eating as knife is to",
-         opt(("A", "cooking"), ("B", "cutting"), ("C", "spoon"), ("D", "drinking")),
-         "B", "en_analogy", ["英文 FUNCTION 类比", "未登录竞争项声明"]),
+         opt(("A", "handle"), ("B", "cutting"), ("C", "metal"), ("D", "blade")),
+         "B", "en_analogy", ["英文 FUNCTION 类比", "PART_OF/MADE_FROM 可判定干扰(R4a 重设)"]),
     item("lng-en-18", "Wheel is to car as page is to",
-         opt(("A", "wheel"), ("B", "vehicle"), ("C", "book"), ("D", "read")),
-         "C", "en_analogy", ["英文 PART_OF"]),
+         opt(("A", "paper"), ("B", "book"), ("C", "reading"), ("D", "leaf")),
+         "B", "en_analogy", ["英文 PART_OF", "MADE_FROM/FUNCTION/SYN 可判定(R4a 重设)"]),
     item("lng-syn-19", "找出下列词语的近义词：吝啬",
-         opt(("A", "节俭"), ("B", "小气"), ("C", "大方"), ("D", "慷慨")),
-         "B", "synonym", ["近义词", "评价色彩干扰"]),
+         opt(("A", "慷慨"), ("B", "小气"), ("C", "大方"), ("D", "挥霍")),
+         "B", "synonym", ["近义词", "ANT 可判定干扰(R4a 重设:评价混淆项移入审计记录)"]),
     item("lng-ant-20", "下列词语与“勤奋”意思相反的是",
          opt(("A", "勤勉"), ("B", "懒惰"), ("C", "刻苦"), ("D", "努力")),
-         "B", "antonym", ["反义词", "近义干扰"]),
+         "B", "antonym", ["反义词", "近义干扰(R4a 全可判定)"]),
 ]
 
 BLIND = [
@@ -202,20 +202,30 @@ def main(publish_blind: bool = False) -> None:
     d.mkdir(parents=True, exist_ok=True)
     _write_bytes(d / "language.jsonl", _rows(DEV))
     dev_sha = _sha(_rows(DEV))
+    # 合并式 manifest：冻结 split 的记录只增不减（dev 重生成绝不丢失 blind/blind2 sha）
+    mpath = OUT_LANG / "manifest.json"
+    old = json.loads(mpath.read_text(encoding="utf-8")) if mpath.exists() else {}
+    splits = dict(old.get("splits") or {})
+    dev_hist = list(old.get("dev_history") or [])
+    prev = splits.get("dev")
+    if prev and prev.get("sha256") and prev["sha256"] != dev_sha:
+        dev_hist.append(prev)
     manifest = {
         "name": "benchmark_language",
         "data_class": "human-written（按七类关系×方向×判别性网格独立编写；期望在模型运行前确定）",
         "created_at": CREATED,
-        "splits": {
-            "dev": {"file": "dev/language.jsonl", "count": len(DEV), "sha256": dev_sha,
-                    "policy": "R3c 迭代期间可调参；重生成即更新 sha256"},
-        },
+        "splits": splits,
+        "dev_history": dev_hist,
         "independence_declaration": (
             "题目由人工按关系网格独立编写，未按 Solver 是否解对筛除失败样本"
             "（多重匹配/词典外题干作为诚实 failed 样本保留）；"
             "blind 与 verbal_blind2 在 dev 工作完成后生成并冻结，只允许首次且唯一一次评测；"
             "此后不得依据盲集表现修改规则或重生成盲集。"),
     }
+    manifest["splits"]["dev"] = {"file": "dev/language.jsonl", "count": len(DEV),
+                                  "sha256": dev_sha,
+                                  "policy": "可调参；重生成即更新 sha256 并把旧版记入 dev_history"}
+    manifest["splits"].pop("blind_firstrun", None)
     (OUT_LANG / "manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"[language] dev {len(DEV)} 题 sha={dev_sha[:16]} publish_blind={publish_blind}")

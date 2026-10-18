@@ -83,7 +83,7 @@ def test_analogy_direction_swap_is_mismatch_not_match():
     r = core_analogy(stem, opts)
     assert r["ok"] and r["plan"].proposed_answer == "B"
     a_opt = next(a for a in r["plan"].option_analyses if a.label == "A")
-    assert a_opt.verdict == "partial"  # 只有方向相反标签，缺 PART_OF
+    assert a_opt.verdict == "contradicted"  # R4a：方向偷换=有证据的排除，不再是 partial
 
 
 def test_analogy_multiple_match_refuses():

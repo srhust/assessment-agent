@@ -281,7 +281,8 @@ class LanguageReasoningSkill(BaseSkill):
             else:
                 unverifiable = True
 
-        # ④ 竞争选项同等对待：每个非答案选项必须有可判定 verdict；unknown_pair → 未积极排除
+        # ④ 竞争选项同等对待：unknown_pair = 开放词典下不可排除——R4a 起规则通道也降为
+        #    unverified（唯一"已知匹配"≠"唯一正确答案"；补词典条目才能恢复确定性，不许忽略）
         others = [a for a in plan.option_analyses if a.label != solution.answer]
         undef = [a.label for a in others if a.verdict in {"unknown_pair", ""}]
         if len(others) + 1 != len(plan.option_analyses):
@@ -289,14 +290,11 @@ class LanguageReasoningSkill(BaseSkill):
                                              detail="选项覆盖不完整", severity="blocking"))
             unverifiable = True
         elif undef:
-            detail = f"竞争项未登录词典无法积极排除: {undef}"
-            if llm_channel:
-                checks.append(VerificationCheck(name="language.competitors_excluded", passed=False,
-                                                 detail=detail + "；LLM 通道拒绝", severity="blocking"))
-                unverifiable = True
-            else:
-                checks.append(VerificationCheck(name="language.competitors_excluded", passed=True,
-                                                 detail=detail + "（接受依赖唯一 match，不确定性已声明）"))
+            detail = f"开放词典：竞争项 {undef} 未登录、无法积极排除（未知≠不存在）"
+            checks.append(VerificationCheck(name="language.competitors_excluded", passed=False,
+                                             detail=detail + "；降级 unverified，不对外作答",
+                                             severity="warning"))
+            unverifiable = True
         else:
             checks.append(VerificationCheck(name="language.competitors_excluded", passed=True,
                                              detail="全部竞争选项有确定性排除"))
@@ -338,16 +336,16 @@ class LanguageReasoningSkill(BaseSkill):
             L = _lex("zh")
             if target not in L:
                 return {"status": "insufficient", "problems": ["目标词不在词典"]}
-            rels = L[target].get(want) or []
-            rels = rels if isinstance(rels, list) else [rels]
             probs: List[str] = []
             unresolved: List[str] = []
             hits = []
+            want_tag = want.upper()
             for label, text in options:
                 w = re.sub(r"[^一-龥A-Za-z]", "", text)
                 own = sorted({t for t, _, _ in infer_relations(target, w, "zh")}
                               | {t for t, _, _ in infer_relations(w, target, "zh")})
-                if w in rels:
+                if want_tag in own:
+                    # R4a 对称闭包：目标关系可由任一侧词条字段证实
                     hits.append(label)
                 elif own:
                     pass  # 可判定为不含目标关系

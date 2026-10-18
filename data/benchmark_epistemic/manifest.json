@@ -5,14 +5,14 @@
   "name": "benchmark_epistemic",
   "splits": {
     "dev": {
-      "count": 13,
+      "count": 15,
       "expected_status_counts": {
         "failed": 4,
-        "solved": 9
+        "solved": 11
       },
       "file": "dev/epistemic.jsonl",
       "policy": "R3c 迭代期间可调参；调整后重生成即更新本 sha256",
-      "sha256": "3d3c63770d030a78d9ba4698fbb3aa5da8d52ddda8271f688f99a325ce669c6c"
+      "sha256": "c8b68228c25dc60ee0075502a8b4a449b75306d996350541f481b1b8ad5e87c9"
     }
   }
 }

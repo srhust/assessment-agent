@@ -1,0 +1,37 @@
+{
+  "file": "annotation_audit_r4a",
+  "benchmark": "benchmark_verbal/blind2",
+  "audit_date": "2026-10-18",
+  "auditor": "R4a 独立标注复核（人工语言学标准，与 Solver 运行结果无关）",
+  "frozen_data_policy": "本题集与 blind2_firstrun_metrics.json 为冻结记录；本审计不修改题目/标注/首跑结果，重述口径仅用于 R4a 起的报告。",
+  "items": [
+    {
+      "id": "vb2-inf-03",
+      "annotation": {"expected_status": "failed", "answer": null},
+      "audit_verdict": "genuinely_undecidable",
+      "rationale": "归属否认双向不可推（P 与 ¬P 都推不出），无合法候选；维持。"
+    },
+    {
+      "id": "vb2-clo-07",
+      "annotation": {"expected_status": "failed", "answer": null},
+      "audit_verdict": "answerable_capability_gap",
+      "objective_answer": "A",
+      "rationale": "『并非出于无知，而是精心算计』要求表意『明知而放任』——漠视（主观冷淡）唯一契合；忽视=无心、无视=有意但不含放任义、轻视=评价性低看，均与『并非无知+算计』不双匹配。客观唯一解 A，失败根因=搭配/色彩微义不在离线规则子集，属能力缺口。",
+      "denominator_impact": "客观可答 +1"
+    },
+    {
+      "id": "vb2-inf-10",
+      "annotation": {"expected_status": "solved", "answer": "A"},
+      "audit_verdict": "disputed_entailment_caliber",
+      "rationale": "原文为『气象预报显示明天有暴雨…可能取消』。考试惯例口径（与原文内容相符即可选）下 A 成立；但按 R3c/R4a 命题级纪律 Forecast(P) ⊬ P，A 是预报内容升格为事实断言，严格口径下本题无合法候选（B 情态增强、C 量词扩大，A 归属越权）。R4a 引入 predicted 状态后，规则在新口径下对该题弃权——与严格审计结论一致。",
+      "resolution": "不回写标注（冻结）。R4a 起报告并列两口径：考试复述口径 objective 4/8（原始），严格命题口径 3/7（inf-10 转 undecidable）+ clo-07 审计补入可答后 4/9（复述口径重述）。",
+      "denominator_impact": "严格口径 −1（转 undecidable）；复述口径 +1（clo-07 计入可答题）"
+    }
+  ],
+  "firstrun_other_misses_note": "inf-04/main-06/arg-08/inf-09 为 solved 期望未达（覆盖缺口），首跑已如实记录，不构成标注问题：inf-04 C 项『说法来自分析师』预设/蕴含不在子集；main-06 重表述覆盖缺口；arg-08 权衡型论证子集外；inf-09 uncertain/believed 混合归属未对齐。",
+  "restated_metrics_r4a": {
+    "note": "原始首跑（policy 6/10, objective 4/8）不得改写；以下为审计重述。",
+    "paraphrase_caliber": {"objective": "4/9 = 44.4%", "answerable": 9, "gap": "clo-07 计入"},
+    "strict_proposition_caliber": {"objective": "4/8 = 50.0%", "answerable": 8, "note": "inf-10 移出可答（转 undecidable），clo-07 计入"}
+  }
+}
