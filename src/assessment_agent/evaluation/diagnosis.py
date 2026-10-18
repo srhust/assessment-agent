@@ -20,6 +20,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Any, Optional
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -150,6 +151,8 @@ ROOT_CAUSES = (
     "solver_coverage",      # 已支持题型但规律不覆盖（无解）
     "solver_rule_selection",  # 弱规律压过强规律 / 规律误选（答案错）
     "solver_arithmetic",    # 算术/数列求解错误
+    "data_extraction",      # R3a：表格/统计图数据读取层失败（缺区域/缺单元格/OCR 歧义/单位冲突）
+    "solver_data_reference",  # R3a：计算计划无法把题意唯一绑定到数据证据（目标/时间/引用歧义）
     "solver_overreach",     # 本应弃权却强行作答
     "verifier",             # 验证器误杀（false reject）
     "pipeline",             # 框架/接口异常
@@ -209,6 +212,20 @@ def derive_root_cause(
         return "verifier"
     if outcome == "over_answer":
         return "solver_overreach"
+    if "资料分析" in error:
+        # R3a：资料分析的结构化失败码 → 区分"数据读取层"与"题意-数据引用层"
+        m = re.search(r"失败[:：]\s*([a-z_]+)", error)
+        code = m.group(1) if m else ""
+        if code in {"cell_missing", "digit_ambiguous", "multi_number", "unit_conflict",
+                     "cell_unusable", "no_table", "no_data_regions", "chart_values_insufficient",
+                     "chart_value_conflict"} or "缺少表格/统计图" in error:
+            return "data_extraction"
+        if code in {"target_not_found", "ambiguous_reference", "time_pair_incomplete",
+                     "operation_unsupported", "plan_build_error"} or "无法唯一匹配" in error:
+            return "solver_data_reference"
+        if code in {"plan_eval_error", "divide_by_zero"}:
+            return "solver_arithmetic"
+        return "solver_coverage"
     if outcome == "unverified_answerable":
         # 独立复核确认不了答案：错误在 Solver 的规则选择/感知特征，不在 Verifier
         if skill == "figure_reasoning" or solver_rule:

@@ -164,6 +164,36 @@ class TableRegion(BaseModel):
     cells: List[List[str]] = Field(default_factory=list)
 
 
+class DataOperand(BaseModel):
+    """数据计算计划的一个操作数：必须携带来源单元格的原始证据（R3a 资料分析）。"""
+
+    name: str = "O1"                 # 计划内引用名
+    table_ref: int = 0               # 来源表序号
+    row: Optional[int] = None        # 归一化后的源行
+    col: Optional[int] = None        # 归一化后的源列
+    row_label: str = ""              # 行头（统计对象/时间）
+    col_label: str = ""              # 列头（指标+时间）
+    raw_text: str = ""               # 源单元格原始文本（图像证据保留）
+    value: str = ""                  # 归一化数值（可被 Fraction 重解析的字符串）
+    unit: str = ""                   # 源单元格单位（万元/亿元/%/百分点/…）
+    kind: str = "number"             # money | quantity | percent | ppt | number | label
+    source_bbox: Optional[List[int]] = None
+
+
+class DataCalculationPlan(BaseModel):
+    """可复用的数据计算计划：LLM 只允许输出该结构，计算由确定性求值器执行。"""
+
+    operation: str                   # sum/mean/max/min/rank/growth_yoy/growth_mom/…
+    operands: List[DataOperand] = Field(default_factory=list)
+    expression: str = ""             # 以操作数名组合的表达式，如 (O2 - O1) / O1 * 100
+    intermediate_values: List[Dict[str, str]] = Field(default_factory=list)
+    result_unit: str = ""
+    result_kind: str = "number"      # number | percent | ppt
+    answer_kind: str = "value"       # value | label（排序/排位类返回行列标签）
+    assumptions: List[str] = Field(default_factory=list)
+    question_focus: str = ""         # 计划实际解析到的题干片段（题意核对用）
+
+
 class ExtractionResult(BaseModel):
     """题图抽取结果（视觉模型 -> 结构化字段）。
 
@@ -195,7 +225,9 @@ class ExtractionResult(BaseModel):
 
     @property
     def has_regions(self) -> bool:
-        return self.schema_version >= 2 and bool(self.diagram_regions or self.option_regions)
+        return self.schema_version >= 2 and bool(
+            self.diagram_regions or self.option_regions or self.table_regions
+        )
 
     def vision_meta(self) -> Dict[str, Any]:
         """注入 ``Question.meta["vision"]`` 的精简结构（供 Skill / 适配器消费）。"""
@@ -215,6 +247,8 @@ class ExtractionResult(BaseModel):
             "stem_matrix_crop": stem_matrix.crop_path if stem_matrix else None,
             "diagram_regions": [region.model_dump(mode="json") for region in self.diagram_regions],
             "option_regions": [region.model_dump(mode="json") for region in self.option_regions],
+            "table_regions": [region.model_dump(mode="json") for region in self.table_regions],
+            "text_regions": [region.model_dump(mode="json") for region in self.text_regions],
             "reading_order": self.reading_order,
             "parser": self.parser,
             "confidence": self.confidence,

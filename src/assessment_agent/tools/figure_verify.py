@@ -215,7 +215,10 @@ def _grid_substitution(
             ious[label] = 0.0
             continue
         opt_mask = load_mask(Path(item["path"]), None)
-        opt_norm = normalized_cell_mask(opt_mask, [0, 0, opt_mask.shape[0], opt_mask.shape[1]])
+        opt_h, opt_w = opt_mask.shape[:2]
+        # bbox 约定是 [x0, y0, x1, y1]，而 NumPy shape 是 [height, width]——
+        # 非方形选项裁剪必须按 (宽, 高) 传参，否则裁切会截断/转置（R3a 修复）
+        opt_norm = normalized_cell_mask(opt_mask, [0, 0, opt_w, opt_h])
         for operator, _ in operators:
             expected = _compose(cell_norm(target_row[0]), cell_norm(target_row[1]), operator)
             ious[label] = max(ious.get(label, 0.0), _iou64(opt_norm, expected))

@@ -83,6 +83,9 @@ assessment-agent/
 
 ## 2. 八个题型与当前状态
 
+当前注册表 8 个 Skill、5 个已实现（numeric/series/logical/figure/**data_analysis**）；
+`capability_status` 一律由 `pipeline.registry.supported()` 派生（R3a），不再有手写名单。
+
 | Skill ID | 题型 | 第一阶段 | 求解方式 |
 | --- | --- | --- | --- |
 | `numeric_calculation` | 数字计算 | ✅ 已实现 | 题干 → 表达式 → SymPy 精确求值 → 选项数值匹配 |
@@ -91,7 +94,7 @@ assessment-agent/
 | `figure_reasoning` | 图形推理 | ✅ 已实现 | 网格解析 + 六类规律（个数/边数/面积/平移/对称/叠加）+ 选项匹配；失败时给出原因 |
 | `verbal_understanding` | 言语理解 | 🚧 仅接口 | 返回 `unsupported`，不编造答案 |
 | `language_reasoning` | 语言推理 | 🚧 仅接口 | 同上 |
-| `data_analysis` | 资料分析 | 🚧 仅接口 | 同上 |
+| `data_analysis` | 资料分析 | ✅ 已实现（R3a） | 表格/统计图 → `DataCalculationPlan` → Fraction 精确求值 → 六步独立验证；缺数/歧义/单位冲突如实失败 |
 | `personality` | 性格测评解释 | 🚧 仅接口 | 同上 |
 
 未实现题型的行为是**明确失败**：
@@ -412,13 +415,73 @@ python -m assessment_agent eval --split bench_dev --eval-mode auto_router --json
 > （17 个文件）。R2c 已把画布默认落盘移到系统临时目录（内容寻址文件名）并删除污染文件，
 > 测试断言 `data/` 不再出现画布。
 
+### 6.4 资料分析 Skill 正式实现（R3a）
+
+`data_analysis` 从"声明未实现"升级为**可验证的真实能力**：
+表格/统计图 → 数据结构化 → 问题语义解析 → 计算计划 → 确定性求值 → 独立验证 → 最终答案。
+
+**数据结构化**（`tools/table_tool.py`）：复用 `ExtractionResult.table_regions`/金标 `regions.table`；
+行/列/单元格标准化并保留来源坐标与原文；多层表头按"时间·指标"合并（不丢失年份或统计对象）；
+显式区分金额/数量/百分比/百分点/倍数；表头单位与格内 inline 单位量级冲突逐列标记；
+空值/占位符、OCR 歧义数字（`l80`、多小数点、错误千分位）、一格多数值全部返回结构化失败码，
+**每个数字保留原始证据**（raw 文本 + bbox + 单位）。
+
+**计算计划**（`tools/data_plan.py`，schemas 中 `DataCalculationPlan`/`DataOperand` 可复用结构）：
+求和/均值/最大最小与排序/两实体差值、同比环比增长率与增长量、比重（含无合计行时的总量推定）、
+倍数（"是多少倍"与"多几倍"区分）、复合/年均增长率（精确有理开方，非精确时显式标近似）、
+基期/现期推算（`现期/(1+r)`、`现期×(1+r)`，题干内联速率同样要求逐字证据）、百分点差、
+单位换算（万元/亿元/万亿）与近似比较。求值为分像素级 Fraction 精确算术（自带递归下降解析器），
+结果按显示单位换算回表头量纲后匹配选项；**数值重算正确 ≠ 题意理解正确**——
+操作数必须绑定真实单元格原文（行×列或题干内联文本）。
+
+**LLM 可选入口**：规则解析失败时才允许 LLM 提交结构化计划（只含 operation/operands/expression），
+且**所有引用数字必须逐字命中真实单元格原文，否则整盘拒绝**；LLM 永远不能直接给出最终选项。
+
+**统计图纪律**：柱状/折线数值只取图上**标注文本证据**（如"甲组17件"）；对无标注、读数冲突或
+无法可靠提取的图表（饼图/堆叠图）一律 `unsupported/unverified`——**不允许仅凭柱形长度猜精确数值**。
+`chart_tool.py` 的柱高像素测量仅用于**比例一致性复核**（与文本读数矛盾 → 阻断；测不了 → warning，
+不作为确认依据）。
+
+**六步独立验证**（与 Solver 不共享最终决策）：① 重读源单元格（原文/数值/单位逐字一致，篡改即 `reject`）；
+② 核对行列索引、时间与统计对象（题面线索仍在，双层表头标签含年份+指标）；③ 核对单位、
+百分比 vs 百分点；④ **另一条算术路径**独立复算（不重放表达式字符串；无法复算 → `unverified`）；
+⑤ 答案与选项**唯一**匹配（两个选项同值 → 拒绝接受）；⑥ 任何不能确认的情形返回 `unverified`
+受控弃权，**绝不默认 accept**。
+
+**口径与残留修复**：`capability_status` 改为从 `pipeline.registry.supported()` 实际注册能力派生
+（不再依赖固定"已实现名单"，`metrics.capability.capability_source="skill_registry"`）；
+主观量表即使带人工填写的 A/B/C/D 也优先派生 `subjective`（修复 2）；
+`_grid_substitution` 非方形裁剪 bbox 宽高序修复（修复 1）；e2e 指标块新增 `primary_*` 主口径字段并
+显式标注 `legacy_fields`/`legacy_note`（修复 3），消融基线更名 `flags_off_current_code` 与历史提交
+对照分开报告。消融升级为七臂（+`da_only`、+`r2c_full`），并用 `ASSESSMENT_R2C_DISABLE=…,data_analysis`
+单独关闭资料分析。
+
+**R3a Dev 实验结果（2026-10-18，`results/modes_20261018T112929/` 与 `results/r2c_ablation_20261018T032936/`）**：
+独立基准 Dev 扩充至 35 样本（客观分母 15→30，全部新增 DA 样本为 dev-only，Holdout 字节级不变）：
+
+| 指标（oracle_solver / auto_router 同值） | R2c | R3a |
+|---|---|---|
+| 总体答题准确率（客观分母） | 53.3%（8/15） | **80.0%（24/30）** |
+| 资料分析准确率 | 0/1（未实现） | **16/16（全部有答案样本可验证作答）** |
+| 能力覆盖（已支持/客观可答） | 86.7% | **96.7%（29/30）** |
+| 选择性准确率 | 100% | **100%（误放 0）** |
+| 误放 / 越权 | 0 / 0（Dev） | **0 / 0** |
+| unverified（受控弃权） | 1 | 1 |
+| honest abstention（undecidable+subjective） | 100% | 100%（5/5，含 4 个新"真无唯一解"样本） |
+
+消融净增量：`r2c_full` 8/30 → `full` 24/30（+16 全部来自资料分析），`da_only` 臂单独 +16
+且其 4 起图形误放恰好证明**覆盖率提升与误放治理是两个正交机制**，同时开启后误放归零。
+mock-vlm image_only 机制行 22/30、路由 91.4%——该行 payload 由金标区域构造，只验证
+VisionParser→Router→Solver→Verifier 链路机制，不代表真实识别能力。**真实 VLM：NOT EXECUTED**（本机未配置 `LLM_API_KEY`/`LLM_VISION_MODEL`）——
+DA 的"真实截图端到端作答能力"在配置视觉 API 前仍未验证，且应尽早单独跑一轮 image-only。
+
 ---
 
 ## 7. 测试
 
 ```bash
 python -m pytest -q
-# 197 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
+# 236 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
 ```
 
 覆盖范围：
@@ -427,7 +490,7 @@ python -m pytest -q
 - 路由（7 类规则命中、显式指定、离线回退、LLM 兜底、未知技能拒绝）
 - 工具（SymPy 精确计算与非法输入、Fraction 独立求值、选项匹配、7 类数列规律、Z3 蕴含/否定/矛盾/带数值差拒绝、图形布局解析、六类规律推断、Skill 端到端与诚实失败）
 - 校验（数值篡改 → repair、数列篡改 → repair、逻辑复核、unsupported → reject、图形换阈值复算、Skill 复核异常 → blocking 失败）
-- Skill（8 个注册、4 个 MVP、声明式 Skill 绝不返回答案、数列歧义标记 ambiguous）
+- Skill（8 个注册、5 个已支持（含 R3a 资料分析）、声明式 Skill 绝不返回答案、数列歧义标记 ambiguous）
 - 流水线（文本端到端、内联选项解析、截图 + 假视觉模型端到端、缺视觉模型报错、产物完整性、拒答不暴露原始答案）
 - 评测（数据集加载、指标统计、失败归因、结果落盘、oracle/auto 路由模式、新指标计算、failed 状态严格匹配、answerable_coverage 不被错误拒答虚高）
 - 图形工具接口（布局解析、特征提取、规律引擎、Skill 端到端、诚实失败、换阈值复核）
@@ -435,6 +498,8 @@ python -m pytest -q
 - 图形布局适配层（题干矩阵+选项裁剪→原六类规律引擎、标号映射保持、题干专属 grid、空白选项诚实失败）
 - 截图基准（oracle_solver/auto_router 全离线通过；image_only 用 mock 视觉后端验证全链路机制与产物落盘；真实模型用例未配置时显式 skip）
 - R2b 独立基准（region_incomplete 拦截静默整图回退、旧输入兼容、失败归因映射与最上游次序、CER/IoU 单元、漏检留在分母、批次 run_id 隔离、用量快照、benchmark_real 结构/防泄漏/manifest sha256、undecidable 判分链路）
+- R2c 可靠性（标注派生与冻结分母、误放/误杀/unverified/over-answer 计数、图形候选代入复核、非方形格框 bbox 锚、消融五臂→七臂口径）
+- R3a 资料分析（39 项：Dev 全部 DA 样本 solved/failed 双套参数化、计划可追溯性、六步验证、单元格/图上文本篡改拦截、缺数/OCR 歧义/单位冲突/同名列歧义结构化失败、年均增长率精确开方、双层表头、统计图像素比例复核、LLM 只能供证据绑定计划、注册表派生 capability_status、开关消融、primary/legacy 口径字段）
 - DSH / MCP 接入（清单结构、`tools/call` 形状、未知工具与非法参数、能力输出脱敏、`save=false` 不落盘）
 - CLI（solve / eval / skills / doctor / mcp-manifest / call 的返回码与输出）
 
@@ -471,7 +536,7 @@ mock 结果只证明链路机制，不用于宣称模型识别能力。
 | 题型 | 计划实现 | 依赖 |
 | --- | --- | --- |
 | 图形推理 | ✅ 已实现：网格解析 + 六类规律（个数/边数/面积/平移/对称/叠加）；待实现：旋转/翻转匹配、曲线图形、非叠加九宫格规律 | OpenCV + NumPy |
-| 资料分析 | 截图表格 → Markdown 表 + 行列/合计校验；指标公式复用 `python_math` | 视觉模型 + 表格校验器 |
+| 资料分析 | ✅ R3a 已实现：表格/柱状图结构化 + 计算计划 + Fraction 求值 + 六步独立验证；待实现：折线/多图复合表格、更复杂表头合并与真实截图 OCR 端到端验证 | OpenCV + 表格校验器 +（真实 VLM 待配置） |
 | 言语理解 | 选词填空四维排除、语句排序关联词链、主旨论题-论点提取 | 带证据的 LLM 输出 + 校验器 |
 | 语言推理 | 词关系类型知识库 + 关系一致性/方向/词性校验 | 知识库检索 + LLM |
 | 性格测评解释 | 维度释义模板 + 组合解释 + 合规边界检查 | 量表知识库 |

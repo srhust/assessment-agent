@@ -30,7 +30,20 @@ data/
 | `grid` | 否 | 显式网格 `[行, 列]`：整图按该行列等分，空白格也会被识别；用于位置/叠加类图形题 |
 | `tags` | 否 | 标签，便于失败归因 |
 | `answerability` | 否（R2c） | 客观可答性显式标注：`has_unique_answer` / `undecidable` / `subjective` / `objective_unlabeled`；**缺省由 loader 派生**（有 `answer`→客观可答；`expected_status∈{undecidable,failed}`→信息不足；性格/自评→主观；无答案且非上述→客观可答未标注），**已有数据集无需回填**，冻结集不受影响 |
-| `capability_status` | 否（R2c） | 当前支持声明 `supported` / `unsupported`；缺省按 `skill ∈ {numeric_calculation, number_series, figure_reasoning, logical_reasoning}` 派生 |
+| `capability_status` | 否（R2c） | 当前支持声明 `supported` / `unsupported`；**R3a 起缺省由 `pipeline.registry.supported()` 实际注册能力派生**（当前：numeric_calculation / number_series / logical_reasoning / figure_reasoning / data_analysis），不再有手写名单 |
+
+## 独立基准 `benchmark_real/`（R2b/R3a）
+
+- `dev/`（35 样本，R3a 扩充资料分析后可重生成）与 `holdout/`（16 行 / 客观分母 14，**冻结**）：
+  `independent.jsonl` + `images/` + `regions/`（选项图形裁剪、统计图柱形裁剪）。
+- `regions.table = {"bbox", "cells"}`：表格金标（cells 为字符串二维数组，行 0 起为表头，
+  支持双层表头）；**dev-only** 新增 `regions.text_regions`（含 `id="chart"` 的图上标注文本）与
+  `regions.chart = {"bbox", "text", "crop_path"}`（统计图金标 + 柱状图裁剪，供像素比例复核）。
+- 资料分析样本纪律：有唯一答案的表格/标注柱状图 `expected_status=solved`；
+  "真无唯一解"样本（缺数、OCR 歧义、无标注柱状图、同名单位列歧义）`answer=null` +
+  `expected_status=failed`——期望系统**如实失败**，禁止为其编写特殊规则。
+- 生成器完全确定性：`source.created` 按 split 固定（holdout 恒为 2026-10-17，重生成字节级不变，
+  由 `tests/test_r2b_benchmark.py` 的 sha256 断言守护）。**禁止根据冻结 Holdout 的具体答案修改规则。**
 
 ## 图形推理子集
 
@@ -45,7 +58,7 @@ data/
 
 ## 数据边界
 
-- 当前样本覆盖第一阶段已实现的题型（数字计算 / 数字推理 / 逻辑推理 / 图形推理）。
+- 当前样本覆盖第一阶段已实现的题型（数字计算 / 数字推理 / 逻辑推理 / 图形推理 / 资料分析 R3a）。
 - 未实现题型只保留少量 `expected_status=unsupported` 样本，用于验证系统如实返回
   “未实现”，而不是编造答案。
 - 全部样本为自编的合成题，不含任何真实企业测评原题；请勿提交含真实题目、个人信息或

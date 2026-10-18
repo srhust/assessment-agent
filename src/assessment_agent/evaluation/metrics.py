@@ -341,6 +341,7 @@ class MetricsAccumulator:
                 item for item in e2e_items if item.expected is not None and item.expected_status == "solved"
             ]
             e2e_abstention = [item for item in e2e_items if item.expected_status in {"unsupported", "failed", "undecidable"}]
+            e2e_capability = compute_capability_metrics(e2e_items)
             e2e = {
                 "cases": len(e2e_items),
                 "extraction_accuracy": round(sum(1 for flag in extraction_flags if flag) / len(extraction_flags), 4) if extraction_flags else None,
@@ -348,6 +349,18 @@ class MetricsAccumulator:
                 "region_iou_mean": round(mean(region_ious), 4) if region_ious else None,
                 "region_iou_scored": len(region_ious),  # 分母=带题干矩阵金标准的样本数（漏检按 0 计入）
                 "option_mapping_accuracy": round(sum(1 for flag in option_flags if flag) / len(option_flags), 4) if option_flags else None,
+                # ---- R3a：主指标（answerability 客观可答口径，与其他 capability 块同源）----
+                "primary_answer_accuracy": e2e_capability["overall_answer_accuracy"],
+                "primary_answered_coverage": e2e_capability["overall_answered_coverage"],
+                "primary_honest_abstention": e2e_capability["honest_abstention"],
+                "primary_false_accept": e2e_capability["false_accept_total"],
+                "primary_unverified": e2e_capability["unverified_answerable_total"],
+                # ---- 以下均为 R2b expected_status 口径（legacy，勿与新口径混读）----
+                "legacy_fields": ["answer_accuracy", "answer_scored", "abstention_accuracy",
+                                   "abstention_scored", "answerable_coverage",
+                                   "end_to_end_accuracy_mixed"],
+                "legacy_note": "answer_accuracy 等字段分母=标注 expected_status==solved 的样本，"
+                "与 answerability 口径不同源；报告与对比一律以 primary_*/capability 为准",
                 # R2b 口径：分母只含有标准答案的样本
                 "answer_accuracy": round(sum(1 for item in e2e_answerable if item.correct) / len(e2e_answerable), 4) if e2e_answerable else None,
                 "answer_scored": len(e2e_answerable),
@@ -368,9 +381,9 @@ class MetricsAccumulator:
                 else None,
                 # 旧混合口径（可答题+拒答一起算）——保留但显式标注
                 "end_to_end_accuracy_mixed": round(sum(1 for item in e2e_items if item.correct) / len(e2e_items), 4),
-                "mixed_note": "旧口径：分母含应拒答样本，仅作历史对照；R2b 起以 answer_accuracy/abstention_accuracy 为准",
+                "mixed_note": "旧口径：分母含应拒答样本，仅作历史对照；R2b 起以 answer_accuracy/abstention_accuracy 为准，R3a 起以 primary_* 为准",
                 # R2c：image_only 子集的双维度口径
-                "capability": compute_capability_metrics(e2e_items),
+                "capability": e2e_capability,
             }
 
         # 失败归因类别分布（R2b）
@@ -387,8 +400,12 @@ class MetricsAccumulator:
             "correct": correct,
             "accuracy": round(correct / total, 4) if total else 0.0,  # legacy: 混合准确率
             "route_mode": route_mode,
-            # R2c 顶层口径（overall = 分母含未实现但有客观答案的样本）
+            # R2c 顶层口径（overall = 分母含未实现但有客观答案的样本）——主指标
             "capability": capability,
+            "primary_answer_accuracy": capability["overall_answer_accuracy"],
+            "primary_capability_coverage": capability["capability_coverage"],
+            "primary_answered_coverage": capability["overall_answered_coverage"],
+            "primary_honest_abstention": capability["honest_abstention"],
             "overall_answer_accuracy": capability["overall_answer_accuracy"],
             "capability_coverage": capability["capability_coverage"],
             # 新指标

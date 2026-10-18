@@ -153,15 +153,26 @@ class Router:
         table = vision.get("table")
         if isinstance(table, dict) and table.get("cells"):
             tables = tables + [table]
-        if tables:
+        charts = []
+        if isinstance(vision.get("chart"), dict):
+            charts.append(vision["chart"])
+        for region in vision.get("text_regions") or []:
+            if isinstance(region, dict) and region.get("id") == "chart":
+                charts.append(region)
+            elif isinstance(region, dict) and re.search(r"组\s*\d+(?:\.\d+)?\s*[万件元人]?%", str(region.get("text") or "")):
+                charts.append(region)
+        if tables or charts:
             competing = sorted(k for k, v in scores.items() if k != "data_analysis" and v >= 2.0)
+            evidence = f"表格 {len(tables)} 个" if tables else ""
+            if charts:
+                evidence += ("，" if evidence else "") + f"统计图 {len(charts)} 个"
             return RouteDecision(
                 skill="data_analysis",
-                confidence=0.6 if competing else 0.8,
+                confidence=0.6 if competing else 0.85,
                 source="structure",
                 scores=scores,
                 ambiguous=bool(competing),
-                notes=f"结构证据：检出 {len(tables)} 个表格/图表区域，路由到资料分析（当前未实现则按能力缺口如实失败）"
+                notes=f"结构证据：检出 {evidence} 数据区域，路由到资料分析"
                 + (f"；文本线索 {competing} 冲突，置信度封顶 0.6" if competing else ""),
             )
         # 反例守卫：空括号（ ）像数列占位符，但选项若是**词语**（≥2 个汉字、非数值），

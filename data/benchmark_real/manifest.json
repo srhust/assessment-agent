@@ -1,7 +1,7 @@
 {
   "name": "benchmark_real",
   "data_class": "independent-synthetic（独立自编模拟测评页面；不是真实招聘平台截图）",
-  "created_at": "2026-10-17T18:31:00",
+  "created_at": "2026-10-18T11:22:26",
   "authorship": "assessment-agent 项目原创（题目文字、图形与答案均为原创构造）",
   "license": "内部评估使用（自创内容，无第三方版权）",
   "contains_real_exam": false,
@@ -9,16 +9,16 @@
   "independence_declaration": "样本按内容表独立选择，未按当前 Solver 是否解对进行筛选；包含已知超出现有规则能力的题型（旋转/翻转/半径外推/缺口九宫格/质数）与未实现题型（资料分析/言语理解/性格），这些样本的失败是基准要测量的信号。",
   "splits": {
     "dev": {
-      "count": 16,
+      "count": 35,
       "file": "dev/independent.jsonl",
-      "sha256": "5ec0a1f0def1f5b062ce6f8597604f2eeaf94f9cfb041e945bad9ddc2f5059bf"
+      "sha256": "354604cf42df67f6c53ccc451ef3295dcf62acce333872bd2b9095c80ffafb82"
     },
     "holdout": {
       "count": 16,
       "file": "holdout/independent.jsonl",
       "sha256": "886d0aaa2d6e45ac81716efd2498b18d525b67fa174360e78a908c20062c0930",
       "frozen": true,
-      "frozen_date": "2026-10-17",
+      "frozen_date": "2026-10-18",
       "freeze_policy": "冻结后不得根据求解结果增删样本；扩充只能新建版本目录"
     }
   },
@@ -63,6 +63,63 @@
     ],
     "g-da-table": [
       "bi-table-total-15"
+    ],
+    "g-da-yoy": [
+      "bi-table-yoy-17"
+    ],
+    "g-da-mom": [
+      "bi-table-mom-18"
+    ],
+    "g-da-share": [
+      "bi-table-share-19"
+    ],
+    "g-da-mean": [
+      "bi-table-mean-20"
+    ],
+    "g-da-rank": [
+      "bi-table-rank-21"
+    ],
+    "g-da-diff2": [
+      "bi-table-diff-22"
+    ],
+    "g-da-base": [
+      "bi-table-base-23"
+    ],
+    "g-da-multi": [
+      "bi-table-multi-24"
+    ],
+    "g-da-ppt": [
+      "bi-table-ppt-25"
+    ],
+    "g-da-unit": [
+      "bi-table-unit-26"
+    ],
+    "g-da-hdr2": [
+      "bi-table-hdr2-27"
+    ],
+    "g-da-total": [
+      "bi-table-totalrow-28"
+    ],
+    "g-da-avg": [
+      "bi-table-avg-29"
+    ],
+    "g-da-chart-diff": [
+      "bi-chart-diff-30"
+    ],
+    "g-da-chart-sum": [
+      "bi-chart-sum-31"
+    ],
+    "g-da-chart-bare": [
+      "bi-chart-nolabel-32"
+    ],
+    "g-da-ocr": [
+      "bi-table-ocr-33"
+    ],
+    "g-da-missing": [
+      "bi-table-gap-34"
+    ],
+    "g-da-ambigcol": [
+      "bi-table-ambigcol-35"
     ],
     "g-vu-blank": [
       "bi-verbal-blank-16"
@@ -125,15 +182,18 @@
   ],
   "layout_coverage": [
     "chart",
+    "chart_bar",
     "grid_3x3",
     "mixed_fig_text_options",
     "row4_text",
     "single_row_options",
     "table",
+    "table2hdr",
     "two_row_options",
     "twocol_text"
   ],
   "expected_status_coverage": [
+    "failed",
     "solved",
     "undecidable",
     "unsupported"

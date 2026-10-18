@@ -113,11 +113,12 @@ class Settings(BaseModel):
     verifier_use_llm: bool = False
     verifier_min_confidence: float = 0.5
     vision_parser: bool = True  # True：截图走区域化 VisionParser（schema v2）；False：旧版纯文本抽取
-    # R2c 消融开关（env ASSESSMENT_R2C_DISABLE 逗号分隔：word_problem / figure_verify / router_structure）。
-    # 默认全部启用；消融脚本按臂关闭，用于量化每类改进的独立贡献。
+    # R2c 消融开关（env ASSESSMENT_R2C_DISABLE 逗号分隔：word_problem / figure_verify /
+    # router_structure / data_analysis）。默认全部启用；消融脚本按臂关闭，量化每类改进的独立贡献。
     r2c_word_problem: bool = True  # 自然语言数量关系理解层（numeric_calculation 前置）
     r2c_figure_verify: bool = True  # 图形候选代入独立复核（与 Solver 不共享最终规则决策）
     r2c_router_structure: bool = True  # Router 结构证据优先（图形裁剪/表格区域压过关键词冲突）
+    r3a_data_analysis: bool = True  # R3a 资料分析 Skill 开关（关闭时回退 declared 接口=弃权）
 
     @property
     def llm_enabled(self) -> bool:
@@ -177,6 +178,7 @@ class Settings(BaseModel):
             r2c_word_problem="word_problem" not in disabled,
             r2c_figure_verify="figure_verify" not in disabled,
             r2c_router_structure="router_structure" not in disabled,
+            r3a_data_analysis="data_analysis" not in disabled,
         )
 
     def describe(self) -> Dict[str, object]:
@@ -196,5 +198,6 @@ class Settings(BaseModel):
                 "word_problem": self.r2c_word_problem,
                 "figure_verify": self.r2c_figure_verify,
                 "router_structure": self.r2c_router_structure,
+                "data_analysis": self.r3a_data_analysis,
             },
         }

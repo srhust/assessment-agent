@@ -166,7 +166,7 @@ def test_verifier_rejects_unsupported_solution(tmp_path):
 
 
 # ---------------------------------------------------------------- Skills
-def test_registry_has_eight_skills_and_four_mvp():
+def test_registry_has_eight_skills_and_five_supported():
     registry = SkillRegistry()
     assert len(registry.ids()) == 8
     supported = {skill.id for skill in registry.supported()}
@@ -175,12 +175,13 @@ def test_registry_has_eight_skills_and_four_mvp():
         "number_series",
         "logical_reasoning",
         "figure_reasoning",
+        "data_analysis",  # R3a：资料分析从声明接口升级为已实现能力
     }
 
 
 @pytest.mark.parametrize(
     "skill_id",
-    ["verbal_understanding", "language_reasoning", "data_analysis", "personality"],
+    ["verbal_understanding", "language_reasoning", "personality"],
 )
 def test_declared_skills_never_fake_answers(skill_id, settings, fake_llm):
     from assessment_agent.skills import SkillContext
@@ -192,6 +193,19 @@ def test_declared_skills_never_fake_answers(skill_id, settings, fake_llm):
     assert solution.answer is None
     assert solution.meta["planned_capabilities"]
     assert solution.meta["stage"] == 2
+
+
+def test_data_analysis_honest_without_data_regions(settings):
+    """R3a：data_analysis 已实现——但缺数据区域证据时必须如实失败，绝不凭空作答。"""
+    from assessment_agent.skills import SkillContext
+
+    registry = SkillRegistry()
+    ctx = SkillContext(settings=settings)
+    solution = registry.require("data_analysis").solve(
+        _question("根据下表，2023 年销售额合计是多少万元？", [("A", "930"), ("B", "900")]), ctx)
+    assert solution.status == "failed"
+    assert solution.answer is None
+    assert (solution.meta.get("failure") or {}).get("code") == "no_data_regions"
 
 
 def test_numeric_skill_fails_honestly_on_unparseable_text(settings):

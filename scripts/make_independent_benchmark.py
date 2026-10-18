@@ -433,7 +433,121 @@ def content_items() -> List[Dict[str, Any]]:
         table=[["季度", "销售额(万元)"], ["一", "180"], ["二", "210"], ["三", "240"], ["四", "300"]],
         question="四个季度销售额合计是多少万元？",
         options=[("A", "930"), ("B", "870"), ("C", "900"), ("D", "960")], answer="A",
-        expected="unsupported", note="180+210+240+300=930；资料分析未实现→应弃权")
+        expected="solved", note="R3a 起资料分析已实现：180+210+240+300=930（万元）")
+    # ---- R3a 资料分析 dev 样本扩展（全部 split="dev"；冻结 Holdout 不增不改）----
+    add(id="bi-table-yoy-17", group="g-da-yoy", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["年份", "销售额(万元)", "增长率"], ["2022年", "180", "12.5%"], ["2023年", "210", "16.7%"]],
+        question="2023年销售额同比增长率约为多少？",
+        options=[("A", "16.7%"), ("B", "12.5%"), ("C", "30.0%"), ("D", "16.3%")], answer="A",
+        expected="solved", note="(210-180)/180=16.67%，四舍五入读数 16.7%；增长率列不得当操作数")
+    add(id="bi-table-mom-18", group="g-da-mom", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["月份", "产量(件)", "备注"], ["5月", "120", "正常"], ["6月", "150", "加班追产"]],
+        question="6月产量环比增长多少件？",
+        options=[("A", "30"), ("B", "36"), ("C", "25"), ("D", "180")], answer="A",
+        expected="solved", note="150-120=30 件；“备注”干扰列不参与计算")
+    add(id="bi-table-share-19", group="g-da-share", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["类别", "数量(件)"], ["甲", "30"], ["乙", "45"], ["丙", "25"], ["合计", "100"]],
+        question="丙的数量占合计数量的比重是多少？",
+        options=[("A", "25%"), ("B", "75%"), ("C", "30%"), ("D", "20%")], answer="A",
+        expected="solved", note="25/100=25%；含合计行（总量直接取合计单元格）")
+    add(id="bi-table-mean-20", group="g-da-mean", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["季度", "投诉量(件)"], ["一", "80"], ["二", "120"], ["三", "100"], ["四", "140"]],
+        question="平均每个季度的投诉量是多少件？",
+        options=[("A", "110"), ("B", "111"), ("C", "100"), ("D", "120")], answer="A",
+        expected="solved", note="(80+120+100+140)/4=110")
+    add(id="bi-table-rank-21", group="g-da-rank", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["季度", "投诉量(件)"], ["一", "80"], ["二", "120"], ["三", "100"], ["四", "140"]],
+        question="投诉量最多的季度是哪个季度？",
+        options=[("A", "第一季度"), ("B", "第二季度"), ("C", "第三季度"), ("D", "第四季度")], answer="D",
+        expected="solved", note="标签类答案：最大值 140 对应行“四”，须唯一匹配到“第四季度”")
+    add(id="bi-table-diff-22", group="g-da-diff2", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["季度", "销售额(万元)"], ["一季度", "180"], ["二季度", "210"], ["三季度", "240"], ["四季度", "300"]],
+        question="二季度销售额比一季度多多少万元？",
+        options=[("A", "30"), ("B", "40"), ("C", "60"), ("D", "90")], answer="A",
+        expected="solved", note="两实体差值 210-180=30，不是全体最大最小差 120")
+    add(id="bi-table-base-23", group="g-da-base", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["年份", "销售额(万元)", "同比增速"], ["2022年", "180", ""], ["2023年", "210", "16.7%"]],
+        question="2023年销售额同比增长16.7%，上年销售额约为多少万元？",
+        options=[("A", "180"), ("B", "178.6"), ("C", "190"), ("D", "210")], answer="A",
+        expected="solved", note="基期=现期/(1+增长率)=210/1.167≈179.95，四舍五入选项 180")
+    add(id="bi-table-multi-24", group="g-da-multi", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["组别", "完成件数"], ["甲组", "60"], ["乙组", "20"], ["丙组", "30"]],
+        question="甲组完成件数是乙组的多少倍？",
+        options=[("A", "3倍"), ("B", "2倍"), ("C", "4倍"), ("D", "1.5倍")], answer="A",
+        expected="solved", note="60/20=3；“是多少倍”取商，“多几倍”才取商-1")
+    add(id="bi-table-ppt-25", group="g-da-ppt", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["年份", "销售额(万元)", "增长率"], ["2022年", "180", "12.5%"], ["2023年", "210", "20%"]],
+        question="2023年增长率比2022年高约多少个百分点？",
+        options=[("A", "7.5个百分点"), ("B", "12.5个百分点"), ("C", "20个百分点"), ("D", "8个百分点")], answer="A",
+        expected="solved", note="百分点差=两期百分比读数直接相减 20-12.5=7.5")
+    add(id="bi-table-unit-26", group="g-da-unit", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["年份", "利润(亿元)"], ["2022年", "3.5"], ["2023年", "4.2"]],
+        question="2023年利润换算成万元约为多少？",
+        options=[("A", "42000"), ("B", "4200"), ("C", "420000"), ("D", "35000")], answer="A",
+        expected="solved", note="4.2亿元=42000万元；单位换算必须显式乘除倍率")
+    add(id="bi-table-hdr2-27", group="g-da-hdr2", split="dev", skill="data_analysis",
+        kind="table", layout="table2hdr", stem="根据下表回答问题。",
+        table=[["类别", "2022年", "2023年"], ["", "销售额(万元)", "销售额(万元)"],
+               ["产品A", "100", "130"], ["产品B", "50", "70"]],
+        question="2023年产品A销售额同比增长率是多少？",
+        options=[("A", "30%"), ("B", "13%"), ("C", "26%"), ("D", "40%")], answer="A",
+        expected="solved", note="双层表头不得丢失年份或统计对象：(130-100)/100=30%")
+    add(id="bi-table-totalrow-28", group="g-da-total", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["季度", "销售额(万元)"], ["一季度", "180"], ["二季度", "210"], ["三季度", "240"],
+               ["四季度", "300"], ["合计", "930"]],
+        question="四个季度合计销售额比三季度多多少万元？",
+        options=[("A", "690"), ("B", "750"), ("C", "660"), ("D", "720")], answer="A",
+        expected="solved", note="点名两实体（合计 vs 三季度）：930-240=690，禁止全体最大最小差")
+    add(id="bi-table-avg-29", group="g-da-avg", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["年份", "营收(亿元)"], ["2021年", "150"], ["2022年", "180"], ["2023年", "216"]],
+        question="2021至2023年营收年均增长率约为多少？",
+        options=[("A", "20%"), ("B", "22%"), ("C", "18%"), ("D", "44%")], answer="A",
+        expected="solved", note="(216/150)^(1/2)-1=20%（精确有理开方，无需近似）")
+    add(id="bi-chart-diff-30", group="g-da-chart-diff", split="dev", skill="data_analysis",
+        kind="chart", layout="chart_bar", values=[17, 42, 30],
+        question="从统计图可以看出，完成最多的组比最少的组多多少件？",
+        options=[("A", "25"), ("B", "12"), ("C", "30"), ("D", "72")], answer="A",
+        expected="solved", note="柱状图读数只取标注文本；验证层用柱高比例做像素一致性复核")
+    add(id="bi-chart-sum-31", group="g-da-chart-sum", split="dev", skill="data_analysis",
+        kind="chart", layout="chart_bar", values=[25, 40, 15],
+        question="从统计图可以看出，三个组一共完成多少件？",
+        options=[("A", "80"), ("B", "85"), ("C", "75"), ("D", "65")], answer="A",
+        expected="solved", note="25+40+15=80")
+    add(id="bi-chart-nolabel-32", group="g-da-chart-bare", split="dev", skill="data_analysis",
+        kind="chart", layout="chart_bar", values=[17, 42, 30], value_text=False,
+        question="从统计图可以看出，乙组比甲组约多完成多少件？",
+        options=[("A", "25"), ("B", "22"), ("C", "27"), ("D", "无法确定")], answer=None,
+        expected="failed", note="无标注数值文本：不允许仅凭柱长猜精确数值 → 必须如实失败")
+    add(id="bi-table-ocr-33", group="g-da-ocr", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["季度", "销售额(万元)"], ["一季度", "l80"], ["二季度", "210"]],
+        question="一季度与二季度销售额合计是多少万元？",
+        options=[("A", "390"), ("B", "300"), ("C", "290"), ("D", "420")], answer=None,
+        expected="failed", note="OCR 歧义数字 l80：digit_ambiguous → 引用即失败，绝不按 180 猜")
+    add(id="bi-table-gap-34", group="g-da-missing", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["年份", "出口额(万美元)", "同比增速"], ["2022年", "2400", "20%"], ["2023年", "", "25%"]],
+        question="2023年出口额比2022年多多少万美元？",
+        options=[("A", "600"), ("B", "480"), ("C", "540"), ("D", "3000")], answer=None,
+        expected="failed", note="2023 出口额缺失：cell_missing → 如实失败，不得用增速推算")
+    add(id="bi-table-ambigcol-35", group="g-da-ambigcol", split="dev", skill="data_analysis",
+        kind="table", layout="table", stem="根据下表回答问题。",
+        table=[["品类", "销售额(万元)", "销售额(元)"], ["甲", "100", "12000000"], ["乙", "50", "6500000"]],
+        question="甲的销售额合计是多少万元？",
+        options=[("A", "100"), ("B", "1200"), ("C", "150"), ("D", "2200")], answer=None,
+        expected="failed", note="同名指标列两种单位并存、题面无法区分 → ambiguous_reference 失败")
     add(id="bi-verbal-blank-16", group="g-vu-blank", split="dev", skill="verbal_understanding",
         kind="text", layout="row4_text", stem="他的发言获得了与会者一致的（ ），会场气氛由此变得热烈起来。",
         options=[("A", "反应"), ("B", "反映"), ("C", "批示"), ("D", "注视")], answer="A",
@@ -626,24 +740,28 @@ def render_item(page: Paper, item: Dict[str, Any]) -> Dict[str, Any]:
                       reading_order=["stem", "table"] + [e["label"] for e in option_regions])
     elif kind == "chart":
         labels, values = ["甲", "乙", "丙"], item["values"]
+        show_text = bool(item.get("value_text", True))
         top, max_h = page.cursor_y, 150
         base_y = top + max_h + 10
         x = 80
         for name, value in zip(labels, values):
             bar_h = int(max_h * value / max(values))
             page.draw.rectangle([x, base_y - bar_h, x + 46, base_y], outline=0, width=3)
-            page._line(x + 12, base_y - bar_h - 26, str(value), _font(18))
+            if show_text:
+                page._line(x + 12, base_y - bar_h - 26, str(value), _font(18))
             page._line(x + 14, base_y + 4, name, _font(18))
             x += 110
         page.draw.line([60, base_y, x - 60, base_y], fill=0, width=2)
         chart_bbox = [60, top, x - 120, base_y - top + 30]
-        chart_text = " ".join(f"{n}组{v}件" for n, v in zip(labels, values))
+        chart_text = " ".join(f"{n}组{v}件" for n, v in zip(labels, values)) if show_text else ""
         page.cursor_y = base_y + 42
         page.stem(item["question"])
         option_regions = page.options_text(item["options"], layout="row4")
         result.update(stem_bbox=_last_stem_bbox(page),
                       option_regions=option_regions,
-                      extra_text_regions=[{"id": "chart", "bbox": chart_bbox, "text": chart_text}],
+                      chart_bbox=chart_bbox, chart_text=chart_text,
+                      extra_text_regions=([{"id": "chart", "bbox": chart_bbox, "text": chart_text}]
+                                          if chart_text else []),
                       reading_order=["chart", "stem"] + [e["label"] for e in option_regions])
     else:
         raise ValueError(kind)
@@ -737,6 +855,14 @@ def build_records() -> List[Dict[str, Any]]:
                 entry["crop_path"] = f"regions/{item['id']}/option_{entry['label']}.png"
                 if _ink_ratio(crop) < 0.001:
                     problems.append(f"选项 {entry['label']} 图形裁剪空白")
+        chart_crop_rel = None
+        if (item["split"] == "dev" and item.get("kind") == "chart" and result.get("chart_bbox")):
+            cb = result["chart_bbox"]
+            crop = page.image.crop(to_pil_box(cb))
+            crop.save(crop_dir / "chart.png")
+            if _ink_ratio(crop) < 0.001:
+                problems.append("统计图裁剪为空白")
+            chart_crop_rel = f"regions/{item['id']}/chart.png"
         if problems:
             raise SystemExit(f"{item['id']} 标注 QA 失败: {problems}")
 
@@ -754,6 +880,15 @@ def build_records() -> List[Dict[str, Any]]:
         stem_text = item.get("stem") or item.get("question", "")
         if item.get("paragraph_lines"):
             stem_text = "".join(item["paragraph_lines"]) + item["stem"]
+        # R3a（仅 Dev）：表格题把小问并入记录题干——图片本就画了这两行文字，
+        # 合并后题干文本与图像严格一致，且计算计划必须能看到小问语义。Holdout 不动。
+        if (item["split"] == "dev" and item.get("kind") == "table"
+                and item.get("stem") and item.get("question")):
+            stem_text = item["stem"] + item["question"]
+
+        text_regions = [{"id": r["id"], "bbox": scale_bbox(r["bbox"]), "text": r["text"]} for r in page.text_regions if r["id"] in {"stem", "passage"}] + [
+            {"id": r["id"], "bbox": scale_bbox(r["bbox"]), "text": r["text"]} for r in result.get("extra_text_regions", [])
+        ]
 
         regions: Dict[str, Any] = {
             "bbox_format": "pixel_xywh",
@@ -766,10 +901,14 @@ def build_records() -> List[Dict[str, Any]]:
         }
         if result.get("table"):
             regions["table"] = {"bbox": scale_bbox(result["table"]["bbox"]), "cells": result["table"]["cells"]}
-
-        text_regions = [{"id": r["id"], "bbox": scale_bbox(r["bbox"]), "text": r["text"]} for r in page.text_regions if r["id"] in {"stem", "passage"}] + [
-            {"id": r["id"], "bbox": scale_bbox(r["bbox"]), "text": r["text"]} for r in result.get("extra_text_regions", [])
-        ]
+        # R3a（仅 Dev）：oracle/auto 模式同样提供文本/统计图金标证据，与 image_only 对齐
+        if item["split"] == "dev":
+            if text_regions:
+                regions["text_regions"] = text_regions
+            if item.get("kind") == "chart" and result.get("chart_bbox"):
+                regions["chart"] = {"bbox": scale_bbox(result["chart_bbox"]),
+                                     "text": result.get("chart_text", ""),
+                                     "crop_path": chart_crop_rel}
 
         records.append(
             {
@@ -786,7 +925,10 @@ def build_records() -> List[Dict[str, Any]]:
                 "grid": result.get("stem_matrix_grid"),
                 "regions": regions,
                 "text_regions": text_regions,
-                "source": {**SOURCE, "created": date.today().isoformat(), "note": item["note"]},
+                # created 必须确定性：冻结 Holdout 保持 2026-10-17 字节不变（重生成不得漂移日期）
+                "source": {**SOURCE,
+                           "created": "2026-10-17" if item["split"] == "holdout" else "2026-10-18",
+                           "note": item["note"]},
                 "image_sha256": digest,
             }
         )

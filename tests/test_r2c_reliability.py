@@ -52,9 +52,14 @@ def test_label_derivation_rules():
     assert derive_answerability(None, "undecidable", "number_series") == "undecidable"
     assert derive_answerability(None, "failed", "number_series") == "undecidable"
     assert derive_answerability(None, "unsupported", "personality") == "subjective"
+    # R3a 修复 2：主观量表即使带着人工填写的 A/B/C/D"答案"，也必须优先判 subjective——
+    # 受试者选择不是唯一客观正确答案
+    assert derive_answerability("B", "solved", "personality") == "subjective"
     assert derive_answerability(None, "unsupported", "data_analysis") == "objective_unlabeled"
     assert derive_capability_status("figure_reasoning") == "supported"
-    assert derive_capability_status("data_analysis") == "unsupported"
+    assert derive_capability_status("data_analysis") == "supported"  # R3a：注册表即能力声明
+    assert derive_capability_status("verbal_understanding") == "unsupported"
+    assert derive_capability_status("data_analysis", ["numeric_calculation"]) == "unsupported"
 
 
 def test_bench_labels_derived_not_written_back():
@@ -70,12 +75,14 @@ def test_bench_labels_derived_not_written_back():
     hold = load_cases(DATA, "bench_holdout")
     objective_dev = [c for c in dev if c.answerability == "has_unique_answer"]
     objective_hold = [c for c in hold if c.answerability == "has_unique_answer"]
-    # 与用户核对口径一致：Dev 分母 15、Holdout 分母 14（含未实现但有答案的题型）
-    assert len(objective_dev) == 15
+    # R2c 口径核对为 Dev 15 / Holdout 14；R3a 扩充 Dev 资料分析样本后：
+    # Dev=30（新增 15 个有唯一答案的 DA 样本；4 个"真无唯一解"样本按 undecidable 计），
+    # Holdout 保持冻结分母 14 不变。
+    assert len(objective_dev) == 30
     assert len(objective_hold) == 14
     table = [c for c in dev if c.id == "bi-table-total-15"][0]
     assert table.answerability == "has_unique_answer"
-    assert table.capability_status == "unsupported"
+    assert table.capability_status == "supported"  # R3a：data_analysis 已在注册表内
 
 
 # --------------------------------------------------------------------------- 2. 口径指标

@@ -165,7 +165,7 @@ def main() -> int:
     (out / "mode_comparison.json").write_text(json.dumps(comparison, ensure_ascii=False, indent=2), encoding="utf-8")
 
     lines = [
-        "# R2c 三模式评测对照（regression + 独立基准，双维度口径）",
+        "# R3a 三模式评测对照（regression + 独立基准，双维度口径；R2c 口径延续）",
         "",
         f"- 生成时间：{comparison['generated_at']}",
         f"- 真实视觉模型端到端：**{real_status}**",

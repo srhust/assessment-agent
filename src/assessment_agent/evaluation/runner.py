@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import functools
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -33,29 +34,46 @@ EVAL_MODES = ("oracle_solver", "auto_router", "image_only")
 
 # R2c：标注双维度（题目标注可显式给出 answerability/capability_status，缺省时按
 # 客观事实派生——金标准答案是否存在决定 answerability，题型是否已实现决定 capability）
-IMPLEMENTED_SKILLS = {"numeric_calculation", "number_series", "figure_reasoning", "logical_reasoning"}
 SUBJECTIVE_SKILLS = {"personality"}
+
+
+@functools.lru_cache(maxsize=1)
+def _registry_capability_ids() -> Tuple[str, ...]:
+    """capability_status 从**实际注册的 Skill 声明**派生（R3a：不再维护固定名单）。
+
+    依据 ``BaseSkill.supported``（注册表即版本化能力声明）；未注册或未支持 → unsupported。
+    """
+    from ..skills import default_skills
+
+    return tuple(sorted(skill.id for skill in default_skills() if skill.supported))
 
 
 def derive_answerability(answer: Optional[str], expected_status: str, skill: str) -> str:
     """answerability（客观属性，与系统能力无关）：
-    - has_unique_answer：存在唯一客观标准答案（哪怕当前 Skill 未实现该题型）
-    - undecidable：信息不足以唯一确定（含构造性歧义/合规弃权样本）
-    - subjective：无客观标准答案（性格/自评量表类）
-    - objective_unlabeled：客观可答但本数据集未标注答案（不进答题分母，单独上报）
+    - subjective：无客观标准答案（性格/自评量表类）。**优先级最高**：量表里出现的
+      "答案"只是受试者的实际选择，不是唯一客观正确答案，绝不能因 `answer` 非空
+      而被派生成 has_unique_answer（R3a 修复）；
+    - has_unique_answer：存在唯一客观标准答案（哪怕当前 Skill 未实现该题型）；
+    - undecidable：信息不足以唯一确定（含构造性歧义/合规弃权样本）；
+    - objective_unlabeled：客观可答但本数据集未标注答案（不进答题分母，单独上报）。
     """
+    if skill in SUBJECTIVE_SKILLS:
+        return "subjective"
     if answer is not None:
         return "has_unique_answer"
     if expected_status in ("undecidable", "failed"):
         return "undecidable"
-    if skill in SUBJECTIVE_SKILLS:
-        return "subjective"
     return "objective_unlabeled"
 
 
-def derive_capability_status(skill: str) -> str:
-    """capability_status（当前系统能力声明）：supported / unsupported。"""
-    return "supported" if skill in IMPLEMENTED_SKILLS else "unsupported"
+def derive_capability_status(skill: str, capability_ids: Optional[Sequence[str]] = None) -> str:
+    """capability_status（当前系统能力声明）：supported / unsupported。
+
+    缺省从实际注册能力派生；评测运行时会传入 ``pipeline.registry`` 的 supported 集合，
+    确保注册表变化（如 R3a 实现 data_analysis）自动反映到口径，无需改代码常量。
+    """
+    ids = tuple(capability_ids) if capability_ids is not None else _registry_capability_ids()
+    return "supported" if skill in ids else "unsupported"
 
 
 @dataclass
@@ -156,6 +174,13 @@ def _load_regions(raw: Any, source: Path) -> Optional[Dict[str, Any]]:
         if crop and not Path(crop).is_file():
             raise FileNotFoundError(f"{source.name} 选项裁剪不存在: {crop}")
         option["crop_path"] = crop
+    # R3a：统计图金标区域（dev）的柱状图裁剪同样按 data/ 根解析并强制存在
+    chart = regions.get("chart")
+    if isinstance(chart, dict) and chart.get("crop_path"):
+        crop = _resolve(chart["crop_path"])
+        if crop and not Path(crop).is_file():
+            raise FileNotFoundError(f"{source.name} 统计图裁剪不存在: {crop}")
+        chart["crop_path"] = crop
     return regions
 
 
@@ -170,7 +195,14 @@ def _load_grid(raw: Any) -> Optional[List[int]]:
     return None
 
 
-def load_cases(data_dir: Path, split: str, skills: Optional[Sequence[str]] = None) -> List[Case]:
+def load_cases(
+    data_dir: Path,
+    split: str,
+    skills: Optional[Sequence[str]] = None,
+    capability_ids: Optional[Sequence[str]] = None,
+) -> List[Case]:
+    """capability_ids：实际注册能力声明（评测运行器传入 registry 的 supported 集合）；
+    缺省则按模块默认注册表派生，不再是写死的题型名单。"""
     if split not in SPLITS:
         raise ValueError(f"split 必须是 {SPLITS} 之一，收到 {split!r}")
     split_dir = Path(data_dir) / _SPLIT_DIRS.get(split, split)
@@ -208,7 +240,7 @@ def load_cases(data_dir: Path, split: str, skills: Optional[Sequence[str]] = Non
                     answerability=str(payload.get("answerability") or "")
                     or derive_answerability(answer, expected_status, skill),
                     capability_status=str(payload.get("capability_status") or "")
-                    or derive_capability_status(skill),
+                    or derive_capability_status(skill, capability_ids),
                 )
             )
     if not cases:
@@ -277,7 +309,10 @@ class EvaluationRunner:
             raise ValueError(f"eval_mode 必须是 {EVAL_MODES} 之一，收到 {mode!r}")
         # R2b：批次唯一标识——image_only 的 runs 产物按批次隔离，重复评测不覆盖历史证据
         batch = eval_batch or run_name or datetime.now().strftime("%Y%m%dT%H%M%S")
-        cases = load_cases(self.data_dir, split, skills=skills)
+        cases = load_cases(
+            self.data_dir, split, skills=skills,
+            capability_ids=[s.id for s in self.pipeline.registry.supported()],
+        )
         accumulator = MetricsAccumulator()
         started = time.perf_counter()
         for case in cases:
@@ -287,6 +322,11 @@ class EvaluationRunner:
 
         metrics = accumulator.summary(route_mode=mode)
         metrics["eval_batch"] = batch
+        if isinstance(metrics.get("capability"), dict):
+            # R3a：能力声明溯源——capability_status 来自实际注册表（版本化声明），非硬编码名单
+            metrics["capability"]["capability_source"] = "skill_registry"
+            metrics["capability"]["registered_supported_skills"] = sorted(
+                s.id for s in self.pipeline.registry.supported())
         vision_agg = aggregate_vision([item.vision for item in accumulator.results if item.vision])
         if vision_agg:
             metrics["vision"] = vision_agg
@@ -405,7 +445,16 @@ class EvaluationRunner:
                 else None
             )
             if case.expected_status == "unsupported":
-                correct = solution.status == "unsupported"
+                if case.capability_status == "supported":
+                    # R3a：该样本生成时"未实现"，但当前注册表声明已实现。
+                    # 有金标准 → 按真实答题判定；无金标准（数据区域缺失类样本）→
+                    # 只要不给出通过校验的答案就是合规受控弃权（不强求 status 字面值）。
+                    if case.answer is not None:
+                        correct = solution.status == "solved" and answers_match(predicted, case.answer)
+                    else:
+                        correct = predicted is None
+                else:
+                    correct = solution.status == "unsupported"
             elif case.expected_status == "failed":
                 # 合规性样本：必须严格匹配 failed 状态（不猜答案）才算正确
                 correct = solution.status == "failed"
@@ -631,10 +680,10 @@ class EvaluationRunner:
             f"- 样本数：{sample_count}",
             f"- 输入模式：{route_mode}（oracle_solver=标注题型+标准题干；auto_router=标准题干+自动路由；image_only=仅原始截图）",
             "",
-            "## 核心指标",
+            "## 核心指标（legacy · R2b expected_status 口径，仅供历史对照；主指标见下方 answerability 口径块）",
             "",
-            f"- **答案准确率**：{metrics['answer_accuracy']:.2%}（{metrics['answerable']} 道可答题中答对 {int(metrics['answer_accuracy'] * metrics['answerable'])} 道）",
-            f"- **可答题覆盖率**：{metrics['answerable_coverage']:.2%}（{metrics['covered_count']}/{metrics['answerable']}）",
+            f"- **答案准确率（legacy）**：{metrics['answer_accuracy']:.2%}（{metrics['answerable']} 道可答题中答对 {int(metrics['answer_accuracy'] * metrics['answerable'])} 道）",
+            f"- **可答题覆盖率（legacy）**：{metrics['answerable_coverage']:.2%}（{metrics['covered_count']}/{metrics['answerable']}）",
             f"- **选择性准确率**：{metrics['selective_accuracy']:.2%}（通过验证的答案中正确的比例）",
         ]
 
@@ -662,7 +711,7 @@ class EvaluationRunner:
             lines.extend(
                 [
                     "",
-                    "## 客观可答性与能力口径（R2c，分母=所有有唯一客观答案样本，含未实现题型）",
+                    "## 核心指标（主口径 · answerability 双维度）——客观可答性与能力口径（R2c/R3a，分母=所有有唯一客观答案样本，含未实现题型）",
                     "",
                     f"- **总体答题准确率 overall_answer_accuracy**：{_pct(capability.get('overall_answer_accuracy'))}"
                     "；分母含当前 Skill 未实现但客观有答案的题型",
@@ -684,7 +733,8 @@ class EvaluationRunner:
                     f"越权作答 over_answer={capability.get('over_answer_total', 0)}",
                     "",
                     "注：旧 `answer_accuracy`/`abstention_accuracy` 为 R2b 兼容口径"
-                    "（分母只含标注 solved；弃权集混入有答案未实现样本），仅供历史对照。",
+                    "（分母只含标注 solved；弃权集混入有答案未实现样本），仅供历史对照；"
+                    "JSON 输出中 `primary_*` / `capability` 字段为 R3a 主口径，报告一律优先读取。",
                 ]
             )
 
