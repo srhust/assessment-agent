@@ -14,7 +14,8 @@ from __future__ import annotations
 import re
 from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
-from ..schemas import VerbalEvidence, VerbalOptionAnalysis, VerbalReasoningPlan
+from ..schemas import (PropositionRecord, VerbalEvidence, VerbalOptionAnalysis,
+                       VerbalReasoningPlan)
 
 # ------------------------------------------------------------------ 基础文本工具
 
@@ -96,10 +97,60 @@ def extract_cues(text: str) -> Dict[str, Any]:
     }
 
 
+# ------------------------------------------------- R3c 命题归属 / 事实性层
+#
+# 核心区分：asserted(P)（原文直接陈述）/ reported(P)（报道、声称）/ believed(P)（观点、
+# 信念）/ hypothetical(P)（假设、条件）/ uncertain(P)（可能级）/ denied_attribution
+# （否认的是归属谓词——既推不出 P 也推不出 ¬P）。
+# reported(P) ⊬ P；believed(P) ⊬ P；hypothetical(P) ⊬ P。这是**主实现**（词表+最早位置），
+# audit() 中的归属复核是**独立轻量实现**（不同词表组织，见 _ATT_SIMPLE/_audit_epistemics），
+# 两者一致才允许接受；不一致时以更保守方为准。不针对任何具体样本 ID/题干特判。
+
+# 主实现（结构锚定）：句首"据…/X称|认为…"为归属层；假设/可能连词为辖域算子（任意位置）；
+# "否认+说法/报道类宾语"为归属否认。内容谓词（如"某机构否认指控"的否认若不在句首引导
+# 归属位置）不会被当作选项自身的归属层——选项复述归属事件时与证据同状态，走正常管线。
+_HEAD_ATT = re.compile(r"^(?:据[\u4e00-\u9fa5]{0,10}(?:报道|称|说|了解|悉|传)?"
+                       r"|[\u4e00-\u9fa5]{1,12}?(?:声称|宣称|辩称|称|表示|指出|透露|介绍|报道|认为|相信|觉得|主张|说(?!法|服))"
+                       r"|有[\u4e00-\u9fa5]{0,10}(?:报道|消息))")
+_BELIEVE_HEAD = re.compile(r"(?:认为|相信|觉得|主张|观点|看法)")
+_HYPOTH = re.compile(r"(假设|假如|倘若|要是|如果|若|一旦|设想)")
+_UNCERTAIN = re.compile(r"(可能|或许|也许|大概|估计|预计|似乎|据说|传闻)")
+_DENIAL_OBJ = re.compile(r"(?:否认|驳斥|反驳|澄清|质疑)[^，。；]{0,20}(?:说法|报道|消息|传闻|言论|指控)"
+                         r"|(?:说法|报道|传闻|言论|指控)[^，。；]{0,12}(?:被|遭到|予以|受到)[^，。；]{0,8}(?:否认|驳斥|澄清|质疑)"
+                         r"|(?:没有|尚无|并无)证据(?:表明|显示)?|无法证实|不足以证明|尚待(?:验证|证实)|存疑")
+# 辖域算子开头的小句（条件/让步/因果）必须与后续小句合并，否则"如果p，q"的 q 会被
+# 当作独立断言（R3c：这是"所有…都会…"越权接受的根因之一）。
+_SCOPE_HEAD = re.compile(r"^(?:如果|假如|倘若|要是|若|一旦|虽然|尽管|因为|由于|既然|无论|哪怕|即使)")
+
+
+def epistemics(text: str) -> Dict[str, Any]:
+    """句子/选项的命题态度扫描：status / marker / 剥离后的 P / 嵌套标记。"""
+    hits: List[Tuple[int, str, str]] = []
+    m = _HEAD_ATT.match(text)
+    if m:
+        kind = "believed" if _BELIEVE_HEAD.search(m.group(0)) else "reported"
+        hits.append((0, kind, m.group(0)))
+    for rx, kind in ((_DENIAL_OBJ, "denied_attribution"), (_HYPOTH, "hypothetical"),
+                     (_UNCERTAIN, "uncertain")):
+        mm = rx.search(text)
+        if mm:
+            hits.append((mm.start(), kind, mm.group(0)))
+    if not hits:
+        return {"status": "asserted", "marker": "", "proposition": text, "nested": []}
+    hits.sort(key=lambda h: (h[0], ["denied_attribution", "reported", "believed",
+                                    "hypothetical", "uncertain"].index(h[1])))
+    pos, kind, marker = hits[0]
+    nested = [h[2] for h in hits[1:]]
+    prop = (text[pos + len(marker):].strip("，,、；;：: ") if pos == 0 else text)
+    return {"status": kind, "marker": marker, "proposition": prop or text, "nested": nested}
+
+
 # ------------------------------------------------------------------ 任务识别
 
 TASK_PATTERNS: List[Tuple[str, str]] = [
-    ("argument", r"最能?(?:削弱|质疑|反驳|支持|加强)|(?:以下|下列)哪项(?:是|为)?.{0,6}(?:必要)?前提|假设"),
+    # 注意：bare "假设" 一词不作 argument 触发（R3c：材料中出现"假设"字样属推理材料
+    # 常见情形，误路由会绕过归属层）——论证检测必须依赖提问句式。
+    ("argument", r"最能?(?:削弱|质疑|反驳|支持|加强)|(?:以下|下列)哪项(?:是|为)?.{0,6}(?:必要)?前提|(?:以下|下列|上述|这|该).{0,4}(?:项)?假设|基于.{0,8}假设|需要.{0,6}假设"),
     ("cloze", r"依次填入|填入.{0,6}(?:横线|空格|括号)|最恰当的一?项?"),
     ("inference", r"(?:可以|无法|不能|最不能|不可能)(?:推出|得出)|推不出|由此可知|下列说法(?:正确|错误|不正确)|根据(?:这段|上述|以上)(?:文字|材料)"),
     ("main_idea", r"主旨|意在|强调|概括|适合做(?:的)?标题|中心(?:思想|论点)|主要(?:观点|说明|论述)"),
@@ -151,8 +202,52 @@ def _overlap(a: Set[str], b: Set[str]) -> float:
     return len(a & b) / len(a)
 
 
+def split_clauses(text: str) -> List[Tuple[int, int, str]]:
+    """句内小句切分（相对偏移）。R3c：归属/断言常在同一复句内分层
+    （"有报道称X，但Y"——Y 是作者断言，不应被整句 reported 吞并）。"""
+    out: List[Tuple[int, int, str]] = []
+    start = 0
+    for i, ch in enumerate(text):
+        if ch in "，,":
+            seg = text[start:i]
+            if norm(seg):
+                out.append((start, i, seg))
+            start = i + 1
+    seg = text[start:]
+    if norm(seg):
+        out.append((start, start + len(seg), seg))
+    return out
+
+
+_ATT_TAIL = re.compile(r"(?:称|表示|指出|报道|认为|相信|觉得|说|介绍|透露|消息|流传|传闻|传)$")
+
+
+def evidence_units(text: str) -> List[Tuple[int, int, str]]:
+    """推断/审计的证据单元：先句切分再小句切分（保留原文绝对偏移）。
+
+    归属引导小句（"有报道称"/"专家表示"结尾）必须与内容小句**合并**为一个单元，
+    否则归属层会被逗号切开而失效。
+    """
+    units: List[Tuple[int, int, str]] = []
+    for s0, _s1, s_text in split_sentences(text):
+        clauses = split_clauses(s_text)
+        merged: List[Tuple[int, int, str]] = []
+        for c0, c1, c_text in clauses:
+            if merged and norm(c_text) and (
+                    _ATT_TAIL.search(merged[-1][2].rstrip("，, "))
+                    or _SCOPE_HEAD.match(merged[-1][2].lstrip())):
+                p0 = merged[-1][0]
+                merged[-1] = (p0, c1, s_text[p0:c1])   # 原文切片（保留分隔逗号）
+            else:
+                merged.append((c0, c1, c_text))
+        for c0, c1, c_text in merged:
+            if norm(c_text):
+                units.append((s0 + c0, s0 + c1, c_text))
+    return units
+
+
 def classify_inference_option(label: str, text: str, sentences: List[Tuple[int, int, str]],
-                              stem: str) -> VerbalOptionAnalysis:
+                              stem: str, epistemic: bool = True) -> VerbalOptionAnalysis:
     ob = content_bigrams(text)
     best_span, best_ratio = None, 0.0
     for span in sentences:
@@ -170,12 +265,35 @@ def classify_inference_option(label: str, text: str, sentences: List[Tuple[int, 
     ana.evidence = [_ev(label, best_span, "support")]
     oc, sc = extract_cues(text), extract_cues(best_span[2])
     diffs: List[str] = []
+    # --- R3c 命题归属核对（主实现）：归属/假设/传闻证据不支持裸断言 ---
+    se, oe = epistemics(best_span[2]), epistemics(text)
+    if epistemic:
+        ana.epistemic = f"evidence:{se['status']}/option:{oe['status']}"
+        if se["status"] != "asserted" and oe["status"] == "asserted":
+            ana.cue_diffs = diffs + [f"命题归属不一致（证据 {se['status']}，选项为裸断言）"]
+            ana.relation = "overreach"
+            ana.definitive = True
+            ana.notes = "归属内容不得当作事实（reported(P) ⊬ P；否认归属谓词时 P 真值未定）"
+            ana.new_terms = new_terms
+            return ana
+        if se["status"] == "asserted" and oe["status"] in {"reported", "believed", "hypothetical"}:
+            ana.relation = "insufficient"
+            ana.notes = "原文未陈述该归属/假设本身存在，不能由 P 推出 reported(P)/believed(P)"
+            ana.new_terms = new_terms
+            return ana
+        if se["status"] == "denied_attribution" and oe["status"] == "uncertain":
+            ana.relation = "insufficient"
+            ana.notes = "否认针对归属谓词，P 真值未定，连可能级断言也缺乏依据"
+            ana.new_terms = new_terms
+            return ana
     if oc["neg_parity"] != sc["neg_parity"]:
         diffs.append(f"否定极性不一致（选项 {oc['neg_parity']} vs 原文 {sc['neg_parity']}）")
     if oc["modal"] > sc["modal"]:
         diffs.append(f"情态增强（{sc['modal']}→{oc['modal']}）")
     if oc["quant"] is not None and sc["quant"] is not None and oc["quant"] > sc["quant"]:
         diffs.append(f"量词扩大（{sc['quant']}→{oc['quant']}）")
+    if epistemic and se["status"] != "asserted" and oe["status"] not in {se["status"], "uncertain"}:
+        diffs.append(f"归属标记未对齐（证据 {se['status']} vs 选项 {oe['status']}）")
     ana.cue_diffs = diffs
     ana.new_terms = new_terms
     if diffs and best_ratio >= 0.4:
@@ -191,9 +309,10 @@ def classify_inference_option(label: str, text: str, sentences: List[Tuple[int, 
     return ana
 
 
-def core_inference(stem: str, options: Sequence[Tuple[str, str]]) -> Dict[str, Any]:
+def core_inference(stem: str, options: Sequence[Tuple[str, str]],
+                   epistemic: bool = True) -> Dict[str, Any]:
     question, passage_end = _question_tail(stem)
-    sentences = [s for s in split_sentences(stem[:passage_end] or stem) if norm(s[2])]
+    sentences = evidence_units(stem[:passage_end] or stem)
     if not sentences:
         return _verb_fail("no_passage")
     question_target = question or stem
@@ -204,7 +323,7 @@ def core_inference(stem: str, options: Sequence[Tuple[str, str]]) -> Dict[str, A
         mode = "false"          # 说法错误：只有"与原文矛盾"才算候选
     else:
         mode = "true"           # 可以推出：必须被原文支持
-    analyses = [classify_inference_option(l, t, sentences, stem[:passage_end] or stem)
+    analyses = [classify_inference_option(l, t, sentences, stem[:passage_end] or stem, epistemic)
                 for l, t in options]
     CANDIDATE_RELATIONS = {
         "cannot": {"contradicted", "overreach", "absent"},
@@ -217,11 +336,27 @@ def core_inference(stem: str, options: Sequence[Tuple[str, str]]) -> Dict[str, A
                                negative_target=negative,
                                passage_spans=[e for a in analyses for e in a.evidence])
     plan.option_analyses = analyses
+    for (s0, s1, s_text) in sentences[:8] if epistemic else []:
+        if not norm(s_text):
+            continue
+        epi = epistemics(s_text)
+        pc = extract_cues(epi["proposition"])
+        plan.propositions.append(PropositionRecord(
+            proposition=epi["proposition"], attribution=epi["marker"],
+            epistemic_status=epi["status"], polarity=pc["neg_parity"],
+            modality=pc["modal"], quantifier=pc["quant"],
+            evidence_span=VerbalEvidence(start=s0, end=s1, text=s_text, role="support"),
+            nested_markers=epi["nested"]))
     plan.unsupported_claims = sorted({t for a in analyses for t in a.new_terms
                                        if a.label == (cands[0].label if len(cands) == 1 else "")})
     if len(cands) == 1:
         plan.proposed_answer = cands[0].label
         plan.confidence = 0.8 if not weak_others else 0.6
+        if "option:uncertain" in (cands[0].epistemic or "") \
+                and not (cands[0].epistemic or "").startswith("evidence:asserted"):
+            plan.confidence = min(plan.confidence, 0.6)
+            plan.uncertainty_reasons.append(
+                "选项为可能级推断且证据带归属层：按阅读惯例归属证据仅支持可能级，非确证断言")
         if weak_others:
             plan.uncertainty_reasons.append(
                 "部分干扰项规则不可判定（未被积极排除）；接受依赖唯一命中+验证层独立重叠复核")
@@ -706,10 +841,13 @@ CORES = {"inference": core_inference, "main_idea": core_main_idea,
          "cloze": core_cloze, "argument": core_argument}
 
 
-def build_verbal_plan(stem: str, options: Sequence[Tuple[str, str]]) -> Dict[str, Any]:
+def build_verbal_plan(stem: str, options: Sequence[Tuple[str, str]],
+                      epistemic: bool = True) -> Dict[str, Any]:
     task = detect_task(stem)
     if task is None:
         return _verb_fail("unrecognized_task", {"question": stem[:80]})
+    if task == "inference":
+        return core_inference(stem, options, epistemic)
     return CORES[task](stem, options)
 
 
@@ -730,7 +868,8 @@ def spans_valid(plan: Dict[str, Any] | VerbalReasoningPlan, stem: str) -> List[s
 
 
 def audit(stem: str, options: Sequence[Tuple[str, str]], answer: str, task_type: str,
-          claim_relation: str = "", span_texts: Sequence[str] = ()) -> Dict[str, Any]:
+          claim_relation: str = "", span_texts: Sequence[str] = (),
+          epistemic: bool = True) -> Dict[str, Any]:
     """独立于求解器的最小重算（不同实现：包含度度量 + 独立否定奇偶扫描 + 强度词表核对）。
     返回 status ∈ {confirmed, refuted, insufficient, self_consistent}；
     语义任务不存在真正独立的算术式反证——cloze/argument 只能自洽复核，
@@ -767,13 +906,33 @@ def audit(stem: str, options: Sequence[Tuple[str, str]], answer: str, task_type:
         return {"status": "insufficient", "reason": "empty_option"}
     whole = len(o_g & grams(t)) / len(o_g)
     if task_type == "inference":
+        # R3c 归属层独立复核（轻量不同词表；与主实现一致才维持 confirmed）
+        att_rx = re.compile(r"(报道|据称|据说|据传|声称|宣称|传媒|媒体|指出|表示|认为|以为|相信|觉得"
+                            r"|观点|主张|假设|假如|倘若|要是|如果|若|一旦|否认|驳斥|没有证据|无法证实|质疑|存疑)")
+        weak_rx = re.compile(r"(可能|或许|也许|大概|估计|预计|似乎)")
+        ev_att = any(att_rx.search(sp) for sp in span_texts) if span_texts else False
+        op_att = bool(att_rx.search(opts[answer]))
+        op_weak = bool(weak_rx.search(opts[answer]))
+        att_issue = ""
+        if epistemic:
+            if ev_att and not op_att and not op_weak:
+                att_issue = "attribution-as-fact：归属/假设证据被裸断言选项越过（独立扫描）"
+            elif not ev_att and op_att and span_texts:
+                att_issue = "attribution-ungrounded：选项的归属存在性无原文证据（独立扫描）"
         if claim_relation == "supported":
             par_ok = all(neg_scan(norm(sp)) == neg_scan(o) for sp in span_texts if sp)
+            if att_issue:
+                return {"status": "insufficient", "metric": round(whole, 3), "reason": att_issue}
             if whole >= 0.5 and par_ok:
                 return {"status": "confirmed", "metric": round(whole, 3)}
             return {"status": "refuted" if whole < 0.3 else "insufficient",
                     "metric": round(whole, 3), "reason": "包含度/否定极性复核"}
         if claim_relation in {"contradicted", "overreach"}:
+            if att_issue.startswith("attribution-as-fact"):
+                if claim_relation == "contradicted":
+                    return {"status": "insufficient", "metric": round(whole, 3),
+                            "reason": "归属证据下无法确认矛盾（报道内容未必为真）"}
+                return {"status": "confirmed", "reason": "归属层独立复核：传闻/假设不得作事实断言"}
             strength = ("一定", "必然", "所有", "都", "任何", "首次", "唯一", "必须")
             for sp in span_texts:
                 spn = norm(sp)

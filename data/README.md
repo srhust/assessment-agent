@@ -56,6 +56,36 @@ data/
   系统给出任何通过校验的答案都算越权。**禁止按模型是否解对筛题，禁止依据盲集结果回改题目或规则。**
 - 评测：`eval --split verbal_dev|verbal_blind`；指标聚合见 `scripts/run_r3b_report.py`
   （Verbal Accuracy、Selective、False Accept、Abstention、Evidence Citation Validity、Latency 等）。
+- **R3c 备注**：旧 `blind/` 首跑 8/12 中暴露的 `vbv-inf-09` 误放已修复，该集成为**历史回归锚**
+  （重跑 9/12 不再具有盲测意义，manifest 与数据文件均未回写）；新未见盲集见 `blind2/`。
+
+## 言语理解第二盲集 `benchmark_verbal/blind2/`（R3c，冻结）
+
+- 10 题全新人工题干（与 blind/ 题干互斥，守护测试断言），覆盖归属/否认/传闻+无法证实/
+  预报断言层/cannot 型/主旨/搭配/论证；**首跑即终录**：policy 6/10，objective 4/8，
+  误放 0、越权 0，4 例为覆盖缺口诚实弃权（见 `blind2_firstrun_metrics.json` 与
+  `benchmark_language/manifest.json` 的 sha）。
+
+## 命题归属对照组 `benchmark_epistemic/dev/`（R3c）
+
+- 13 题**最小对比对**：同一内容命题 P 固定，只换外层归属谓词（有报道/有媒体称/实测数据/
+  专家观点/假设/否认/双重否定归属），期望行为随之改变（9 solved + 4 failed）。
+- 属开发集：R3c 迭代期间可调整；重生成脚本 `scripts/make_epistemic_benchmark.py`。
+- 评测：`eval --split verbal_epistemic_dev`。
+
+## 语言推理基准 `benchmark_language/`（R3c）
+
+- `dev/`（20 题）：七类关系（种属/整体部分/材料成品/功能用途/地点对象/工具行为/因果）
+  ×方向 ×判别性网格 + 近义/反义 + 英文类比子集；oracle/auto 均 20/20。
+- `blind/`（12 题，**一次生成即冻结**，sha=75eb15a…）：首跑 policy 11/12、objective 8/8，
+  其中 1 例 over_answer（ANT 字段单向引用：大方∶小气 未被积极排除）为盲集暴露的真实缺陷，
+  按纪律不回写（`blind_firstrun_metrics.json` 留档）。
+- 期望纪律：干扰项按词典语言学判定必须为不同关系/方向反转；多重匹配与词典外题干作为
+  诚实 failed 样本保留，**不按 Solver 结果筛题**。
+- 生成：`scripts/make_language_benchmark.py`（`--publish-blind` 仅执行一次，已执行）。
+- 评测：`eval --split language_dev|language_blind`；指标口径见 `scripts/run_r3c_report.py`
+  （objective/coverage/selective/false_accept/over_answer/unverified_abstention 分离），
+  消融四臂 `scripts/run_r3c_ablation.py`。
 
 ## 图形推理子集
 
@@ -71,7 +101,8 @@ data/
 ## 数据边界
 
 - 当前样本覆盖第一阶段已实现的题型（数字计算 / 数字推理 / 逻辑推理 / 图形推理 / 资料分析 R3a /
-  言语理解 R3b 的离线证据子集）。
+  言语理解 R3b 的离线证据子集）。R3c 新增：命题归属对照组、语言推理词典关系子集与
+  `verbal/blind2`、`language/blind` 两个冻结盲集。
 - 未实现题型只保留少量 `expected_status=unsupported` 样本，用于验证系统如实返回
   “未实现”，而不是编造答案。
 - 全部样本为自编的合成题，不含任何真实企业测评原题；请勿提交含真实题目、个人信息或

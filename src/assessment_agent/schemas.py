@@ -204,6 +204,23 @@ class VerbalEvidence(BaseModel):
     role: str = "support"                # support | against | absence | conclusion_anchor
 
 
+class PropositionRecord(BaseModel):
+    """R3c 命题级中间表示：把"谁以何种态度陈述 P"与 P 本身分开。
+
+    核心纪律：``reported(P) ⊬ P``、``believed(P) ⊬ P``、``hypothetical(P) ⊬ P``；
+    否认的是归属谓词时，既不得推出 P，也不得推出 ¬P。
+    """
+
+    proposition: str = ""                       # 归属谓词作用的核心内容（P，归一化文本）
+    attribution: str = ""                       # 归属主体/谓词证据（"有报道称"…），空=原文直接陈述
+    epistemic_status: str = "asserted"          # asserted|reported|believed|hypothetical|uncertain|denied_attribution
+    polarity: int = 0                           # 内容否定奇偶（0 肯定 / 1 否定；双否折叠≈0）
+    modality: int = 2                           # 1=可能级 2=中性断言 3=必然级
+    quantifier: Optional[float] = None          # 显式量词强度（None=无显式量词）
+    evidence_span: Optional[VerbalEvidence] = None
+    nested_markers: List[str] = Field(default_factory=list)   # 嵌套归属/否认标记（如"报道称…否认…"内层）
+
+
 class VerbalOptionAnalysis(BaseModel):
     """逐选项分析（LLM 与规则核共用同一结构；缺分析的选项不允许被接受）。"""
 
@@ -216,6 +233,7 @@ class VerbalOptionAnalysis(BaseModel):
     evidence: List[VerbalEvidence] = Field(default_factory=list)
     cue_diffs: List[str] = Field(default_factory=list)   # 否定/量词/情态差异记录
     new_terms: List[str] = Field(default_factory=list)   # 选项中无法在原文定位的内容词
+    epistemic: str = ""                  # R3c: 证据status→选项status（归属核对结果）
     notes: str = ""
 
 
@@ -228,8 +246,46 @@ class VerbalReasoningPlan(BaseModel):
     passage_spans: List[VerbalEvidence] = Field(default_factory=list)
     premises: List[str] = Field(default_factory=list)
     conclusion: str = ""
+    propositions: List[PropositionRecord] = Field(default_factory=list)   # R3c 证据句命题层
     option_analyses: List[VerbalOptionAnalysis] = Field(default_factory=list)
     unsupported_claims: List[str] = Field(default_factory=list)
+    proposed_answer: str = ""
+    confidence: float = 0.0
+    uncertainty_reasons: List[str] = Field(default_factory=list)
+    resolution: str = "rule"             # rule | llm_audited
+    assumptions: List[str] = Field(default_factory=list)
+
+
+class RelationEvidence(BaseModel):
+    """R3c 关系词库证据：一次关系判定所用的词典条目引用。"""
+
+    word_a: str = ""
+    word_b: str = ""
+    field: str = ""                       # hyper / part_of / made_of / function / place / tool / act / cause / syn / ant / def
+    source_text: str = ""                 # 人工释义原文（verify 对账词典现存内容）
+    direction: str = ""                   # a->b | b->a
+
+
+class LanguageRelationOption(BaseModel):
+    label: str
+    pair: List[str] = Field(default_factory=list)          # [c1, c2]
+    matched: List[str] = Field(default_factory=list)       # 与题干签名同向一致的关系标签
+    own_relations: List[str] = Field(default_factory=list) # 该词对全部可判定关系
+    missing: List[str] = Field(default_factory=list)       # 题干签名中该选项缺失的关系
+    verdict: str = "unknown"                # match | partial | mismatch | unknown_pair
+    notes: str = ""
+
+
+class LanguageRelationPlan(BaseModel):
+    """R3c 语言推理计划：关系标签必须逐条绑定词典证据，方向显式。"""
+
+    task_type: str                       # analogy | synonym | antonym | en_analogy
+    question_target: str = ""
+    stem_pair: List[str] = Field(default_factory=list)
+    relation_signature: List[str] = Field(default_factory=list)   # 含方向的关系标签集
+    evidence: List[RelationEvidence] = Field(default_factory=list)
+    option_analyses: List[LanguageRelationOption] = Field(default_factory=list)
+    conflicts: List[str] = Field(default_factory=list)
     proposed_answer: str = ""
     confidence: float = 0.0
     uncertainty_reasons: List[str] = Field(default_factory=list)

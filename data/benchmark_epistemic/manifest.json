@@ -1,0 +1,18 @@
+{
+  "created_at": "2026-10-18",
+  "data_class": "human-written minimal-contrast pairs（同一命题 P 只换外层归属谓词；期望状态在模型运行前按语言学标准确定）",
+  "independence_declaration": "题目由人工按事实性网格独立编写；不按模型是否解对筛题；冻结盲集（benchmark_verbal/blind）原题未出现在本组，vbv-inf-09 仅以机制改写变体作回归锚；禁止依据任何盲集表现修改本组之外的规则后回写盲集。",
+  "name": "benchmark_epistemic",
+  "splits": {
+    "dev": {
+      "count": 13,
+      "expected_status_counts": {
+        "failed": 4,
+        "solved": 9
+      },
+      "file": "dev/epistemic.jsonl",
+      "policy": "R3c 迭代期间可调参；调整后重生成即更新本 sha256",
+      "sha256": "3d3c63770d030a78d9ba4698fbb3aa5da8d52ddda8271f688f99a325ce669c6c"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "created_at": "2026-10-18",
+  "data_class": "human-written（按七类关系×方向×判别性网格独立编写；期望在模型运行前确定）",
+  "independence_declaration": "题目由人工按关系网格独立编写，未按 Solver 是否解对筛除失败样本（多重匹配/词典外题干作为诚实 failed 样本保留）；blind 与 verbal_blind2 在 dev 工作完成后生成并冻结，只允许首次且唯一一次评测；此后不得依据盲集表现修改规则或重生成盲集。",
+  "name": "benchmark_language",
+  "splits": {
+    "blind": {
+      "count": 12,
+      "file": "blind/language.jsonl",
+      "policy": "冻结：首次且唯一一次评测；不得重生成或回写",
+      "sha256": "75eb15aaf915664593cb17247733dbdb3783baee65faa83ac2a53cb33b16a2ae"
+    },
+    "dev": {
+      "count": 20,
+      "file": "dev/language.jsonl",
+      "policy": "R3c 迭代期间可调参；重生成即更新 sha256",
+      "sha256": "e836338943c169b4d080487000ac97892df37891dba7dcca50cabefb1054c568"
+    },
+    "verbal_blind2": {
+      "count": 10,
+      "file": "../benchmark_verbal/blind2/verbal.jsonl",
+      "policy": "冻结：首次且唯一一次评测；含归属机制新题",
+      "sha256": "d466150a4dcd1b965f653841899b950486655e3517c71ad0ff892023ec2e9c40"
+    }
+  }
+}

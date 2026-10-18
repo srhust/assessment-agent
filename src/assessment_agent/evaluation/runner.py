@@ -23,7 +23,8 @@ from .metrics import CaseResult, MetricsAccumulator, answers_match
 from .vision_metrics import aggregate_vision, compare_extraction_detail, render_region_overlay
 
 SPLITS = ("train", "dev", "test", "screens", "bench_dev", "bench_holdout",
-          "verbal_dev", "verbal_blind")
+          "verbal_dev", "verbal_blind", "verbal_epistemic_dev",
+          "language_dev", "language_blind", "verbal_blind2")
 
 # split → 数据集目录（benchmark_real 独立泛化基准：dev 可调参、holdout 冻结）
 _SPLIT_DIRS = {
@@ -31,6 +32,10 @@ _SPLIT_DIRS = {
     "bench_holdout": "benchmark_real/holdout",
     "verbal_dev": "benchmark_verbal/dev",
     "verbal_blind": "benchmark_verbal/blind",
+    "verbal_epistemic_dev": "benchmark_epistemic/dev",
+    "language_dev": "benchmark_language/dev",
+    "language_blind": "benchmark_language/blind",
+    "verbal_blind2": "benchmark_verbal/blind2",
 }
 
 EVAL_MODES = ("oracle_solver", "auto_router", "image_only")

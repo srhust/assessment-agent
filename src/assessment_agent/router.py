@@ -48,9 +48,11 @@ SKILL_RULES: Dict[str, Sequence[Rule]] = {
         (re.compile(r"(?:这段|上述|以下|短材料)(?:文字|材料)[^？]{0,40}(?:可以|无法|不能)?推(?:出|断)|意在强调?"), 2.2),
     ),
     "language_reasoning": (
-        (re.compile(r"类比|关系最为相似|最为相似|最为相近|最为接近|反义|近义|同义|词语关系"), 2.5),
+        (re.compile(r"类比|关系最(?:为)?相似|最为相似|最为相近|最为接近|反义|近义|同义|词语关系|意思(相近|相反)"), 2.5),
         (re.compile(r"\b(analogy|verbal reasoning|synonym|antonym)\b", re.IGNORECASE), 2.5),
         (re.compile(r"[A-Za-z]{3,}\s*[:：]\s*[A-Za-z]{3,}\s*(?:as|::)\s*", re.IGNORECASE), 2.0),
+        (re.compile(r"\bis\s+to\b.{0,40}\bas\b", re.IGNORECASE), 2.5),
+        (re.compile(r"相当于|与之相同|相同于|关系相同|一(组|对)词语|词语.{0,6}关系|逻辑关系与之|逻辑关系", re.UNICODE), 2.0),
     ),
     "personality": (
         (re.compile(r"性格|人格|职业倾向|量表|测评结果|维度得分|行为风格|MBTI|大五"), 2.5),

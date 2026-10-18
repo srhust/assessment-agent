@@ -60,7 +60,8 @@ class VerbalUnderstandingSkill(BaseSkill):
         if detect_task(question.stem) is None:
             return self.unsupported(question, "题干不属于言语理解离线子集（选词/主旨/推断/论证之外）")
 
-        result = build_verbal_plan(question.stem, options)
+        result = build_verbal_plan(question.stem, options,
+                                   epistemic=getattr(ctx.settings, "r3c_epistemic", True))
         plan_source = "rules"
         llm_rejection: Optional[Dict[str, Any]] = None
         if not result.get("ok") and ctx.llm is not None:
@@ -80,6 +81,7 @@ class VerbalUnderstandingSkill(BaseSkill):
             "verbal_plan": plan.model_dump(),
             "task_type": plan.task_type,
             "plan_source": plan_source,
+            "epistemic_enabled": bool(getattr(ctx.settings, "r3c_epistemic", True)),
             "evidence_count": sum(len(a.evidence) for a in plan.option_analyses) + len(plan.passage_spans),
             "unsupported_claims": plan.unsupported_claims,
             "uncertainty": plan.uncertainty_reasons,
@@ -252,7 +254,8 @@ class VerbalUnderstandingSkill(BaseSkill):
                 severity="blocking")], solution.answer)
         audit_res = audit(stem, options, str(solution.answer), plan.task_type,
                           answer_ana.relation,
-                          [e.text for e in answer_ana.evidence if e.role != "against"])
+                          [e.text for e in answer_ana.evidence if e.role != "against"],
+                          epistemic=bool(solution.meta.get("epistemic_enabled", True)))
         status = audit_res.get("status")
         if status == "refuted":
             checks.append(VerificationCheck(name="verbal.cues_preserved", passed=False,

@@ -83,7 +83,7 @@ assessment-agent/
 
 ## 2. 八个题型与当前状态
 
-当前注册表 8 个 Skill、6 个已实现（numeric/series/logical/figure/**data_analysis**/**verbal_understanding**）；
+当前注册表 8 个 Skill、7 个已实现（numeric/series/logical/figure/**data_analysis**/**verbal_understanding**/**language_reasoning**）；
 `capability_status` 一律由 `pipeline.registry.supported()` 派生（R3a），不再有手写名单。
 
 | Skill ID | 题型 | 第一阶段 | 求解方式 |
@@ -92,20 +92,20 @@ assessment-agent/
 | `number_series` | 数字推理 | ✅ 已实现 | 7 类规律检测（等差/等比/差分/奇偶分组/递推/幂次偏移/常数），要求解释全部已知项 |
 | `logical_reasoning` | 逻辑推理 | ✅ 已实现 | 排序比较语句 → Z3 约束 → 必然性/可能性判定 |
 | `figure_reasoning` | 图形推理 | ✅ 已实现 | 网格解析 + 六类规律（个数/边数/面积/平移/对称/叠加）+ 选项匹配；失败时给出原因 |
-| `verbal_understanding` | 言语理解 | ✅ 已实现（R3b，离线证据子集） | 选词填空（搭配表）/主旨概括（结论句覆盖）/阅读推断（否定极性·情态·量词核对）/加强削弱假设（字面条件链 + Z3）；每条证据必须为原文逐字区间，越界/伪造引用直接拒绝；子集外诚实 failed |
-| `language_reasoning` | 语言推理 | 🚧 仅接口 | 同上 |
+| `verbal_understanding` | 言语理解 | ✅ 已实现（R3b，R3c 增强） | 选词填空（搭配表）/主旨概括（结论句覆盖）/阅读推断（否定极性·情态·量词核对 + **R3c 命题归属层**：asserted/reported/believed/hypothetical/uncertain/denied 分层，传闻/假设/归属否认不得作事实断言）/加强削弱假设（字面条件链 + Z3）；每条证据必须为原文逐字区间，越界/伪造引用直接拒绝；子集外诚实 failed |
+| `language_reasoning` | 语言推理 | ✅ 已实现（R3c，词典关系子集） | 词语类比（七类方向关系：种属/整体部分/材料成品/功能用途/地点对象/工具行为/因果，方向显式）+ 近义/反义（仅人工词典证据）+ 英文类比子集；每个关系判定绑定 `lexicon_r3c` 词条，多重关系要求判别性覆盖，词典外一律 unknown——不硬猜 |
 | `data_analysis` | 资料分析 | ✅ 已实现（R3a） | 表格/统计图 → `DataCalculationPlan` → Fraction 精确求值 → 六步独立验证；缺数/歧义/单位冲突如实失败 |
 | `personality` | 性格测评解释 | 🚧 仅接口 | 同上 |
 
-未实现题型的行为是**明确失败**（如 `language_reasoning`、`personality`）：
+未实现题型的行为是**明确失败**（如 `personality`）：
 
 ```json
 {
   "status": "unsupported",
-  "skill": "language_reasoning",
+  "skill": "personality",
   "answer": null,
-  "error": "语言推理尚未实现（第一阶段 MVP 范围之外），不提供推测性答案",
-  "meta": {"stage": 2, "planned_capabilities": ["..."], "interface": "skills.language_reasoning...solve(question, ctx) -> Solution"}
+  "error": "性格测评解释尚未实现（第一阶段 MVP 范围之外），不提供推测性答案",
+  "meta": {"stage": 2, "planned_capabilities": ["..."], "interface": "skills.personality...solve(question, ctx) -> Solution"}
 }
 ```
 
@@ -123,7 +123,7 @@ pip install -r requirements.txt
 copy .env.example .env         # 填入你自己的模型服务地址与密钥（.env 已被 gitignore）
 ```
 
-即使**不配置任何模型**也能使用六个已实现题型（离线确定性模式）：
+即使**不配置任何模型**也能使用七个已实现题型（离线确定性模式）：
 
 ```bash
 $env:PYTHONPATH="src"          # 或 pip install -e .
@@ -543,11 +543,74 @@ image-only 实验与 verbal LLM 审计通道实验。
 
 ---
 
+### 6.6 R3c：命题事实性层、指标口径重构与语言推理
+
+**Part 1（P0）：传闻当事实的修复——命题级区分，而不是词表**。
+R3b 盲集首跑暴露 `vbv-inf-09`（"有报道称… ⇒ 报道内容为真"被接受）。修复不是扩词黑名单，
+而是给推断核引入命题归属层 `epistemics()`：`asserted(P) / reported(P) / believed(P) /
+hypothetical(P) / uncertain(P) / denied(归属谓词)`，规则：
+
+- `reported(P) ⊬ P`，但 `reported(P) ⊢ "存在关于 P 的报道"`（归属对齐选项仍可支持）；
+- 原文否定的是"有人声称 P"时，**不得**转换成"P 不成立"（双向裸断言均不可推出）；
+- 嵌套范围（"报道称某机构否认 P"）逐层记录 nested markers，只支持归属层面复述；
+- 来源不可靠/无合法候选 → `insufficient`/诚实 `failed`，**不允许仅凭词组重叠度给 confirmed**；
+- 证据粒度为**小句级**（句内按逗号切分）：归属引导小句（"有报道称"）与内容小句合并、
+  条件连词小句（"如果 p，q"）不得把后句当独立断言——修复了逗号复句的归属越权。
+  主实现（结构锚点：句首"据…"、主语+报道动词、对象式否认）与审计层（独立轻量词表扫描）
+  双实现互相制约，方向不一致时保守结果胜出。
+
+不针对任何题干/选项/样本 ID 特判；已暴露的旧盲集样本转为**历史回归锚**（机制变体测试），
+不再作为未见盲测成绩（新规则下旧 blind 为 9/12，该数字不再具有盲测意义）。
+
+**Part 2（P1）：指标口径重构**。R3b 的"verbal_dev 20/20"与"blind 8/12"是
+**policy_compliance**（遵守子集策略：该答答对+该弃权弃权），不是客观正确率。
+`scripts/run_r3c_report.py` 分离八个指标：`objective_answer_accuracy`（全部有金标准样本，
+含规则不可解）、`supported_subset_accuracy`（预声明可解子集）、`policy_compliance`、
+`answered_coverage`、`selective_accuracy`、`false_accept`（有金标准且接受错项）、
+`over_answer`（无金标准/越权给确定答案）、`unverified_abstention`（产生候选但验证未过、
+未对外作答）；"对外作答"与内部 `failed` 状态分账。Router Accuracy 分母=全部样本
+（unknown/超时/路由失败计入并列出 misses）。复算口径：verbal_dev objective 12/19=63.2%、
+历史 blind objective 3/11=27.3%。
+
+**Part 3–4：语言推理 Skill（`language_reasoning`，词典关系子集）**。
+`tools/language_tool.py` + `tools/lexicon_r3c.json`（人工词条：释义 def + 关系字段，
+是**唯一世界观来源**）：七类关系方向标签（GENUS_UP/DOWN、PART_OF/HAS_PART、
+MADE_FROM/PRODUCES、FUNCTION、PLACE、TOOL、CAUSE/EFFECT、SYN/ANT）。
+输出 `LanguageRelationPlan`（词对、关系签名、逐词条证据绑定、候选覆盖与排除、冲突、置信度）。
+规则：方向显式（反序=partial 不算满足）；多重关系要求选项**覆盖题干全部签名**（判别性不足→
+ambiguous 拒答）；近义/反义仅词典证据；英文类比子集。验证六检查：词条 source_text 对账、
+方向一致、粒度/方向偷换、竞争项同等判定（未登录竞争项如实声明不积极排除）、世界知识来源、
+唯一性；`audit_relation` 独立重推导。LLM（如配置）只有**提议权**：提议词对必须被词典逐对
+重算一致，同一模型自评不构成验证。
+
+**Part 5：新基准（`data/benchmark_epistemic/`、`data/benchmark_language/`、
+`data/benchmark_verbal/blind2/`）**。事实性对照组 13 题（最小对比对：同一命题 P 只换外层
+谓词，期望行为随之改变）；language dev 20 题（oracle/auto 均 20/20）；
+language blind 12 题与 verbal_blind2 10 题在 dev 完成后生成、**首跑即冻结**：
+language_blind 首跑 policy 11/12（objective 8/8，1 例 over_answer——ANT 字段单向引用被
+盲集暴露，如实记录不回写）；verbal_blind2 首跑 policy 6/10（objective 4/8，误放 0，
+4 例为覆盖缺口诚实弃权）。全部盲集 sha 入 manifest + 守护测试。
+
+**Part 6：消融四臂**（`results/r3c_ablation_*`，同一代码按开关切换）：
+
+| 臂 | verbal_dev obj | epistemic dev obj/over_answer | language dev obj | router auto |
+|---|---|---|---|---|
+| r0 R3b 基线 | 12/19 | 5/9 · **3 越权** | 0/18（不支持） | 53/53 |
+| r1 仅命题事实性 | 12/19 | **9/9 · 0 越权** | 0/18 | 53/53 |
+| r2 仅语言推理 | 12/19 | 5/9 · 3 越权 | **18/18** | 53/53 |
+| r3 完整 R3c | 12/19 | 9/9 · 0 | 18/18 | 53/53 |
+
+主基准无退化：bench_dev 25/30（oracle/auto，误放 0）、bench_holdout 5/14（误放 0）、
+screens 9/9；旧 Dev/盲集数据未回写。**真实 LLM/VLM 未配置：NOT EXECUTED**（词典语言核、
+命题归属层与 LLM 提议通道的真实模型表现均未验证）。
+
+---
+
 ## 7. 测试
 
 ```bash
 python -m pytest -q
-# 260 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
+# 299 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
 ```
 
 覆盖范围：
@@ -556,7 +619,7 @@ python -m pytest -q
 - 路由（7 类规则命中、显式指定、离线回退、LLM 兜底、未知技能拒绝）
 - 工具（SymPy 精确计算与非法输入、Fraction 独立求值、选项匹配、7 类数列规律、Z3 蕴含/否定/矛盾/带数值差拒绝、图形布局解析、六类规律推断、Skill 端到端与诚实失败）
 - 校验（数值篡改 → repair、数列篡改 → repair、逻辑复核、unsupported → reject、图形换阈值复算、Skill 复核异常 → blocking 失败）
-- Skill（8 个注册、6 个已支持（R3a 资料分析、R3b 言语理解）、声明式 Skill 绝不返回答案、数列歧义标记 ambiguous）
+- Skill（8 个注册、7 个已支持（R3a 资料分析、R3b 言语理解、R3c 语言推理）、声明式 Skill 绝不返回答案、数列歧义标记 ambiguous）
 - 流水线（文本端到端、内联选项解析、截图 + 假视觉模型端到端、缺视觉模型报错、产物完整性、拒答不暴露原始答案）
 - 评测（数据集加载、指标统计、失败归因、结果落盘、oracle/auto 路由模式、新指标计算、failed 状态严格匹配、answerable_coverage 不被错误拒答虚高）
 - 图形工具接口（布局解析、特征提取、规律引擎、Skill 端到端、诚实失败、换阈值复核）
@@ -567,7 +630,10 @@ python -m pytest -q
 - R2c 可靠性（标注派生与冻结分母、误放/误杀/unverified/over-answer 计数、图形候选代入复核、非方形格框 bbox 锚、消融五臂→七臂→九臂口径）
 - R3a 资料分析（39 项：Dev 全部 DA 样本 solved/failed 双套参数化、计划可追溯性、六步验证、单元格/图上文本篡改拦截、缺数/OCR 歧义/单位冲突/同名列歧义结构化失败、年均增长率精确开方、双层表头、统计图像素比例复核、LLM 只能供证据绑定计划、注册表派生 capability_status、开关消融、primary/legacy 口径字段）
 - R3b 可靠性（11 项：LLM 合法计划被真正执行并 accept、越界/篡改引用与表达式-存档值不一致阻断、操作↔表达式模板互证、intent 表层检查措辞、伪造计划拒绝）
-- R3b 言语理解（14 项：搭配/推断/主旨/论证四类规则核端到端、原文区间逐字验证与篡改/越界/提问区引用拦截、LLM 逐选项分析+区间绑定执行通道、伪造证据/漏分析/坏标签拒绝、cloze/argument 自洽复核不得给 LLM 确定性通过、真歧义拒选、开关消融、verbal 基准结构+盲集 sha256 冻结+防泄漏守护）
+- R3b 言语理解（14 项：搭配/推断/主旨/论证四类规则核端到端、原文区间逐字验证与篡改/越界/提问区引用拦截、LLM 逐选项分析+区间绑定执行通道、伪造证据/漏分析/坏标签拒绝、cloze/argument 自洽
+- R3c 命题归属（18 项：六状态 epistemics 判别、嵌套归属范围、最小对比对（P 固定换外层谓词）、否认双向阻断、旧盲集 inf-09 机制锚通用变体、审计层独立拦截 supported 越权、Skill 端到端拒传闻/接归属对齐）
+- R3c 语言推理（15 项：七类关系方向显式、反序 partial、多重匹配拒答、词典外诚实 failed、source_text 篡改 reject、LLM 提议三态（一致绑定/不一致拒绝/词典外拒绝）、消融开关复现 R3b 误放、路由优先语言）
+- R3c 数据守护（7 项：epistemic/language/blind/blind2 数量与 sha 对账、盲集间题干互斥、旧 blind 冻结不变、首跑记录存在、行格式与 answer/expected 一致性）复核不得给 LLM 确定性通过、真歧义拒选、开关消融、verbal 基准结构+盲集 sha256 冻结+防泄漏守护）
 - DSH / MCP 接入（清单结构、`tools/call` 形状、未知工具与非法参数、能力输出脱敏、`save=false` 不落盘）
 - CLI（solve / eval / skills / doctor / mcp-manifest / call 的返回码与输出）
 
@@ -605,8 +671,8 @@ mock 结果只证明链路机制，不用于宣称模型识别能力。
 | --- | --- | --- |
 | 图形推理 | ✅ 已实现：网格解析 + 六类规律（个数/边数/面积/平移/对称/叠加）；待实现：旋转/翻转匹配、曲线图形、非叠加九宫格规律 | OpenCV + NumPy |
 | 资料分析 | ✅ R3a 已实现：表格/柱状图结构化 + 计算计划 + Fraction 求值 + 六步独立验证；待实现：折线/多图复合表格、更复杂表头合并与真实截图 OCR 端到端验证 | OpenCV + 表格校验器 +（真实 VLM 待配置） |
-| 言语理解 | ✅ R3b 已实现离线证据子集：选词搭配、主旨结论覆盖、推断否定/量词/情态核对、字面条件链 Z3；待实现：传闻/转述谓词的证据极性（盲集已暴露 1 例误放）、语句排序关联词链、跨句指代、近义重表述主旨 | 带证据的 LLM 输出 + 校验器 |
-| 语言推理 | 词关系类型知识库 + 关系一致性/方向/词性校验 | 知识库检索 + LLM |
+| 言语理解 | ✅ R3b+R3c：选词搭配、主旨结论覆盖、推断否定/量词/情态核对 + **命题归属层**（传闻/假设/否认不升格为事实）、字面条件链 Z3；待实现：跨句指代、近义重表述主旨、预设/蕴含（"否认说法⇒说法存在"）形式化、肯后式推断 | 带证据的 LLM 输出 + 校验器 |
+| 语言推理 | ✅ R3c：词典七类方向关系 + 判别性覆盖 + 六项验证；待实现：词库规模化（当前 ~120 中文词条）、程度关系、词性/语义角色校验、真实 LLM 提议通道验证 | 知识库检索 + LLM |
 | 性格测评解释 | 维度释义模板 + 组合解释 + 合规边界检查 | 量表知识库 |
 | 通用 | 真假话/条件推理的 Z3 编码、DSH/MCP 适配、SFT 蒸馏 | — |
 

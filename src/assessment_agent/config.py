@@ -120,6 +120,10 @@ class Settings(BaseModel):
     r2c_router_structure: bool = True  # Router 结构证据优先（图形裁剪/表格区域压过关键词冲突）
     r3a_data_analysis: bool = True  # R3a 资料分析 Skill 开关（关闭时回退 declared 接口=弃权）
     r3b_verbal: bool = True         # R3b 言语理解 Skill 开关（同上，供消融）
+    # R3c：epistemic=命题归属/事实性层（关闭即回到 R3b 词组重叠行为，供消融）；
+    # language=语言推理 Skill（关闭回退 declared）。env ASSESSMENT_R3C_DISABLE=epistemic,language
+    r3c_epistemic: bool = True
+    r3c_language: bool = True
 
     @property
     def llm_enabled(self) -> bool:
@@ -165,6 +169,11 @@ class Settings(BaseModel):
             for item in (merged.get("ASSESSMENT_R2C_DISABLE") or "").split(",")
             if item.strip()
         }
+        r3c_off = {
+            item.strip()
+            for item in (merged.get("ASSESSMENT_R3C_DISABLE") or "").split(",")
+            if item.strip()
+        }
         return cls(
             llm=llm,
             offline=offline,
@@ -181,6 +190,8 @@ class Settings(BaseModel):
             r2c_router_structure="router_structure" not in disabled,
             r3a_data_analysis="data_analysis" not in disabled,
             r3b_verbal="verbal_understanding" not in disabled,
+            r3c_epistemic="epistemic" not in disabled,
+            r3c_language="language" not in disabled,
         )
 
     def describe(self) -> Dict[str, object]:
@@ -202,5 +213,7 @@ class Settings(BaseModel):
                 "router_structure": self.r2c_router_structure,
                 "data_analysis": self.r3a_data_analysis,
                 "verbal_understanding": self.r3b_verbal,
+                "r3c_epistemic": self.r3c_epistemic,
+                "r3c_language": self.r3c_language,
             },
         }

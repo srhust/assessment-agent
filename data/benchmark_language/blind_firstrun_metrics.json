@@ -1,0 +1,43 @@
+{
+  "split": "language_blind",
+  "total": 12,
+  "correct": 11,
+  "per_skill": {
+    "language_reasoning": {
+      "skill": "language_reasoning",
+      "total": 12,
+      "correct": 11,
+      "accuracy": 0.9167,
+      "answerable": 8,
+      "answer_accuracy": 1.0,
+      "covered_count": 9,
+      "coverage_ratio": 0.75,
+      "answerable_coverage": 1.0,
+      "selective_accuracy": 0.8889,
+      "abstention_total": 4,
+      "abstention_correct": 3,
+      "abstention_accuracy": 0.75,
+      "route_total": 12,
+      "route_correct": 12,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 8,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 1.0,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 9,
+      "unsupported": 0,
+      "failed": 3,
+      "repaired": 0,
+      "rejected": 3,
+      "mean_latency_ms": 2.678,
+      "p50_latency_ms": 2.729,
+      "p95_latency_ms": 4.477,
+      "failure_reasons": {
+        "wrong_answer": 1
+      }
+    }
+  },
+  "firstrun_policy": "首跑即终录；盲集冻结后禁止重评或回写"
+}
