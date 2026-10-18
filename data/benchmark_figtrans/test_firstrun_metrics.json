@@ -1,0 +1,124 @@
+{
+  "split": "figtrans_test",
+  "evaluated_at": "2026-10-18",
+  "run_mode": "oracle_solver",
+  "data_sha256_at_firstrun": "6eedfe14e737a836db18910a2fa3d7efdd6afb735544a5ddb29adc8bdba0e61d",
+  "code_commit": "cb5d1dc",
+  "note": "首次且唯一一次评测（冻结纪律）。此文件即首评记录，之后任何改动 test 数据都不得回写本文件。",
+  "summary": {
+    "total": 10,
+    "correct": 7,
+    "accuracy": 0.7,
+    "false_accept_total": 1,
+    "false_reject_total": 0
+  },
+  "honesty_notes": [
+    {
+      "case": "ftt-comp-08",
+      "label": "false_accept",
+      "analysis": "金标准模板复合式书写错误：选项 A 实际渲染为 R90(s1)（与题干第2格重复），几何口径下 B 才是 R90 步进的合法外推；solver/独立 verifier 均接受 B → 对冻结 gold=A 记 false accept（不回写、不重评）。"
+    },
+    {
+      "case": "ftt-rot90-01",
+      "label": "false_reject(诚实弃权)",
+      "analysis": "阶梯形 R180 自对称 → R90/R270 步进等价，且 gold 选项 A 与 D 内容同化，仲裁正确弃权（不可区分），对 expected solved 记 false reject；属金标注记未考虑对称等价类。"
+    },
+    {
+      "case": "ftt-scale-04",
+      "label": "false_reject(容差边界)",
+      "analysis": "缩放候选对 gold 选项残差 0.1505 恰贴 tol=0.15 之外 → 弃权。纪律：不放宽容差换准确率；此案例已入回归测试锁定。"
+    }
+  ],
+  "per_case": [
+    {
+      "case_id": "ftt-rot90-01",
+      "status": "failed",
+      "predicted": null,
+      "expected": "A",
+      "correct": false,
+      "verification_action": "reject",
+      "failure_reason": "已有规律无法唯一匹配选项：图形个数外推为 3，但有 4 个选项匹配（无法唯一确定）; 对称性应为 垂直=False 水平=False，但有 4 个选项匹配; 墨迹面积外推到 216px，多个选项接近，无法唯一确定；变换通道：{'rotate_flip_seq': {'A': 0.047321, 'B': 0.66402, 'C': 0.907546, 'D': 0.047321}}"
+    },
+    {
+      "case_id": "ftt-mirror-02",
+      "status": "solved",
+      "predicted": "B",
+      "expected": "B",
+      "correct": true,
+      "verification_action": "accept",
+      "failure_reason": null
+    },
+    {
+      "case_id": "ftt-trans-03",
+      "status": "solved",
+      "predicted": "A",
+      "expected": "A",
+      "correct": true,
+      "verification_action": "accept",
+      "failure_reason": null
+    },
+    {
+      "case_id": "ftt-scale-04",
+      "status": "failed",
+      "predicted": null,
+      "expected": "A",
+      "correct": false,
+      "verification_action": "reject",
+      "failure_reason": "空白格不在行末，当前只支持“求下一格”的序列题；变换通道：{'scale': {'A': 0.150455, 'B': 1.0, 'C': 1.0}}"
+    },
+    {
+      "case_id": "ftt-grid-05",
+      "status": "solved",
+      "predicted": "A",
+      "expected": "A",
+      "correct": true,
+      "verification_action": "accept",
+      "failure_reason": null
+    },
+    {
+      "case_id": "ftt-overlay-06",
+      "status": "solved",
+      "predicted": "A",
+      "expected": "A",
+      "correct": true,
+      "verification_action": "accept",
+      "failure_reason": null
+    },
+    {
+      "case_id": "ftt-rot180-07",
+      "status": "solved",
+      "predicted": "A",
+      "expected": "A",
+      "correct": true,
+      "verification_action": "accept",
+      "failure_reason": null
+    },
+    {
+      "case_id": "ftt-comp-08",
+      "status": "solved",
+      "predicted": "B",
+      "expected": "A",
+      "correct": false,
+      "verification_action": "accept",
+      "failure_reason": "wrong_answer"
+    },
+    {
+      "case_id": "ftt-sym-09",
+      "status": "failed",
+      "predicted": null,
+      "expected": null,
+      "correct": true,
+      "verification_action": "reject",
+      "failure_reason": null
+    },
+    {
+      "case_id": "ftt-conflict-10",
+      "status": "failed",
+      "predicted": null,
+      "expected": null,
+      "correct": true,
+      "verification_action": "reject",
+      "failure_reason": null
+    }
+  ]
+}

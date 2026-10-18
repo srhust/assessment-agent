@@ -124,6 +124,12 @@ class Settings(BaseModel):
     # language=语言推理 Skill（关闭回退 declared）。env ASSESSMENT_R3C_DISABLE=epistemic,language
     r3c_epistemic: bool = True
     r3c_language: bool = True
+    # R4a：transform=图形变换通道（关闭回到仅六类规律）；indep_verifier=变换独立验证器
+    # （关闭则回到仅候选代回复核，消融臂3/4）。env ASSESSMENT_R4A_DISABLE=transform,indep_verifier
+    r4a_transform: bool = True
+    r4a_indep_verifier: bool = True
+    # 消融臂 r1（仅新变换规则）专用：禁用六类规则通道，只允许变换通道作答
+    r4a_disable_six_rules: bool = False
 
     @property
     def llm_enabled(self) -> bool:
@@ -174,6 +180,11 @@ class Settings(BaseModel):
             for item in (merged.get("ASSESSMENT_R3C_DISABLE") or "").split(",")
             if item.strip()
         }
+        r4a_off = {
+            item.strip()
+            for item in (merged.get("ASSESSMENT_R4A_DISABLE") or "").split(",")
+            if item.strip()
+        }
         return cls(
             llm=llm,
             offline=offline,
@@ -190,8 +201,11 @@ class Settings(BaseModel):
             r2c_router_structure="router_structure" not in disabled,
             r3a_data_analysis="data_analysis" not in disabled,
             r3b_verbal="verbal_understanding" not in disabled,
-            r3c_epistemic="epistemic" not in disabled,
-            r3c_language="language" not in disabled,
+            r3c_epistemic="epistemic" not in disabled and "epistemic" not in r3c_off,
+            r3c_language="language" not in r3c_off,
+            r4a_transform="transform" not in r4a_off,
+            r4a_indep_verifier="indep_verifier" not in r4a_off,
+            r4a_disable_six_rules="six_rules" in r4a_off,
         )
 
     def describe(self) -> Dict[str, object]:
@@ -215,5 +229,8 @@ class Settings(BaseModel):
                 "verbal_understanding": self.r3b_verbal,
                 "r3c_epistemic": self.r3c_epistemic,
                 "r3c_language": self.r3c_language,
+                "r4a_transform": self.r4a_transform,
+                "r4a_indep_verifier": self.r4a_indep_verifier,
+                "r4a_disable_six_rules": self.r4a_disable_six_rules,
             },
         }

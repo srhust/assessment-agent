@@ -263,8 +263,10 @@ def substitution_check(
             "measurements": {},
         }
 
-    if grid:
+    if grid and int(grid[0]) >= 2:
         return _grid_substitution(stem_crop, (int(grid[0]), int(grid[1])), measurements, chosen_label)
+    # 单行显式 grid（1×N 序列题）与无 grid 一样走序列约束复核；九宫格结构检查
+    # 对单行题干恒假（完整行数=0），R4a figtrans 序列题暴露了该分支错误
 
     layout = analyze_layout(Path(stem_crop))
     stem_cells = [cell for band in layout["bands"] for cell in band["cells"]]

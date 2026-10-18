@@ -1,0 +1,12 @@
+{
+  "split": "figtrans_dev",
+  "evaluated_at": "2026-10-18",
+  "data_sha256": "66444dcf3a5c0c82c80484d8675e3ac64b41c44107f6142521c23ef769446844",
+  "summary": {
+    "total": 16,
+    "correct": 16,
+    "accuracy": 1.0,
+    "false_accept_total": 0,
+    "false_reject_total": 0
+  }
+}

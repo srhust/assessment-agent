@@ -7,13 +7,15 @@ from typing import List
 from .base import Tool, ToolBox, ToolError, ToolUnavailable, json_safe
 from .figure_rules import FigureRuleTool
 from .figure_tools import FigureTools
+from .figure_transform_tools import FigureTransformTool
 from .logic_tool import Z3LogicTool
 from .math_tool import PythonMathTool
 from .series import NumberSeriesTool
 
 
 def default_tools() -> List[Tool]:
-    return [PythonMathTool(), NumberSeriesTool(), Z3LogicTool(), FigureTools(), FigureRuleTool()]
+    return [PythonMathTool(), NumberSeriesTool(), Z3LogicTool(), FigureTools(),
+            FigureRuleTool(), FigureTransformTool()]
 
 
 def default_toolbox() -> ToolBox:

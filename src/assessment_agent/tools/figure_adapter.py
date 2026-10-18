@@ -219,3 +219,110 @@ def _blank_option_failure(
         "options": [],
         "adapter": {"source": "vision_regions", "stem_crop": stem, "option_labels": labels},
     }
+
+
+# ------------------------------------------------------------------ R4a 变换通道
+#
+# 独立于六类规律引擎的新入口：把题干裁剪按网格切成**每格二值 mask**，空格（低墨迹）
+# 视为待预测位置；选项裁剪各自成 mask。全部推理交给 figure_transform 的候选/仲裁，
+# 验证用独立帧尺寸/容差扫描（不采信本通道的归一化前提）。不修改上面任何既有语义。
+
+
+def solve_figure_transform_regions(
+    stem_image: str | Path,
+    option_images: Sequence[Tuple[str, str]],
+    *,
+    grid: Optional[Sequence[int]] = None,
+    threshold: Optional[float] = None,
+) -> Dict[str, Any]:
+    """变换通道求解：返回 analyze_transform 的 payload + 格 mask 审计（供验证器复用）。"""
+    from .figure_transform import analyze_transform
+    from .figure_transform_tools import verify_transformation
+
+    stem = Path(stem_image)
+    if not stem.is_file():
+        raise ToolError(f"题干矩阵裁剪不存在: {stem}")
+    stem_layout = analyze_layout(stem, threshold=threshold, grid=grid)
+    bands = stem_layout["bands"]
+    stem_mask = load_mask(stem, threshold)
+
+    # 空格识别：对每列对齐后的 None 或 blank 特征
+    def row_masks(band: Dict[str, Any]) -> Tuple[List[Optional[np.ndarray]], Optional[int]]:
+        cols = max((c["column"] for c in band["cells"]), default=-1) + 1
+        if stem_layout.get("mode") == "explicit" and stem_layout.get("grid"):
+            cols = int(stem_layout["grid"][1])
+        mapping = {c["column"]: c for c in band["cells"]}
+        out: List[Optional[np.ndarray]] = []
+        blank_at: Optional[int] = None
+        for col in range(cols):
+            cell = mapping.get(col)
+            if cell is None:
+                out.append(None)
+                if blank_at is None:
+                    blank_at = col
+                continue
+            bx0, by0, bx1, by1 = cell["bbox"]
+            m = stem_mask[by0:by1, bx0:bx1]
+            if cell["features"].get("blank"):
+                # 变换通道只把"几乎无墨"视为空格；问号形状启发式（target_marker）
+                # 会误伤小尺寸合法图形，不适用于本通道
+                out.append(None)
+                if blank_at is None:
+                    blank_at = col
+            else:
+                out.append(m.astype(np.uint8))
+        return out, blank_at
+
+    option_masks: Dict[str, np.ndarray] = {}
+    for label, path in option_images:
+        option_masks[label] = load_mask(path, threshold).astype(np.uint8)
+
+    if len(bands) == 1:
+        cells, blank_at = row_masks(bands[0])
+        known = [c for c in cells if c is not None]
+        if blank_at is None or blank_at != len(cells) - 1 or len(known) < 2:
+            return {"status": "not_applicable",
+                    "reason": "空格不在行末或已知格不足，变换通道不适用（序列）",
+                    "candidates": [], "verdict": {"verdict": "no_rule", "answer": None,
+                                                  "support": {}}}
+        mode = "sequence"
+        stem_list = known
+    elif len(bands) == 3 and all(len(b["cells"]) >= 2 for b in bands):
+        rows = [row_masks(b) for b in bands]
+        flat: List[Optional[np.ndarray]] = [c for row, _ in rows for c in row]
+        blanks = [i for i, c in enumerate(flat) if c is None]
+        if blanks != [8]:
+            return {"status": "not_applicable",
+                    "reason": f"九宫格需恰好第9格为空格，实际空格位置 {blanks}",
+                    "candidates": [], "verdict": {"verdict": "no_rule", "answer": None,
+                                                  "support": {}}}
+        mode = "grid3"
+        stem_list = [c for c in flat if c is not None]
+    else:
+        return {"status": "not_applicable", "reason": "布局非单行/三行九宫格",
+                "candidates": [], "verdict": {"verdict": "no_rule", "answer": None,
+                                              "support": {}}}
+
+    res = analyze_transform(stem_list, option_masks, mode=mode)
+    verdict = res["verdict"]
+    answer = verdict.get("answer") if verdict.get("verdict") == "unique" else None
+    ver = verify_transformation({**res, "mode": mode}, stem_list, option_masks, answer)
+    return {
+        "status": "solved" if (answer and ver.action == "accept") else
+                  ("unverified" if answer and ver.action != "accept" else "failed"),
+        "mode": mode,
+        "answer": answer if ver.action == "accept" else None,
+        "verdict": verdict,
+        "candidates": res["candidates"],
+        "symmetry_unresolvable": res["symmetry_unresolvable"],
+        "verification": ver.model_dump(),
+        "reason": (f"变换律唯一：{verdict.get('support')}" if answer and ver.action == "accept"
+                   else verdict.get("detail") or res.get("reason") or "变换规律不可唯一判定"),
+        "steps": [f"[变换通道] {mode} 模式，候选 {len(res['candidates'])} 条，"
+                  f"仲裁 {verdict.get('verdict')}，独立验证 {ver.action}"],
+        "stem_fingerprint": {  # 审计指纹（验证器可据原始裁剪重算，不回传全量掩码）
+            "cell_count": len(stem_list),
+            "ink": [int((m > 0).sum()) for m in stem_list],
+            "canvas": [list(map(int, m.shape)) for m in stem_list],
+        },
+    }

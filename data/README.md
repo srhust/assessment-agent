@@ -86,6 +86,31 @@ data/
 - 评测：`eval --split language_dev|language_blind`；指标口径见 `scripts/run_r3c_report.py`
   （objective/coverage/selective/false_accept/over_answer/unverified_abstention 分离），
   消融四臂 `scripts/run_r3c_ablation.py`。
+- **R4a 审计（不回写原数据）**：`annotation_audit_r4a.json`（language 与 verbal/blind2 各一份）
+  按对称闭包+开放世界口径复核盲集 null 样本——lngb-gen-01、lngb-en-12 改判
+  `answerable_capability_gap`（客观分母 8→10，首跑文件仅追加
+  `data_sha256_at_firstrun` 防漂移字段）；vb2-inf-10 记录 `disputed_entailment_caliber`
+  双口径复述（考试转述口径 4/9 vs 严格蕴含口径 4/8），**不裁决、不回写**。
+  dev 集（可调参）新增预测/断言最小对比样本后重生成，旧 dev sha 记入
+  `manifest.json.dev_history`。
+
+## 图形变换基准 `benchmark_figtrans/`（R4a）
+
+- `dev/`（16 题，可调参）与 `test/`（10 题，**dev 收敛后一次性生成并冻结**，
+  `--publish-test` 已执行，重跑拒绝覆盖）：合成模板渲染的九类变换题
+  （离散旋转/镜像/组合/相对平移/等比缩放/九宫格行列律/xor-or 叠加 + 歧义与降级诚实样本），
+  `regions/<qid>/stem.png + option_X.png` 金标裁剪，manifest 记双 split sha256。
+- 期望纪律：**期望在渲染前由变换规律模板定义，不按 Solver 结果筛题**；
+  对称不可区分（ft-sym-14/ftt-sym-09）、画布失配（ft-canvas-16）、双同内容选项
+  （ft-conflict-15/ftt-conflict-10）为 `expected_status=failed` 诚实样本。
+- 首评即终评：dev 16/16（误放 0）；**test 7/10（误放 1）**，三个失误（金标复合式
+  书写错误、阶梯 R180 自对称选项同化、缩放残差 0.1505 贴容差边界）逐条记录在
+  `test_firstrun_metrics.json` 的 `honesty_notes`，已转化为
+  `tests/test_r4a_figtrans_regression.py` 回归锁定——不回写、不重评、不放宽容差。
+- 消融四臂：`ablation_r4a.json`（`scripts/run_figtrans_ablation.py`，
+  `ASSESSMENT_R4A_DISABLE=transform|six_rules|indep_verifier` 切换）。
+- 真实 VLM 冒烟：`phase6_vlm_smoke.json` = **NOT_EXECUTED**（未配置 API Key，无 mock 冒充）。
+- 生成：`scripts/make_figtrans_benchmark.py`；评测：`eval --split figtrans_dev|figtrans_test`。
 
 ## 图形推理子集
 
@@ -102,7 +127,8 @@ data/
 
 - 当前样本覆盖第一阶段已实现的题型（数字计算 / 数字推理 / 逻辑推理 / 图形推理 / 资料分析 R3a /
   言语理解 R3b 的离线证据子集）。R3c 新增：命题归属对照组、语言推理词典关系子集与
-  `verbal/blind2`、`language/blind` 两个冻结盲集。
+  `verbal/blind2`、`language/blind` 两个冻结盲集；R4a 新增：`benchmark_figtrans`
+  图形变换基准（dev+冻结 test）与两份 R4a 标注审计（不改动盲集原文）。
 - 未实现题型只保留少量 `expected_status=unsupported` 样本，用于验证系统如实返回
   “未实现”，而不是编造答案。
 - 全部样本为自编的合成题，不含任何真实企业测评原题；请勿提交含真实题目、个人信息或

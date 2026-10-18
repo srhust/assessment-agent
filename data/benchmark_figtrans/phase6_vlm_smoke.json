@@ -1,0 +1,25 @@
+{
+  "phase": "R4a Phase6 real-VLM image_only smoke",
+  "generated_at": "2026-10-18",
+  "vision_model": null,
+  "llm_model": null,
+  "base_url_configured": false,
+  "input_images": [
+    "data/benchmark_figtrans/images/dev/ft-rot90-01.png",
+    "data/benchmark_figtrans/images/dev/ft-grid-10.png",
+    "data/benchmark_figtrans/images/dev/ft-overlay-12.png"
+  ],
+  "eval_mode": "image_only",
+  "status": "NOT_EXECUTED",
+  "reason": "环境未配置 LLM_API_KEY / LLM_VISION_MODEL（离线评测环境）。按纪律不得以 mock 或离线解析器冒充真实模型端到端结果。",
+  "what_would_run": "python -m assessment_agent.cli eval --split figtrans_dev --eval-mode image_only（截图输入，区域定位由 VisionParser→LLM 完成），逐题记录 parsed_regions/predicted_option/verification_action/usage(run_ref)",
+  "report_fields_on_executed": [
+    "model",
+    "run_ref",
+    "usage_tokens",
+    "input_image",
+    "parsed_regions(bbox/labels)",
+    "answer",
+    "verification_status"
+  ]
+}

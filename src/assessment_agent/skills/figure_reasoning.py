@@ -116,26 +116,136 @@ class FigureReasoningSkill(BaseSkill):
 
     def _solve_regions(self, question: Question, ctx: SkillContext, inputs: Dict[str, Any]) -> Solution:
         """有区域裁剪证据时走适配层；适配异常 → 结构化失败（不回退整图猜测）。"""
-        try:
-            payload = self._run_adapter(inputs)
-        except Exception as exc:  # noqa: BLE001 - 区域异常记录为失败，不猜答案
-            return Solution(
-                status="failed",
-                skill=self.id,
-                answer=None,
-                confidence=0.0,
-                method=ADAPTER_ID,
-                error=f"区域适配失败：{type(exc).__name__}: {exc}",
-                tool_calls=[
-                    ToolInvocation(
-                        tool=ADAPTER_ID,
-                        args={"stem_crop": inputs["stem_crop"], "labels": [label for label, _ in inputs["options"]]},
-                        ok=False,
-                        error=f"{type(exc).__name__}: {exc}",
-                    )
-                ],
-                meta={"stage": self.stage, "reason": "adapter_error"},
+        if getattr(ctx.settings, "r4a_disable_six_rules", False):
+            # 消融臂 r1：六类通道禁用，仅变换通道可作答
+            payload = {"status": "failed", "reason": "ablation: 六类通道禁用",
+                       "candidates": [], "verdict": {}}
+        else:
+            try:
+                payload = self._run_adapter(inputs)
+            except Exception as exc:  # noqa: BLE001 - 区域异常记录为失败，不猜答案
+                return Solution(
+                    status="failed",
+                    skill=self.id,
+                    answer=None,
+                    confidence=0.0,
+                    method=ADAPTER_ID,
+                    error=f"区域适配失败：{type(exc).__name__}: {exc}",
+                    tool_calls=[
+                        ToolInvocation(
+                            tool=ADAPTER_ID,
+                            args={"stem_crop": inputs["stem_crop"], "labels": [label for label, _ in inputs["options"]]},
+                            ok=False,
+                            error=f"{type(exc).__name__}: {exc}",
+                        )
+                    ],
+                    meta={"stage": self.stage, "reason": "adapter_error"},
+                )
+        six_solved = payload.get("status") == "solved"
+        is_figtrans = (question.meta or {}).get("layout") == "figtrans"
+        if ((not six_solved or is_figtrans)
+                and getattr(ctx.settings, "r4a_transform", True)):
+            # R4a 变换通道：六类规律未解出时独立重推；对 figtrans 新题型则**双通道
+            # 交叉校验**——两规律族必须共同支持同一选项，冲突即 ambiguous（诚实弃权），
+            # 原六类题型（非 figtrans）行为完全不变。
+            try:
+                from ..tools.figure_adapter import solve_figure_transform_regions
+
+                tp = solve_figure_transform_regions(
+                    inputs["stem_crop"],
+                    inputs["options"],
+                    grid=inputs.get("grid"),
+                )
+            except Exception as exc:  # noqa: BLE001
+                tp = {"status": "failed", "reason": f"变换通道异常：{type(exc).__name__}: {exc}",
+                      "candidates": [], "verdict": {"verdict": "no_rule"}}
+            tinv = ToolInvocation(
+                tool="figure_transform",
+                args={"stem_crop": inputs["stem_crop"],
+                      "labels": [label for label, _ in inputs["options"]],
+                      "mode": tp.get("mode")},
+                ok=True,
+                result={"status": tp.get("status"), "answer": tp.get("answer"),
+                        "verdict": tp.get("verdict"),
+                        "candidates": tp.get("candidates"),
+                        "symmetry_unresolvable": tp.get("symmetry_unresolvable"),
+                        "verification": tp.get("verification")},
             )
+            if six_solved:
+                if tp.get("status") == "solved" and tp.get("answer") == payload.get("answer"):
+                    sol = self._finalize_regions(question, payload, inputs)
+                    sol.meta["transform_cross_support"] = True
+                    sol.meta["transform"] = {k: tp.get(k) for k in
+                                             ("verdict", "candidates",
+                                              "symmetry_unresolvable", "stem_fingerprint",
+                                              "verification")}
+                    sol.tool_calls.append(tinv)
+                    return sol
+                t_verdict = str((tp.get("verdict") or {}).get("verdict") or "")
+                if tp.get("status") == "solved" or t_verdict in ("ambiguous", "insufficient",
+                                                                 "multiple_rules"):
+                    return Solution(
+                        status="failed",
+                        skill=self.id,
+                        answer=None,
+                        confidence=0.0,
+                        method="figure_transform",
+                        error=(f"规律族冲突（ambiguous）：六类规律 {payload.get('rule')} "
+                               f"指向 {payload.get('answer')}，变换规律指向 "
+                               f"{tp.get('answer') or '多个/无法唯一'}，不能共同支持同一选项"),
+                        tool_calls=[tinv],
+                        meta={"stage": self.stage, "channel": "cross_check",
+                              "transform": {k: tp.get(k) for k in
+                                            ("verdict", "candidates", "symmetry_unresolvable")},
+                              "six_rule_claim": {"rule": payload.get("rule"),
+                                                 "answer": payload.get("answer")}},
+                    )
+                # 变换通道无规律可提 → 保留六类结果（历史语义）
+                sol = self._finalize_regions(question, payload, inputs)
+                sol.meta["transform"] = {k: tp.get(k) for k in
+                                         ("verdict", "candidates", "symmetry_unresolvable")}
+                return sol
+            if tp.get("status") in ("solved", "unverified"):
+                if tp.get("status") == "unverified":
+                    return Solution(
+                        status="failed",       # 有唯一候选但独立验证不稳定 → 诚实弃权
+                        skill=self.id,
+                        answer=None,
+                        confidence=0.0,
+                        method="figure_transform",
+                        error="变换候选未通过独立验证（unverified），不对外作答",
+                        steps=tp.get("steps") or [],
+                        tool_calls=[tinv],
+                        meta={"stage": self.stage, "channel": "transform",
+                              "transform": {k: tp.get(k) for k in
+                                            ("verdict", "candidates",
+                                             "symmetry_unresolvable", "stem_fingerprint",
+                                             "verification")},
+                              "six_rule_failure": payload.get("reason")},
+                    )
+                return Solution(
+                    status="solved",
+                    skill=self.id,
+                    answer=tp.get("answer"),
+                    answer_text=(question.option_text(tp["answer"])
+                                 if tp.get("answer") else "") or "",
+                    confidence=0.88,
+                    method="figure_transform",
+                    steps=tp.get("steps") or [],
+                    tool_calls=[tinv],
+                    meta={"stage": self.stage, "channel": "transform",
+                          "transform": {k: tp.get(k) for k in
+                                        ("verdict", "candidates",
+                                         "symmetry_unresolvable", "stem_fingerprint",
+                                         "verification")},
+                          "six_rule_failure": payload.get("reason")},
+                )
+            # 变换通道也失败：合并两通道原因，保持 failed（诚实）
+            merged = self._finalize_regions(question, payload, inputs)
+            merged.error = (merged.error or "六类规律未解") + f"；变换通道：{tp.get('reason')}"
+            merged.meta["transform"] = {k: tp.get(k) for k in
+                                        ("verdict", "candidates", "symmetry_unresolvable")}
+            return merged
         return self._finalize_regions(question, payload, inputs)
 
     def _finalize_regions(self, question: Question, payload: Dict[str, Any], inputs: Dict[str, Any]) -> Solution:
@@ -280,10 +390,73 @@ class FigureReasoningSkill(BaseSkill):
         )
 
     # ------------------------------------------------------------ 独立复核
+    def _verify_transform(self, question: Question, solution: Solution,
+                          meta: Dict[str, Any], ctx: SkillContext) -> Verification:
+        """变换通道验证：R2c 候选代回复核架构保留——验证器从**原始裁剪**独立重建
+        每格 mask、重跑变换推理与帧参数扫描；求解器的归一化/容差不作前提。
+        消融臂3（indep_verifier=off）时只做候选字段自洽检查（回到原 verifier 强度）。"""
+        t = meta.get("transform") or {}
+        verdict = t.get("verdict") or {}
+        checks: List[VerificationCheck] = []
+        if solution.answer is None:
+            checks.append(VerificationCheck(
+                name="figure_transform.abstain", passed=True, severity="info",
+                detail="变换通道未给出对外答案（unverified/failed 语义）"))
+            return Verification(passed=False, action="unverified", checks=checks,
+                                notes="候选未过独立验证，弃权")
+        settings = getattr(ctx, "settings", None)
+        indep = getattr(settings, "r4a_indep_verifier", True)
+        cands = t.get("candidates") or []
+        voting = [c for c in cands
+                  if c.get("candidate_scores", {}).get(solution.answer, 1.0) <= 0.15
+                  and (c.get("discriminative_margin") or 0) >= 0.05]
+        checks.append(VerificationCheck(
+            name="figure_transform.support", passed=bool(voting),
+            detail=f"{len(voting)} 条**参与裁决**的候选在容差内支持 {solution.answer}"
+                   f"（总候选 {len(cands)} 条；未排除竞争项的候选按弃权处理，不构成竞争）"))
+        if not voting:
+            return Verification(passed=False, action="unverified", checks=checks,
+                                notes="无参与裁决的候选支撑该答案")
+        if indep:
+            # 独立重建：从原始裁剪文件重新切格重跑（与求解器同一入口但独立调用，
+            # verify_transformation 已在 solve 内做过 9 组参数扫描，这里再独立做一次，
+            # 不复用 solution.meta 中求解器留下的结论）
+            try:
+                from ..tools.figure_adapter import solve_figure_transform_regions
+                inputs = self._region_inputs(question)
+                if not inputs:
+                    raise RuntimeError("区域裁剪不可用")
+                fresh = solve_figure_transform_regions(
+                    inputs["stem_crop"], inputs["options"], grid=inputs.get("grid"))
+            except Exception as exc:  # noqa: BLE001
+                checks.append(VerificationCheck(
+                    name="figure_transform.independent", passed=False,
+                    detail=f"独立重建失败：{exc}"))
+                return Verification(passed=False, action="unverified", checks=checks,
+                                    notes="验证器无法独立重建证据链")
+            fresh_answer = fresh.get("answer")
+            stable = (fresh.get("status") == "solved" and fresh_answer == solution.answer)
+            checks.append(VerificationCheck(
+                name="figure_transform.independent", passed=stable,
+                detail=f"独立重算={fresh_answer or fresh.get('reason')}，求解器={solution.answer}"))
+            if not stable:
+                return Verification(passed=False,
+                                    action="reject" if fresh_answer else "unverified",
+                                    checks=checks, notes="独立重算不一致")
+        passed = all(c.passed for c in checks if c.severity == "blocking")
+        return Verification(passed=passed, action="accept" if passed else "unverified",
+                            checks=checks, final_answer=solution.answer if passed else None,
+                            notes="变换通道独立验证通过" if passed else "变换验证未过")
+
     def verify(self, question: Question, solution: Solution, ctx: SkillContext) -> Optional[Verification]:
         if solution.status != "solved":
             return None
         meta = solution.meta or {}
+        if (meta.get("channel") or "") == "transform" or meta.get("transform_cross_support"):
+            # R4a：变换通道解 + 双通道互证解 → 由变换独立 verifier 接管复核
+            # （R2c substitution 复核不认识旋转/镜像/叠加等几何约束，互证题若再走
+            # R2c 只会产生系统性错误拒绝；独立验证器的 9 参数重算覆盖更强）
+            return self._verify_transform(question, solution, meta, ctx)
         regions = meta.get("regions")
         if regions:
             return self._verify_regions(question, solution, regions, settings=getattr(ctx, "settings", None))

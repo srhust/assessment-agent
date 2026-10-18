@@ -91,7 +91,7 @@ assessment-agent/
 | `numeric_calculation` | 数字计算 | ✅ 已实现 | 题干 → 表达式 → SymPy 精确求值 → 选项数值匹配 |
 | `number_series` | 数字推理 | ✅ 已实现 | 7 类规律检测（等差/等比/差分/奇偶分组/递推/幂次偏移/常数），要求解释全部已知项 |
 | `logical_reasoning` | 逻辑推理 | ✅ 已实现 | 排序比较语句 → Z3 约束 → 必然性/可能性判定 |
-| `figure_reasoning` | 图形推理 | ✅ 已实现 | 网格解析 + 六类规律（个数/边数/面积/平移/对称/叠加）+ 选项匹配；失败时给出原因 |
+| `figure_reasoning` | 图形推理 | ✅ 已实现（R4a 扩展） | 网格解析 + 六类规律（个数/边数/面积/平移/对称/叠加）+ **R4a 变换通道**：离散旋转 90/180/270、H/V/对角镜像、组合（D4 群）、帧内相对平移、等比缩放+相对面积、3×3 行列一致变换、xor/or/and 叠加（画布级判别）；候选规律须共同支持同一选项，两律冲突/对称不可区分即诚实弃权；独立验证器 9 组归一化参数重推，不信任求解器前提；失败时给出原因 |
 | `verbal_understanding` | 言语理解 | ✅ 已实现（R3b，R3c 增强） | 选词填空（搭配表）/主旨概括（结论句覆盖）/阅读推断（否定极性·情态·量词核对 + **R3c 命题归属层**：asserted/reported/believed/hypothetical/uncertain/denied 分层，传闻/假设/归属否认不得作事实断言）/加强削弱假设（字面条件链 + Z3）；每条证据必须为原文逐字区间，越界/伪造引用直接拒绝；子集外诚实 failed |
 | `language_reasoning` | 语言推理 | ✅ 已实现（R3c，词典关系子集） | 词语类比（七类方向关系：种属/整体部分/材料成品/功能用途/地点对象/工具行为/因果，方向显式）+ 近义/反义（仅人工词典证据）+ 英文类比子集；每个关系判定绑定 `lexicon_r3c` 词条，多重关系要求判别性覆盖，词典外一律 unknown——不硬猜 |
 | `data_analysis` | 资料分析 | ✅ 已实现（R3a） | 表格/统计图 → `DataCalculationPlan` → Fraction 精确求值 → 六步独立验证；缺数/歧义/单位冲突如实失败 |
@@ -604,13 +604,66 @@ language_blind 首跑 policy 11/12（objective 8/8，1 例 over_answer——ANT 
 screens 9/9；旧 Dev/盲集数据未回写。**真实 LLM/VLM 未配置：NOT EXECUTED**（词典语言核、
 命题归属层与 LLM 提议通道的真实模型表现均未验证）。
 
+### 6.7 R4a：对称闭包、开放世界词典修正与图形变换推理扩展
+
+**Part 1：语言关系对称闭包与开放世界口径**（`tools/language_tool.py`，已入库 `cb5d1dc`）：
+SYN/ANT 词典边按 `syn@a/syn@b/ant@a/ant@b` 源标签双向补全；候选三态判定
+（match/partial/contradicted/unknown_pair）区分"词典未记录"与"真实矛盾"——
+存在未排除且可能匹配的竞争项时降为 `unverified`，不再把"唯一已知匹配"当"唯一正确答案"。
+由此 lngb-gen-01、lngb-en-12 从"不可判"改判为**客观可答的能力缺口**（词典缺项），
+客观分母 8→10；盲集原始数据与首跑报告**不回写**，审计单独存
+`data/benchmark_language/annotation_audit_r4a.json`、`data/benchmark_verbal/annotation_audit_r4a.json`
+（含 vb2-inf-10 预报口径争议的双口径复述）。命题事实性层新增 `predicted` 状态
+（预报/预测/预计：Forecast(P) ⊬ P，与 reported 同律），最小对比对测试防逐样本特判。
+
+**Part 2-4：图形变换独立模块与通道**（`tools/figure_transform.py` +
+`figure_transform_tools.py`，`solve_figure_transform_regions`）：
+离散旋转 90/180/270、水平/垂直/对角镜像、稳定相对平移、等比缩放+相对面积、D4 组合表
+（12×12 非对称探针实测推导）、3×3 行列一致变换与去同存异/并集/交集叠加。
+标准表示输出原始裁剪/连通域/轮廓/相对坐标/候选变换/几何残差/判别裕度；
+**答案决策不使用选项绝对位置、文件名、标签顺序或人工 grid**。
+每候选十字段（rule_type…unresolved_competitors/confidence）；旋转/镜像候选守
+**保面积纪律**（bbox 面积比 |log|>0.35 即不可由二面体解释，交缩放律处理）；
+叠加律用**画布级归一化**（bbox 归一会把 xor/or 的中心重叠差异抹平——dev 实测暴露）；
+平移律的判别维度是帧内相对位置（位置惩罚 0.30 曼哈顿标度）。
+仲裁：多个候选规律必须共同支持同一选项；**绝不做多数投票**，两律指向不同选项即
+ambiguous 弃权；旋转对称图形（非方形矩形等）经稳定子披露"唯一角度不可判定"。
+独立验证器从裁剪重推：`FRAME×tol` 9 组参数扫描重跑全流程，求解器的归一化/容差
+**不作为不可质疑前提**；参数间答案漂移→unverified，与求解答案矛盾→reject；
+画布尺寸失配（异常裁剪）全局降级。`figure_reasoning` 集成为**回退+交叉校验通道**：
+六类未解出时变换通道独立作答；`layout=figtrans` 新题型则双通道交叉校验，
+两规律族冲突即诚实弃权（原六类题历史语义不变 → 299+ 测试零回归）。
+错误放行/错误拒绝回归用例：`tests/test_r4a_figtrans_regression.py` 固化 test 首评
+暴露的三个真实失误（FV 对称等价类、R180 自对称步进不可区分、容差贴边不放宽）。
+
+**Part 5：新变换基准与消融**（`data/benchmark_figtrans/`，dev 16 / test 10，生成器
+模板先于求解器定义期望，不按 Solver 结果筛题）：
+dev **16/16**（含 3 个歧义/降级诚实 failed 全弃权，误放 0）；
+**test 首评即终评：7/10，误放 1**——三个失误全部诚实记录在
+`test_firstrun_metrics.json`（comp-08 金标复合式书写错误、rot90-01 阶梯 R180 自对称
+致选项内容同化、scale-04 残差 0.1505 贴容差边界），不回写、不重评、不放宽容差。
+消融四臂（`data/benchmark_figtrans/ablation_r4a.json`）：
+
+| 臂 | figtrans_dev | bench_dev（原六类） | 误放 |
+|---|---|---|---|
+| r0 仅原六类 | 3/16（仅诚实 failed 题弃权得分） | 25/30 · obj 0.8276 | 0 |
+| r1 仅新变换 | 16/16 | 23/30（六类图题 3→1 正确） | 0 |
+| r2 完整+原 Verifier | 16/16 | 25/30 · 0.8276 | 0 |
+| r3 完整+独立 Verifier | 16/16 | 25/30 · 0.8276 | 0 |
+
+变换通道带来 figtrans 0/13 → 13/13 客观增益，原六类口径逐项不变。
+
+**Part 6：真实 VLM image_only 冒烟**：环境未配置 `LLM_API_KEY`/`LLM_VISION_MODEL`
+→ `data/benchmark_figtrans/phase6_vlm_smoke.json` 显式 **NOT_EXECUTED**（含执行时
+应记录的字段清单：model/run_ref/usage/输入图/区域定位/答案/验证状态），无 mock 冒充。
+
 ---
 
 ## 7. 测试
 
 ```bash
 python -m pytest -q
-# 299 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
+# 349 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
 ```
 
 覆盖范围：
@@ -634,6 +687,9 @@ python -m pytest -q
 - R3c 命题归属（18 项：六状态 epistemics 判别、嵌套归属范围、最小对比对（P 固定换外层谓词）、否认双向阻断、旧盲集 inf-09 机制锚通用变体、审计层独立拦截 supported 越权、Skill 端到端拒传闻/接归属对齐）
 - R3c 语言推理（15 项：七类关系方向显式、反序 partial、多重匹配拒答、词典外诚实 failed、source_text 篡改 reject、LLM 提议三态（一致绑定/不一致拒绝/词典外拒绝）、消融开关复现 R3b 误放、路由优先语言）
 - R3c 数据守护（7 项：epistemic/language/blind/blind2 数量与 sha 对账、盲集间题干互斥、旧 blind 冻结不变、首跑记录存在、行格式与 answer/expected 一致性）复核不得给 LLM 确定性通过、真歧义拒选、开关消融、verbal 基准结构+盲集 sha256 冻结+防泄漏守护）
+- R4a 语言闭包（9 项）+ 命题预测状态（21 项：predicted 六态、最小对比、审计层、开放世界词典守卫）
+- R4a 图形变换（15 项：标准表示相对量、D4 组合表封闭、离散旋转/镜像/平移/缩放、九宫格行列冲突 ambiguous、叠加 xor/or、标签位置盲、对称竞争项披露、画布失配降级）
+- R4a 变换回归锁定（4 项：FV 等价类不择一、R180 自对称步进不可区分、容差贴边不放宽、稳定子披露）+ figtrans 基准守护（6 项：manifest sha、诚实 failed 保留、test 冻结+首评对账、split 注册、Phase6 NOT_EXECUTED 语义、消融四臂底线）
 - DSH / MCP 接入（清单结构、`tools/call` 形状、未知工具与非法参数、能力输出脱敏、`save=false` 不落盘）
 - CLI（solve / eval / skills / doctor / mcp-manifest / call 的返回码与输出）
 
@@ -669,7 +725,7 @@ mock 结果只证明链路机制，不用于宣称模型识别能力。
 
 | 题型 | 计划实现 | 依赖 |
 | --- | --- | --- |
-| 图形推理 | ✅ 已实现：网格解析 + 六类规律（个数/边数/面积/平移/对称/叠加）；待实现：旋转/翻转匹配、曲线图形、非叠加九宫格规律 | OpenCV + NumPy |
+| 图形推理 | ✅ R2~R4a：网格解析 + 六类规律 + **离散旋转/镜像/平移/缩放/组合/九宫格/叠加变换通道**（D4 群 + 画布级叠加判别 + 独立参数扫描验证器 + 双律冲突弃权）；待实现：曲线/交点数量律、多步复合链规律、真实截图 VLM 端到端（Phase6 目前 NOT_EXECUTED） | OpenCV + NumPy |
 | 资料分析 | ✅ R3a 已实现：表格/柱状图结构化 + 计算计划 + Fraction 求值 + 六步独立验证；待实现：折线/多图复合表格、更复杂表头合并与真实截图 OCR 端到端验证 | OpenCV + 表格校验器 +（真实 VLM 待配置） |
 | 言语理解 | ✅ R3b+R3c：选词搭配、主旨结论覆盖、推断否定/量词/情态核对 + **命题归属层**（传闻/假设/否认不升格为事实）、字面条件链 Z3；待实现：跨句指代、近义重表述主旨、预设/蕴含（"否认说法⇒说法存在"）形式化、肯后式推断 | 带证据的 LLM 输出 + 校验器 |
 | 语言推理 | ✅ R3c：词典七类方向关系 + 判别性覆盖 + 六项验证；待实现：词库规模化（当前 ~120 中文词条）、程度关系、词性/语义角色校验、真实 LLM 提议通道验证 | 知识库检索 + LLM |

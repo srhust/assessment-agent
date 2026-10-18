@@ -24,7 +24,8 @@ from .vision_metrics import aggregate_vision, compare_extraction_detail, render_
 
 SPLITS = ("train", "dev", "test", "screens", "bench_dev", "bench_holdout",
           "verbal_dev", "verbal_blind", "verbal_epistemic_dev",
-          "language_dev", "language_blind", "verbal_blind2")
+          "language_dev", "language_blind", "verbal_blind2",
+          "figtrans_dev", "figtrans_test")
 
 # split → 数据集目录（benchmark_real 独立泛化基准：dev 可调参、holdout 冻结）
 _SPLIT_DIRS = {
@@ -36,6 +37,8 @@ _SPLIT_DIRS = {
     "language_dev": "benchmark_language/dev",
     "language_blind": "benchmark_language/blind",
     "verbal_blind2": "benchmark_verbal/blind2",
+    "figtrans_dev": "benchmark_figtrans/dev",
+    "figtrans_test": "benchmark_figtrans/test",
 }
 
 EVAL_MODES = ("oracle_solver", "auto_router", "image_only")
@@ -93,6 +96,7 @@ class Case:
     answer: Optional[str] = None
     expected_status: str = "solved"
     tags: List[str] = field(default_factory=list)
+    layout: str = ""
     source_file: str = ""
     image: Optional[str] = None
     grid: Optional[List[int]] = None
@@ -241,6 +245,7 @@ def load_cases(
                     answer=answer,
                     expected_status=expected_status,
                     tags=[str(tag) for tag in payload.get("tags") or []],
+                    layout=str(payload.get("layout") or ""),
                     source_file=str(path.name),
                     image=_resolve_image(data_dir, payload.get("image"), path, line_number),
                     grid=_load_grid(payload.get("grid")),
@@ -431,6 +436,8 @@ class EvaluationRunner:
                 meta: Dict[str, Any] = {}
                 if case.grid:
                     meta["grid"] = case.grid
+                if getattr(case, "layout", None):
+                    meta["layout"] = case.layout
                 if case.regions:
                     meta["vision"] = case.regions
                 usage_before = self._usage()

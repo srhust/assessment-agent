@@ -1,0 +1,166 @@
+{
+  "generated_at": "2026-10-18",
+  "note": "bench_dev 行为全题型口径（figure 子集另见 fig_*）；各臂题集一致，仅切换能力臂；无删题/无容差调整。",
+  "rows": [
+    {
+      "arm": "r0_six_only",
+      "split": "figtrans_dev",
+      "disable": "transform",
+      "fig_total": 16,
+      "fig_correct": 3,
+      "fig_accuracy": 0.1875,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.0,
+      "answerable_coverage": 0.0,
+      "selective_accuracy": 0.0,
+      "overall_answer_accuracy": {
+        "value": 0.0,
+        "hit": 0,
+        "denominator": 13
+      },
+      "unverified_abstention": 3
+    },
+    {
+      "arm": "r0_six_only",
+      "split": "bench_dev",
+      "disable": "transform",
+      "fig_total": 7,
+      "fig_correct": 3,
+      "fig_accuracy": 0.4286,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.8276,
+      "answerable_coverage": 0.8276,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 0.8333,
+        "hit": 25,
+        "denominator": 30
+      },
+      "unverified_abstention": 6
+    },
+    {
+      "arm": "r1_transform_only",
+      "split": "figtrans_dev",
+      "disable": "six_rules",
+      "fig_total": 16,
+      "fig_correct": 16,
+      "fig_accuracy": 1.0,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 1.0,
+      "answerable_coverage": 1.0,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 1.0,
+        "hit": 13,
+        "denominator": 13
+      },
+      "unverified_abstention": 3
+    },
+    {
+      "arm": "r1_transform_only",
+      "split": "bench_dev",
+      "disable": "six_rules",
+      "fig_total": 7,
+      "fig_correct": 1,
+      "fig_accuracy": 0.1429,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.7586,
+      "answerable_coverage": 0.7586,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 0.7667,
+        "hit": 23,
+        "denominator": 30
+      },
+      "unverified_abstention": 6
+    },
+    {
+      "arm": "r2_full_orig_verifier",
+      "split": "figtrans_dev",
+      "disable": "indep_verifier",
+      "fig_total": 16,
+      "fig_correct": 16,
+      "fig_accuracy": 1.0,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 1.0,
+      "answerable_coverage": 1.0,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 1.0,
+        "hit": 13,
+        "denominator": 13
+      },
+      "unverified_abstention": 3
+    },
+    {
+      "arm": "r2_full_orig_verifier",
+      "split": "bench_dev",
+      "disable": "indep_verifier",
+      "fig_total": 7,
+      "fig_correct": 3,
+      "fig_accuracy": 0.4286,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.8276,
+      "answerable_coverage": 0.8276,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 0.8333,
+        "hit": 25,
+        "denominator": 30
+      },
+      "unverified_abstention": 6
+    },
+    {
+      "arm": "r3_full_indep_verifier",
+      "split": "figtrans_dev",
+      "disable": null,
+      "fig_total": 16,
+      "fig_correct": 16,
+      "fig_accuracy": 1.0,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 1.0,
+      "answerable_coverage": 1.0,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 1.0,
+        "hit": 13,
+        "denominator": 13
+      },
+      "unverified_abstention": 3
+    },
+    {
+      "arm": "r3_full_indep_verifier",
+      "split": "bench_dev",
+      "disable": null,
+      "fig_total": 7,
+      "fig_correct": 3,
+      "fig_accuracy": 0.4286,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.8276,
+      "answerable_coverage": 0.8276,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 0.8333,
+        "hit": 25,
+        "denominator": 30
+      },
+      "unverified_abstention": 6
+    }
+  ]
+}
