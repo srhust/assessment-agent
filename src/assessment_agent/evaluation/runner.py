@@ -25,7 +25,8 @@ from .vision_metrics import aggregate_vision, compare_extraction_detail, render_
 SPLITS = ("train", "dev", "test", "screens", "bench_dev", "bench_holdout",
           "verbal_dev", "verbal_blind", "verbal_epistemic_dev",
           "language_dev", "language_blind", "verbal_blind2",
-          "figtrans_dev", "figtrans_test")
+          "figtrans_dev", "figtrans_test",
+          "figshots_dev", "figshots_test")
 
 # split → 数据集目录（benchmark_real 独立泛化基准：dev 可调参、holdout 冻结）
 _SPLIT_DIRS = {
@@ -39,6 +40,9 @@ _SPLIT_DIRS = {
     "verbal_blind2": "benchmark_verbal/blind2",
     "figtrans_dev": "benchmark_figtrans/dev",
     "figtrans_test": "benchmark_figtrans/test",
+    # R4b P0-1/P1-3：完整页面截图集（image_only 端到端专用；figtrans 转 Oracle 回归集）
+    "figshots_dev": "benchmark_figshots/dev",
+    "figshots_test": "benchmark_figshots/test",
 }
 
 EVAL_MODES = ("oracle_solver", "auto_router", "image_only")

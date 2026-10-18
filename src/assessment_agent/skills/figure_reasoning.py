@@ -142,12 +142,13 @@ class FigureReasoningSkill(BaseSkill):
                     meta={"stage": self.stage, "reason": "adapter_error"},
                 )
         six_solved = payload.get("status") == "solved"
-        is_figtrans = (question.meta or {}).get("layout") == "figtrans"
-        if ((not six_solved or is_figtrans)
-                and getattr(ctx.settings, "r4a_transform", True)):
-            # R4a 变换通道：六类规律未解出时独立重推；对 figtrans 新题型则**双通道
-            # 交叉校验**——两规律族必须共同支持同一选项，冲突即 ambiguous（诚实弃权），
-            # 原六类题型（非 figtrans）行为完全不变。
+        # R4b P1-1：变换通道对**所有**区域化题常开，适用性由图形结构决定
+        # （solve_figure_transform_regions 内部结构过滤：单行末空格/九宫格第9空格），
+        # 不再读取数据集 layout 标签——Oracle/AutoRouter/ImageOnly 三模式同一决策路径。
+        if getattr(ctx.settings, "r4a_transform", True):
+            # 六类未解出 → 变换通道独立作答；六类已解 → 双通道交叉校验。
+            # 冲突拦截仅限"变换规律族真的表态"的情形（有投票候选）：
+            # 变换通道无候选 = 结构上不适用 = 无意见，保留六类结果（历史语义）。
             try:
                 from ..tools.figure_adapter import solve_figure_transform_regions
 
@@ -176,14 +177,15 @@ class FigureReasoningSkill(BaseSkill):
                     sol = self._finalize_regions(question, payload, inputs)
                     sol.meta["transform_cross_support"] = True
                     sol.meta["transform"] = {k: tp.get(k) for k in
-                                             ("verdict", "candidates",
-                                              "symmetry_unresolvable", "stem_fingerprint",
+                                             ("verdict", "candidates", "parameter_stable",
+                                              "independently_verified", "symmetry_unresolvable", "stem_fingerprint",
                                               "verification")}
                     sol.tool_calls.append(tinv)
                     return sol
                 t_verdict = str((tp.get("verdict") or {}).get("verdict") or "")
-                if tp.get("status") == "solved" or t_verdict in ("ambiguous", "insufficient",
-                                                                 "multiple_rules"):
+                has_cands = bool(tp.get("candidates"))
+                if tp.get("status") == "solved" or (
+                        has_cands and t_verdict in ("ambiguous", "multiple_rules")):
                     return Solution(
                         status="failed",
                         skill=self.id,
@@ -196,14 +198,18 @@ class FigureReasoningSkill(BaseSkill):
                         tool_calls=[tinv],
                         meta={"stage": self.stage, "channel": "cross_check",
                               "transform": {k: tp.get(k) for k in
-                                            ("verdict", "candidates", "symmetry_unresolvable")},
+                                            ("verdict", "candidates",
+                                         "parameter_stable", "independently_verified",
+                                         "symmetry_unresolvable")},
                               "six_rule_claim": {"rule": payload.get("rule"),
                                                  "answer": payload.get("answer")}},
                     )
                 # 变换通道无规律可提 → 保留六类结果（历史语义）
                 sol = self._finalize_regions(question, payload, inputs)
                 sol.meta["transform"] = {k: tp.get(k) for k in
-                                         ("verdict", "candidates", "symmetry_unresolvable")}
+                                         ("verdict", "candidates",
+                                         "parameter_stable", "independently_verified",
+                                         "symmetry_unresolvable")}
                 return sol
             if tp.get("status") in ("solved", "unverified"):
                 if tp.get("status") == "unverified":
@@ -218,8 +224,8 @@ class FigureReasoningSkill(BaseSkill):
                         tool_calls=[tinv],
                         meta={"stage": self.stage, "channel": "transform",
                               "transform": {k: tp.get(k) for k in
-                                            ("verdict", "candidates",
-                                             "symmetry_unresolvable", "stem_fingerprint",
+                                            ("verdict", "candidates", "parameter_stable",
+                                             "independently_verified", "symmetry_unresolvable", "stem_fingerprint",
                                              "verification")},
                               "six_rule_failure": payload.get("reason")},
                     )
@@ -235,8 +241,8 @@ class FigureReasoningSkill(BaseSkill):
                     tool_calls=[tinv],
                     meta={"stage": self.stage, "channel": "transform",
                           "transform": {k: tp.get(k) for k in
-                                        ("verdict", "candidates",
-                                         "symmetry_unresolvable", "stem_fingerprint",
+                                        ("verdict", "candidates", "parameter_stable",
+                                         "independently_verified", "symmetry_unresolvable", "stem_fingerprint",
                                          "verification")},
                           "six_rule_failure": payload.get("reason")},
                 )
@@ -244,7 +250,9 @@ class FigureReasoningSkill(BaseSkill):
             merged = self._finalize_regions(question, payload, inputs)
             merged.error = (merged.error or "六类规律未解") + f"；变换通道：{tp.get('reason')}"
             merged.meta["transform"] = {k: tp.get(k) for k in
-                                        ("verdict", "candidates", "symmetry_unresolvable")}
+                                        ("verdict", "candidates",
+                                         "parameter_stable", "independently_verified",
+                                         "symmetry_unresolvable")}
             return merged
         return self._finalize_regions(question, payload, inputs)
 

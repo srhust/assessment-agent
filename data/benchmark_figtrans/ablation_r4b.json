@@ -1,0 +1,247 @@
+{
+  "generated_at": "2026-10-18",
+  "note": "bench_dev 行为全题型口径（figure 子集另见 fig_*）；各臂题集一致，仅切换能力臂；无删题/无容差调整。R4b 复跑说明：验证口径已收紧（单因子 all_confirm + 几何六项），r2/r3 差异只反映独立验证器代数差，题集与容差未动。",
+  "harness": "R4b 代码状态（保守验证器全开）复跑；figshots_dev=完整页面集新首跑消融",
+  "rows": [
+    {
+      "arm": "r0_six_only",
+      "split": "figtrans_dev",
+      "disable": "transform",
+      "fig_total": 16,
+      "fig_correct": 3,
+      "fig_accuracy": 0.1875,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.0,
+      "answerable_coverage": 0.0,
+      "selective_accuracy": 0.0,
+      "overall_answer_accuracy": {
+        "value": 0.0,
+        "hit": 0,
+        "denominator": 13
+      },
+      "unverified_abstention": 3
+    },
+    {
+      "arm": "r0_six_only",
+      "split": "figshots_dev",
+      "disable": "transform",
+      "fig_total": 15,
+      "fig_correct": 2,
+      "fig_accuracy": 0.1333,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.0,
+      "answerable_coverage": 0.0,
+      "selective_accuracy": 0.0,
+      "overall_answer_accuracy": {
+        "value": 0.0,
+        "hit": 0,
+        "denominator": 13
+      },
+      "unverified_abstention": 2
+    },
+    {
+      "arm": "r0_six_only",
+      "split": "bench_dev",
+      "disable": "transform",
+      "fig_total": 7,
+      "fig_correct": 3,
+      "fig_accuracy": 0.4286,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.8276,
+      "answerable_coverage": 0.8276,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 0.8333,
+        "hit": 25,
+        "denominator": 30
+      },
+      "unverified_abstention": 6
+    },
+    {
+      "arm": "r1_transform_only",
+      "split": "figtrans_dev",
+      "disable": "six_rules",
+      "fig_total": 16,
+      "fig_correct": 13,
+      "fig_accuracy": 0.8125,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.7692,
+      "answerable_coverage": 0.7692,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 0.7692,
+        "hit": 10,
+        "denominator": 13
+      },
+      "unverified_abstention": 3
+    },
+    {
+      "arm": "r1_transform_only",
+      "split": "figshots_dev",
+      "disable": "six_rules",
+      "fig_total": 15,
+      "fig_correct": 12,
+      "fig_accuracy": 0.8,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.7692,
+      "answerable_coverage": 0.7692,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 0.7692,
+        "hit": 10,
+        "denominator": 13
+      },
+      "unverified_abstention": 2
+    },
+    {
+      "arm": "r1_transform_only",
+      "split": "bench_dev",
+      "disable": "six_rules",
+      "fig_total": 7,
+      "fig_correct": 1,
+      "fig_accuracy": 0.1429,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.7586,
+      "answerable_coverage": 0.7586,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 0.7667,
+        "hit": 23,
+        "denominator": 30
+      },
+      "unverified_abstention": 6
+    },
+    {
+      "arm": "r2_full_orig_verifier",
+      "split": "figtrans_dev",
+      "disable": "indep_verifier",
+      "fig_total": 16,
+      "fig_correct": 13,
+      "fig_accuracy": 0.8125,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.7692,
+      "answerable_coverage": 0.7692,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 0.7692,
+        "hit": 10,
+        "denominator": 13
+      },
+      "unverified_abstention": 3
+    },
+    {
+      "arm": "r2_full_orig_verifier",
+      "split": "figshots_dev",
+      "disable": "indep_verifier",
+      "fig_total": 15,
+      "fig_correct": 12,
+      "fig_accuracy": 0.8,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.7692,
+      "answerable_coverage": 0.7692,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 0.7692,
+        "hit": 10,
+        "denominator": 13
+      },
+      "unverified_abstention": 2
+    },
+    {
+      "arm": "r2_full_orig_verifier",
+      "split": "bench_dev",
+      "disable": "indep_verifier",
+      "fig_total": 7,
+      "fig_correct": 3,
+      "fig_accuracy": 0.4286,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.8276,
+      "answerable_coverage": 0.8276,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 0.8333,
+        "hit": 25,
+        "denominator": 30
+      },
+      "unverified_abstention": 6
+    },
+    {
+      "arm": "r3_full_indep_verifier",
+      "split": "figtrans_dev",
+      "disable": null,
+      "fig_total": 16,
+      "fig_correct": 13,
+      "fig_accuracy": 0.8125,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.7692,
+      "answerable_coverage": 0.7692,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 0.7692,
+        "hit": 10,
+        "denominator": 13
+      },
+      "unverified_abstention": 3
+    },
+    {
+      "arm": "r3_full_indep_verifier",
+      "split": "figshots_dev",
+      "disable": null,
+      "fig_total": 15,
+      "fig_correct": 12,
+      "fig_accuracy": 0.8,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.7692,
+      "answerable_coverage": 0.7692,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 0.7692,
+        "hit": 10,
+        "denominator": 13
+      },
+      "unverified_abstention": 2
+    },
+    {
+      "arm": "r3_full_indep_verifier",
+      "split": "bench_dev",
+      "disable": null,
+      "fig_total": 7,
+      "fig_correct": 3,
+      "fig_accuracy": 0.4286,
+      "false_accept": 0,
+      "false_reject": 0,
+      "over_answer": 0,
+      "objective_answer_accuracy": 0.8276,
+      "answerable_coverage": 0.8276,
+      "selective_accuracy": 1.0,
+      "overall_answer_accuracy": {
+        "value": 0.8333,
+        "hit": 25,
+        "denominator": 30
+      },
+      "unverified_abstention": 6
+    }
+  ]
+}

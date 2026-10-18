@@ -1,12 +1,16 @@
 {
   "split": "figtrans_dev",
-  "evaluated_at": "2026-10-18",
+  "evaluated_at": "2026-10-18T21:35:00+08:00",
+  "run_mode": "oracle",
+  "code_evidence": {
+    "base_commit": "c4ea4f6",
+    "working_state": "R4b 未提交工作树（figure_transform 系 4 文件改动 + figshots 基准）",
+    "note": "R4b 起按首评教训记录 commit+dirty 双凭证；提交后以 commit 为准",
+    "r4b_head_commit": "PENDING_AT_WRITE", "module_content_sha256": {"figure_transform.py": "eb979846d475b9d5ecc5bdf73c463304161997d54e8acac7cd56bf2c86de958d", "figure_transform_tools.py": "4ae4f98a9220abe17a09c371fce650b39bbcfb210578c38999b6c6df370f0e49", "figure_adapter.py": "4ed4b41e1644b3dc8fd96199b0a3d6f929387f2ee27a28de7a40220e565d4c1d", "figure_reasoning.py": "e807e2a39e5b4f17b40ad66ef87603f3a0054232f22d34a47739e371efae775d"}
+  },
   "data_sha256": "66444dcf3a5c0c82c80484d8675e3ac64b41c44107f6142521c23ef769446844",
-  "summary": {
-    "total": 16,
-    "correct": 16,
-    "accuracy": 1.0,
-    "false_accept_total": 0,
-    "false_reject_total": 0
-  }
+  "summary": {"correct": 13, "total": 16, "false_accept": 0, "objective_answer_accuracy": 0.7692,
+              "hit_over_answerable_denominator": "10/13"},
+  "policy_change_note": "相对 R4a 验收时的 16/16：R4b 收紧验证口径（all_confirm 扫描计数洞修复 + 几何独立代入 + 双侧扰动）使 3 题保守弃权（trans-07/trans-08/overlay-12，均为位置/叠加维度由离散化维持的判别）。这是覆盖损失不是正确率下降；R4a 16/16 记录不回写，历史对照见 ablation_r4a.json。",
+  "remaining_misses": ["ft-trans-07（unverified：位置维度扰动塌缩）", "ft-trans-08（unverified）", "ft-overlay-12（unverified：叠加对 1px 描边扰动系统性敏感）"]
 }

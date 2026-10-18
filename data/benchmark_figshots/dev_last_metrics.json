@@ -1,0 +1,20 @@
+{
+  "split": "figshots_dev",
+  "evaluated_at": "2026-10-18T21:35:00+08:00",
+  "run_mode": "oracle",
+  "dataset_note": "R4b P0-1 完整页面截图集（题干+选项+字母标号同页渲染，bbox 全在图内，crop=页面像素再导出；canvas-16 因异常裁剪考点在整页结构下不可表达而剔除，deviations 见 manifest）",
+  "code_evidence": {
+    "base_commit": "c4ea4f6",
+    "working_state": "R4b 未提交工作树",
+    "r4b_head_commit": "PENDING_AT_WRITE", "module_content_sha256": {"figure_transform.py": "eb979846d475b9d5ecc5bdf73c463304161997d54e8acac7cd56bf2c86de958d", "figure_transform_tools.py": "4ae4f98a9220abe17a09c371fce650b39bbcfb210578c38999b6c6df370f0e49", "figure_adapter.py": "4ed4b41e1644b3dc8fd96199b0a3d6f929387f2ee27a28de7a40220e565d4c1d", "figure_reasoning.py": "e807e2a39e5b4f17b40ad66ef87603f3a0054232f22d34a47739e371efae775d"}
+  },
+  "data_sha256": "ab768631438c2f308ce067e831712835ec12bf1e8b1f1019b333afe1813da2ef",
+  "oracle_summary": {"correct": 12, "total": 15, "false_accept": 0, "objective_answer_accuracy": 0.7692,
+                     "judged_conclusions": "12/15 与 figtrans_dev 等价题集判定逐题一致（canvas-16 剔除后），P1-1 移除 layout 决策控制后三模式同一路径"},
+  "image_only_summary": {
+    "status": "NOT_EXECUTED（真实识别能力主张为零）",
+    "offline_behavior": "无 VLM 环境下 15/15 诚实 model_api_error（failure_class 分账），绝不以金标区域或离线解析器冒充",
+    "smoke_report": "phase6_vlm_smoke.json（figshots 目录）"
+  },
+  "remaining_misses": ["ft-trans-07", "ft-trans-08", "ft-overlay-12（均为保守验证弃权，同 figtrans 根因）"]
+}

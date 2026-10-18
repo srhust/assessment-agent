@@ -137,6 +137,26 @@ GROUP: Dict[str, Any] = {
     "FA":   lambda a: _fit_frame(np.rot90(np.flipud(a), 1)),                 # 副对角镜像
 }
 
+# 原始动作（不重归一）与按帧绑定：R4b P0-2 要求归一化帧尺寸**显式参数传递**，
+# 验证器不得通过修改模块全局 FRAME 切换尺度（并发/异常隔离风险、跨请求状态污染）。
+_RAW: Dict[str, Any] = {
+    "I":    lambda a: a,
+    "R90":  lambda a: np.rot90(a, 1),
+    "R180": lambda a: np.rot90(a, 2),
+    "R270": lambda a: np.rot90(a, 3),
+    "FH":   lambda a: np.fliplr(a),
+    "FV":   lambda a: np.flipud(a),
+    "FD":   lambda a: np.swapaxes(a, 0, 1),
+    "FA":   lambda a: np.rot90(np.flipud(a), 1),
+}
+
+
+def group_for(frame: Optional[int] = None) -> Dict[str, Any]:
+    """返回绑定到指定帧尺寸的 D4 元素表（默认帧不变，供独立验证器自带帧使用）。"""
+    fr = int(frame or FRAME)
+    return {name: (lambda raw, f=fr: lambda a, f=f: _fit_frame(raw(a), f))(_RAW[name])
+            for name in _RAW}
+
 
 def compose(t1: str, t2: str) -> str:
     """群元素复合：先 t2 后 t1 的名称（离散查表，二面体群 D4）。"""
@@ -167,12 +187,14 @@ def residual(a: np.ndarray, b: np.ndarray) -> float:
     return round(1.0 - inter / union, 6)
 
 
-def stabilizer(sh: Shape, tol: float = 0.12) -> List[str]:
+def stabilizer(sh: Shape, tol: float = 0.12, frame: Optional[int] = None) -> List[str]:
     """变换不可区分集：施加 g 后残差≤tol 的群元素。旋转对称图形由此显式暴露。"""
-    return sorted(g for g in GROUP if residual(GROUP[g](sh.frame), sh.frame) <= tol)
+    G = group_for(frame)
+    return sorted(g for g in G if residual(G[g](sh.frame), sh.frame) <= tol)
 
 
-def transform_matches(src: Shape, dst: Shape, tol: float = 0.12) -> List[str]:
+def transform_matches(src: Shape, dst: Shape, tol: float = 0.12,
+                      frame: Optional[int] = None) -> List[str]:
     """src 经哪些群元素可得到 dst（可能多个→对称歧义）。
     保面积纪律：旋转/镜像不改变 bbox 相对面积——面积明显变化不是旋转/镜像规律
     （那是缩放律的领地），否则会把缩放序列误解释成恒等旋转匹配。"""
@@ -180,7 +202,8 @@ def transform_matches(src: Shape, dst: Shape, tol: float = 0.12) -> List[str]:
     if src.scale_area > EPS and dst.scale_area > EPS:
         if abs(math.log(dst.scale_area / src.scale_area)) > 0.35:
             return []
-    return sorted(g for g in GROUP if residual(GROUP[g](src.frame), dst.frame) <= tol)
+    G = group_for(frame)
+    return sorted(g for g in G if residual(G[g](src.frame), dst.frame) <= tol)
 
 
 # ------------------------------------------------------------------ 规律候选
@@ -298,14 +321,15 @@ def arbitrate(cands: List[Candidate], tol: float = 0.15,
 
 # ------------------------------------------------------------------ 总入口
 
-def _seq_candidates(shapes: Sequence[Shape]) -> List[Candidate]:
+def _seq_candidates(shapes: Sequence[Shape], frame: Optional[int] = None) -> List[Candidate]:
     """已知序列（空格在末尾/被截断）：全程一致的 dihedral 变换外推一格。"""
     cands: List[Candidate] = []
     n = len(shapes)
+    G = group_for(frame)
     if n >= 2:
         step_sets = []
         for i in range(n - 1):
-            ms = transform_matches(shapes[i], shapes[i + 1])
+            ms = transform_matches(shapes[i], shapes[i + 1], frame=frame)
             if not ms:
                 step_sets = []
                 break
@@ -315,7 +339,7 @@ def _seq_candidates(shapes: Sequence[Shape]) -> List[Candidate]:
             for g in common:
                 c = Candidate(rule_type="rotate_flip_seq", transformation=g,
                               source_cells=list(range(n)))
-                c._pred_frame = GROUP[g](shapes[-1].frame)      # type: ignore
+                c._pred_frame = G[g](shapes[-1].frame)          # type: ignore
                 cands.append(c)
     # 平移：帧内相对位置等差（零位移不构成平移规律）→ 预测=同内容帧
     centers = [s.center for s in shapes]
@@ -348,16 +372,24 @@ def _seq_candidates(shapes: Sequence[Shape]) -> List[Candidate]:
 
 def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
                       mode: str = "sequence",
-                      tol: float = 0.12) -> Dict[str, Any]:
+                      tol: float = 0.12,
+                      frame: Optional[int] = None,
+                      score_tol: Optional[float] = None,
+                      margin_min: float = 0.05) -> Dict[str, Any]:
     """题面已知格 mask 序列（空格截断/置末）+ 选项格 mask → 候选+仲裁+对称声明。
 
     mode="sequence"：一行 N 已知 + 预测下一格。
     mode="grid3"：8 已知 + 空格在第 9 位（行优先，末位为空格）——行内一致变换
     与列内一致变换分别枚举，进入候选池；由仲裁决定共同支持。
+    frame：归一化帧尺寸**显式传入**（R4b P0-2：验证器用它做参数扫描，绝不改全局）。
+    score_tol：选项打分容差；默认 None=沿用历史 0.15（保持既有验收），扫描组传入
+    真实 tol——R4a 曾把仲裁容差写死 0.15，导致"容差扫描"实际不影响打分，一并修复。
     纪律：只用变换残差+裕度；选项标签仅作为标识符，位置/文件名不可见。
     """
-    shapes = [standardize(m) for m in stem]
-    option_shapes = {lab: standardize(m) for lab, m in options.items()}
+    fr = int(frame or FRAME)
+    G = group_for(fr)
+    shapes = [standardize(m, fr) for m in stem]
+    option_shapes = {lab: standardize(m, fr) for lab, m in options.items()}
     if any(s.blank for s in shapes):
         return {"status": "insufficient", "reason": "blank_cell_in_stem",
                 "candidates": [], "verdict": {"verdict": "no_rule", "answer": None,
@@ -365,7 +397,7 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
                 "symmetry_unresolvable": [], "per_cell_stabilizer": {}}
     cands: List[Candidate] = []
     if mode == "sequence":
-        cands += _seq_candidates(shapes)
+        cands += _seq_candidates(shapes, fr)
     elif mode == "grid3":
         if len(shapes) != 8:
             return {"status": "insufficient", "reason": "grid3_needs_8_known_cells",
@@ -382,7 +414,7 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
             for line in lines:
                 known = [s for s in line if s is not None]
                 for a, b in zip(known, known[1:]):
-                    ms = transform_matches(a, b)
+                    ms = transform_matches(a, b, frame=fr)
                     if not ms:
                         step_sets = []
                         break
@@ -396,10 +428,10 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
                     # 行律对第 8 格外推、列律对第 6 格外推（空格恒在 (2,2)）
                     c = Candidate(rule_type=f"rotate_flip_grid_{kind}", transformation=g,
                                   source_cells=list(range(8)))
-                    c._pred_frame = GROUP[g](base.frame)      # type: ignore
+                    c._pred_frame = G[g](base.frame)            # type: ignore
                     cands.append(c)
         # 整网格行优先序列也试一次（平移/缩放类）
-        cands += _seq_candidates(shapes)
+        cands += _seq_candidates(shapes, fr)
         # --- 叠加律：每行(列)第三格 = 前两格布尔叠加，跨行(列)同算子 ---
         def mkop(name):
             f = {"xor": lambda x, y: ((x > 0) ^ (y > 0)).astype(np.uint8),
@@ -415,13 +447,13 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
             for (a, b, c_), (d, e, f_), (g, h, _) in groups:
                 for opname, opf in ((n, mkop(n)) for n in ("xor", "or", "and")):
                     checks = [(a, b, c_), (d, e, f_)]
-                    if all(residual(fit_canvas(opf(RAW[x], RAW[y])),
+                    if all(residual(fit_canvas(opf(RAW[x], RAW[y]), fr),
                                      S[z].canvas_frame) <= tol for x, y, z in checks):
                         c = Candidate(rule_type=kind, transformation=f"overlay_{opname}",
                                       source_cells=[a, b, d, e, g, h],
                                       predicted_shape={"aspect": round(float(S[h].aspect), 3)})
                         # 画布级预测：保留空洞/位置结构（bbox 归一会把 xor/or 拉平）
-                        c._pred_canvas = fit_canvas(opf(RAW[g], RAW[h]))  # type: ignore
+                        c._pred_canvas = fit_canvas(opf(RAW[g], RAW[h]), fr)  # type: ignore
                         c._pred_frame = c._pred_canvas                     # type: ignore
                         c.pred_scale = -1.0        # 叠加结果的 bbox 尺度与格内尺度不可比
                         cands.append(c)
@@ -442,13 +474,14 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
         area_r = max(c[0] * c[1] for c in canv) / max(1, min(c[0] * c[1] for c in canv))
         if max(ar) - min(ar) > 0.2 or area_r > 1.6:
             flags.append("canvas_mismatch：格间画布尺寸/纵横不一致（裁剪异常），尺度维度不可信，整体降级")
-    arb = arbitrate(cands, tol=0.15) if cands else {"verdict": "no_rule", "answer": None,
-                                                      "support": {}}
+    arb = (arbitrate(cands, tol=(0.15 if score_tol is None else float(score_tol)),
+                     margin_min=margin_min) if cands
+           else {"verdict": "no_rule", "answer": None, "support": {}})
     # 画布失配时任何答案都建立在可疑的尺度维度上 → 整体降级（保守）
     if flags:
         arb = {"verdict": "ambiguous", "answer": None, "support": {},
                "detail": flags[0]}
-    sym = {i: stabilizer(s) for i, s in enumerate(shapes)}
+    sym = {i: stabilizer(s, frame=fr) for i, s in enumerate(shapes)}
     unverifiable = [f"cell{i}: 对称不可区分 {g}" for i, g in sym.items() if len(g) > 1]
     return {"status": "ok", "verdict": arb, "candidates": [c.as_dict() for c in cands],
             "symmetry_unresolvable": unverifiable + flags,

@@ -307,11 +307,20 @@ def solve_figure_transform_regions(
     verdict = res["verdict"]
     answer = verdict.get("answer") if verdict.get("verdict") == "unique" else None
     ver = verify_transformation({**res, "mode": mode}, stem_list, option_masks, answer)
+    # R4b P0-3：两个布尔**必须分开**透出——parameter_stable=单因子归一化参数组
+    # 全部唯一复算同一答案（扫描口径）；independently_verified=验证器自有帧下
+    # 几何候选替代验证六项全过（代入口径）。二者不可共用一个字段。
+    vchecks = {c.get("name"): bool(c.get("passed"))
+               for c in (ver.model_dump().get("checks") or [])}
+    parameter_stable = bool(vchecks.get("figure_transform.parameter_stable"))
+    independently_verified = bool(vchecks.get("geometry.independently_verified"))
     return {
         "status": "solved" if (answer and ver.action == "accept") else
                   ("unverified" if answer and ver.action != "accept" else "failed"),
         "mode": mode,
         "answer": answer if ver.action == "accept" else None,
+        "parameter_stable": parameter_stable,
+        "independently_verified": independently_verified,
         "verdict": verdict,
         "candidates": res["candidates"],
         "symmetry_unresolvable": res["symmetry_unresolvable"],

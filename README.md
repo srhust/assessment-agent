@@ -657,13 +657,86 @@ dev **16/16**（含 3 个歧义/降级诚实 failed 全弃权，误放 0）；
 → `data/benchmark_figtrans/phase6_vlm_smoke.json` 显式 **NOT_EXECUTED**（含执行时
 应记录的字段清单：model/run_ref/usage/输入图/区域定位/答案/验证状态），无 mock 冒充。
 
+### 6.8 R4b：图形验证可靠性与真实截图闭环（2026-10-18）
+
+R4a 交付后复核发现两个 P0 洞，R4b 全部封堵并新增**完整页面截图基准**：
+
+**P0-1 完整截图基准 `benchmark_figshots`**：R4a 的 figtrans 题图只渲染题干矩阵，
+选项单独存放且标注 bbox 超出主图——`image_only` 端到端选择题在物理上不成立。
+figshots 把题干矩阵、全部选项格、字母标号（A. B. C.）与中性说明文字
+（"根据题目图形中蕴含的规律…"，**无旋转/叠加等规律名提示**）渲染到同一页面；
+全部 bbox 严格位于图片内；regions 金标裁剪从页面像素**再导出**（像素一致性由
+测试锁定 `np.array_equal(crop, page[bbox])`）。canvas-16（异常裁剪考点）在整页
+统一网格结构下无法表达，如实剔除并记入 manifest.deviations——该降级题保留在
+figtrans Oracle 回归集。原 figtrans/test 冻结集与首评记录**未动**（sha 复验在测试内）。
+
+**P0-2 扫描计数洞**：R4a `unique={A,None,…}` 去 None 后当成"全部一致"放行（1/9 确认
+可 accept）。现拆 `confirmed/contradicted/unresolved` 三计数，政策显式
+`all_confirm`（unresolved>0 → unverified），锁死测试
+`test_partial_confirm_is_unverified_not_accept`（构造部分确认场景）。扫描同时从
+3×3 全因子改为**单因子帧组 {48,64,80}**（48帧×0.08容差这类交叉病态组合检验的是
+双重极端劣化而非求解器前提，曾把真实唯一规律误判为不稳定）；打分容差不再混入
+扫描维度，由验证器自有 VTOL+双侧扰动承担。`ft.FRAME` 全局突变路径删除，改为
+`group_for(frame)` 参数贯穿——并发 12 线程结果逐位一致、中断/顺序调换测试在
+`test_r4b_reliability.py` 锁定。
+
+**P0-3 parameter_stable ≠ independently_verified**：9 组同参重跑只是参数稳定性。
+新 `verify_geometry` 在验证器**自有帧 72×72** 下枚举几何候选做替代验证六项：
+规律重放（blocking）、外推代入（blocking）、等价选项互距、稳定子披露、
+同等合理替代规律指向别处、离散化双侧扰动（±1px 膨胀/腐蚀同时作用于题干与
+选项、声明规律按原参数重放、排序不翻转且裕度不塌缩）。两布尔经
+`solve_figure_transform_regions` 顶层字段 → solution.meta → 验证记录**分开透出**，
+测试锁定"参数稳定但代入未过 → unverified 不作答"的真实样本
+（trans-07/overlay-12：dev 中 3 道弃权根因即在此）。
+
+**P1-1 layout 决策解耦**：`question.meta["layout"]=="figtrans"` 不再参与求解决策——
+变换通道对所有区域化题常开，适用性由图形结构判定（空格位置/已知格数/网格形状），
+交叉冲突拦截仅限"变换规律族真的表态"。测试 `test_layout_label_does_not_change_solver_decision`
+证明只改 layout 字段时答案/候选/验证逐位不变；Oracle/auto_router/image_only 同一路径。
+
+**P1-2 分账审计 `annotation_audit_r4b.json`**：comp-08（疑 gold 生成错误）、
+rot90-01（等价选项无唯一解）、scale-04（gold 残差贴容差）逐题记录原始金标/预测/
+评测结论/是否存在唯一合法解/复核结论与证据。首评 7/10 **永不回写**；Adjudicated
+Score 标 PENDING_HUMAN_REVIEW。`code_commit=cb5d1dc` 取证结论：该字段只记录了
+HEAD 指针，变换模块当时未入库（首次 commit 是 ca89a6c），首评代码态**不可复原**，
+如实记录不猜测——R4b 起所有指标持久化附**模块内容 sha256 双凭证**。
+R4b 代码对 test 集一次性诊断重放：误放 1→0（comp-08 封堵为弃权），代价是
+trans-03 由首评答对转为保守弃权——覆盖损失如实入账，不粉饰为正确。
+
+**P1-3 严格 image_only**：runner image_only 分支只传原始整页图片（输入合同由源码
+断言测试锁定），无 VLM 环境 15/15 诚实 `model_api_error`；冒烟报告迁移至
+`benchmark_figshots/phase6_vlm_smoke.json`（NOT_EXECUTED，含 8 项产物清单）。
+
+**R4b 数字**（误放全 0；真实识别能力主张仍为零）：
+
+| 数据集 | R4a 口径 | R4b 口径 | 说明 |
+|---|---|---|---|
+| figtrans_dev（Oracle 回归集） | 16/16 | **13/16** | 3 题位置/叠加判别由离散化维持→弃权（FR 分账） |
+| figshots_dev（完整页面，Oracle） | — | **12/15** | 与 figtrans 等价题集判定逐题一致 |
+| figtrans_test 首评（历史） | 7/10 · FA1 | 诊断重放 6/10 · FA0 | 首评记录不回写 |
+| figshots_test **首评即终评** | — | **6/10 · FA0 · FR0** | obj 4/8；trans-03 口径收紧直接可见 |
+| bench_dev（原六类） | 25/30 · obj 0.8276 | **不变** | layout 解耦与验证收紧零回归 |
+
+R4b 消融（`ablation_r4b.json`，四臂 × figtrans_dev/figshots_dev/bench_dev）：
+r0 仅六类 figshots 2/15；r1 仅变换 12/15（bench 六类图题 3→1）；r2/r3 完整
+13/16 与 12/15、bench 25/30 obj 0.8276 误放 0——变换通道增益与验证器代数差
+同表可查。
+
+**行尾凭证事故与修复（R4b 过程中发现的仓库级缺陷）**：本机 `core.autocrlf=true`
+且无 `.gitattributes`，`git checkout` 把冻结 jsonl 重写为 CRLF，多个 manifest sha
+出现"假性漂移"；同时取证确认 R2b/R3b 时代部分 manifest 记录的是发布机 CRLF 字节
+哈希而 git blob 一直存 LF（凭证与库内容**历史性地**不字节相等，JSONL 行内容恒等
+已逐行验证）。修复：`.gitattributes` 强制 `*.jsonl/*.json -text`（禁一切转换），
+四个受害文件按 manifest 凭证字节恢复（行内容零改动，`rows-equal True` 证明），
+新增 `test_frozen_figtrans_untouched` 等测试锁定。
+
 ---
 
 ## 7. 测试
 
 ```bash
 python -m pytest -q
-# 349 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
+# 362 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
 ```
 
 覆盖范围：
@@ -690,6 +763,7 @@ python -m pytest -q
 - R4a 语言闭包（9 项）+ 命题预测状态（21 项：predicted 六态、最小对比、审计层、开放世界词典守卫）
 - R4a 图形变换（15 项：标准表示相对量、D4 组合表封闭、离散旋转/镜像/平移/缩放、九宫格行列冲突 ambiguous、叠加 xor/or、标签位置盲、对称竞争项披露、画布失配降级）
 - R4a 变换回归锁定（4 项：FV 等价类不择一、R180 自对称步进不可区分、容差贴边不放宽、稳定子披露）+ figtrans 基准守护（6 项：manifest sha、诚实 failed 保留、test 冻结+首评对账、split 注册、Phase6 NOT_EXECUTED 语义、消融四臂底线）
+- R4b 可靠性（13 项：完整页面 bbox 有界+crop 像素再导出+字母/说明文字像素存在、figtrans 冻结集字节不变、部分确认→unverified 反例、all_confirm 政策断言、无全局 FRAME 突变、并发/中断/顺序调换一致、parameter_stable 与 independently_verified 分离且代入未过不作答、layout 标签零影响（四取值逐位一致）、image_only 输入合同源码断言、Phase6 figshots NOT_EXECUTED）
 - DSH / MCP 接入（清单结构、`tools/call` 形状、未知工具与非法参数、能力输出脱敏、`save=false` 不落盘）
 - CLI（solve / eval / skills / doctor / mcp-manifest / call 的返回码与输出）
 
@@ -725,7 +799,8 @@ mock 结果只证明链路机制，不用于宣称模型识别能力。
 
 | 题型 | 计划实现 | 依赖 |
 | --- | --- | --- |
-| 图形推理 | ✅ R2~R4a：网格解析 + 六类规律 + **离散旋转/镜像/平移/缩放/组合/九宫格/叠加变换通道**（D4 群 + 画布级叠加判别 + 独立参数扫描验证器 + 双律冲突弃权）；待实现：曲线/交点数量律、多步复合链规律、真实截图 VLM 端到端（Phase6 目前 NOT_EXECUTED） | OpenCV + NumPy |
+| 图形推理 | ✅ R2~R4b：网格解析 + 六类规律 + **离散旋转/镜像/平移/缩放/组合/九宫格/叠加变换通道**（D4 群 + 画布级叠加判别 + 单因子 all_confirm 扫描 + 几何候选替代独立验证 + parameter_stable/independently_verified 分账 + **完整页面截图基准 figshots**）；R4b 已封堵扫描计数洞、layout 决策耦合与题图缺选项三项 P0；待实现：曲线/交点数量律、多步复合链规律、真实截图 VLM 端到端（Phase6 仍 NOT_EXECUTED） | OpenCV + NumPy |
+| 下一步顺序（评审确认） | ① 真实 VLM 端到端（figshots image_only，记录 extraction/区域/router/候选/验证/latency/usage/归因）→ ② 全新冻结泛化盲集 → ③ 才评估 R5 蒸馏（先回答：真实视觉解析是否破坏题干信息/表格结构/选项映射、错误解题轨迹会不会被验证器误收） | LLM_VISION_MODEL 配置 |
 | 资料分析 | ✅ R3a 已实现：表格/柱状图结构化 + 计算计划 + Fraction 求值 + 六步独立验证；待实现：折线/多图复合表格、更复杂表头合并与真实截图 OCR 端到端验证 | OpenCV + 表格校验器 +（真实 VLM 待配置） |
 | 言语理解 | ✅ R3b+R3c：选词搭配、主旨结论覆盖、推断否定/量词/情态核对 + **命题归属层**（传闻/假设/否认不升格为事实）、字面条件链 Z3；待实现：跨句指代、近义重表述主旨、预设/蕴含（"否认说法⇒说法存在"）形式化、肯后式推断 | 带证据的 LLM 输出 + 校验器 |
 | 语言推理 | ✅ R3c：词典七类方向关系 + 判别性覆盖 + 六项验证；待实现：词库规模化（当前 ~120 中文词条）、程度关系、词性/语义角色校验、真实 LLM 提议通道验证 | 知识库检索 + LLM |

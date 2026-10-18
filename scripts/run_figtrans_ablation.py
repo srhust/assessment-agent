@@ -24,7 +24,7 @@ ARMS = {
     "r2_full_orig_verifier": "indep_verifier",
     "r3_full_indep_verifier": "",
 }
-SPLITS = ("figtrans_dev", "bench_dev")
+SPLITS = ("figtrans_dev", "figshots_dev", "bench_dev")
 
 
 def run_arm(arm: str, disable: str, split: str) -> dict:
@@ -68,11 +68,16 @@ def main() -> None:
             r = run_arm(arm, disable, split)
             rows.append(r)
             print(json.dumps(r, ensure_ascii=False))
-    out = ROOT / "data" / "benchmark_figtrans" / "ablation_r4a.json"
+    # R4b：证据文件按轮次命名（ablation_r4a.json 是 R4a 验收凭证，不再覆盖）
+    out_name = os.environ.get("ABLATION_OUT", "ablation_r4a.json")
+    out = ROOT / "data" / "benchmark_figtrans" / out_name
     out.write_text(json.dumps({
         "generated_at": "2026-10-18",
         "note": "bench_dev 行为全题型口径（figure 子集另见 fig_*）；"
-                "各臂题集一致，仅切换能力臂；无删题/无容差调整。",
+                "各臂题集一致，仅切换能力臂；无删题/无容差调整。"
+                "R4b 复跑说明：验证口径已收紧（单因子 all_confirm + 几何六项），"
+                "r2/r3 差异只反映独立验证器代数差，题集与容差未动。",
+        "harness": os.environ.get("ABLATION_NOTE", ""),
         "rows": rows,
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("saved", out)

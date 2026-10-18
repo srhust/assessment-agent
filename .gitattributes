@@ -1,0 +1,11 @@
+# 评测纪律：jsonl 数据文件的 sha 是冻结凭证——行尾属于内容的一部分。
+# core.autocrlf 机器默认会把 checkout 文件变成 CRLF 导致假性"sha 漂移"。
+# ⚠️ -text（禁一切行尾转换）而非 eol=lf：eol=lf 只保证 checkout 为 LF，
+# 提交时 clean 仍把 LF→CRLF，blob 身份会被本机 autocrlf 篡改。
+# 生成器一律 write_bytes(LF)，blob=工作树=磁盘字节，sha 凭证跨平台稳定。
+*.jsonl -text
+*.json  -text
+*.md    text eol=lf
+*.py    text eol=lf
+*.png   binary
+*.jpg   binary

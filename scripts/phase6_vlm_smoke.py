@@ -13,7 +13,10 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "data" / "benchmark_figtrans" / "phase6_vlm_smoke.json"
+OUT = ROOT / "data" / "benchmark_figshots" / "phase6_vlm_smoke.json"
+STRICTNESS = ("image_only 模式 pipeline 仅接收原始完整页面图片：不提供题干文字/选项文本/"
+              "区域坐标/grid/金标答案/layout 标签；金标 regions 只用于评测对照，"
+              "不进入求解输入")
 SHELL_QIDS = ("ft-rot90-01", "ft-grid-10", "ft-overlay-12")  # 三类变换形态代表题
 
 
@@ -39,9 +42,14 @@ def main() -> None:
         "vision_model": env.get("LLM_VISION_MODEL"),
         "llm_model": env.get("LLM_MODEL"),
         "base_url_configured": bool(env.get("LLM_BASE_URL")),
-        "input_images": [f"data/benchmark_figtrans/images/dev/{q}.png"
+        "input_images": [f"data/benchmark_figshots/images/dev/{q}.png"
                          for q in SHELL_QIDS],
         "eval_mode": "image_only",
+        "split": "figshots_dev",
+        "strict_input_contract": STRICTNESS,
+        "artifacts_per_case": ["原图", "extraction.json", "预测区域及裁剪", "router 结果",
+                               "solver 候选规律与答案", "verifier 状态", "延迟与 token usage",
+                               "最终错误归因"],
     }
     if not ok:
         base.update({
@@ -62,7 +70,7 @@ def main() -> None:
 
     proc = subprocess.run(
         [sys.executable, "-X", "utf8", "-m", "assessment_agent.cli", "eval",
-         "--split", "figtrans_dev", "--eval-mode", "image_only", "--json"],
+         "--split", "figshots_dev", "--eval-mode", "image_only", "--json"],
         capture_output=True, text=True, encoding="utf-8", cwd=str(ROOT))
     if proc.returncode != 0:
         base.update({"status": "EXECUTION_FAILED", "stderr_tail": proc.stderr[-400:]})

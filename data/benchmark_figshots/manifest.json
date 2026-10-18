@@ -1,0 +1,27 @@
+{
+  "name": "benchmark_figshots",
+  "data_class": "synthetic-full-page（完整页面截图基准；期望渲染前定义；不按求解结果筛题）",
+  "contains_real_exam": false,
+  "contains_pii": false,
+  "independence_declaration": "与 benchmark_figtrans 同源题面模板；页面包含题干+全部选项+字母标号，全部 bbox 位于图片内；金标裁剪由页面像素直接切出（像素一致性测试锁定）。本集用于 image_only 端到端；benchmark_figtrans 继续作为 Oracle 回归集。",
+  "splits": {
+    "dev": {
+      "file": "dev/figshots.jsonl",
+      "count": 15,
+      "sha256": "ab768631438c2f308ce067e831712835ec12bf1e8b1f1019b333afe1813da2ef",
+      "frozen": false
+    },
+    "test": {
+      "file": "test/figshots.jsonl",
+      "count": 10,
+      "sha256": "22a7a02585e16a4a9ccd9564b8e927ed0459678ada2a80298228f2610d4a3dbe",
+      "frozen": true
+    }
+  },
+  "deviations": {
+    "excluded": [
+      "ft-canvas-16"
+    ],
+    "reason": "异常裁剪尺寸考点在整页统一网格结构下不可表达；保留于 benchmark_figtrans"
+  }
+}

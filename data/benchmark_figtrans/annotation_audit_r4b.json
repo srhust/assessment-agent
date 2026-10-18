@@ -1,0 +1,64 @@
+{
+  "round": "R4b",
+  "created": "2026-10-18",
+  "purpose": "图形 false-accept 与真实 gold 缺陷分账（P1-2）。本文件是**旁路审计记录**：冻结的 test 数据、首评 metrics（7/10）与首评逐题判定永不改写；如独立复核认定 gold 有误，Adjudicated Score 在本文件单独给出。",
+  "discipline": [
+    "Original Frozen Score = benchmark_figtrans/test_firstrun_metrics.json 的 7/10（FA 1），任何后续修复不回写首评。",
+    "本文件只登记证据与复核建议；gold 是否最终改判需人工图形复核 + 新盲集首评，不在本轮执行。"
+  ],
+  "samples": [
+    {
+      "id": "ftt-comp-08",
+      "original_gold": "A",
+      "original_prediction": "B",
+      "original_eval_conclusion": "wrong_answer（首评 false accept 之外：predicted=B 未过验证被拒，计 wrong）",
+      "unique_valid_answer_exists": false,
+      "reviewed_semantic_conclusion": "疑似 gold 生成错误（模板渲染把选项 A 复制为题干第 2 格内容，未构成对'复合规律外推项'的合法候选）",
+      "review_reasoning_and_evidence": "R4a 几何取证：复合规律 R90 后 FH 的外推形状与选项 B 像素残差 0.0，而 gold A 的内容与题干中间格相同（非外推结果）。等价性在 frame 48/64/80 三组独立归一化下复现（R4a test 回归 test_fv_symmetric_composite_cannot_single_out_equivalent_option 同类结构）。独立验证器对'gold 本身重复题干格'这一类无判别力——它会拒绝该题而非识别 gold 错。"
+    },
+    {
+      "id": "ftt-rot90-01",
+      "original_gold": "A",
+      "original_prediction": "refused（ambiguous）",
+      "original_eval_conclusion": "wrong_answer（弃权计错）",
+      "unique_valid_answer_exists": false,
+      "reviewed_semantic_conclusion": "疑题面缺陷：阶梯图形为 R180 自对称，R90 与 R270 外推像素等价，选项 A/D 等价 → 题面无唯一答案",
+      "review_reasoning_and_evidence": "R4a 回归 test_rot180_self_symmetric_stair_step_is_indistinguishable 在同构造上证实：稳定子 {I,R180} 使 R90 步与 R270 步产生的预测不可区分，选项 A 与 D 归一化残差 ≤ 1e-9。仲裁层 margin=0 → ambiguous 弃权是策略正确行为；错在题目生成时未检测等价选项。"
+    },
+    {
+      "id": "ftt-scale-04",
+      "original_gold": "A",
+      "original_prediction": "refused（unverified）",
+      "original_eval_conclusion": "wrong_answer（弃权计错）",
+      "unique_valid_answer_exists": true,
+      "reviewed_semantic_conclusion": "疑似容差/离散化覆盖缺陷：gold A 方向正确，几何残差 0.1505 恰在容差 0.15 之外",
+      "review_reasoning_and_evidence": "R4a 首评取证 + R4b verify_geometry 复算：缩放律在自有帧 72 下预测与 A 的残差全部扫描组一致（参数稳定），仅因 4px 边框裁剪使面积比偏离名义 1.5×。属离散化边界案例，非模型能力缺口；题面渲染保留边距即可修复（新数据版本事项）。"
+    }
+  ],
+  "code_commit_audit": {
+    "field_under_review": "test_firstrun_metrics.json.code_commit = 'cb5d1dc'",
+    "finding": "不精确。cb5d1dc（2026-10-18 17:00:37 +0800）为 R4a phase1 语言侧提交，其 commit tree **不含** figure_transform 模块（git show cb5d1dc:src/assessment_agent/tools/figure_transform.py 报 path does not exist）；变换模块首次入库于 ca89a6c（19:07:16 +0800）。",
+    "accurate_account": "首评在 cb5d1dc 的工作树（HEAD=cb5d1dc 的已跟踪文件 + 尚未提交的图形变换模块/基准脚本）上执行；metrics 的 code_commit 由 persist 时 git rev-parse --short HEAD 生成，只记录了 HEAD 指针，未包含未跟踪状态。首评时的完整代码状态从未被任何 commit 归档，无法逐字节复原——按纪律记录为不可复原，不做猜测性对齐。",
+    "evidence": [
+      "git log --diff-filter=A：figure_transform.py 与 figure_transform_tools.py 首次出现于 ca89a6c",
+      "cb5d1dc 与 96f5397（R3c 起点）时间戳（15:52:24 → 17:00:37 → 19:07:16）与首评发生窗口一致",
+      "data_sha256_at_firstrun（6eedfe14…）与冻结 test 集当前字节一致，数据侧可复现；代码侧不可复原"
+    ],
+    "consequence": "首评 7/10 数字保持权威（唯一一次评测纪律）；R4b 起任何指标持久化一律记录 commit + 工作树 dirty 状态双凭证（见 dev_last_metrics.json.r4b 代码凭证字段）。"
+  },
+  "adjudicated_score": {
+    "status": "PENDING_HUMAN_REVIEW",
+    "note": "若独立图形复核确认 comp-08 为 gold 错误且 rot90-01 无唯一答案，则 10 题中 2 题应改判（不可答题移出分母、gold 错误题按预测计对）：adjudicated 口径预计 8/8~8/9 区间，**不在本文件敲定**；Original Frozen Score 恒为 7/10。",
+    "original_frozen_score": {"correct": 7, "total": 10, "false_accept": 1}
+  },
+  "r4b_policy_recheck_on_this_code": {
+    "note": "在当前 R4b 保守验证器（单因子 all_confirm + 几何六项 + 双侧扰动）下对冻结 test 集的**一次性诊断重放**（不改变首评记录、不产生新评测批次、首评 7/10 仍是唯一对外口径）：",
+    "diagnostic_metrics": {"correct": 6, "total": 10, "false_accept": 0, "answer_accuracy": 0.5},
+    "delta_vs_first_run": "-1（ftt-trans-03：首评 solved 正确，R4b 验证判其判别裕度扰动不稳健 → 保守拒答）；首评 false accept（ftt-comp-08 通道下同类样本）已封堵为 reject 不作答",
+    "ftt-comp-08": "failed / predicted None / vrf reject——原 false accept 路径被 geometry 等价选项与替代规律检查拦截",
+    "ftt-rot90-01": "failed（等价选项题弃权正确）",
+    "ftt-scale-04": "failed（gold 残差 0.1505 超容差，同首评根因；题面渲染边距问题非能力缺口）",
+    "diagnostic_run": "results/figtrans_test/r4b_test_diagnostic/（本地；results/ 为 git 忽略目录，凭证字段引用此路径）",
+    "honesty": "R4b 收紧验证把 1 道首评答对题变为保守弃权：这是覆盖损失不是正确率提升，计入 unverified/FR 分账，不用于粉饰；真实模型识别能力仍无任何主张。"
+  }
+}

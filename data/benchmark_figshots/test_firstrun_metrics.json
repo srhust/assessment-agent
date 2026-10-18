@@ -1,0 +1,39 @@
+{
+  "split": "figshots_test",
+  "evaluated_at": "2026-10-18T21:41:00+08:00",
+  "run_mode": "oracle",
+  "note": "首次且唯一一次评测（冻结纪律）。此文件即首评记录，之后任何改动均不得回写本文件。",
+  "data_sha256_at_firstrun": "22a7a02585e16a4a9ccd9564b8e927ed0459678ada2a80298228f2610d4a3dbe",
+  "code_evidence": {
+    "head_commit_at_run": "c4ea4f6（R4a 图像入库提交；**工作树含未提交的 R4b 改动**，与 R4a 首评 code_commit 教训同构——故本轮额外记录内容级凭证）",
+    "module_content_sha256_at_run": {
+      "src/assessment_agent/tools/figure_transform.py": "eb979846d475b9d5ecc5bdf73c463304161997d54e8acac7cd56bf2c86de958d",
+      "src/assessment_agent/tools/figure_transform_tools.py": "4ae4f98a9220abe17a09c371fce650b39bbcfb210578c38999b6c6df370f0e49",
+      "src/assessment_agent/tools/figure_adapter.py": "4ed4b41e1644b3dc8fd96199b0a3d6f929387f2ee27a28de7a40220e565d4c1d",
+      "src/assessment_agent/skills/figure_reasoning.py": "e807e2a39e5b4f17b40ad66ef87603f3a0054232f22d34a47739e371efae775d",
+      "src/assessment_agent/tools/figure_rules.py": "ef89b609b525b5f5016e8f76449d57682d189946da3b5b144cce80a14cc4b49f（未改动，同 c4ea4f6）",
+      "src/assessment_agent/tools/figure_verify.py": "6358ae7e39701383a5f489e59fc8779c974f0586df6482c29db955766a4e94f3（未改动，同 c4ea4f6）"
+    },
+    "r4b_commit_after_this_run": "见 git log 'R4b'——提交时上述内容哈希即该 commit 的 blob，可互相印证"
+  },
+  "summary": {"correct": 6, "total": 10, "false_accept_total": 0, "false_reject_total": 0,
+              "objective_answer_accuracy": 0.5, "hit_over_answerable_denominator": "4/8"},
+  "comparison_note": "与 figtrans_test 首评（7/10, FA 1）同题集内容（canvas-16 无、本题集本就 10 题同源）；差异 = trans-03 由首评正确转为保守弃权（unverified→不作答）且原 false-accept 样本 comp-08 封堵为 failed。**FA 1→0 是本轮核心验收目标**；6/10 vs 7/10 的差值是验证收紧的诚实覆盖损失。",
+  "per_case": [
+    {"id": "ftt-rot90-01", "gold": "A", "predicted": null, "status": "failed", "conclusion": "弃权（等价选项，题面无唯一解——见 annotation_audit_r4b.json）"},
+    {"id": "ftt-mirror-02", "gold": "B", "predicted": "B", "status": "solved", "conclusion": "正确"},
+    {"id": "ftt-trans-03", "gold": "A", "predicted": "A(solved 但 unverified 不作答)", "status": "solved", "conclusion": "保守弃权：R4b 扰动复核判其判别由离散化维持；figtrans 首评同题为 accept 正确——口径收紧的直接体现"},
+    {"id": "ftt-scale-04", "gold": "A", "predicted": null, "status": "failed", "conclusion": "弃权（gold 残差 0.1505 超容差，题面渲染缺陷，audit 在案）"},
+    {"id": "ftt-grid-05", "gold": "A", "predicted": "A", "status": "solved", "conclusion": "正确"},
+    {"id": "ftt-overlay-06", "gold": "A", "predicted": "A", "status": "solved", "conclusion": "正确"},
+    {"id": "ftt-rot180-07", "gold": "A", "predicted": "A", "status": "solved", "conclusion": "正确"},
+    {"id": "ftt-comp-08", "gold": "A", "predicted": null, "status": "failed", "conclusion": "弃权封堵原 false accept（首评曾以 B 误答被计 FA；audit 疑 gold 生成错误，待人工图形复核）"},
+    {"id": "ftt-sym-09", "gold": null, "predicted": null, "status": "failed", "conclusion": "诚实弃权（预期 failed）"},
+    {"id": "ftt-conflict-10", "gold": null, "predicted": null, "status": "failed", "conclusion": "诚实弃权（预期 failed）"}
+  ],
+  "honesty_notes": [
+    {"label": "false_accept_first_run", "detail": "本轮 0——但不得据此宣称'误放问题已解决'：figtrans 首评的 FA 来自 gold 缺陷样本，R4b 通过保守验证把它降为弃权（不作答≠答对）；真实识别能力主张仍为零（image_only 未执行）"},
+    {"label": "coverage_loss", "detail": "trans-03 由首评 correct 转为 unverified 弃权：验证口径收紧的代价，如实计入"},
+    {"label": "score_duality", "detail": "Original score 6/10（本文件）；audit 若最终改判 comp-08/rot90-01/scale-04，Adjudicated 口径另算，本文件不改"}
+  ]
+}

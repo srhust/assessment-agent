@@ -94,6 +94,15 @@ data/
   dev 集（可调参）新增预测/断言最小对比样本后重生成，旧 dev sha 记入
   `manifest.json.dev_history`。
 
+## 完整页面截图基准 benchmark_figshots/（R4b）
+
+修复 R4a figtrans 的题图缺陷：image 为**真实页面**（中性说明文字 + 题干矩阵 +
+全部选项格 + 字母标号），全部 bbox 严格位于图内，regions 金标裁剪从页面像素再导出
+（像素一致性测试锁定）。dev 15 题（可调参）/ test 10 题（**首评即终评 6/10，误放 0**，
+见 	est_firstrun_metrics.json，含模块内容 sha256 代码凭证）。
+canvas-16（异常裁剪考点）因整页统一网格结构不可表达而剔除，manifest.deviations 记录，
+原降级题保留在 benchmark_figtrans。图与行内容均为程序合成（source.provenance）。
+
 ## 图形变换基准 `benchmark_figtrans/`（R4a）
 
 - `dev/`（16 题，可调参）与 `test/`（10 题，**dev 收敛后一次性生成并冻结**，
