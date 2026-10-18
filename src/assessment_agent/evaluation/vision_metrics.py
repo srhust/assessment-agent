@@ -108,6 +108,10 @@ def compare_extraction_detail(gold_regions: Dict[str, Any], extraction: Any) -> 
             "region_detection_failure": True,
             "table_cell_accuracy": None,
             "table_cells_scored": 0,
+            "grid_parse_correct": False if gold_regions.get("stem_matrix_grid") is not None else None,
+            "crops_complete": False,
+            "crops_scored": (len(gold_regions.get("option_regions") or [])
+                             + (1 if gold_regions.get("stem_matrix_bbox") else 0)),
         }
 
     out: Dict[str, Any] = {"parse_failed": False}
@@ -220,7 +224,47 @@ def compare_extraction_detail(gold_regions: Dict[str, Any], extraction: Any) -> 
         out["table_cell_accuracy"] = round(matched / len(gold_norm), 4)
     else:
         out["table_cell_accuracy"] = None
-    out["table_cells_scored"] = len(gold_cells)
+    # ---- R4c 追加：网格行列解析 + 裁剪完整性 ------------------------------
+    gold_grid = gold_regions.get("stem_matrix_grid")
+    if gold_grid is not None:
+        def _grid_dims(g: Any) -> Optional[Tuple[int, int]]:
+            if isinstance(g, dict):
+                try:
+                    return int(g.get("rows")), int(g.get("cols"))
+                except (TypeError, ValueError):
+                    return None
+            if isinstance(g, (list, tuple)) and len(g) == 2:
+                try:
+                    return int(g[0]), int(g[1])
+                except (TypeError, ValueError):
+                    return None
+            return None
+        gold_dims = _grid_dims(gold_grid)
+        pred_dims = None
+        for region in (extraction.diagram_regions or []):
+            if getattr(region, "grid", None) is not None:
+                g = region.grid
+                pred_dims = (int(getattr(g, "rows", 0) or 0), int(getattr(g, "cols", 0) or 0))
+                break
+        out["grid_parse_correct"] = (gold_dims == pred_dims) if gold_dims else None
+    else:
+        out["grid_parse_correct"] = None
+    crop_paths: List[str] = []
+    for option in (getattr(extraction, "option_regions", None) or []):
+        if getattr(option, "crop_path", None):
+            crop_paths.append(str(option.crop_path))
+    for region in (extraction.diagram_regions or []):
+        if getattr(region, "crop_path", None):
+            crop_paths.append(str(region.crop_path))
+    if crop_paths:
+        from pathlib import Path as _P
+        out["crops_complete"] = all(_P(cp).is_file() for cp in crop_paths)
+        out["crops_scored"] = len(crop_paths)
+    else:
+        gold_crops = (len(gold_regions.get("option_regions") or [])
+                      + (1 if gold_regions.get("stem_matrix_bbox") else 0))
+        out["crops_complete"] = False if gold_crops else None
+        out["crops_scored"] = gold_crops
     return out
 
 

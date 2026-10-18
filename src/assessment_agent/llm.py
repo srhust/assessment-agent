@@ -105,7 +105,14 @@ def image_to_data_url(image_path: str | Path) -> str:
 
 
 class OpenAICompatibleClient:
-    """最小可用的 OpenAI 兼容客户端（同步）。"""
+    """最小可用的 OpenAI 兼容客户端（同步）。
+
+    R4c 审计凭证：每次发起 HTTP 请求（含重试的每次尝试）都记录状态码、错误类型、
+    服务端回显模型与用量；进程内不写网络日志文件，由评测/冒烟脚本读取
+    `audit_snapshot()` 落盘。**凭证语义**：`requests_sent` 只统计真实发出的
+    HTTP 尝试，`requests_succeeded` 只统计拿到 2xx JSON 的响应——EXECUTED 判定
+    依据这些计数而非进程退出码。
+    """
 
     def __init__(self, settings: LLMSettings, *, transport: Optional[httpx.BaseTransport] = None):
         self.settings = settings
@@ -115,6 +122,14 @@ class OpenAICompatibleClient:
         self._call_count = 0
         self._usage_totals: Dict[str, int] = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
         self.last_model: Optional[str] = None
+        # R4c 调用审计
+        self._requests_sent = 0
+        self._requests_succeeded = 0
+        self._http_status_counts: Dict[str, int] = {}
+        self._error_types: Dict[str, int] = {}
+        self._echoed_models: set = set()
+        self._request_ids: List[str] = []
+        self._transport_is_fake = transport is not None
 
     # ------------------------------------------------------------------ 基础
     def _headers(self) -> Dict[str, str]:
@@ -130,6 +145,7 @@ class OpenAICompatibleClient:
         last_error: Optional[Exception] = None
         attempts = max(0, self.settings.max_retries) + 1
         for attempt in range(attempts):
+            self._requests_sent += 1
             try:
                 with httpx.Client(
                     timeout=self.settings.timeout_s,
@@ -138,12 +154,14 @@ class OpenAICompatibleClient:
                 ) as client:
                     response = client.post(url, headers=self._headers(), json=payload)
             except httpx.RequestError as exc:
+                self._error_types[type(exc).__name__] = self._error_types.get(type(exc).__name__, 0) + 1
                 last_error = exc
                 if attempt + 1 >= attempts:
                     break
                 time.sleep(min(4.0, 0.5 * (2**attempt)))
                 continue
             if response.status_code >= 500 or response.status_code in (408, 409, 429):
+                self._record_status(response, ok=False)
                 last_error = LLMError(f"模型服务返回 {response.status_code}: {response.text[:300]}")
                 if attempt + 1 >= attempts:
                     break
@@ -152,11 +170,24 @@ class OpenAICompatibleClient:
                 time.sleep(min(8.0, delay))
                 continue
             if response.status_code >= 400:
+                self._record_status(response, ok=False)
                 raise LLMError(f"模型服务返回 {response.status_code}: {response.text[:300]}")
+            self._record_status(response, ok=True)
             try:
-                return response.json()
+                data = response.json()
             except json.JSONDecodeError as exc:  # pragma: no cover - 非 JSON 响应
+                self._error_types["NonJsonResponse"] = self._error_types.get("NonJsonResponse", 0) + 1
                 raise LLMError(f"模型响应不是 JSON: {exc}") from exc
+            self._requests_succeeded += 1
+            if isinstance(data, dict):
+                if data.get("model"):
+                    self._echoed_models.add(str(data["model"]))
+                rid = (response.headers.get("x-request-id")
+                       or response.headers.get("x-dashscope-request-id")
+                       or data.get("id"))
+                if rid:
+                    self._request_ids.append(str(rid))
+            return data
         raise LLMError(f"模型调用重试后仍失败: {last_error}")
 
     # ------------------------------------------------------------------ 对话
@@ -212,6 +243,33 @@ class OpenAICompatibleClient:
             if isinstance(value, (int, float)):
                 self._usage_totals[key] = self._usage_totals.get(key, 0) + int(value)
         return response
+
+    def _record_status(self, response: "httpx.Response", *, ok: bool) -> None:
+        key = str(response.status_code) if ok else f"{response.status_code} (error)"
+        self._http_status_counts[key] = self._http_status_counts.get(key, 0) + 1
+        if not ok:
+            kind = ("auth_401_403" if response.status_code in (401, 403)
+                    else "not_found_404" if response.status_code == 404
+                    else "rate_limit_429" if response.status_code == 429
+                    else "server_5xx" if response.status_code >= 500
+                    else f"http_{response.status_code}")
+            self._error_types[kind] = self._error_types.get(kind, 0) + 1
+
+    def audit_snapshot(self) -> Dict[str, Any]:
+        """真实调用审计（EXECUTED 判定的唯一依据；不含密钥）。"""
+        return {
+            "requests_sent": self._requests_sent,
+            "requests_succeeded": self._requests_succeeded,
+            "http_status_counts": dict(self._http_status_counts),
+            "error_types": dict(self._error_types),
+            "echoed_models": sorted(self._echoed_models),
+            "request_ids_sample": self._request_ids[:5],
+            "base_url_host": (self.settings.base_url.split("//")[-1].split("/")[0]
+                              if self.settings.base_url else None),
+            "vision_model_configured": self.settings.vision_model,
+            "mock_or_injected_transport": bool(self._transport_is_fake),
+            "offline_mode": not self.settings.configured,
+        }
 
     def usage_snapshot(self) -> Dict[str, Any]:
         """当前累计用量（评测逐题取差分即可得到单题 token/调用数）。"""

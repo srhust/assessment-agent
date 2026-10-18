@@ -316,6 +316,8 @@ class EvaluationRunner:
         route_mode: str = "oracle",
         eval_mode: Optional[str] = None,
         eval_batch: Optional[str] = None,
+        case_ids: Optional[Sequence[str]] = None,
+        limit: Optional[int] = None,
     ) -> EvaluationSummary:
         # 三种评测输入模式（R2a）：
         #   oracle_solver：标准题干/区域/题型 → 只测 Solver
@@ -330,6 +332,16 @@ class EvaluationRunner:
             self.data_dir, split, skills=skills,
             capability_ids=[s.id for s in self.pipeline.registry.supported()],
         )
+        # R4c：冒烟子集选择（显式 case_ids/limit 只影响本次运行范围，不改数据、
+        # 不按结果筛题——选择标准必须在运行前声明并写入报告）
+        if case_ids:
+            wanted = list(case_ids)
+            cases = [c for c in cases if c.id in wanted]
+            missing = [q for q in wanted if q not in {c.id for c in cases}]
+            if missing:
+                raise ValueError(f"case_ids 不存在于 {split}: {missing}")
+        if limit is not None:
+            cases = cases[: int(limit)]
         accumulator = MetricsAccumulator()
         started = time.perf_counter()
         for case in cases:
@@ -645,6 +657,33 @@ class EvaluationRunner:
         )
         # R2b：每题独立诊断记录 + 区域叠加可视化（仅 image_only 且有 run 产物）
         self._write_case_records(output_dir, cases, results)
+        # R4c：真实调用审计凭证（EXECUTED 判定唯一依据；键与响应正文不落盘）
+        audit_fn = getattr(self.pipeline.llm, "audit_snapshot", None)
+        if callable(audit_fn):
+            audit = audit_fn()
+        elif self.pipeline.llm is None:
+            audit = {"requests_sent": 0, "requests_succeeded": 0, "http_status_counts": {},
+                     "error_types": {}, "echoed_models": [], "base_url_host": None,
+                     "vision_model_configured": self.pipeline.settings.llm.vision_model,
+                     "mock_or_injected_transport": False, "offline_mode": True,
+                     "real_client_present": False,
+                     "note": "pipeline 无模型客户端（离线或未配置）：任何 EXECUTED 判定都不成立"}
+        else:
+            audit = {"requests_sent": 0, "requests_succeeded": 0, "error_types": {},
+                     "mock_or_injected_transport": True, "real_client_present": False,
+                     "offline_mode": self.pipeline.settings.offline,
+                     "injected_client_type": type(self.pipeline.llm).__name__,
+                     "note": "注入的是替身客户端（测试 Fake 等），不构成真实调用证据"}
+        (output_dir / "llm_evidence.json").write_text(
+            json.dumps({
+                "audit": audit,
+                "usage": self._usage(),
+                "eval_mode": metrics.get("eval_mode"),
+                "split": split,
+                "sample_count": len(cases),
+            }, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
         (output_dir / "summary.md").write_text(
             self._render_summary(split, len(cases), metrics, duration),
             encoding="utf-8",

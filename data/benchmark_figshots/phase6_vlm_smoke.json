@@ -1,9 +1,13 @@
 {
-  "phase": "R4a Phase6 real-VLM image_only smoke",
-  "generated_at": "2026-10-18",
+  "phase": "R4c real-VLM image_only smoke（调用审计凭证判定）",
+  "generated_at": "2026-10-18T23:06:46+08:00",
+  "provider": "api.openai.com",
   "vision_model": null,
-  "llm_model": null,
-  "base_url_configured": false,
+  "text_model": "gpt-4o-mini",
+  "temperature": 0.0,
+  "max_tokens": 2048,
+  "api_key_present": false,
+  "offline_flag": true,
   "input_images": [
     "data/benchmark_figshots/images/dev/ft-rot90-01.png",
     "data/benchmark_figshots/images/dev/ft-grid-10.png",
@@ -20,18 +24,28 @@
     "solver 候选规律与答案",
     "verifier 状态",
     "延迟与 token usage",
-    "最终错误归因"
+    "最终错误归因",
+    "llm_evidence.json（请求计数/状态码/回显模型）"
   ],
-  "status": "NOT_EXECUTED",
-  "reason": "环境未配置 LLM_API_KEY / LLM_VISION_MODEL（离线评测环境）。按纪律不得以 mock 或离线解析器冒充真实模型端到端结果。",
-  "what_would_run": "python -m assessment_agent.cli eval --split figtrans_dev --eval-mode image_only（截图输入，区域定位由 VisionParser→LLM 完成），逐题记录 parsed_regions/predicted_option/verification_action/usage(run_ref)",
+  "status": "NOT_CONFIGURED",
+  "reason": "环境未配置 LLM_API_KEY / LLM_VISION_MODEL 或 ASSESSMENT_OFFLINE=1。按纪律不得以 mock 或离线解析器冒充真实模型端到端结果；真实执行报告将写入 results/real_vlm/<run_id>/，不回写本文件。",
+  "what_would_run": "python -m assessment_agent.cli eval --split figshots_dev --eval-mode image_only（截图输入，区域定位由 VisionParser→真实 VLM 完成），逐题记录 extraction/区域 bbox/答案/验证状态/usage/latency，并以 output_dir/llm_evidence.json 的请求计数判定状态",
+  "status_semantics": {
+    "NOT_CONFIGURED": "缺少真实模型配置（或离线开关）",
+    "CONFIGURED_NOT_CALLED": "已配置但没有发出真实请求的证据",
+    "API_FAILED": "已发起真实请求但全部失败（401/404/超时等）",
+    "PARTIAL_EXECUTED": "部分样本完成真实视觉解析",
+    "EXECUTED": "指定样本全部完成真实视觉解析（审计计数佐证）"
+  },
   "report_fields_on_executed": [
-    "model",
-    "run_ref",
-    "usage_tokens",
-    "input_image",
-    "parsed_regions(bbox/labels)",
-    "answer",
-    "verification_status"
+    "audit.requests_sent/requests_succeeded",
+    "audit.http_status_counts",
+    "audit.error_types",
+    "audit.echoed_models",
+    "audit.request_ids_sample",
+    "usage",
+    "latency_ms P50/P95",
+    "per-case parse_failed",
+    "run_dir（不写密钥与响应正文）"
   ]
 }

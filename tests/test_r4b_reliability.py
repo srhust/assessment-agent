@@ -282,9 +282,13 @@ def test_image_only_input_contract_is_image_only():
 def test_phase6_figshots_smoke_honest():
     f = FIGSHOTS / "phase6_vlm_smoke.json"
     d = json.loads(f.read_text(encoding="utf-8"))
-    assert d["status"] == "NOT_EXECUTED", "离线环境不得出现 EXECUTED/模拟结果"
+    # R4c 起未配置语义统一为五状态之一（NOT_CONFIGURED），与 NOT_EXECUTED 同族；
+    # 无论哪个标签，绝不允许出现 EXECUTED/模拟结果
+    assert d["status"] in ("NOT_EXECUTED", "NOT_CONFIGURED"), \
+        "离线环境不得出现 EXECUTED/模拟结果"
     assert "LLM" in d["reason"] or "未配置" in d["reason"]
     assert d["split"] == "figshots_dev"
+    assert "figtrans_dev" not in json.dumps(d, ensure_ascii=False)  # R4c 修旧 split 残留
     assert d["strict_input_contract"]
     assert len(d["artifacts_per_case"]) >= 8
     assert d["eval_mode"] == "image_only"

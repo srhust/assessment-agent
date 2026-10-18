@@ -56,6 +56,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     evaluate.add_argument("--eval-batch", help="评测批次标识（image_only runs 产物按批次隔离，默认使用时间戳）")
     evaluate.add_argument("--skills", help="只评测指定题型，逗号分隔")
+    evaluate.add_argument("--case-ids", help="R4c 冒烟：只评测指定题号，逗号分隔（运行前显式声明）")
+    evaluate.add_argument("--limit", type=int, help="R4c 冒烟：只评测前 N 题（顺序=数据集行序，不按结果筛选）")
     evaluate.add_argument("--run-name", help="结果目录名")
     evaluate.add_argument("--no-save", action="store_true", help="不写 results/ 产物")
     evaluate.add_argument("--json", action="store_true", help="以 JSON 输出指标")
@@ -165,6 +167,9 @@ def _cmd_eval(args: argparse.Namespace, settings: Settings) -> int:
             route_mode=args.route_mode,
             eval_mode=getattr(args, "eval_mode", None),
             eval_batch=getattr(args, "eval_batch", None),
+            case_ids=([q.strip() for q in args.case_ids.split(",") if q.strip()]
+                      if getattr(args, "case_ids", None) else None),
+            limit=getattr(args, "limit", None),
         )
     except (FileNotFoundError, ValueError) as exc:
         print(f"[错误] {exc}", file=sys.stderr)

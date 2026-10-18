@@ -193,3 +193,31 @@ def test_real_vision_e2e_single_figure_case(tmp_path: Path):
     assert run.extraction.parser in {"vision_parser", "legacy_payload"}
     assert run.solution is not None
     assert run.verification is not None
+
+
+@pytest.mark.skipif(not _vision_configured(), reason="未配置 LLM_API_KEY/LLM_VISION_MODEL，真实模型端到端测试未执行")
+def test_real_e2e_writes_honest_audit(tmp_path: Path):
+    """R4c：真实调用路径必须留下可审计凭证——客户端审计有真实请求发出，
+    且评测产物 llm_evidence.json 与之一致；离线/mock 绝到不了这里（skipif 拦截）。"""
+    import json as _json
+
+    from assessment_agent.evaluation.runner import EvaluationRunner
+
+    settings = Settings(data_dir=DATA_DIR, results_dir=tmp_path / "results",
+                        offline=False)
+    if not settings.llm.vision_configured:
+        settings = settings.model_copy(update={"llm": settings.llm.model_copy(
+            update={"vision_model": os.getenv("LLM_VISION_MODEL",
+                                              settings.llm.vision_model or "")})})
+    pipeline = Pipeline(settings)
+    assert getattr(pipeline.llm, "audit_snapshot", None), "真实客户端必须提供审计接口"
+    runner = EvaluationRunner(pipeline, data_dir=DATA_DIR,
+                              results_dir=tmp_path / "results")
+    summary = runner.run("figshots_dev", eval_mode="image_only",
+                         run_name="real-e2e-audit", save=True, limit=1)
+    ev = _json.loads((Path(summary.output_dir) / "llm_evidence.json")
+                     .read_text(encoding="utf-8"))
+    audit = ev["audit"]
+    assert audit["requests_sent"] >= 1, "真实执行必须有 HTTP 尝试计数"
+    assert not audit["mock_or_injected_transport"]
+    assert audit["base_url_host"]

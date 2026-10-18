@@ -730,13 +730,60 @@ r0 仅六类 figshots 2/15；r1 仅变换 12/15（bench 六类图题 3→1）；
 四个受害文件按 manifest 凭证字节恢复（行内容零改动，`rows-equal True` 证明），
 新增 `test_frozen_figtrans_untouched` 等测试锁定。
 
+### 6.9 R4c：真实 VLM 端到端评测与错误归因基础设施（2026-10-18）
+
+R4b 静态验收后发现的 P0——**冒烟脚本用 CLI 退出码/local run_ref 判 EXECUTED**，
+在"已配置但 401/模型不存在/全部请求失败"场景下会产生虚假执行凭证——本轮封堵；
+范围严格限于端到端测量，**未扩任何新 Skill/规则，未动冻结金标，未开始蒸馏**。
+
+**执行状态五分类（调用审计为唯一依据）**：
+`OpenAICompatibleClient` 新增审计层（`llm.py`）：每次真实 HTTP 尝试计数、状态码分布、
+错误类型（auth_401_403/not_found_404/rate_limit_429/server_5xx/请求异常名）、服务端回显
+模型、request id 采样、注入 transport 检测、offline 标志——`audit_snapshot()` 不落密钥。
+评测每次落 `output_dir/llm_evidence.json`（runner），冒烟与实验脚本按
+`NOT_CONFIGURED / CONFIGURED_NOT_CALLED / API_FAILED / PARTIAL_EXECUTED / EXECUTED`
+五态判定；`classify_status` 为纯函数，11 项测试锁定，其中反例直接构造
+"requests_succeeded=0 + predictions 全有 run_ref → 绝不 EXECUTED"。
+真实执行报告只写 `results/real_vlm/<run_id>/`；Git 跟踪的
+`data/benchmark_figshots/phase6_vlm_smoke.json` 保持离线凭证不可变（源码断言测试：
+configured 分支无任何仓库写路径）；what_would_run 旧 `figtrans_dev` 残留已修。
+
+**固定实验基础设施**（`scripts/run_real_vlm_experiment.py`）：manifest 锁定 git
+commit+dirty 摘要、provider/model/temperature/max_tokens、VISION_PARSE_SYSTEM prompt
+sha256、15 张图逐图 sha256、选择规则**运行前声明**（冒烟 3 题显式 case_ids /
+全量按数据集行序 / bench_dev 全部 35 截图不按题型文件筛更不按解析结果筛）。
+三模式矩阵（oracle_solver / auto_router / image_only）×（冒烟→全量）+ 跨题型
+自动执行；`Δ_vision = Acc(auto) − Acc(image_only)` 只在 image_only 有真实调用凭证
+时输出数值，否则记 `not_meaningful（未真实执行）`——当前环境产出的诚实状态是
+**NOT_CONFIGURED**，未声称任何真实识别能力。
+
+**逐题归因**（attribution_*.json）：11 字段（stem OCR/CER、选项标号映射、选项文本、
+stem bbox IoU、逐选项 bbox IoU、grid 行列、裁剪完整性、路由、solver 提出正解、
+verifier 接受、最终作答）+ 错误类型优先级分类（api_failure→ocr→bbox→option_map→
+grid→router→solver→verifier）；未执行=None ≠ 零值。`compare_extraction_detail`
+补 grid_parse_correct / crops_complete（漏检记 0 留在分母）。oracle 的 200px 裁剪
+IoU 差异按 R2c 口径归一化说明，不误报 bbox 错误。
+
+**分层指标**：extraction/region IoU/option map/router/solver-with-gold-extraction/
+端到端 obj/coverage/selective/FA/over-answer/unverified/API 失败率/解析成功率/
+P50-P95 延迟/tokens——全部分子+分母齐备，`not_applicable`/`missing`/真零三态区分；
+per_skill 分组含 false_accept 及最上游归因链；报告显式声明小调用量不支撑
+"已证明部署误放概率"的宣称。
+
+**新盲测（仅计划，未构建）**：`blind_test_plan.status=PLANNED_NOT_BUILT`，前提=
+真实模型 Dev 实验完成且模型/算法配置冻结；三层来源（自编合成/独立人工/授权真实
+截图，第三类当前缺失不得以合成冒充）。
+
+当前离线回归：`373 passed, 2 skipped`（新增 R4c 11 项 + 真实路径审计凭证 1 项
+skip；原 362 全保留，真实端到端用例仍未配置时双双显式 skip）。
+
 ---
 
 ## 7. 测试
 
 ```bash
 python -m pytest -q
-# 362 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
+# 373 passed, 2 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
 ```
 
 覆盖范围：
@@ -764,6 +811,7 @@ python -m pytest -q
 - R4a 图形变换（15 项：标准表示相对量、D4 组合表封闭、离散旋转/镜像/平移/缩放、九宫格行列冲突 ambiguous、叠加 xor/or、标签位置盲、对称竞争项披露、画布失配降级）
 - R4a 变换回归锁定（4 项：FV 等价类不择一、R180 自对称步进不可区分、容差贴边不放宽、稳定子披露）+ figtrans 基准守护（6 项：manifest sha、诚实 failed 保留、test 冻结+首评对账、split 注册、Phase6 NOT_EXECUTED 语义、消融四臂底线）
 - R4b 可靠性（13 项：完整页面 bbox 有界+crop 像素再导出+字母/说明文字像素存在、figtrans 冻结集字节不变、部分确认→unverified 反例、all_confirm 政策断言、无全局 FRAME 突变、并发/中断/顺序调换一致、parameter_stable 与 independently_verified 分离且代入未过不作答、layout 标签零影响（四取值逐位一致）、image_only 输入合同源码断言、Phase6 figshots NOT_EXECUTED）
+- R4c 真实 VLM 凭证与归因（11 项：五状态分类纯函数全分支（含"退出码 0+run_ref 非空≠EXECUTED"与"全 401 绝不 EXECUTED"反例）、mock transport 拒绝、客户端审计结构与非敏感（密钥不落审计）、runner 恒产 llm_evidence（离线 requests_sent=0）、仓库冒烟报告 configured 分支零写盘（源码断言）、冒烟 case_ids/limit 运行前声明、归因字段消费 compare_extraction_detail 的 grid/裁剪新字段（None≠0）、冻结报告 NOT_CONFIGURED+无 figtrans_dev 残留）
 - DSH / MCP 接入（清单结构、`tools/call` 形状、未知工具与非法参数、能力输出脱敏、`save=false` 不落盘）
 - CLI（solve / eval / skills / doctor / mcp-manifest / call 的返回码与输出）
 
@@ -800,7 +848,7 @@ mock 结果只证明链路机制，不用于宣称模型识别能力。
 | 题型 | 计划实现 | 依赖 |
 | --- | --- | --- |
 | 图形推理 | ✅ R2~R4b：网格解析 + 六类规律 + **离散旋转/镜像/平移/缩放/组合/九宫格/叠加变换通道**（D4 群 + 画布级叠加判别 + 单因子 all_confirm 扫描 + 几何候选替代独立验证 + parameter_stable/independently_verified 分账 + **完整页面截图基准 figshots**）；R4b 已封堵扫描计数洞、layout 决策耦合与题图缺选项三项 P0；待实现：曲线/交点数量律、多步复合链规律、真实截图 VLM 端到端（Phase6 仍 NOT_EXECUTED） | OpenCV + NumPy |
-| 下一步顺序（评审确认） | ① 真实 VLM 端到端（figshots image_only，记录 extraction/区域/router/候选/验证/latency/usage/归因）→ ② 全新冻结泛化盲集 → ③ 才评估 R5 蒸馏（先回答：真实视觉解析是否破坏题干信息/表格结构/选项映射、错误解题轨迹会不会被验证器误收） | LLM_VISION_MODEL 配置 |
+| 下一步顺序（评审确认） | ① **R4c 已完成基础设施（状态 NOT_CONFIGURED）**：用户配置 `LLM_API_KEY`/`LLM_VISION_MODEL`（及必要时 `LLM_BASE_URL`）并确认 `ASSESSMENT_OFFLINE≠1` 后，运行 `python scripts/run_real_vlm_experiment.py` 即产出带真实调用审计的首份端到端报告（results/real_vlm/<run_id>/）→ ② 冻结模型与算法配置后构建新跨题型盲测（合成/人工/授权真实三层，第三类缺失如实标注）→ ③ 才评估 R5 蒸馏（先回答：真实视觉解析是否破坏题干信息/表格结构/选项映射、错误解题轨迹会不会被验证器误收） | LLM_VISION_MODEL 配置 |
 | 资料分析 | ✅ R3a 已实现：表格/柱状图结构化 + 计算计划 + Fraction 求值 + 六步独立验证；待实现：折线/多图复合表格、更复杂表头合并与真实截图 OCR 端到端验证 | OpenCV + 表格校验器 +（真实 VLM 待配置） |
 | 言语理解 | ✅ R3b+R3c：选词搭配、主旨结论覆盖、推断否定/量词/情态核对 + **命题归属层**（传闻/假设/否认不升格为事实）、字面条件链 Z3；待实现：跨句指代、近义重表述主旨、预设/蕴含（"否认说法⇒说法存在"）形式化、肯后式推断 | 带证据的 LLM 输出 + 校验器 |
 | 语言推理 | ✅ R3c：词典七类方向关系 + 判别性覆盖 + 六项验证；待实现：词库规模化（当前 ~120 中文词条）、程度关系、词性/语义角色校验、真实 LLM 提议通道验证 | 知识库检索 + LLM |
