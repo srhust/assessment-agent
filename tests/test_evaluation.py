@@ -90,7 +90,8 @@ def test_evaluation_runner_reports_accuracy_latency_and_failures(tmp_path: Path)
     assert metrics["per_skill"]["numeric_calculation"]["total"] == 2
     assert metrics["per_skill"]["numeric_calculation"]["correct"] == 1
     assert metrics["per_skill"]["number_series"]["accuracy"] == 1.0
-    assert metrics["per_skill"]["verbal_understanding"]["unsupported"] == 1
+    # R3b：verbal 已实现（离线子集）——该合成样本无搭配依据，如实 failed（仍按无金标准判正确）
+    assert metrics["per_skill"]["verbal_understanding"]["failed"] == 1
     reasons = metrics["per_skill"]["numeric_calculation"]["failure_reasons"]
     assert any("解析" in reason for reason in reasons)
     for stats in metrics["per_skill"].values():

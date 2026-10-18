@@ -287,12 +287,12 @@ def test_capability_status_is_registry_derived():
     pipeline = Pipeline(Settings(offline=True, data_dir=DATA))
     supported = {s.id for s in pipeline.registry.supported()}
     assert "data_analysis" in supported  # 由实际注册能力派生，而不是固定名单
-    assert "verbal_understanding" not in supported
+    assert "verbal_understanding" in supported  # R3b 起由注册表派生（不再是固定名单）
     cases = load_cases(DATA, "bench_dev")
     da = [c for c in cases if c.skill == "data_analysis"]
     assert da and all(c.capability_status == "supported" for c in da)
     verbal = [c for c in cases if c.skill == "verbal_understanding"]
-    assert verbal and all(c.capability_status == "unsupported" for c in verbal)
+    assert verbal and all(c.capability_status == "supported" for c in verbal)
 
 
 def test_router_prefers_data_analysis_on_table_structure():

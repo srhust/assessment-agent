@@ -194,6 +194,49 @@ class DataCalculationPlan(BaseModel):
     question_focus: str = ""         # 计划实际解析到的题干片段（题意核对用）
 
 
+class VerbalEvidence(BaseModel):
+    """言语推理的证据引用：必须对应原文（题干/材料）中的有效字符区间。"""
+
+    option: str = ""                     # 关联选项标号（空=材料级证据）
+    start: int = -1                      # 原文字符偏移（含）
+    end: int = -1                        # 原文字符偏移（不含）
+    text: str = ""                       # 引用片段原文（verify 逐字核对 stem[start:end]）
+    role: str = "support"                # support | against | absence | conclusion_anchor
+
+
+class VerbalOptionAnalysis(BaseModel):
+    """逐选项分析（LLM 与规则核共用同一结构；缺分析的选项不允许被接受）。"""
+
+    label: str
+    option_text: str = ""
+    relation: str = "unanalyzable"       # supported/contradicted/overreach/absent/insufficient/
+                                         # covers/misses/collocation_hit/collocation_conflict/
+                                         # strengthens/weakens/neutral/not_formalizable
+    definitive: bool = False             # 该判断是否由确定性检查得出
+    evidence: List[VerbalEvidence] = Field(default_factory=list)
+    cue_diffs: List[str] = Field(default_factory=list)   # 否定/量词/情态差异记录
+    new_terms: List[str] = Field(default_factory=list)   # 选项中无法在原文定位的内容词
+    notes: str = ""
+
+
+class VerbalReasoningPlan(BaseModel):
+    """R3b 言语理解计划：答案只能由证据+规则/审计得出，模型不得只交字母。"""
+
+    task_type: str                       # cloze | main_idea | inference | argument
+    question_target: str = ""            # 解析到的提问句（题意锚点）
+    negative_target: bool = False        # "无法推出/削弱/不恰当" 类反向提问
+    passage_spans: List[VerbalEvidence] = Field(default_factory=list)
+    premises: List[str] = Field(default_factory=list)
+    conclusion: str = ""
+    option_analyses: List[VerbalOptionAnalysis] = Field(default_factory=list)
+    unsupported_claims: List[str] = Field(default_factory=list)
+    proposed_answer: str = ""
+    confidence: float = 0.0
+    uncertainty_reasons: List[str] = Field(default_factory=list)
+    resolution: str = "rule"             # rule | llm_audited
+    assumptions: List[str] = Field(default_factory=list)
+
+
 class ExtractionResult(BaseModel):
     """题图抽取结果（视觉模型 -> 结构化字段）。
 

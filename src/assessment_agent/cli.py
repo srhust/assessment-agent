@@ -42,8 +42,10 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate.add_argument(
         "--split",
         default="test",
-        choices=["train", "dev", "test", "screens", "bench_dev", "bench_holdout"],
-        help="screens=合成截图回归基线；bench_dev/bench_holdout=独立泛化基准（可调参/冻结）",
+        choices=["train", "dev", "test", "screens", "bench_dev", "bench_holdout",
+                  "verbal_dev", "verbal_blind"],
+        help="screens=合成截图回归基线；bench_dev/bench_holdout=独立泛化基准（可调参/冻结）；"
+              "verbal_dev/verbal_blind=R3b 言语理解基准（可调参/冻结）",
     )
     evaluate.add_argument("--eval-batch", help="评测批次标识（image_only runs 产物按批次隔离，默认使用时间戳）")
     evaluate.add_argument("--skills", help="只评测指定题型，逗号分隔")

@@ -22,12 +22,15 @@ from .diagnosis import (
 from .metrics import CaseResult, MetricsAccumulator, answers_match
 from .vision_metrics import aggregate_vision, compare_extraction_detail, render_region_overlay
 
-SPLITS = ("train", "dev", "test", "screens", "bench_dev", "bench_holdout")
+SPLITS = ("train", "dev", "test", "screens", "bench_dev", "bench_holdout",
+          "verbal_dev", "verbal_blind")
 
 # split → 数据集目录（benchmark_real 独立泛化基准：dev 可调参、holdout 冻结）
 _SPLIT_DIRS = {
     "bench_dev": "benchmark_real/dev",
     "bench_holdout": "benchmark_real/holdout",
+    "verbal_dev": "benchmark_verbal/dev",
+    "verbal_blind": "benchmark_verbal/blind",
 }
 
 EVAL_MODES = ("oracle_solver", "auto_router", "image_only")

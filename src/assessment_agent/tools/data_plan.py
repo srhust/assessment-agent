@@ -15,7 +15,8 @@ from fractions import Fraction
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from ..schemas import DataCalculationPlan, DataOperand
-from .table_tool import _resolve_scale, find_columns, find_rows, normalize_text, question_times
+from .table_tool import (_resolve_scale, find_columns, find_rows, get_cell, normalize_text,
+                          parse_cell_value, question_times)
 
 # 操作识别按特异性排序；先命中者优先
 OPERATION_PATTERNS: List[Tuple[str, str]] = [
@@ -214,6 +215,163 @@ class TableContext:
 
 
 # ------------------------------------------------------------------ 计划入口
+# ------------------------------------------------------------------ R3b：LLM 受限计划入口（修复缺口 1）
+# LLM 只能提交"结构化计划"：操作必须在白名单、表达式必须匹配该操作的确定性模板、
+# 每个操作数必须逐字绑定真实证据（表格单元格 / 题干内联文本 / 图上标注）。
+# 通过校验后走与规则计划**同一**求值+独立复算+选项匹配路径——模型没有任何直接决定答案的通道。
+
+# 与规则生成器各分支产出的表达式形式一一对应（空白归一后 fullmatch）
+OPERATION_EXPRESSION_TEMPLATES: Dict[str, str] = {
+    "sum": r"O\d+(?: \+ O\d+)+",
+    "mean": r"\(O\d+(?: \+ O\d+)+\) / \d+",
+    "difference": r"O\d+ - O\d+",
+    "rank_extreme": r"O\d+",
+    "growth_amount": r"O\d+ - O\d+",
+    "growth_yoy": r"\(O\d+ - O\d+\) / O\d+ \* 100|O\d+ - O\d+",
+    "growth_mom": r"\(O\d+ - O\d+\) / O\d+ \* 100|O\d+ - O\d+",
+    "avg_annual_growth": r"\(O\d+ / O\d+\) \^ \(1/\d+\) - 1",
+    "base_value": r"O\d+ / \(1 \+ O\d+\)",
+    "current_value": r"O\d+ \* \(1 \+ O\d+\)",
+    "share": r"\(O\d+(?: \+ O\d+)*\) / (?:O\d+|\(O\d+(?: \+ O\d+)*\)) \* 100",
+    "multiple": r"O\d+ / O\d+(?: - 1)?",
+    "pct_point_diff": r"\(O\d+ - O\d+\) \* 100",
+    "unit_convert": r"O\d+ / \(\d+(?:\.\d+)?\)",
+}
+
+LLM_ALLOWED_OPERATIONS = frozenset(OPERATION_EXPRESSION_TEMPLATES)
+
+_EXPR_CHARSET = re.compile(r"[0-9O+\-*/().^ ]+")
+
+
+def _plan_fail(code: str, detail: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    return {"ok": False, "failure": {"code": code, "detail": detail or {}}}
+
+
+def plan_from_llm_payload(question_stem: str, payload: Any,
+                          tables: Sequence[Dict[str, Any]],
+                          chart: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    """把 LLM 输出编译成可执行的 DataCalculationPlan（不做任何语义自我确认）。"""
+    if not isinstance(payload, dict):
+        return _plan_fail("payload_shape")
+    operation = str(payload.get("operation") or "")
+    if operation not in LLM_ALLOWED_OPERATIONS:
+        return _plan_fail("operation_not_whitelisted", {"operation": operation[:40]})
+    raw_ops = payload.get("operands")
+    if not isinstance(raw_ops, list) or not (1 <= len(raw_ops) <= 12):
+        return _plan_fail("operand_shape", {"n": len(raw_ops) if isinstance(raw_ops, list) else None})
+
+    operands: List[DataOperand] = []
+    seen_names: set = set()
+    for item in raw_ops:
+        if not isinstance(item, dict):
+            return _plan_fail("operand_shape", {"item": str(item)[:60]})
+        name = str(item.get("name") or "")
+        if not re.fullmatch(r"O\d+", name) or name in seen_names:
+            return _plan_fail("operand_name", {"name": name[:20]})
+        seen_names.add(name)
+        source = str(item.get("source") or "table")
+        raw_text = str(item.get("raw") or "")
+        if source == "table":
+            try:
+                ref = int(item.get("table_ref", 0))
+                row = int(item.get("row"))
+                col = int(item.get("col"))
+            except (TypeError, ValueError):
+                return _plan_fail("operand_index_missing", {"name": name})
+            if not (0 <= ref < len(tables)):
+                return _plan_fail("table_ref_out_of_range", {"table_ref": ref})
+            table = tables[ref]
+            # row/col 为**网格坐标**（与规则计划、verify 重读同一口径）
+            if col < 0 or col >= len(table["columns"]):
+                return _plan_fail("cell_out_of_bounds", {"row": row, "col": col})
+            cell = get_cell(table, row, col)
+            if cell is None:
+                return _plan_fail("cell_out_of_bounds", {"row": row, "col": col})
+            row_obj = next((r for r in table["rows"] if r["index"] == row), None)
+            col_obj = next((c for c in table["columns"] if c["index"] == col), None)
+            if str(cell.get("raw")) != raw_text:
+                return _plan_fail("evidence_mismatch", {"name": name, "claimed": raw_text[:40],
+                                                         "actual": str(cell.get("raw"))[:40]})
+            if cell.get("unit_conflict"):
+                return _plan_fail("unit_conflict", {"name": name})
+            if not cell.get("ok") or cell.get("value") is None:
+                return _plan_fail("cell_unusable", {"name": name,
+                                                     "cell_failure": cell.get("failure")})
+            operands.append(DataOperand(
+                name=name, table_ref=ref, row=row, col=col,
+                row_label=str((row_obj or {}).get("label") or ""),
+                col_label=str((col_obj or {}).get("name") or ""),
+                raw_text=raw_text, value=str(cell["value"]),
+                unit=str(cell.get("display_unit") or cell.get("unit") or ""),
+                kind=str(cell.get("kind") or "number"),
+                source_bbox=table.get("bbox")))
+        elif source == "inline":
+            if not raw_text or raw_text not in question_stem:
+                return _plan_fail("inline_evidence_missing", {"raw": raw_text[:40]})
+            parsed = parse_cell_value(raw_text)
+            if not parsed.get("ok") or parsed.get("value") is None:
+                return _plan_fail("inline_unparsable", {"raw": raw_text[:40],
+                                                         "failure": parsed.get("failure")})
+            operands.append(DataOperand(
+                name=name, table_ref=-1, row=None, col=None,
+                row_label="题干内联", col_label=str(item.get("col_label") or "题干读数"),
+                raw_text=raw_text, value=str(parsed["value"]),
+                unit=str(parsed.get("unit") or ""), kind=str(parsed.get("kind") or "number")))
+        elif source == "chart":
+            label = str(item.get("label") or "")
+            if not chart or label not in (chart.get("series") or {}):
+                return _plan_fail("chart_evidence_missing", {"label": label[:20]})
+            value = chart["series"][label]
+            evidence_blob = " ".join(str(e) for e in (chart.get("evidence") or [])) or \
+                f"{label}组{float(value):g}"
+            if raw_text and raw_text not in evidence_blob:
+                return _plan_fail("chart_evidence_mismatch", {"name": name, "raw": raw_text[:40]})
+            operands.append(DataOperand(
+                name=name, table_ref=-1, row=None, col=None,
+                row_label=label, col_label="图上读数",
+                raw_text=raw_text or f"{label}组{float(value):g}",
+                value=str(value), unit=str(chart.get("unit") or ""), kind="quantity"))
+        else:
+            return _plan_fail("source_unknown", {"source": source[:20]})
+
+    expr = re.sub(r"\s+", " ", str(payload.get("expression") or "").strip())
+    if not expr or len(expr) > 160:
+        return _plan_fail("expression_shape")
+    if not _EXPR_CHARSET.fullmatch(expr):
+        return _plan_fail("expression_charset", {"expression": expr[:60]})
+    refs = re.findall(r"O\d+", expr)
+    if not refs or not set(refs) <= seen_names:
+        return _plan_fail("expression_references", {"refs": refs})
+    if not re.fullmatch(OPERATION_EXPRESSION_TEMPLATES[operation], expr):
+        # 操作↔表达式必须一致：这是"计划语义"层面的结构检查，不是完整题意证明
+        return _plan_fail("expression_operation_mismatch",
+                          {"operation": operation, "expression": expr[:80]})
+    test = expr
+    for operand in sorted(operands, key=lambda x: -len(x.name)):
+        test = test.replace(operand.name, f"({operand.value})")
+    try:
+        _parse_arithmetic(test)
+    except Exception as exc:
+        return _plan_fail("expression_eval", {"error": str(exc)[:120]})
+
+    focus = str(payload.get("question_focus") or "")
+    if focus and focus not in question_stem:
+        focus = ""
+    result_unit = str(payload.get("result_unit") or "") or (operands[0].unit or "")
+    result_kind = ("percent" if "%" in result_unit
+                   else "ppt" if "百分点" in result_unit
+                   else "multiple" if "倍" in result_unit else "number")
+    plan = DataCalculationPlan(
+        operation=operation, operands=operands, expression=expr,
+        result_unit=result_unit, result_kind=result_kind,
+        answer_kind="label" if payload.get("answer_kind") == "label" else "value",
+        question_focus=focus,
+        assumptions=["计划由 LLM 提出：操作白名单+表达式模板+逐字证据绑定，"
+                     "答案仍由确定性求值与独立复算决定"],
+    )
+    return {"ok": True, "plan": plan}
+
+
 def build_data_plan(question: str, tables: Sequence[Dict[str, Any]],
                     chart: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     try:

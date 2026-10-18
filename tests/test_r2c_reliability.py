@@ -58,7 +58,7 @@ def test_label_derivation_rules():
     assert derive_answerability(None, "unsupported", "data_analysis") == "objective_unlabeled"
     assert derive_capability_status("figure_reasoning") == "supported"
     assert derive_capability_status("data_analysis") == "supported"  # R3a：注册表即能力声明
-    assert derive_capability_status("verbal_understanding") == "unsupported"
+    assert derive_capability_status("verbal_understanding") == "supported"  # R3b：注册表即能力声明
     assert derive_capability_status("data_analysis", ["numeric_calculation"]) == "unsupported"
 
 

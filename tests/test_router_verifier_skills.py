@@ -166,7 +166,7 @@ def test_verifier_rejects_unsupported_solution(tmp_path):
 
 
 # ---------------------------------------------------------------- Skills
-def test_registry_has_eight_skills_and_five_supported():
+def test_registry_has_eight_skills_and_six_supported():
     registry = SkillRegistry()
     assert len(registry.ids()) == 8
     supported = {skill.id for skill in registry.supported()}
@@ -176,12 +176,13 @@ def test_registry_has_eight_skills_and_five_supported():
         "logical_reasoning",
         "figure_reasoning",
         "data_analysis",  # R3a：资料分析从声明接口升级为已实现能力
+        "verbal_understanding",  # R3b：言语理解离线证据子集
     }
 
 
 @pytest.mark.parametrize(
     "skill_id",
-    ["verbal_understanding", "language_reasoning", "personality"],
+    ["language_reasoning", "personality"],
 )
 def test_declared_skills_never_fake_answers(skill_id, settings, fake_llm):
     from assessment_agent.skills import SkillContext

@@ -119,6 +119,7 @@ class Settings(BaseModel):
     r2c_figure_verify: bool = True  # 图形候选代入独立复核（与 Solver 不共享最终规则决策）
     r2c_router_structure: bool = True  # Router 结构证据优先（图形裁剪/表格区域压过关键词冲突）
     r3a_data_analysis: bool = True  # R3a 资料分析 Skill 开关（关闭时回退 declared 接口=弃权）
+    r3b_verbal: bool = True         # R3b 言语理解 Skill 开关（同上，供消融）
 
     @property
     def llm_enabled(self) -> bool:
@@ -179,6 +180,7 @@ class Settings(BaseModel):
             r2c_figure_verify="figure_verify" not in disabled,
             r2c_router_structure="router_structure" not in disabled,
             r3a_data_analysis="data_analysis" not in disabled,
+            r3b_verbal="verbal_understanding" not in disabled,
         )
 
     def describe(self) -> Dict[str, object]:
@@ -199,5 +201,6 @@ class Settings(BaseModel):
                 "figure_verify": self.r2c_figure_verify,
                 "router_structure": self.r2c_router_structure,
                 "data_analysis": self.r3a_data_analysis,
+                "verbal_understanding": self.r3b_verbal,
             },
         }

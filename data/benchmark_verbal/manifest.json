@@ -1,0 +1,50 @@
+{
+  "name": "benchmark_verbal",
+  "data_class": "independent-handwritten（人工按语言特征网格独立编写，非真题库）",
+  "created_at": "2026-10-18",
+  "authorship": "assessment-agent 项目原创（题干、选项与标注均为人工编写并复核）",
+  "license": "内部评估使用（自创内容，无第三方版权）",
+  "contains_real_exam": false,
+  "independence_declaration": "样本按 任务类型×语言特征 网格独立编写并按语言学标准标注：期望状态（solved/failed/undecidable）在**任何模型运行之前**依据子集设计意图确定；禁止按模型是否解对筛选题目；blind 集生成一次即冻结（本清单记录 sha256），后续不得依据 blind 表现修改题目或规则后重生成。",
+  "annotation_note": "expected_status=failed/undecidable 的题目包含超出当前离线规则子集的构造性难点（成语色彩、近义并列、重表述改写、现实语义论证、肯后式推断）；answer 字段保留人工金标准，undecidable 样本不给唯一答案。",
+  "splits": {
+    "dev": {
+      "file": "dev/verbal.jsonl",
+      "count": 20,
+      "sha256": "91c87109b155c67db13e09f2f9dea866e31cddd57e84d155204d58e8121f80ef",
+      "tuning": "允许在此集上调试规则并报告指标"
+    },
+    "blind": {
+      "file": "blind/verbal.jsonl",
+      "count": 12,
+      "sha256": "b3f6c2a03c7e6bbb10281fae0c9d9761b8423e9a8f67cec3067993946a3505dd",
+      "tuning": "冻结：首次运行后只报告，不再据结果改题改规则"
+    }
+  },
+  "group_coverage": {
+    "dev": {
+      "cloze": 5,
+      "main_idea": 4,
+      "inference": 6,
+      "argument": 5
+    },
+    "blind": {
+      "cloze": 3,
+      "main_idea": 3,
+      "inference": 3,
+      "argument": 3
+    }
+  },
+  "expected_status_coverage": {
+    "dev": {
+      "solved": 12,
+      "failed": 7,
+      "undecidable": 1
+    },
+    "blind": {
+      "solved": 5,
+      "failed": 6,
+      "undecidable": 1
+    }
+  }
+}

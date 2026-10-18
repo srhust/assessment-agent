@@ -1,17 +1,19 @@
-"""R2c/R3a 消融回归：baseline / +word / +router / +verifier / +DA / r2c_full / full 七臂对照。
+"""R2c/R3a/R3b 消融回归：baseline / +word / +router / +verifier / +DA / +verbal / r2c_full / r3a_full / full 九臂对照。
 
 目的不是刷总分，而是**逐机制**验证每个修复在 Dev 集上改变了哪类失败：
-- baseline（全部开关关闭）≈ R2b 行为：图形误放、应用题失败、关键词撞车路由、资料分析弃权；
+- baseline（全部开关关闭）≈ R2b 行为：图形误放、应用题失败、关键词撞车路由、资料分析/言语弃权；
 - +word：数量关系抽取生效（工具直抽失败时的兜底路径）；
 - +router：结构证据优先（图形/表格不再被"规律"关键词劫持），ambiguous 置信封顶；
 - +verifier：候选代入独立复核（误放 → 拦截/受控弃权）；
 - +DA（R3a）：资料分析 Skill 单独开启——表格/统计图从"能力缺口弃权"变为"可验证作答"；
-- r2c_full：R2c 三开关全开但 DA 关闭（隔离 R3a 净增量）；
+- +verbal（R3b）：言语理解 Skill 单独开启——选词/主旨/推断/论证的离线证据子集；
+- r2c_full：R2c 三开关全开但 DA/verbal 关闭（隔离后续净增量）；
+- r3a_full：R3a 基线（隔离 R3b 净增量）；
 - full：全部开启。
 
 每臂输出：分题型准确率（客观口径）、answerable coverage、selective accuracy、
 false-accept rate（误放 / 已接受客观答案）、verification_outcome 分布。
-仅用 Dev 集驱动（screens + bench_dev）；Holdout 不出现在本脚本。
+仅用 Dev 集驱动（screens + bench_dev + verbal_dev）；Holdout/盲集不出现在本脚本。
 """
 
 from __future__ import annotations
@@ -34,13 +36,15 @@ ARMS = {
     # 注意：flags_off_current_code 是"**当前代码**关闭全部 R2c/R3a 开关"的快照——感知修复
     # （目标格标记、格框归一化等）仍生效，与历史 R2b 提交（fb73eec）的 5/13（旧口径）
     # **不是同一实验**，两者分开报告，不可互相换算。
-    "flags_off_current_code": (False, False, False, False),
-    "word_only": (True, False, False, False),
-    "router_only": (False, True, False, False),
-    "verifier_only": (False, False, True, False),
-    "da_only": (False, False, False, True),          # R3a：资料分析单独开启
-    "r2c_full": (True, True, True, False),           # R2c 三开关、DA 关（隔离净增量）
-    "full": (True, True, True, True),
+    "flags_off_current_code": (False, False, False, False, False),
+    "word_only": (True, False, False, False, False),
+    "router_only": (False, True, False, False, False),
+    "verifier_only": (False, False, True, False, False),
+    "da_only": (False, False, False, True, False),          # R3a：资料分析单独开启
+    "verbal_only": (False, False, False, False, True),      # R3b：言语理解单独开启
+    "r2c_full": (True, True, True, False, False),           # R2c 三开关、DA/verbal 关
+    "r3a_full": (True, True, True, True, False),            # R3a 基线（隔离 R3b 净增量）
+    "full": (True, True, True, True, True),
 }
 
 # 历史提交对照（R2b fb73eec 当时的评测结论，旧 expected_status 口径，原样保留不重跑）
@@ -52,11 +56,12 @@ HISTORICAL_REFERENCE = {
     "figure_false_accept": "Dev 4 起（本脚本 flags_off_current_code 复现其机制）",
 }
 
-SPLITS = ("bench_dev", "screens")
+SPLITS = ("bench_dev", "screens", "verbal_dev")
 MODES = ("oracle_solver", "auto_router")
 
 
-def make_settings(word: bool, router: bool, verifier: bool, data: bool = True) -> Settings:
+def make_settings(word: bool, router: bool, verifier: bool, data: bool = True,
+                  verbal: bool = True) -> Settings:
     base = Settings.from_env()
     return base.model_copy(
         update={
@@ -64,6 +69,7 @@ def make_settings(word: bool, router: bool, verifier: bool, data: bool = True) -
             "r2c_router_structure": router,
             "r2c_figure_verify": verifier,
             "r3a_data_analysis": data,
+            "r3b_verbal": verbal,
         }
     )
 
@@ -118,7 +124,7 @@ def run_arm(arm: str, flags: tuple, out_dir: Path) -> dict:
                 "per_skill": per_skill,
             })
     return {"arm": arm, "flags": {"word": flags[0], "router": flags[1], "verifier": flags[2],
-                                   "data_analysis": flags[3]}, "rows": rows}
+                                   "data_analysis": flags[3], "verbal": flags[4]}, "rows": rows}
 
 
 def main() -> int:
@@ -131,10 +137,10 @@ def main() -> int:
                "arms": results, "historical_reference": HISTORICAL_REFERENCE}
     (out_dir / "ablation.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    lines = ["# R2c/R3a 消融回归（Dev 集驱动，Holdout 不参与）", "",
+    lines = ["# R2c/R3a/R3b 消融回归（Dev 集驱动，Holdout/盲集不参与）", "",
              f"- 生成时间：{ts}（UTC）", "- 口径：overall = 分母含未实现但客观有答案样本；false_accept_rate = 误放 / 已接受的客观答案",
-             "- `flags_off_current_code` = 当前代码关闭全部 R2c/R3a 开关（感知修复仍在），**不等于**历史 R2b 提交快照",
-             "- `r2c_full` 与 `full` 之差 = R3a 资料分析净增量（准确率与能力覆盖）", ""]
+             "- `flags_off_current_code` = 当前代码关闭全部 R2c/R3a/R3b 开关（感知修复仍在），**不等于**历史 R2b 提交快照",
+             "- `r2c_full → r3a_full → full` 逐级差值 = R3a 资料分析 / R3b 言语理解的净增量", ""]
     for split in SPLITS:
         for mode in MODES:
             lines += [f"## {split} · {mode}", "",

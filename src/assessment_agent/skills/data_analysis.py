@@ -17,8 +17,9 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 from ..schemas import (DataCalculationPlan, Question, Solution, Verification,
                         VerificationCheck)
 from ..tools.chart_tool import chart_values_from_texts, read_bar_chart
-from ..tools.data_plan import (build_data_plan, evaluate_plan, match_plan_option,
-                                recompute_independently)
+from ..tools.data_plan import (OPERATION_EXPRESSION_TEMPLATES, build_data_plan,
+                                 evaluate_plan, match_plan_option, plan_from_llm_payload,
+                                 recompute_independently)
 from ..tools.table_tool import get_cell, normalize_table
 from .base import BaseSkill, SkillContext
 
@@ -47,15 +48,23 @@ class DataAnalysisSkill(BaseSkill):
             )
 
         result = build_data_plan(question.stem, tables, chart)
+        plan_source = "rules"
+        llm_rejection: Optional[Dict[str, Any]] = None
         if not result.get("ok") and ctx.llm is not None:
-            result = self._llm_plan(question, ctx, tables, chart) or result
+            llm_result, llm_rejection = self._llm_plan(question, ctx, tables, chart)
+            if llm_result is not None:
+                result = llm_result
+                plan_source = "llm_evidence_bound"
         if not result.get("ok"):
             failure = result.get("failure", {"code": "plan_unavailable"})
+            fail_meta: Dict[str, Any] = {"failure": failure, "tables": len(tables), "chart": bool(chart)}
+            if llm_rejection is not None:
+                fail_meta["llm_rejection"] = llm_rejection
             return Solution(
                 status="failed", skill=self.id, answer=None, confidence=0.0,
                 method="data_analysis:plan",
                 error=f"资料分析计划构建失败: {failure.get('code')} {json.dumps(failure.get('detail', {}), ensure_ascii=False)[:220]}",
-                meta={"failure": failure, "tables": len(tables), "chart": bool(chart)},
+                meta=fail_meta,
             )
 
         plan: DataCalculationPlan = result["plan"]
@@ -93,6 +102,8 @@ class DataAnalysisSkill(BaseSkill):
             f"结果: {value}{'（近似）' if evaluation.get('approx') else ''} {plan.result_unit}",
             f"匹配选项: {matched['label']}",
         ]
+        if plan_source != "rules":
+            steps = steps + [f"计划来源: {plan_source}（LLM 提出结构，证据与求值全部过确定性闸门）"]
         return Solution(
             status="solved", skill=self.id, answer=matched["label"], answer_text=option_text,
             confidence=0.82, method=f"data_analysis:{plan.operation}", steps=steps,
@@ -101,6 +112,7 @@ class DataAnalysisSkill(BaseSkill):
                 "evaluation": {"value": str(value), "approx": bool(evaluation.get("approx")),
                                "steps": evaluation.get("steps", [])},
                 "matched_label": matched["label"],
+                "plan_source": plan_source,
                 "evidence": [o.model_dump(mode="json") for o in plan.operands],
                 "tables_normalized": len(tables), "table_failures": table_failures,
                 "chart": bool(chart),
@@ -118,6 +130,9 @@ class DataAnalysisSkill(BaseSkill):
         for inter in plan.intermediate_values:
             if inter.get("name") == "PICK":
                 expr = inter.get("expression", "")
+        if not expr:
+            refs = re.findall(r"O\d+", plan.expression)
+            expr = refs[0] if len(set(refs)) == 1 else ""
         operand = next((o for o in plan.operands if o.name == expr), None) \
             or (plan.operands[0] if plan.operands else None)
         if operand is None:
@@ -165,31 +180,38 @@ class DataAnalysisSkill(BaseSkill):
         parsed["crop_path"] = crop
         return parsed
 
-    # ------------------------------------------------------------------ LLM 计划入口（只允许输出计划结构）
+    # ------------------------------------------------------------------ LLM 计划入口（R3b：真正执行证据绑定的模型计划）
     def _llm_plan(self, question: Question, ctx: SkillContext,
-                  tables: Sequence[Dict[str, Any]], chart: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+                  tables: Sequence[Dict[str, Any]],
+                  chart: Optional[Dict[str, Any]]) -> Tuple[Optional[Dict[str, Any]],
+                                                             Optional[Dict[str, Any]]]:
+        """返回 (可执行计划结果|None, 拒绝原因|None)。
+
+        LLM 只能提交 {operation, operands, expression}：操作走白名单、表达式匹配该操作的
+        确定性模板、每个操作数逐字绑定真实证据；通过后进入与规则计划**同一**的求值/复算/
+        选项匹配路径——模型没有任何直接给出答案的通道，也无法用"自我确认"跳过独立验证。
+        """
+        dump = {"row_col_note": "row/col 必须是下表给出的网格坐标；raw 必须逐字等于单元格原文",
+                "tables": [{"columns": [{"col": c["index"], "name": c["name"]} for c in t["columns"]],
+                            "rows": [{"row": r["index"], "label": r["label"],
+                                       "cells": {str(c["col"]): c["raw"] for c in r["cells"]}}
+                                      for r in t["rows"]]} for t in tables],
+                "chart": {k: str(v) for k, v in (chart or {}).get("series", {})}}
         try:
             payload = ctx.llm.complete_json(  # type: ignore[union-attr]
-                system="你是资料分析计划器。只输出 JSON：{operation, operands:[{row,col,raw}], expression}；"
-                       "不得给出最终答案；operands 必须引用真实单元格原文。",
-                user=json.dumps({"question": question.stem,
-                                   "tables": [[c["raw"] for c in r["cells"]] for r in
-                                              (tables[0]["rows"] if tables else [])]}, ensure_ascii=False),
+                system="你是资料分析计划器。只输出 JSON：{operation(白名单:sum/mean/difference/"
+                       "rank_extreme/growth_yoy/growth_mom/growth_amount/share/multiple/avg_annual_growth/"
+                       "base_value/current_value/pct_point_diff/unit_convert), operands:[{name,source:"
+                       "table|inline|chart,row,col|label,raw}], expression, question_focus}。"
+                       "不得给出最终答案；表达式必须使用操作对应的固定形式；operands 必须逐字引用真实单元格原文。",
+                user=json.dumps({"question": question.stem, "data": dump}, ensure_ascii=False)[:4000],
             )
         except Exception:
-            return None
-        if not isinstance(payload, dict):
-            return None
-        operands = payload.get("operands") or []
-        # 证据绑定：LLM 引用的 row/col/raw 必须与真实单元格逐字一致，否则整盘拒绝
-        if tables and operands and all(
-            isinstance(o, dict) and get_cell(tables[0], int(o.get("row", -1)), int(o.get("col", -1))) is not None
-            and str(get_cell(tables[0], int(o["row"]), int(o["col"]))["raw"]) == str(o.get("raw"))
-            for o in operands):
-            rebuilt = build_data_plan(question.stem, tables, chart)
-            if rebuilt.get("ok"):
-                return rebuilt
-        return None
+            return None, {"code": "llm_call_failed"}
+        built = plan_from_llm_payload(question.stem, payload, tables, chart)
+        if built.get("ok"):
+            return built, None
+        return None, built.get("failure")
 
     # ------------------------------------------------------------------ verify
     def verify(self, question: Question, solution: Solution, ctx: SkillContext) -> Optional[Verification]:
@@ -256,11 +278,21 @@ class DataAnalysisSkill(BaseSkill):
                     checks.append(VerificationCheck(name="data.source_recheck", passed=False,
                                                      detail=f"{o.name}: 题干内联证据消失 {o.raw_text!r}"))
                     contradicted = True
+            else:
+                # 修复缺口 2：每个操作数必须且只能命中一种有效证据来源；
+                # 越界 table_ref、缺失行列、无法绑定的引用一律阻断接受。
+                checks.append(VerificationCheck(name="data.source_recheck", passed=False,
+                                                 detail=(f"{o.name}: 无法绑定有效证据来源"
+                                                          f"（table_ref={o.table_ref}, row={o.row}, col={o.col}）"),
+                                                 severity="blocking"))
+                contradicted = True
         if not any(c.name == "data.source_recheck" and not c.passed for c in checks):
             checks.append(VerificationCheck(name="data.source_recheck", passed=True,
                                              detail=f"{len(plan.operands)} 个操作数重读一致"))
 
-        # 2) 行列索引/时间/统计对象一致性：题面线索仍在，行/列标签仍能解析到表结构
+        # 2) 行列索引/时间/统计对象一致性：题面线索仍在，行/列标签仍能解析到表结构。
+        #    注意：这是**表层线索检查**——question_focus 字符串存在不能证明计划回答了题目所问，
+        #    真正的题意一致性由结构语义检查（操作↔表达式模板）+ 独立复算 + 单位核对共同支撑。
         focus = plan.question_focus or ""
         if focus and focus not in question.stem:
             checks.append(VerificationCheck(name="data.intent", passed=False,
@@ -268,7 +300,51 @@ class DataAnalysisSkill(BaseSkill):
             unverifiable = True
         else:
             checks.append(VerificationCheck(name="data.intent", passed=True,
-                                             detail=f"线索 {focus!r} 仍在题干"))
+                                             detail=(f"线索 {focus!r} 仍在题干（表层检查，"
+                                                      "不构成题意正确性证明）")))
+
+        # 2b) 操作↔表达式结构一致性：篡改表达式（如把差值改成求和）必须被阻断
+        template = OPERATION_EXPRESSION_TEMPLATES.get(plan.operation)
+        expr_norm = re.sub(r"\s+", " ", plan.expression.strip())
+        if template and not re.fullmatch(template, expr_norm):
+            checks.append(VerificationCheck(name="data.plan_semantics", passed=False,
+                                             detail=f"表达式与操作不一致: {plan.operation} vs {expr_norm[:60]}",
+                                             severity="blocking"))
+            contradicted = True
+        else:
+            checks.append(VerificationCheck(name="data.plan_semantics", passed=True,
+                                             detail="操作↔表达式模板一致（结构语义检查，非完整题意证明）"))
+
+        # 2c) 表达式重放：篡改后的表达式必须按**当前计划**重新求值并与存档数值比对，
+        #     防止"表达式被改但存档值仍是旧结果"的计划蒙混通过独立复算。
+        replay = evaluate_plan(plan)
+        eval_value_now = (solution.meta.get("evaluation") or {}).get("value")
+        if not replay.get("ok"):
+            checks.append(VerificationCheck(name="data.expr_replay", passed=False,
+                                             detail=f"表达式重放失败: {plan.expression[:60]}",
+                                             severity="blocking"))
+            contradicted = True
+        elif eval_value_now is None:
+            checks.append(VerificationCheck(name="data.expr_replay", passed=False,
+                                             detail="缺少存档求值结果，无法重放核对", severity="blocking"))
+            unverifiable = True
+        else:
+            try:
+                same = Fraction(str(replay["value"])) == Fraction(str(eval_value_now))
+            except (TypeError, ValueError, ZeroDivisionError):
+                try:
+                    same = abs(float(replay["value"]) - float(eval_value_now)) <= 1e-6
+                except (TypeError, ValueError):
+                    same = False
+            if not same:
+                checks.append(VerificationCheck(name="data.expr_replay", passed=False,
+                                                 detail=(f"表达式重放 {replay['value']} ≠ 存档 "
+                                                          f"{eval_value_now}（计划被篡改）"),
+                                                 severity="blocking"))
+                contradicted = True
+            else:
+                checks.append(VerificationCheck(name="data.expr_replay", passed=True,
+                                                 detail="表达式重放与存档数值一致"))
 
         # 3) 单位与百分点/百分比区分
         kinds = [o.kind for o in plan.operands if o.value]
@@ -308,6 +384,9 @@ class DataAnalysisSkill(BaseSkill):
             direct = None
             if len(plan.operands) == 2 and alt_float is not None:
                 n = next((int(i["value"]) for i in plan.intermediate_values if i["name"] == "N"), 0)
+                if not n:
+                    m = re.search(r"\^\(1/(\d+)\)", re.sub(r"\s+", "", plan.expression))
+                    n = int(m.group(1)) if m else 0
                 v0, v1 = (Fraction(plan.operands[0].value), Fraction(plan.operands[1].value))
                 if n and v0 > 0 and v1 > 0:
                     direct = (float(v1 / v0) ** (1.0 / n) - 1) * 100

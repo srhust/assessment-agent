@@ -83,7 +83,7 @@ assessment-agent/
 
 ## 2. 八个题型与当前状态
 
-当前注册表 8 个 Skill、5 个已实现（numeric/series/logical/figure/**data_analysis**）；
+当前注册表 8 个 Skill、6 个已实现（numeric/series/logical/figure/**data_analysis**/**verbal_understanding**）；
 `capability_status` 一律由 `pipeline.registry.supported()` 派生（R3a），不再有手写名单。
 
 | Skill ID | 题型 | 第一阶段 | 求解方式 |
@@ -92,20 +92,20 @@ assessment-agent/
 | `number_series` | 数字推理 | ✅ 已实现 | 7 类规律检测（等差/等比/差分/奇偶分组/递推/幂次偏移/常数），要求解释全部已知项 |
 | `logical_reasoning` | 逻辑推理 | ✅ 已实现 | 排序比较语句 → Z3 约束 → 必然性/可能性判定 |
 | `figure_reasoning` | 图形推理 | ✅ 已实现 | 网格解析 + 六类规律（个数/边数/面积/平移/对称/叠加）+ 选项匹配；失败时给出原因 |
-| `verbal_understanding` | 言语理解 | 🚧 仅接口 | 返回 `unsupported`，不编造答案 |
+| `verbal_understanding` | 言语理解 | ✅ 已实现（R3b，离线证据子集） | 选词填空（搭配表）/主旨概括（结论句覆盖）/阅读推断（否定极性·情态·量词核对）/加强削弱假设（字面条件链 + Z3）；每条证据必须为原文逐字区间，越界/伪造引用直接拒绝；子集外诚实 failed |
 | `language_reasoning` | 语言推理 | 🚧 仅接口 | 同上 |
 | `data_analysis` | 资料分析 | ✅ 已实现（R3a） | 表格/统计图 → `DataCalculationPlan` → Fraction 精确求值 → 六步独立验证；缺数/歧义/单位冲突如实失败 |
 | `personality` | 性格测评解释 | 🚧 仅接口 | 同上 |
 
-未实现题型的行为是**明确失败**：
+未实现题型的行为是**明确失败**（如 `language_reasoning`、`personality`）：
 
 ```json
 {
   "status": "unsupported",
-  "skill": "verbal_understanding",
+  "skill": "language_reasoning",
   "answer": null,
-  "error": "言语理解尚未实现（第一阶段 MVP 范围之外），不提供推测性答案",
-  "meta": {"stage": 2, "planned_capabilities": ["..."], "interface": "skills.verbal_understanding...solve(question, ctx) -> Solution"}
+  "error": "语言推理尚未实现（第一阶段 MVP 范围之外），不提供推测性答案",
+  "meta": {"stage": 2, "planned_capabilities": ["..."], "interface": "skills.language_reasoning...solve(question, ctx) -> Solution"}
 }
 ```
 
@@ -123,7 +123,7 @@ pip install -r requirements.txt
 copy .env.example .env         # 填入你自己的模型服务地址与密钥（.env 已被 gitignore）
 ```
 
-即使**不配置任何模型**也能使用四个 MVP 题型（离线确定性模式）：
+即使**不配置任何模型**也能使用六个已实现题型（离线确定性模式）：
 
 ```bash
 $env:PYTHONPATH="src"          # 或 pip install -e .
@@ -143,6 +143,9 @@ D. 16"
 
 # 逻辑推理
 python -m assessment_agent solve --text "甲乙丙三人参加比赛，名次各不相同。甲比乙高，乙比丙高。以下哪项一定为真？" --options "A=甲比丙矮,B=丙比甲矮,C=乙最高,D=丙最高"
+
+# 言语理解（R3b 离线证据子集：答案必须绑定原文逐字区间）
+python -m assessment_agent solve --text "他的发言获得了与会者一致的（ ），会场气氛由此变得热烈起来。" --options "A=反应,B=反映,C=批示,D=注视"
 
 # 截图输入（需要配置视觉模型）
 python -m assessment_agent solve --image .\screenshot.png
@@ -475,13 +478,76 @@ mock-vlm image_only 机制行 22/30、路由 91.4%——该行 payload 由金标
 VisionParser→Router→Solver→Verifier 链路机制，不代表真实识别能力。**真实 VLM：NOT EXECUTED**（本机未配置 `LLM_API_KEY`/`LLM_VISION_MODEL`）——
 DA 的"真实截图端到端作答能力"在配置视觉 API 前仍未验证，且应尽早单独跑一轮 image-only。
 
+### 6.5 言语理解 Skill 与 LLM 计划执行（R3b）
+
+R3b 含两部分：**先修 R3a 遗留可靠性问题，再实现言语理解离线证据子集**（不含图形规律扩展、蒸馏、语言类比与性格评分）。
+
+**Part 1：LLM Plan Fallback 从"预留入口"变为"真正执行"（资料分析）**
+
+- 规则解析失败后，LLM 提交受限 Schema 计划（operation/operands/expression/question_focus），随后走
+  **与规则通道完全相同的确定性路径**：逐操作数原文证据绑定（行×列网格坐标或题干内联逐字命中）→
+  操作白名单 + 表达式模板一致性 → Fraction 求值 → 独立验证；证据不足则**拒绝并记录 llm_rejection**，
+  绝不"忽略模型计划再重跑同一个失败的规则解析器"。
+- `verify()` 强化：每个 `DataOperand` 必须**且只能**命中一种有效证据来源，任何无法解析或越界的引用
+  阻断接受（`data.source_recheck`）；新增 `data.plan_semantics`（操作↔表达式模板互证）与
+  `data.expr_replay`（用当前表达式重放求值对账存档值——堵住"改了表达式但没改存档值"这类
+  数值重算正确但计划被篡改的情况）；`data.intent` 如实降级为"表层字符串线索检查，不构成题意正确性证明"。
+- 回归：`tests/test_r3b_reliability.py`（11 项）覆盖 篡改引用/表达式-计算语义不一致/合法计划被执行/伪造计划被拒绝。
+
+**Part 2–4：言语理解 Skill（`verbal_understanding`）**
+
+覆盖四类任务的**可形式化子集**，输出 `VerbalReasoningPlan`（任务类型、提问锚点、原文跨度、前提/结论、
+逐选项分析、无依据 claims、候选答案、置信度、不确定原因）：
+
+- 选词填空：人工编写搭配表命中/冲突（单空；"依次填入"多空诚实 failed）；
+- 主旨概括：结论线索句 + 内容词覆盖率与新颖度排除（重表述改写不在子集）；
+- 阅读推断（可以推出/无法推出/说法不正确）：句级证据对齐 + **否定奇偶扫描、情态强度、量词范围**核对，
+  选项强于原文记过度引申、极性翻转记矛盾；真歧义（多候选）拒绝挑选；
+- 加强/削弱/必要前提：字面条件链（如果/只要/只有才/除非/所有…都(不)）→ **Z3 命题蕴含**，
+  削弱=结论直接反驳、加强=补上论证缺口、假设=否定后论证崩溃；主张权衡型/肯后式推断不在子集。
+
+纪律：答案只能来自证据绑定 + 确定性判定，**不允许凭候选字母、样本 ID、数据集文件名走捷径**；
+每条证据引用必须是原文有效字符区间（`stem[start:end] == text` 逐字核对），伪造/越界/截断改义 → 拒绝。
+LLM 通道（规则失败后可选）必须给**逐选项分析与原文区间**；接受条件是独立审计（与求解不同实现的
+包含度+奇偶重算）`confirmed`——搭配表/Z3 这类"与求解共享实现"的**自洽复核永远不能给 LLM 通道
+确定性通过**（cloze/argument 的 LLM 计划最多 `unverified`）。模型 confidence 不作为任何接受依据。
+
+**verbal 基准（`data/benchmark_verbal/`，人工按 任务类型×语言特征 网格编写）**：
+dev 20 题（可调参）、blind 12 题（一次生成即冻结，manifest 记 sha256）；覆盖短/长文、否定、转折、
+双重否定、量词、条件、近义并列、信息不足与真歧义，并含标注为 failed/undecidable 的构造性难点——
+**期望状态在任何模型运行之前按语言学标准确定，不按模型是否解对筛题**。
+
+**R3b 实验结果（2026-10-18，`results/r3b_report_20261018T054049/` 与
+`results/r2c_ablation_20261018T054105/`，全部为离线规则通道）**：
+
+| 实验 | R3a | R3b | 误放 |
+|---|---|---|---|
+| bench_dev oracle/auto（客观分母 30） | 80.0%（24/30） | **83.3%（25/30）** | 0 → 0 |
+| bench_holdout oracle（客观分母 14，冻结） | 5/14 | **5/14（逐行仅 verbal-30 判定口径变化）** | 0 → 0 |
+| screens auto | 9/9 | 9/9（与 HEAD 逐行一致） | 0 |
+| verbal_dev 20（oracle 与 auto） | — | 判定 20/20；期望可解 12/12；引用逐字有效率 100%；弃权 8/8 | **0** |
+| verbal_blind 12（**首次运行即定版**） | — | 判定 8/12；期望可解 3/5；引用有效率 100%；弃权 6/7 | **1**（见下） |
+
+- 消融九臂（`r2c_full → r3a_full → full`）：+16（DA）→ +1（verbal-16 由"弃权正确"变"作答正确"），
+  `verbal_only` 单独臂 +1；误放在 r3a_full/full 臂均为 0。
+- **盲集首跑暴露的真实误放**：`vbv-inf-09`"有报道称…"把传闻内容当作事实接受（选择性准确率 1.0 的含义：
+  有金标准答案的接受 3/3 全对，越权作答 1 例计入误放）。按冻结纪律**未依据盲集结果修改题目或规则**，
+  该缺陷作为 R3c 首要修复项：转述/传闻谓语句应降为不确定证据（不得直接支持其内容）。
+- 能力声明变化的口径效应：holdout `bi-verbal-read-30`（期望不支持+金标 A）由"弃权判对"转为
+  "按金标准判未答对"，属能力声明升级后的判定分支变化，不是新误放（该项 FA 计数 0）。
+
+**已知限制（如实声明）**：搭配表为人工子集；主旨靠结论线索句+字面覆盖，重表述改写不覆盖；
+阅读推断不处理情态不确定反转（肯后式）；论证题只认字面条件链；无 LLM/VLM 配置时**真实模型通道
+NOT EXECUTED**——言语理解与资料分析对真实模型的表现均未验证，配置 API 后应最先补跑真实 VLM 的
+image-only 实验与 verbal LLM 审计通道实验。
+
 ---
 
 ## 7. 测试
 
 ```bash
 python -m pytest -q
-# 236 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
+# 260 passed, 1 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
 ```
 
 覆盖范围：
@@ -490,7 +556,7 @@ python -m pytest -q
 - 路由（7 类规则命中、显式指定、离线回退、LLM 兜底、未知技能拒绝）
 - 工具（SymPy 精确计算与非法输入、Fraction 独立求值、选项匹配、7 类数列规律、Z3 蕴含/否定/矛盾/带数值差拒绝、图形布局解析、六类规律推断、Skill 端到端与诚实失败）
 - 校验（数值篡改 → repair、数列篡改 → repair、逻辑复核、unsupported → reject、图形换阈值复算、Skill 复核异常 → blocking 失败）
-- Skill（8 个注册、5 个已支持（含 R3a 资料分析）、声明式 Skill 绝不返回答案、数列歧义标记 ambiguous）
+- Skill（8 个注册、6 个已支持（R3a 资料分析、R3b 言语理解）、声明式 Skill 绝不返回答案、数列歧义标记 ambiguous）
 - 流水线（文本端到端、内联选项解析、截图 + 假视觉模型端到端、缺视觉模型报错、产物完整性、拒答不暴露原始答案）
 - 评测（数据集加载、指标统计、失败归因、结果落盘、oracle/auto 路由模式、新指标计算、failed 状态严格匹配、answerable_coverage 不被错误拒答虚高）
 - 图形工具接口（布局解析、特征提取、规律引擎、Skill 端到端、诚实失败、换阈值复核）
@@ -498,8 +564,10 @@ python -m pytest -q
 - 图形布局适配层（题干矩阵+选项裁剪→原六类规律引擎、标号映射保持、题干专属 grid、空白选项诚实失败）
 - 截图基准（oracle_solver/auto_router 全离线通过；image_only 用 mock 视觉后端验证全链路机制与产物落盘；真实模型用例未配置时显式 skip）
 - R2b 独立基准（region_incomplete 拦截静默整图回退、旧输入兼容、失败归因映射与最上游次序、CER/IoU 单元、漏检留在分母、批次 run_id 隔离、用量快照、benchmark_real 结构/防泄漏/manifest sha256、undecidable 判分链路）
-- R2c 可靠性（标注派生与冻结分母、误放/误杀/unverified/over-answer 计数、图形候选代入复核、非方形格框 bbox 锚、消融五臂→七臂口径）
+- R2c 可靠性（标注派生与冻结分母、误放/误杀/unverified/over-answer 计数、图形候选代入复核、非方形格框 bbox 锚、消融五臂→七臂→九臂口径）
 - R3a 资料分析（39 项：Dev 全部 DA 样本 solved/failed 双套参数化、计划可追溯性、六步验证、单元格/图上文本篡改拦截、缺数/OCR 歧义/单位冲突/同名列歧义结构化失败、年均增长率精确开方、双层表头、统计图像素比例复核、LLM 只能供证据绑定计划、注册表派生 capability_status、开关消融、primary/legacy 口径字段）
+- R3b 可靠性（11 项：LLM 合法计划被真正执行并 accept、越界/篡改引用与表达式-存档值不一致阻断、操作↔表达式模板互证、intent 表层检查措辞、伪造计划拒绝）
+- R3b 言语理解（14 项：搭配/推断/主旨/论证四类规则核端到端、原文区间逐字验证与篡改/越界/提问区引用拦截、LLM 逐选项分析+区间绑定执行通道、伪造证据/漏分析/坏标签拒绝、cloze/argument 自洽复核不得给 LLM 确定性通过、真歧义拒选、开关消融、verbal 基准结构+盲集 sha256 冻结+防泄漏守护）
 - DSH / MCP 接入（清单结构、`tools/call` 形状、未知工具与非法参数、能力输出脱敏、`save=false` 不落盘）
 - CLI（solve / eval / skills / doctor / mcp-manifest / call 的返回码与输出）
 
@@ -537,7 +605,7 @@ mock 结果只证明链路机制，不用于宣称模型识别能力。
 | --- | --- | --- |
 | 图形推理 | ✅ 已实现：网格解析 + 六类规律（个数/边数/面积/平移/对称/叠加）；待实现：旋转/翻转匹配、曲线图形、非叠加九宫格规律 | OpenCV + NumPy |
 | 资料分析 | ✅ R3a 已实现：表格/柱状图结构化 + 计算计划 + Fraction 求值 + 六步独立验证；待实现：折线/多图复合表格、更复杂表头合并与真实截图 OCR 端到端验证 | OpenCV + 表格校验器 +（真实 VLM 待配置） |
-| 言语理解 | 选词填空四维排除、语句排序关联词链、主旨论题-论点提取 | 带证据的 LLM 输出 + 校验器 |
+| 言语理解 | ✅ R3b 已实现离线证据子集：选词搭配、主旨结论覆盖、推断否定/量词/情态核对、字面条件链 Z3；待实现：传闻/转述谓词的证据极性（盲集已暴露 1 例误放）、语句排序关联词链、跨句指代、近义重表述主旨 | 带证据的 LLM 输出 + 校验器 |
 | 语言推理 | 词关系类型知识库 + 关系一致性/方向/词性校验 | 知识库检索 + LLM |
 | 性格测评解释 | 维度释义模板 + 组合解释 + 合规边界检查 | 量表知识库 |
 | 通用 | 真假话/条件推理的 Z3 编码、DSH/MCP 适配、SFT 蒸馏 | — |
