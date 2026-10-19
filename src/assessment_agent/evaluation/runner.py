@@ -15,6 +15,7 @@ from ..pipeline import Pipeline, PipelineError
 from ..schemas import QuestionOption
 from .diagnosis import (
     classify_case_failure,
+    attribute_error_chain,
     classify_exception,
     derive_root_cause,
     derive_verification_outcome,
@@ -421,6 +422,33 @@ class EvaluationRunner:
         schema_ok = d_json > 0
         extraction_valid = bool(extraction is not None and parser == "vision_parser"
                                 and has_regions)
+        # --- R4e P1-1 三档口径（评审裁决：旧 evidence_complete 过宽）-----------
+        # ① region_evidence_complete：区域与选项标签齐（= 旧 evidence_complete 定义，
+        #    原键保留原语义，首跑记录口径不追改）。
+        # ② structural_evidence_complete：区域齐 **且** 结构可核对——图形题必须
+        #    网格解析正确（VLM 1×3 vs 金标 1×4 这类不算）、题干+选项裁剪完整落盘、
+        #    选项映射成立；纯文本题没有矩阵结构，结构档=区域档。
+        # ③ solver_ready：结构齐 **且** 求解器实际拿得到的裁剪文件都存在（审计用
+        #    磁盘事实，而非只信 flags）。
+        region_evidence = bool(http_ok and extraction_valid
+                               and not vision_detail.get("region_detection_failure", True))
+        is_matrix = vision_detail.get("grid_parse_correct") is not None
+        structural = bool(region_evidence
+                          and (not is_matrix or vision_detail.get("grid_parse_correct") is True)
+                          and (not is_matrix or vision_detail.get("crops_complete") is True))
+        crop_paths: list = []
+        stem_crop = getattr(extraction, "stem_matrix_crop", None) if extraction is not None else None
+        if stem_crop:
+            crop_paths.append(str(stem_crop))
+        if extraction is not None:
+            for reg in (getattr(extraction, "option_regions", None) or []):
+                cp = (reg.get("crop_path") if isinstance(reg, dict)
+                      else getattr(reg, "crop_path", None))
+                if cp and (reg.get("has_figure") if isinstance(reg, dict)
+                           else getattr(reg, "has_figure", False)):
+                    crop_paths.append(str(cp))
+        solver_ready = bool(structural and crop_paths
+                            and all(Path(cp).is_file() for cp in crop_paths))
         return {
             "vision_http_success": http_ok,
             "vision_schema_valid": schema_ok,
@@ -428,8 +456,10 @@ class EvaluationRunner:
             "vision_payload_source": parser,
             "legacy_payload_fallback": bool(extraction is not None and d_json > 0
                                             and not extraction_valid),
-            "evidence_complete": bool(http_ok and extraction_valid
-                                      and not vision_detail.get("region_detection_failure", True)),
+            "evidence_complete": region_evidence,
+            "region_evidence_complete": region_evidence,
+            "structural_evidence_complete": structural,
+            "solver_ready": solver_ready,
         }
 
     @staticmethod
@@ -558,6 +588,18 @@ class EvaluationRunner:
             else:
                 correct = solution.status == "solved" and answers_match(predicted, case.answer)
             latency = (time.perf_counter() - started) * 1000.0
+            # R4e P1-2：先构建错误链，再让 failure_class 看到结构/几何阻塞（不再
+            # 被题干文本截断的早期判定遮蔽）
+            transform_meta = (solution.meta or {}).get("transform") or {}
+            chain = attribute_error_chain(
+                mode=mode, correct=correct, answered=predicted is not None,
+                vision=vision_detail, extraction_stem_ok=extraction_accurate,
+                option_map_ok=option_map_ok,
+                routed_ok=(route.skill == case.skill) if route.skill else None,
+                transform=transform_meta,
+                verification_action=verification.action,
+                solution_answer=solution.answer,
+            )
             failure_class = classify_case_failure(
                 case=case,
                 mode=mode,
@@ -572,6 +614,10 @@ class EvaluationRunner:
                 extraction_present=run.extraction is not None,
                 extraction_stem_ok=extraction_accurate,
                 option_map_ok=option_map_ok,
+                vision=vision_detail,
+                transform_blockers=[str(b.get("code")) for b in
+                                    (transform_meta.get("blockers") or [])
+                                    if isinstance(b, dict)],
             )
             # R2c：verification_outcome（验证表现）与 root_cause（最初失效环节）分开记录
             outcome = derive_verification_outcome(
@@ -618,6 +664,9 @@ class EvaluationRunner:
                 capability_status=case.capability_status,
                 root_cause=root_cause,
                 verification_outcome=outcome,
+                first_detected_error=chain["first_detected_error"],
+                blocking_failure=chain["blocking_failure"],
+                secondary_errors=chain["secondary_errors"],
             )
         except PipelineError as exc:
             latency = (time.perf_counter() - started) * 1000.0
@@ -629,6 +678,11 @@ class EvaluationRunner:
             perr_outcome = derive_verification_outcome(
                 answerability=case.answerability, action="reject",
                 predicted=None, solution_answer=None, gold=case.answer,
+            )
+            perr_chain = attribute_error_chain(
+                mode=mode, correct=False, answered=False, vision=detail,
+                extraction_stem_ok=False if mode == "image_only" else None,
+                transform={}, verification_action="reject", solution_answer=None,
             )
             return CaseResult(
                 case_id=case.id,
@@ -653,6 +707,7 @@ class EvaluationRunner:
                     outcome=perr_outcome, failure_class=classify_exception(str(exc)),
                     capability_status=case.capability_status, skill=case.skill, solution_error=str(exc),
                 ),
+                **perr_chain,
             )
         except Exception as exc:  # noqa: BLE001 - 评测需要记录单题崩溃而不是中断
             latency = (time.perf_counter() - started) * 1000.0
@@ -660,6 +715,10 @@ class EvaluationRunner:
             xerr_outcome = derive_verification_outcome(
                 answerability=case.answerability, action="reject",
                 predicted=None, solution_answer=None, gold=case.answer,
+            )
+            xerr_chain = attribute_error_chain(
+                mode=mode, correct=False, answered=False, vision={},
+                transform={}, verification_action="reject", solution_answer=None,
             )
             return CaseResult(
                 case_id=case.id,
@@ -682,6 +741,7 @@ class EvaluationRunner:
                     outcome=xerr_outcome, failure_class=xerr_class,
                     capability_status=case.capability_status, skill=case.skill, solution_error=str(exc),
                 ),
+                **xerr_chain,
             )
 
     @staticmethod

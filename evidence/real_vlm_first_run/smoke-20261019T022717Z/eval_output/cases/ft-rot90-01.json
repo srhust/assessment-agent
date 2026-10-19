@@ -1,0 +1,169 @@
+{
+  "case_id": "ft-rot90-01",
+  "skill": "figure_reasoning",
+  "expected": "A",
+  "predicted": null,
+  "correct": false,
+  "status": "failed",
+  "verification_action": "reject",
+  "latency_ms": 29560.852,
+  "expected_status": "solved",
+  "failure_reason": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 4 个选项匹配（无法唯一确定）；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）",
+  "predicted_option": null,
+  "tags": [
+    "figtrans",
+    "R4a",
+    "rotate90",
+    "序列",
+    "完整截图",
+    "R4b"
+  ],
+  "routed_skill": "figure_reasoning",
+  "route_source": "explicit",
+  "route_confidence": 1.0,
+  "input_mode": "image_only",
+  "extraction_accurate": false,
+  "region_iou": 0.5123,
+  "option_map_ok": true,
+  "run_ref": "e2e-smoke-20261019T022717Z-ft-rot90-01",
+  "failure_class": "extraction_text_error",
+  "vision": {
+    "parse_failed": false,
+    "stem_exact": false,
+    "stem_cer": 0.1429,
+    "option_label_recall": 1.0,
+    "option_label_fp": 0.0,
+    "option_text_accuracy": 0.0,
+    "option_text_cer_mean": 1.0,
+    "option_iou_mean": 0.4216,
+    "option_iou_scored": 4,
+    "diagram_recall": 1.0,
+    "diagram_iou_mean": 0.5123,
+    "diagram_iou_scored": 1,
+    "region_detection_failure": false,
+    "table_cell_accuracy": null,
+    "grid_parse_correct": false,
+    "crops_complete": true,
+    "crops_scored": 5,
+    "vision_http_success": true,
+    "vision_schema_valid": true,
+    "vision_extraction_valid": true,
+    "vision_payload_source": "vision_parser",
+    "legacy_payload_fallback": false,
+    "evidence_complete": true
+  },
+  "usage": {
+    "calls": 1,
+    "prompt_tokens": 836,
+    "completion_tokens": 1404,
+    "total_tokens": 2240,
+    "model": "glm-5.3-flash"
+  },
+  "answerability": "has_unique_answer",
+  "capability_status": "supported",
+  "root_cause": "extraction_ocr",
+  "verification_outcome": "no_answer",
+  "gold": {
+    "stem": "根据题目图形中蕴含的规律，选择最符合规律的一项补全图形。",
+    "options": {
+      "A": "图",
+      "B": "图",
+      "C": "图",
+      "D": "图"
+    },
+    "answer": "A",
+    "regions": {
+      "bbox_format": "pixel_xywh",
+      "image_size": [
+        380,
+        208
+      ],
+      "option_regions": [
+        {
+          "bbox": [
+            50,
+            136,
+            48,
+            48
+          ],
+          "crop_path": "E:\\assessment-agent\\data\\benchmark_figshots\\regions\\dev\\ft-rot90-01\\option_A.png",
+          "figure_bbox": [
+            50,
+            136,
+            48,
+            48
+          ],
+          "has_figure": true,
+          "label": "A",
+          "text": "图"
+        },
+        {
+          "bbox": [
+            136,
+            136,
+            48,
+            48
+          ],
+          "crop_path": "E:\\assessment-agent\\data\\benchmark_figshots\\regions\\dev\\ft-rot90-01\\option_B.png",
+          "figure_bbox": [
+            136,
+            136,
+            48,
+            48
+          ],
+          "has_figure": true,
+          "label": "B",
+          "text": "图"
+        },
+        {
+          "bbox": [
+            222,
+            136,
+            48,
+            48
+          ],
+          "crop_path": "E:\\assessment-agent\\data\\benchmark_figshots\\regions\\dev\\ft-rot90-01\\option_C.png",
+          "figure_bbox": [
+            222,
+            136,
+            48,
+            48
+          ],
+          "has_figure": true,
+          "label": "C",
+          "text": "图"
+        },
+        {
+          "bbox": [
+            308,
+            136,
+            48,
+            48
+          ],
+          "crop_path": "E:\\assessment-agent\\data\\benchmark_figshots\\regions\\dev\\ft-rot90-01\\option_D.png",
+          "figure_bbox": [
+            308,
+            136,
+            48,
+            48
+          ],
+          "has_figure": true,
+          "label": "D",
+          "text": "图"
+        }
+      ],
+      "stem_matrix_bbox": [
+        24,
+        64,
+        192,
+        48
+      ],
+      "stem_matrix_crop": "E:\\assessment-agent\\data\\benchmark_figshots\\regions\\dev\\ft-rot90-01\\stem.png",
+      "stem_matrix_grid": [
+        1,
+        4
+      ]
+    }
+  },
+  "run_dir": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-rot90-01"
+}

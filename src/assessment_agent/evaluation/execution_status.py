@@ -28,12 +28,21 @@ def _rflag(r: Dict[str, Any], key: str) -> bool:
 
 def vision_stage_summary(case_rows: List[Dict[str, Any]],
                          audit: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-    """每题三段记录 → 链路健康摘要（Vision Parse Success / Evidence Completeness）。"""
+    """每题三段记录 → 链路健康摘要（Vision Parse Success / Evidence Completeness）。
+
+    R4e P1-1：证据完整分三档分别计数——
+    region（区域与选项标签齐，=旧 evidence_complete 口径）/
+    structural（图形题再加网格解析与裁剪完整）/
+    solver_ready（结构齐且求解器实际可读到落盘裁剪文件）。
+    旧键 evidence_complete 保留（值=region 档），不追改历史口径。
+    """
     n = len(case_rows)
     http_ok = sum(1 for r in case_rows if _rflag(r, "vision_http_success"))
     schema_ok = sum(1 for r in case_rows if _rflag(r, "vision_schema_valid"))
     extraction_ok = sum(1 for r in case_rows if _rflag(r, "vision_extraction_valid"))
     complete = sum(1 for r in case_rows if _rflag(r, "evidence_complete"))
+    structural = sum(1 for r in case_rows if _rflag(r, "structural_evidence_complete"))
+    ready = sum(1 for r in case_rows if _rflag(r, "solver_ready"))
     phase = ((audit or {}).get("by_phase") or {}).get("vision_parse", {})
     return {
         "cases": n,
@@ -41,8 +50,12 @@ def vision_stage_summary(case_rows: List[Dict[str, Any]],
         "vision_schema_valid": {"numerator": schema_ok, "denominator": n},
         "vision_extraction_valid": {"numerator": extraction_ok, "denominator": n},
         "evidence_complete": {"numerator": complete, "denominator": n},
+        "region_evidence_complete": {"numerator": complete, "denominator": n},
+        "structural_evidence_complete": {"numerator": structural, "denominator": n},
+        "solver_ready": {"numerator": ready, "denominator": n},
         "phase_audit": dict(phase),
-        "note": "schema 合法但证据不完整（漏选项/九宫格识别成一行）不计入 evidence_complete",
+        "note": "schema 合法但证据不完整（漏选项/九宫格识别成一行）不计入 evidence_complete；"
+                "R4e 起区域/结构/solver_ready 三档分别报告（区域档沿用旧口径）",
     }
 
 

@@ -21,6 +21,15 @@ from .base import BaseSkill, SkillContext
 TOOL_ID = "figure_rules"
 ADAPTER_ID = "figure_rules_adapter"
 
+# R4e P1-2：变换通道进入 solution.meta 的**审计字段白名单**。除历史判定字段外，
+# 必须带上结构化阻塞原因（blockers/overlay_eval）与坐标契约（coord_contract），
+# 归因层才能把"上游文本偏差"与"真正阻断作答的几何失败"分开，不再由
+# extraction_text_error 一类早退标签遮蔽下游几何错误。
+TRANSFORM_META_KEYS = ("status", "answer", "reason", "verdict", "candidates",
+                       "parameter_stable", "independently_verified",
+                       "symmetry_unresolvable", "stem_fingerprint", "verification",
+                       "blockers", "overlay_eval", "coord_contract")
+
 
 class FigureReasoningSkill(BaseSkill):
     id = "figure_reasoning"
@@ -176,10 +185,7 @@ class FigureReasoningSkill(BaseSkill):
                 if tp.get("status") == "solved" and tp.get("answer") == payload.get("answer"):
                     sol = self._finalize_regions(question, payload, inputs)
                     sol.meta["transform_cross_support"] = True
-                    sol.meta["transform"] = {k: tp.get(k) for k in
-                                             ("verdict", "candidates", "parameter_stable",
-                                              "independently_verified", "symmetry_unresolvable", "stem_fingerprint",
-                                              "verification")}
+                    sol.meta["transform"] = {k: tp.get(k) for k in TRANSFORM_META_KEYS}
                     sol.tool_calls.append(tinv)
                     return sol
                 t_verdict = str((tp.get("verdict") or {}).get("verdict") or "")
@@ -197,19 +203,13 @@ class FigureReasoningSkill(BaseSkill):
                                f"{tp.get('answer') or '多个/无法唯一'}，不能共同支持同一选项"),
                         tool_calls=[tinv],
                         meta={"stage": self.stage, "channel": "cross_check",
-                              "transform": {k: tp.get(k) for k in
-                                            ("verdict", "candidates",
-                                         "parameter_stable", "independently_verified",
-                                         "symmetry_unresolvable")},
+                              "transform": {k: tp.get(k) for k in TRANSFORM_META_KEYS},
                               "six_rule_claim": {"rule": payload.get("rule"),
                                                  "answer": payload.get("answer")}},
                     )
                 # 变换通道无规律可提 → 保留六类结果（历史语义）
                 sol = self._finalize_regions(question, payload, inputs)
-                sol.meta["transform"] = {k: tp.get(k) for k in
-                                         ("verdict", "candidates",
-                                         "parameter_stable", "independently_verified",
-                                         "symmetry_unresolvable")}
+                sol.meta["transform"] = {k: tp.get(k) for k in TRANSFORM_META_KEYS}
                 return sol
             if tp.get("status") in ("solved", "unverified"):
                 if tp.get("status") == "unverified":
@@ -223,10 +223,7 @@ class FigureReasoningSkill(BaseSkill):
                         steps=tp.get("steps") or [],
                         tool_calls=[tinv],
                         meta={"stage": self.stage, "channel": "transform",
-                              "transform": {k: tp.get(k) for k in
-                                            ("verdict", "candidates", "parameter_stable",
-                                             "independently_verified", "symmetry_unresolvable", "stem_fingerprint",
-                                             "verification")},
+                              "transform": {k: tp.get(k) for k in TRANSFORM_META_KEYS},
                               "six_rule_failure": payload.get("reason")},
                     )
                 return Solution(
@@ -240,19 +237,13 @@ class FigureReasoningSkill(BaseSkill):
                     steps=tp.get("steps") or [],
                     tool_calls=[tinv],
                     meta={"stage": self.stage, "channel": "transform",
-                          "transform": {k: tp.get(k) for k in
-                                        ("verdict", "candidates", "parameter_stable",
-                                         "independently_verified", "symmetry_unresolvable", "stem_fingerprint",
-                                         "verification")},
+                          "transform": {k: tp.get(k) for k in TRANSFORM_META_KEYS},
                           "six_rule_failure": payload.get("reason")},
                 )
             # 变换通道也失败：合并两通道原因，保持 failed（诚实）
             merged = self._finalize_regions(question, payload, inputs)
             merged.error = (merged.error or "六类规律未解") + f"；变换通道：{tp.get('reason')}"
-            merged.meta["transform"] = {k: tp.get(k) for k in
-                                        ("verdict", "candidates",
-                                         "parameter_stable", "independently_verified",
-                                         "symmetry_unresolvable")}
+            merged.meta["transform"] = {k: tp.get(k) for k in TRANSFORM_META_KEYS}
             return merged
         return self._finalize_regions(question, payload, inputs)
 

@@ -247,6 +247,10 @@ def solve_figure_transform_regions(
     stem_mask = load_mask(stem, threshold)
 
     # 空格识别：对每列对齐后的 None 或 blank 特征
+    # R4e P0-1 坐标事实收集：每格 bbox 来自同一 stem_mask 画布的网格切片（可审计）；
+    # 空格（待预测位）bbox 由同 band 行区间 + 显式网格取整公式推导，供叠加对齐用。
+    cell_boxes: List[Optional[Tuple[int, int, int, int]]] = []
+
     def row_masks(band: Dict[str, Any]) -> Tuple[List[Optional[np.ndarray]], Optional[int]]:
         cols = max((c["column"] for c in band["cells"]), default=-1) + 1
         if stem_layout.get("mode") == "explicit" and stem_layout.get("grid"):
@@ -257,11 +261,29 @@ def solve_figure_transform_regions(
         for col in range(cols):
             cell = mapping.get(col)
             if cell is None:
+                # 缺失格：y 区间与 band 同源（analyze_layout 对同 band 所有格用同一
+                # y0/y1），x 由**同 band 已见格 + 网格 pitch** 推导。推导跨度异常或
+                # 无 pitch 证据时如实给 None → 对齐层判 coordinate_frame_unverified。
+                y0, y1 = band["bbox"][1], band["bbox"][3]
+                pitch = (stem_layout.get("pitch") or [None, None])[0]
+                seen = [c for c in band["cells"] if c.get("bbox")]
+                x0 = x1 = None
+                if seen and pitch:
+                    ref = seen[0]
+                    x0 = int(round(ref["bbox"][0] + (col - ref["column"]) * pitch))
+                    x1 = int(round(ref["bbox"][1] + (col - ref["column"]) * pitch))
+                    if x1 - x0 < 2:
+                        x0 = x1 = None
+                if x0 is not None:
+                    cell_boxes.append((int(x0), int(y0), int(x1), int(y1)))
+                else:
+                    cell_boxes.append(None)
                 out.append(None)
                 if blank_at is None:
                     blank_at = col
                 continue
             bx0, by0, bx1, by1 = cell["bbox"]
+            cell_boxes.append((int(bx0), int(by0), int(bx1), int(by1)))
             m = stem_mask[by0:by1, bx0:bx1]
             if cell["features"].get("blank"):
                 # 变换通道只把"几乎无墨"视为空格；问号形状启发式（target_marker）
@@ -280,6 +302,7 @@ def solve_figure_transform_regions(
     if len(bands) == 1:
         cells, blank_at = row_masks(bands[0])
         known = [c for c in cells if c is not None]
+        known_boxes = [b for c, b in zip(cells, cell_boxes) if c is not None]
         if blank_at is None or blank_at != len(cells) - 1 or len(known) < 2:
             return {"status": "not_applicable",
                     "reason": "空格不在行末或已知格不足，变换通道不适用（序列）",
@@ -290,6 +313,7 @@ def solve_figure_transform_regions(
     elif len(bands) == 3 and all(len(b["cells"]) >= 2 for b in bands):
         rows = [row_masks(b) for b in bands]
         flat: List[Optional[np.ndarray]] = [c for row, _ in rows for c in row]
+        flat_boxes = list(cell_boxes)  # 与 flat 逐位对齐（row_masks 按位 append）
         blanks = [i for i, c in enumerate(flat) if c is None]
         if blanks != [8]:
             return {"status": "not_applicable",
@@ -298,12 +322,16 @@ def solve_figure_transform_regions(
                                                   "support": {}}}
         mode = "grid3"
         stem_list = [c for c in flat if c is not None]
+        known_boxes = [b for c, b in zip(flat, flat_boxes) if c is not None]
     else:
         return {"status": "not_applicable", "reason": "布局非单行/三行九宫格",
                 "candidates": [], "verdict": {"verdict": "no_rule", "answer": None,
                                               "support": {}}}
 
-    res = analyze_transform(stem_list, option_masks, mode=mode)
+    stem_canvas_size = (int(stem_mask.shape[0]), int(stem_mask.shape[1]))
+    res = analyze_transform(stem_list, option_masks, mode=mode,
+                            cell_geometry=known_boxes,
+                            stem_canvas=stem_canvas_size)
     verdict = res["verdict"]
     answer = verdict.get("answer") if verdict.get("verdict") == "unique" else None
     ver = verify_transformation({**res, "mode": mode}, stem_list, option_masks, answer)
@@ -324,6 +352,9 @@ def solve_figure_transform_regions(
         "verdict": verdict,
         "candidates": res["candidates"],
         "symmetry_unresolvable": res["symmetry_unresolvable"],
+        "blockers": res.get("blockers", []),
+        "overlay_eval": res.get("overlay_eval", {}),
+        "coord_contract": res.get("coord_contract"),
         "verification": ver.model_dump(),
         "reason": (f"变换律唯一：{verdict.get('support')}" if answer and ver.action == "accept"
                    else verdict.get("detail") or res.get("reason") or "变换规律不可唯一判定"),

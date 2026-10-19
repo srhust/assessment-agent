@@ -779,7 +779,7 @@ per_skill 分组含 false_accept 及最上游归因链；报告显式声明小�
 当前离线回归：`373 passed, 2 skipped`（新增 R4c 11 项 + 真实路径审计凭证 1 项
 skip；原 362 全保留，真实端到端用例仍未配置时双双显式 skip）。
 
-### 6.10 R4d：真实模型首跑前的指标修复与分阶段执行（2026-10-19，当前 HEAD）
+### 6.10 R4d：真实模型首跑前的指标修复与分阶段执行（2026-10-19）
 
 R4c 静态验收后，评审点出三个首跑前必须修的洞，R4d 全部落地——**本环境无
 API 密钥，真实 VLM 实验仍未执行**，以下全部是"预检"证据；
@@ -860,7 +860,7 @@ API 密钥，真实 VLM 实验仍未执行**，以下全部是"预检"证据；
   全量 **387 passed / 2 skipped**（373 项 R4c 基线零退化 + 14 新增；
   1 项 R4b 契约测试的源码窗口从 2000 字符扩到 3200 以覆盖新增审计快照行）。
 
-### 6.11 R4d 收尾：首跑纪律修正 + HTTP 错误脱敏（评审建议，当前 HEAD）
+### 6.11 R4d 收尾：首跑纪律修正 + HTTP 错误脱敏（评审建议）
 
 评审 R4d 静态验收通过后的两项收尾（主脚本 health_gate **按评审要求未改动**）：
 
@@ -889,6 +889,79 @@ API 密钥，真实 VLM 实验仍未执行**，以下全部是"预检"证据；
   真实 HTTP 联调**尚未执行**；上述纪律与脱敏是为拿到第一份可信真实运行
   证据做准备，不构成任何能力宣称。
 - 全量回归：**393 passed / 2 skipped**（387 基线零退化 + 6 新增）。
+
+### 6.12 R4e：真实视觉输入下的图形坐标归一化与回归修复（2026-10-19）
+
+首跑（smoke-20261019T022717Z，评审已验收为有效首跑）暴露的三类问题按评审
+顺序修复：异尺寸布尔叠加广播崩溃（ft-grid-10）、canvas_mismatch 把可归一
+裁剪抖动误判为画布不一致而整体降级（ft-overlay-12）、证据完整率单档过宽 +
+错误归因把文本截断当作阻断（三题共同）。首跑三件套（results 与
+`evidence/real_vlm_first_run/` 冻结副本）**一字未改**。
+
+- **P0-1 统一坐标系（figure_transform.py）**：新增 `AlignContract` 与
+  `align_pair_for_overlay`——叠加运算必须先证明两格处于**同一画布坐标系**。
+  共同画布优先取自题干矩阵实际网格坐标（显式 grid 切片的格 bbox + 画布
+  尺寸，由 adapter 逐格对齐传入 `cell_geometry`/`stem_canvas`）：同行
+  （y 区间一致 ±3px）或同列 + 掩码尺寸抖动 ≤3px → 以公共画布**整数平移**
+  （非缩放）后布尔叠加；几何证据相互矛盾 → `coordinate_frame_unverified`
+  拒绝叠加（不补零假装）；无可审计几何且尺寸不同 → `shape_mismatch`
+  （结构化码，不再抛 `ValueError: broadcast (46,47) vs (46,48)`）。
+  1–2px 裁剪抖动、平移边距、真画布不一致、同画布不同尺寸四类情形由契约
+  字段（offsets/jitter/mode/reason）分别留痕。旋转/纯形状类内容归一化
+  （standardize）原语义不动；canvas_mismatch 保护**未删除**：无几何的
+  legacy 路径行为与 R4a 完全一致，有几何路径只对**题干格自身**纵横异常
+  降级，选项内容贴边裁剪不再误伤（overlay-12 误伤消除）。
+- **P0-2 共享契约、独立计算（figure_transform_tools.py）**：
+  `analyze_transform` 返回可审计 `coord_contract`（stem_canvas /
+  cell_bboxes / pair_align / tol_px），随 solution.meta.transform 进入
+  验证器；`verify_geometry`/`replay_perturbed` 读取该契约在**自有帧 72**
+  独立重放叠加——只共享坐标事实，绝不消费求解器候选分数（测试用篡改
+  分数双向证明：假分数不影响 reject，也不凭空造出 accept）。
+- **P1-1 证据三档（runner/execution_status）**：`region_evidence_complete`
+  （旧口径原值保留）、`structural_evidence_complete`（图形矩阵题追加
+  grid 维度正确 + 选项裁剪齐全判据）、`solver_ready`（结构完整且裁剪文件
+  实际在盘）。评审反例已固化为测试：VLM 解析 1×3 / 金标 1×4，区域与选项
+  都在，结构档必须不完整。
+- **P1-2 归因三分（diagnosis.attribute_error_chain）**：每题输出
+  `first_detected_error`（流水线上最早偏差）/`blocking_failure`
+  （最下游阻断）/`secondary_errors`。三题共同 stem 截断不再遮蔽几何阻断：
+  如 first_detected=stem_text:… 而 blocking=solver:overlay_residual_over_tol。
+  变换工具统一发结构化码：`shape_mismatch`、`coordinate_frame_unverified`、
+  `canvas_mismatch`、`ambiguous_candidates`（含 `overlay_residual_over_tol`）。
+- **P1-3 同输入离线回放（scripts/r4e_replay_first_run.py）**：复用首跑
+  落盘裁剪（0 次新 API 调用，禁止金标注入 image-only），
+  `evidence/r4e_replay/pre_fix/` 用修复前语义（git HEAD 1e96958 的算法
+  路径）忠实复现崩溃与误降级，`post_fix/` 同输入零崩溃、阻塞码结构化、
+  `coord_contract` 全程留痕——组①/组②**只差代码**的证据。
+- **四组评测**：①/② 如上；③ 新代码 + Oracle 标准区域（oracle_solver，
+  批次 r4e_oracle_replay）：figtrans_dev **13/16**、figshots_dev **12/15**、
+  figtrans_test 重放 **6/10**、figshots_test **6/10**，全部与 R4b 冻结
+  口径逐值一致（误放 0；首评历史值不回写）；④ 原六类 bench_dev
+  **25/30 · 误放 0** 不变。
+- **真实输入重跑（新 experiment id smoke-20261019T051724Z，未覆盖首跑）**：
+  3/3 EXECUTED（glm-5.3-flash 回显，3 请求全 2xx，产物密钥扫描 NONE），
+  **0/3 作答释放**——但每题都有可审计阻断，且按新口径如实分层：
+  区域 3/3 / 结构 2/3 / solver_ready 2/3 / 答题产出 0/3。
+  rot90-01：VLM 网格仍 1×3（结构档=False），六规则给出 A（与金标一致）
+  但独立代入无法从题干重建其声称的 fill 约束 → **不释放**（评审口径：
+  验证器不吃偶然正确）；grid-10：不崩溃，rotate_flip_grid_row/col 两候选
+  对四选项均高残差 → ambiguous_candidates 弃权；overlay-12：canvas_mismatch
+  整体降级消失，改为 `overlay_residual_over_tol`（col:xor 演示残差
+  0.721>0.12，格内字形内容位移 ~15px 属 VisionParser 格切分极限）。
+  计费核对：首跑 usage 2592/8250/10842，重跑 2592/8116/10708
+  （prompt 相同；temperature=0 下 completion 仍有服务端非确定性，
+  rot90 两次产物路径不同即源于此，如实记录不粉饰）。
+- 测试：新增 `tests/test_r4e_geometry_evidence.py` 23 项（广播崩溃回归、
+  异尺寸可判定、抖动容忍、真不一致保守降级、OR/XOR 不收敛、选项置换、
+  验证器独立性、canvas_mismatch 保护存续、结构档反例、归因三分、
+  首跑冻结回放对照）。全量回归 **416 passed / 2 skipped**（393 基线零退化
+  + 23 新增）。
+
+**残余限制（如实）**：图形通道的真实输入产出仍 0/3；rot90-01 的 1×3/1×4
+网格错判在 VisionParser（属 R5 前 Vision 修复项，不得以金标注入绕过）；
+grid-10 rotate_flip 候选在选项层面不可区分说明 VLM 裁剪内容仍有语义损失；
+overlay-12 的格内内容位移超演示容差是几何证据极限，不是可以调参掩盖的
+失败——扩大样本决策仍归人工评审。
 
 ---
 
@@ -963,7 +1036,14 @@ mock 结果只证明链路机制，不用于宣称模型识别能力。
 | 题型 | 计划实现 | 依赖 |
 | --- | --- | --- |
 | 图形推理 | ✅ R2~R4b：网格解析 + 六类规律 + **离散旋转/镜像/平移/缩放/组合/九宫格/叠加变换通道**（D4 群 + 画布级叠加判别 + 单因子 all_confirm 扫描 + 几何候选替代独立验证 + parameter_stable/independently_verified 分账 + **完整页面截图基准 figshots**）；R4b 已封堵扫描计数洞、layout 决策耦合与题图缺选项三项 P0；待实现：曲线/交点数量律、多步复合链规律、真实截图 VLM 端到端（Phase6 仍 NOT_EXECUTED） | OpenCV + NumPy |
-| 下一步顺序（评审确认，2026-10-19 更新） | ① **首跑只允许 3 题独立 Smoke**：配置密钥后运行 `python scripts/phase6_vlm_smoke.py`（内部已 `--case-ids` 固定 ft-rot90-01 / ft-grid-10 / ft-overlay-12 三题，运行前声明、不按结果筛样）；**注意 `run_real_vlm_experiment.py` 是自动分阶段执行器**（stage1 健康门 1/3 结构化成功即自动扩到 15/35，`--force-continue` 只是跳过失败熔断的越级开关，不是人工继续按钮），按当前纪律首跑**不得**直接运行主脚本。跑完提交 `smoke_report.json` + `llm_evidence.json` + `predictions.jsonl` 三件套人工逐题审查 → ② **扩大标准（评审）**：0/3 结构化成功=停止先修 API/模型参数/Schema；1–2/3=保留报告定位失败原因、**不自动扩大**；3/3=先查证据完整率、选项映射与实际裁剪质量，再决定进入 15 题 Dev。**3/3 结构化成功 ≠ 3/3 答题正确 ≠ 真实场景误放率可靠** → ③ 首跑按三顶线指标（Vision Parse Success/Evidence Completeness/Verified Answer Yield）的归因决定优先修 VisionParser、图形 Solver 还是 Verifier → ④ 冻结模型与算法配置后构建新跨题型盲测（合成/人工/授权真实三层，第三类缺失如实标注）→ ⑤ 才评估 R5 蒸馏（先回答：真实视觉解析是否破坏题干信息/表格结构/选项映射、错误解题轨迹会不会被验证器误收）。**R5 与新增 Skill 均未启动**；当前状态=NOT_CONFIGURED（本机无密钥，HTTP 联调尚未执行） | 真实 VLM 密钥配置（用户提供）+ 首跑人工逐题核对 |
+| 下一步顺序（评审确认，2026-10-19 更新） | ① **首跑只允许 3 题独立 Smoke**：配置密钥后运行 `python scripts/phase6_vlm_smoke.py`（内部已 `--case-ids` 固定 ft-rot90-01 / ft-grid-10 / ft-overlay-12 三题，运行前声明、不按结果筛样）；**注意 `run_real_vlm_experiment.py` 是自动分阶段执行器**（stage1 健康门 1/3 结构化成功即自动扩到 15/35，`--force-continue` 只是跳过失败熔断的越级开关，不是人工继续按钮），按当前纪律首跑**不得**直接运行主脚本。跑完提交 `smoke_report.json` + `llm_evidence.json` + `predictions.jsonl` 三件套人工逐题审查 → ② **扩大标准（评审）**：0/3 结构化成功=停止先修 API/模型参数/Schema；1–2/3=保留报告定位失败原因、**不自动扩大**；3/3=先查证据完整率、选项映射与实际裁剪质量，再决定进入 15 题 Dev。**3/3 结构化成功 ≠ 3/3 答题正确 ≠ 真实场景误放率可靠** → ③ 首跑按三顶线指标（Vision Parse Success/Evidence Completeness/Verified Answer Yield）的归因决定优先修 VisionParser、图形 Solver 还是 Verifier → ④ 冻结模型与算法配置后构建新跨题型盲测（合成/人工/授权真实三层，第三类缺失如实标注）→ ⑤ 才评估 R5 蒸馏（先回答：真实视觉解析是否破坏题干信息/表格结构/选项映射、错误解题轨迹会不会被验证器误收）。**R5 与新增 Skill 均未启动**。**R4e 状态（2026-10-19 收口）**：首跑
+（smoke-20261019T022717Z，冻结不回写）与修复后真实重跑
+（smoke-20261019T051724Z，新 experiment id）均 3/3 EXECUTED、零崩溃、
+每题阻断均有结构化码与坐标契约留痕；同输入离线回放（组①旧码 vs 组②新码，
+`evidence/r4e_replay/`）证明差异只在代码；Oracle 回归与 bench_dev 对冻结
+基线零退化。真实图形通道产出仍 0/3——扩 15 题前需人工评审重跑三件套，
+并优先处理 VisionParser 网格错切（rot90-01 的 1×3 vs 1×4）；健康门
+"允许扩大"只是技术门，不构成扩大授权 | 真实 VLM 密钥配置（用户提供）+ 首跑人工逐题核对 |
 | 资料分析 | ✅ R3a 已实现：表格/柱状图结构化 + 计算计划 + Fraction 求值 + 六步独立验证；待实现：折线/多图复合表格、更复杂表头合并与真实截图 OCR 端到端验证 | OpenCV + 表格校验器 +（真实 VLM 待配置） |
 | 言语理解 | ✅ R3b+R3c：选词搭配、主旨结论覆盖、推断否定/量词/情态核对 + **命题归属层**（传闻/假设/否认不升格为事实）、字面条件链 Z3；待实现：跨句指代、近义重表述主旨、预设/蕴含（"否认说法⇒说法存在"）形式化、肯后式推断 | 带证据的 LLM 输出 + 校验器 |
 | 语言推理 | ✅ R3c：词典七类方向关系 + 判别性覆盖 + 六项验证；待实现：词库规模化（当前 ~120 中文词条）、程度关系、词性/语义角色校验、真实 LLM 提议通道验证 | 知识库检索 + LLM |

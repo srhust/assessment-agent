@@ -23,8 +23,8 @@ import numpy as np
 from .base import Tool, ToolUnavailable
 from .figure_tools import backend_status, load_mask
 from .figure_transform import (
-    FRAME, analyze_transform, fit_canvas, group_for, residual, standardize,
-    transform_matches, _to_mask,
+    FRAME, align_pair_for_overlay, analyze_transform, fit_canvas, group_for,
+    residual, standardize, transform_matches, _to_mask,
 )
 from ..schemas import Verification, VerificationCheck
 
@@ -235,6 +235,12 @@ def verify_geometry(payload: Dict[str, Any],
     G = group_for(VFRAME)
     mode = payload.get("mode", "sequence")
 
+    # R4e P0-2：验证器读取求解器留下的**可审计坐标契约**（格 bbox + 画布 + 逐对对齐
+    # 裁决），但用**自有帧独立重算**叠加，绝不消费求解器的候选分数/仲裁结论。
+    cc = payload.get("coord_contract") or {}
+    cell_geometry = cc.get("cell_bboxes")
+    stem_canvas = cc.get("stem_canvas")
+
     def prep(stems: Sequence[Any], opts: Dict[str, Any]):
         S_ = [standardize(_to_mask(m), VFRAME) for m in stems]
         O_ = {lab: standardize(_to_mask(m), VFRAME) for lab, m in opts.items()}
@@ -292,14 +298,28 @@ def verify_geometry(payload: Dict[str, Any],
                     for a, b, c_ in triples:
                         if c_ is None:
                             continue
-                        if residual(fit_canvas(opf(RAW_[a], RAW_[b]), VFRAME),
+                        aa, bb, contract = align_pair_for_overlay(
+                            RAW_[a], RAW_[b],
+                            cell_geometry[a] if cell_geometry else None,
+                            cell_geometry[b] if cell_geometry else None,
+                            stem_canvas)
+                        if not contract.verified:
+                            ok = False
+                            break
+                        if residual(fit_canvas(opf(aa, bb), VFRAME),
                                     S_[c_].canvas_frame) > VTOL:
                             ok = False
                             break
                     if ok:
                         a, b, _ = triples[-1]
-                        feas.append((kind, f"overlay_{opname}", None, None,
-                                     fit_canvas(opf(RAW_[a], RAW_[b]), VFRAME), None))
+                        aa, bb, contract = align_pair_for_overlay(
+                            RAW_[a], RAW_[b],
+                            cell_geometry[a] if cell_geometry else None,
+                            cell_geometry[b] if cell_geometry else None,
+                            stem_canvas)
+                        if contract.verified:
+                            feas.append((kind, f"overlay_{opname}", None, None,
+                                         fit_canvas(opf(aa, bb), VFRAME), None))
         return feas
 
     def score(pred: Optional[np.ndarray], pred_scale: Optional[float],
@@ -473,13 +493,28 @@ def verify_geometry(payload: Dict[str, Any],
             for a, b, c_ in triples:
                 if c_ is None:
                     continue
-                # 布尔叠加对 1px 描边扰动有**系统性放大**（交集/差集面积按线性
-                # 边界变化）：重放容差取 +0.08，仍要求规律结构与排序成立
-                if residual(fit_canvas(opf(RAW_[a], RAW_[b]), VFRAME),
+                # R4e：扰动（±1px 形态学）后仍走**同一坐标契约**的对齐路径；
+                # 布尔叠加对 1px 描边扰动有系统性放大（交集/差集面积按线性边界
+                # 变化）：重放容差 +0.08，仍要求规律结构与排序成立
+                aa, bb, contract = align_pair_for_overlay(
+                    RAW_[a], RAW_[b],
+                    cell_geometry[a] if cell_geometry else None,
+                    cell_geometry[b] if cell_geometry else None,
+                    stem_canvas)
+                if not contract.verified:
+                    return None
+                if residual(fit_canvas(opf(aa, bb), VFRAME),
                             S_[c_].canvas_frame) > VTOL + 0.08:
                     return None
             a, b, _ = triples[-1]
-            return None, None, fit_canvas(opf(RAW_[a], RAW_[b]), VFRAME), None
+            aa, bb, contract = align_pair_for_overlay(
+                RAW_[a], RAW_[b],
+                cell_geometry[a] if cell_geometry else None,
+                cell_geometry[b] if cell_geometry else None,
+                stem_canvas)
+            if not contract.verified:
+                return None
+            return None, None, fit_canvas(opf(aa, bb), VFRAME), None
         return None
 
     disc_ok = True

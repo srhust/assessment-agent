@@ -252,6 +252,103 @@ def _overlay(target: np.ndarray, a: np.ndarray, b: np.ndarray) -> Dict[str, floa
             "and": residual(target, np.logical_and(a, b).astype(np.uint8))}
 
 
+# ------------------------------------------------------------------ 共同画布对齐（R4e P0-1）
+#
+# 叠加律（xor/or/and）是**逐像素**布尔运算，要求两格共享同一画布坐标系。真实视觉
+# 裁剪的两格尺寸并不保证相等（VLM bbox / 网格取整 / 每格内容纵横不同），直接对
+# 原始掩码做 opf(RAW[a], RAW[b]) 会触发 numpy 广播异常，或（同形但原点不同）静默
+# 错位。这里用可审计的格裁剪几何（bbox 在同一题干画布内）把它们对齐到一个
+# **共同格画布**，只有当几何证据支持"同一行/列、共享原点"时才放行；否则如实返回
+# coordinate_frame_unverified，绝不用无约束补零或强缩放伪造可信叠加。
+
+#: 同行/列格宽的取整抖动容差（像素）。1–2px 属正常网格取整；超过即怀疑坐标系不一致。
+CANVAS_ALIGN_TOL_PX = 3
+
+
+@dataclass
+class AlignContract:
+    """一次对齐的可审计事实：放进哪个共同画布、原点偏移、抖动、是否放行。"""
+    verified: bool
+    mode: str                          # grid_top_left | identical | coordinate_frame_unverified | shape_mismatch
+    common_canvas: Tuple[int, int]     # (h, w) 对齐后共同画布尺寸
+    offsets: Tuple[Tuple[int, int], Tuple[int, int]]   # 每格放入共同画布的 (dy, dx)
+    jitter: Tuple[int, int]            # 两格 (dh, dw) 尺寸差
+    reason: str = ""
+
+    def as_dict(self) -> Dict[str, Any]:
+        return {"verified": self.verified, "mode": self.mode,
+                "common_canvas": list(self.common_canvas),
+                "offsets": [list(self.offsets[0]), list(self.offsets[1])],
+                "jitter": list(self.jitter), "reason": self.reason}
+
+
+def _pad_to(a: np.ndarray, size: Tuple[int, int], off: Tuple[int, int]) -> np.ndarray:
+    """确定性整数平移放置：把 mask 放到 size 画布的 (dy,dx) 原点，超界裁剪、不足补零。
+
+    注意这是**平移**（保内容相对格左上角的位置），不是缩放，也不是无约束补零——
+    仅在 AlignContract 判定同行/列共享画布时调用。"""
+    h, w = size
+    dy, dx = int(off[0]), int(off[1])
+    out = np.zeros((h, w), dtype=np.uint8)
+    sh, sw = a.shape
+    ay0, ax0 = max(0, dy), max(0, dx)
+    ay1, ax1 = min(h, dy + sh), min(w, dx + sw)
+    if ay1 <= ay0 or ax1 <= ax0:
+        return out
+    out[ay0:ay1, ax0:ax1] = a[ay0 - dy:ay1 - dy, ax0 - dx:ax1 - dx]
+    return out
+
+
+def align_pair_for_overlay(a: np.ndarray, b: np.ndarray,
+                           bbox_a: Optional[Sequence[int]] = None,
+                           bbox_b: Optional[Sequence[int]] = None,
+                           canvas: Optional[Sequence[int]] = None) -> \
+        Tuple[np.ndarray, np.ndarray, AlignContract]:
+    """返回对齐到共同画布的两格掩码 + 可审计契约。
+
+    - 有 bbox 且两格来自同一题干画布、处于**同一行或同一列**（y 或 x 区间对齐）：
+      按网格原点整数平移对齐（内容位置保留），尺寸差 ≤CANVAS_ALIGN_TOL_PX 视为取整
+      抖动放行 → mode=grid_top_left。
+    - 无几何信息但两格尺寸完全相同：legacy 逐像素叠加（调用方自证同格画布，如合成
+      等尺寸金标）→ mode=identical。
+    - 其余（尺寸不同又无共享画布证据、或行列不对齐、抖动超容差）：不放行，
+      mode=coordinate_frame_unverified，调用方必须弃权。
+    """
+    a = _to_mask(a)
+    b = _to_mask(b)
+    ha, wa = a.shape
+    hb, wb = b.shape
+    jitter = (ha - hb, wa - wb)
+
+    if bbox_a is not None and bbox_b is not None and canvas is not None:
+        ax0, ay0, ax1, ay1 = (int(v) for v in bbox_a)
+        bx0, by0, bx1, by1 = (int(v) for v in bbox_b)
+        # 同一行：纵向区间一致（允许 ≤TOL 抖动）；同一列：横向区间一致。
+        same_row = abs(ay0 - by0) <= CANVAS_ALIGN_TOL_PX and abs(ay1 - by1) <= CANVAS_ALIGN_TOL_PX
+        same_col = abs(ax0 - bx0) <= CANVAS_ALIGN_TOL_PX and abs(ax1 - bx1) <= CANVAS_ALIGN_TOL_PX
+        if not (same_row or same_col):
+            return a, b, AlignContract(False, "coordinate_frame_unverified",
+                                       (max(ha, hb), max(wa, wb)), ((0, 0), (0, 0)), jitter,
+                                       "两格既不同行也不同列，无共同画布原点")
+        if abs(jitter[0]) > CANVAS_ALIGN_TOL_PX or abs(jitter[1]) > CANVAS_ALIGN_TOL_PX:
+            return a, b, AlignContract(False, "coordinate_frame_unverified",
+                                       (max(ha, hb), max(wa, wb)), ((0, 0), (0, 0)), jitter,
+                                       f"格尺寸差 {jitter} 超过网格取整容差 ±{CANVAS_ALIGN_TOL_PX}")
+        ch, cw = max(ha, hb), max(wa, wb)
+        # 内容相对各自格左上角放置（格切片本就从 (x0,y0) 起）→ 原点 (0,0) 对齐。
+        aa = _pad_to(a, (ch, cw), (0, 0))
+        bb = _pad_to(b, (ch, cw), (0, 0))
+        return aa, bb, AlignContract(True, "grid_top_left", (ch, cw), ((0, 0), (0, 0)),
+                                     jitter, "同行/列网格原点整数平移对齐")
+
+    if a.shape == b.shape:
+        return a, b, AlignContract(True, "identical", a.shape, ((0, 0), (0, 0)),
+                                   (0, 0), "等尺寸（调用方自证同一格画布）")
+    return a, b, AlignContract(False, "shape_mismatch",
+                               (max(ha, hb), max(wa, wb)), ((0, 0), (0, 0)), jitter,
+                               "尺寸不同且无可审计共同画布几何（不得无约束补零/缩放）")
+
+
 # ------------------------------------------------------------------ 评分与仲裁
 
 def score_options(pred_frame: np.ndarray, options: Dict[str, Shape],
@@ -375,7 +472,9 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
                       tol: float = 0.12,
                       frame: Optional[int] = None,
                       score_tol: Optional[float] = None,
-                      margin_min: float = 0.05) -> Dict[str, Any]:
+                      margin_min: float = 0.05,
+                      cell_geometry: Optional[Sequence[Optional[Sequence[int]]]] = None,
+                      stem_canvas: Optional[Sequence[int]] = None) -> Dict[str, Any]:
     """题面已知格 mask 序列（空格截断/置末）+ 选项格 mask → 候选+仲裁+对称声明。
 
     mode="sequence"：一行 N 已知 + 预测下一格。
@@ -396,6 +495,19 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
                                               "support": {}},
                 "symmetry_unresolvable": [], "per_cell_stabilizer": {}}
     cands: List[Candidate] = []
+    blockers: List[Dict[str, Any]] = []
+    align_audits: Dict[str, Dict[str, Any]] = {}
+    overlay_eval: Dict[str, Dict[str, Any]] = {}
+    # R4e P0-1：格裁剪的 bbox 几何在同一 stem 画布坐标系中给出时，叠加先经
+    # align_pair_for_overlay 对齐到共同画布再逐像素运算；几何缺失/不可信时
+    # 如实降级为 coordinate_frame_unverified（跳过该算子候选），绝不广播崩溃、
+    # 绝不无约束补零或强缩放伪造可信叠加。
+    geo: List[Optional[Tuple[int, int, int, int]]] = []
+    for i in range(len(stem)):
+        bb = cell_geometry[i] if (cell_geometry and i < len(cell_geometry)
+                                  and cell_geometry[i] is not None) else None
+        geo.append(tuple(int(v) for v in bb) if bb else None)
+    scv = tuple(int(v) for v in stem_canvas) if stem_canvas else None
     if mode == "sequence":
         cands += _seq_candidates(shapes, fr)
     elif mode == "grid3":
@@ -439,24 +551,65 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
                  "and": lambda x, y: np.logical_and(x, y).astype(np.uint8)}[name]
             return f
         S = shapes
-        RAW = [_to_mask(m) for m in stem]   # 叠加在原始帧坐标系进行（归一化会丢格间位置）
+        RAW = [_to_mask(m) for m in stem]   # 叠加在格画布坐标系进行（内容归一化会丢格间位置）
+        overlay_eval = {}
+
+        def aligned_op(x, y, opf):
+            aa, bb, contract = align_pair_for_overlay(RAW[x], RAW[y],
+                                                      geo[x] if geo else None,
+                                                      geo[y] if geo else None, scv)
+            align_audits.setdefault(f"{x}-{y}", contract.as_dict())
+            if not contract.verified:
+                blockers.append({"code": contract.mode,
+                                 "stage": "overlay", "cells": [x, y],
+                                 "detail": contract.reason,
+                                 "shapes": [list(RAW[x].shape), list(RAW[y].shape)]})
+                return None
+            return opf(aa, bb)
+
         lines = {"overlay_grid_row": [((0, 1, 2), (3, 4, 5), (6, 7, None)),
                                       ],
                  "overlay_grid_col": [((0, 3, 6), (1, 4, 7), (2, 5, None))]}
+        overlay_eval: Dict[str, Dict[str, Any]] = {}
         for kind, groups in lines.items():
             for (a, b, c_), (d, e, f_), (g, h, _) in groups:
                 for opname, opf in ((n, mkop(n)) for n in ("xor", "or", "and")):
-                    checks = [(a, b, c_), (d, e, f_)]
-                    if all(residual(fit_canvas(opf(RAW[x], RAW[y]), fr),
-                                     S[z].canvas_frame) <= tol for x, y, z in checks):
-                        c = Candidate(rule_type=kind, transformation=f"overlay_{opname}",
-                                      source_cells=[a, b, d, e, g, h],
-                                      predicted_shape={"aspect": round(float(S[h].aspect), 3)})
-                        # 画布级预测：保留空洞/位置结构（bbox 归一会把 xor/or 拉平）
-                        c._pred_canvas = fit_canvas(opf(RAW[g], RAW[h]), fr)  # type: ignore
-                        c._pred_frame = c._pred_canvas                     # type: ignore
-                        c.pred_scale = -1.0        # 叠加结果的 bbox 尺度与格内尺度不可比
-                        cands.append(c)
+                    # 语义与 R4a 基线一致：规律在演示行/列对上验证，空格行 (g,h) 外推
+                    failed = False
+                    worst = 0.0
+                    for x, y, z in ((a, b, c_), (d, e, f_)):
+                        r_mask = aligned_op(x, y, opf)
+                        if r_mask is None:
+                            failed = True
+                            break
+                        if S[z].canvas_frame is None:
+                            failed = True
+                            break
+                        r = residual(fit_canvas(r_mask, fr), S[z].canvas_frame)
+                        worst = max(worst, r)
+                        if r > tol:
+                            failed = True
+                            break
+                    overlay_eval[f"{kind}:{opname}"] = {
+                        "best_demo_residual": round(worst, 3),
+                        "accepted": not failed,
+                        "alignment": [align_audits.get(f"{a}-{b}", {}).get("mode"),
+                                      align_audits.get(f"{d}-{e}", {}).get("mode")],
+                        "tol": tol,
+                    }
+                    if failed:
+                        continue
+                    pred_mask = aligned_op(g, h, opf)
+                    if pred_mask is None:
+                        continue
+                    c = Candidate(rule_type=kind, transformation=f"overlay_{opname}",
+                                  source_cells=[a, b, d, e, g, h],
+                                  predicted_shape={"aspect": round(float(S[h].aspect), 3)})
+                    # 画布级预测：保留空洞/位置结构（bbox 归一会把 xor/or 拉平）
+                    c._pred_canvas = fit_canvas(pred_mask, fr)      # type: ignore
+                    c._pred_frame = c._pred_canvas                  # type: ignore
+                    c.pred_scale = -1.0        # 叠加结果的 bbox 尺度与格内尺度不可比
+                    cands.append(c)
     else:
         return {"status": "insufficient", "reason": f"unknown_mode:{mode}",
                 "candidates": [], "verdict": {"verdict": "no_rule", "answer": None,
@@ -466,10 +619,24 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
         if c.pred_scale == 0.0:                 # 旋转/镜像/平移保面积：沿用上一格尺度
             c.pred_scale = shapes[-1].scale_area
         c.options = option_shapes       # type: ignore[attr-defined]
-    # 画布一致性：所有格应来自同一尺寸裁切（同题各格）。纵横差异>20% → 尺度维度不可信
+    # 画布一致性（R4e 口径修正）：
+    # - 有可审计格几何（stem_canvas 提供）时，画布事实**只按题干网格格**核对：格来自
+    #   同一检测画布的切片，尺寸抖动属网格取整问题，由 align_pair_for_overlay 逐对
+    #   裁决；选项裁剪是内容贴边框（不同图形天然不同尺寸/纵横），**不得**再把选项
+    #   内容尺寸差当作"画布异常"整体降级（overlay-12 首跑误伤路径）。
+    # - 无几何信息（legacy 合成输入）时保留 R4a/R4b 原判定：stem+选项格间纵横/面积
+    #   比超限 → 整体降级，既有防误放语义一字不动。
     canv = [s.canvas for s in shapes + list(option_shapes.values()) if s.canvas]
     flags: List[str] = []
-    if canv:
+    if scv is not None:
+        stem_canv = [s.canvas for s in shapes if s.canvas]
+        if stem_canv:
+            ar = [c[0] / max(1, c[1]) for c in stem_canv]
+            area_r = max(c[0] * c[1] for c in stem_canv) / max(1, min(c[0] * c[1] for c in stem_canv))
+            if max(ar) - min(ar) > 0.2 or area_r > 1.6:
+                flags.append("canvas_mismatch：题干格间画布尺寸/纵横不一致（网格解析异常），"
+                             "尺度维度不可信，整体降级")
+    elif canv:
         ar = [c[0] / max(1, c[1]) for c in canv]
         area_r = max(c[0] * c[1] for c in canv) / max(1, min(c[0] * c[1] for c in canv))
         if max(ar) - min(ar) > 0.2 or area_r > 1.6:
@@ -479,10 +646,30 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
            else {"verdict": "no_rule", "answer": None, "support": {}})
     # 画布失配时任何答案都建立在可疑的尺度维度上 → 整体降级（保守）
     if flags:
+        blockers.append({"code": "canvas_mismatch", "stage": "canvas_check",
+                         "cells": [], "detail": flags[0]})
         arb = {"verdict": "ambiguous", "answer": None, "support": {},
                "detail": flags[0]}
     sym = {i: stabilizer(s, frame=fr) for i, s in enumerate(shapes)}
     unverifiable = [f"cell{i}: 对称不可区分 {g}" for i, g in sym.items() if len(g) > 1]
-    return {"status": "ok", "verdict": arb, "candidates": [c.as_dict() for c in cands],
-            "symmetry_unresolvable": unverifiable + flags,
-            "per_cell_stabilizer": sym, "n_cells": len(shapes)}
+    out = {"status": "ok", "verdict": arb, "candidates": [c.as_dict() for c in cands],
+           "symmetry_unresolvable": unverifiable + flags,
+           "per_cell_stabilizer": sym, "n_cells": len(shapes),
+           "blockers": blockers, "overlay_eval": overlay_eval}
+    if mode == "grid3" and overlay_eval and not cands:
+        # 无任何候选时，把最接近的算子评估如实记为阻塞原因（供归因链使用）：
+        # 拒绝不是黑箱异常，而是"全部演示残差超容差/对齐不可信"的可审计事实
+        best = min(overlay_eval.items(), key=lambda kv: kv[1]["best_demo_residual"])
+        blockers.append({"code": "overlay_residual_over_tol", "stage": "overlay_eval",
+                         "cells": [], "detail": f"{best[0]} 最小演示残差 "
+                         f"{best[1]['best_demo_residual']} > 容差 {best[1]['tol']}"})
+    # R4e P0-2 坐标契约：求解/验证共享**同一份可审计几何事实**（格 bbox + 画布尺寸 +
+    # 逐对对齐裁决），但验证器用自有帧独立重算，不消费本模块的候选分数。
+    if cell_geometry is not None or stem_canvas is not None:
+        out["coord_contract"] = {
+            "stem_canvas": list(scv) if scv else None,
+            "cell_bboxes": [list(g) if g else None for g in geo] if geo else None,
+            "pair_align": align_audits,
+            "tol_px": CANVAS_ALIGN_TOL_PX,
+        }
+    return out

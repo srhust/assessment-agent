@@ -59,6 +59,11 @@ class CaseResult:
     # R2c：归因拆分——最初出错位置 与 验证结果
     root_cause: Optional[str] = None
     verification_outcome: Optional[str] = None
+    # R4e P1-2：错误归因三分——"最上游偏差"不等于"阻断原因"。首次检出偏差、
+    # 真正阻断作答的直接原因、其余次要偏差分开记录（image_only 全链路审计）。
+    first_detected_error: Optional[str] = None
+    blocking_failure: Optional[str] = None
+    secondary_errors: List[Dict[str, Any]] = field(default_factory=list)
 
     def as_dict(self) -> Dict[str, Any]:
         return asdict(self)

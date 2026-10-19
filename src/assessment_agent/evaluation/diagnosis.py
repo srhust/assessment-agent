@@ -21,7 +21,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional, Sequence
 
 if TYPE_CHECKING:  # pragma: no cover
     from .runner import Case
@@ -70,8 +70,15 @@ def classify_case_failure(
     extraction_present: bool = False,
     extraction_stem_ok: Optional[bool] = None,
     option_map_ok: Optional[bool] = None,
+    vision: Optional[dict] = None,
+    transform_blockers: Optional[Sequence[str]] = None,
 ) -> Optional[str]:
-    """correct=True 时返回 None；否则给出最上游失效环节类别。"""
+    """correct=True 时返回 None；否则给出最上游失效环节类别。
+
+    R4e P1-2：`vision`（结构档事实）与 `transform_blockers`（几何/坐标结构化阻塞码）
+    参与判定——**几何类阻塞优先于题干文本截断**，避免"三题共同的 stem OCR 截断"
+    遮蔽真正的几何失效（首跑教训：三题全被记成 extraction_text_error）。
+    """
     if correct:
         return None
 
@@ -79,9 +86,19 @@ def classify_case_failure(
     meta = solution_meta or {}
     gold = case.answer
     answerable_gold = case.expected_status == "solved" and bool(gold)
+    blockers = set(transform_blockers or ())
 
     # 1. 区域证据问题（结构化失败，优先于路由/求解归因——它就是设计要拦截的降级）
     if meta.get("reason") == "region_incomplete" or any(marker in error for marker in _REGION_MARKERS):
+        return "region_missing_or_shifted"
+
+    # 1b. R4e：结构解析失败（网格 1×3 vs 金标 1×4 / 裁剪缺失）与坐标系不可信
+    #     （coordinate_frame_unverified / shape_mismatch / canvas_mismatch）属于
+    #     区域/几何级失效——先于文本截断判定，不再被其遮蔽。
+    if vision is not None and (vision.get("grid_parse_correct") is False
+                               or vision.get("crops_complete") is False):
+        return "region_missing_or_shifted"
+    if blockers & {"coordinate_frame_unverified", "shape_mismatch", "canvas_mismatch"}:
         return "region_missing_or_shifted"
 
     # 2. 抽取内容错误（image_only：先文本，再选项映射）
@@ -276,3 +293,108 @@ def derive_root_cause(
     if failure_class == "pipeline_error":
         return "pipeline"
     return "unresolved"
+
+
+# ---------------------------------------------------------------------------
+# R4e P1-2：错误归因三分链（first_detected / blocking / secondary）
+# ---------------------------------------------------------------------------
+
+#: 全链路环节顺序（最上游在前）：视觉三段 → 结构几何 → 文本内容 → 路由 → 求解 → 验证
+DETECTION_ORDER = (
+    "vision_api",            # HTTP 未 2xx
+    "vision_schema",         # 输出 JSON/schema 非法
+    "vision_structure",      # 结构化产物不可用（区域数组全空等）
+    "structure_grid",        # 网格解析错误 / 裁剪不完整（VLM 1×3 vs 金标 1×4）
+    "stem_text",             # 题干抽取截断/错字
+    "option_text_map",       # 选项标号映射错误
+    "router",                # 路由失效
+    "solver",                # 求解/变换通道（结构化阻塞码）
+    "verifier",              # 独立复核拦截
+)
+
+
+def _dev(stage: str, code: str, detail: str) -> Dict[str, Any]:
+    return {"stage": stage, "code": code, "detail": detail}
+
+
+def attribute_error_chain(
+    *,
+    mode: str,
+    correct: bool,
+    answered: bool,
+    vision: Optional[dict] = None,
+    extraction_stem_ok: Optional[bool] = None,
+    option_map_ok: Optional[bool] = None,
+    routed_ok: Optional[bool] = None,
+    transform: Optional[dict] = None,
+    verification_action: str = "",
+    solution_answer: Optional[str] = None,
+) -> Dict[str, Any]:
+    """每题错误链：``first_detected_error``（最上游偏差）、``blocking_failure``
+    （直接阻断作答/致错的原因）、``secondary_errors``（其余偏差全量，含先后关系）。
+
+    评审裁决（R4e P1-2）：最上游偏差 ≠ 阻断原因。三题共同的 stem OCR 截断不得
+    遮蔽几何阻塞；变换工具的结构化阻塞码（shape_mismatch /
+    coordinate_frame_unverified / canvas_mismatch / ambiguous_candidates /
+    overlay_residual_over_tol）直接进入 blocking，而不是被文本档提前吸收。
+    """
+    if correct:
+        return {"first_detected_error": None, "blocking_failure": None,
+                "secondary_errors": []}
+    v = vision or {}
+    tp = transform or {}
+    devs: list = []
+    if mode == "image_only":
+        if v.get("vision_http_success") is False:
+            devs.append(_dev("vision_api", "http_failed", "视觉请求未获 2xx"))
+        if v.get("vision_schema_valid") is False:
+            devs.append(_dev("vision_schema", "json_invalid", "模型输出非合法 JSON"))
+        if v.get("vision_extraction_valid") is False or v.get("region_detection_failure") is True:
+            devs.append(_dev("vision_structure", "regions_unusable",
+                             "结构化区域产物缺失或必需区域漏检"))
+        if v.get("grid_parse_correct") is False:
+            devs.append(_dev("structure_grid", "grid_parse_mismatch",
+                             "VLM 网格维度与金标不一致"))
+        if v.get("crops_complete") is False:
+            devs.append(_dev("structure_grid", "crops_incomplete", "题干/选项裁剪不完整"))
+        if extraction_stem_ok is False:
+            devs.append(_dev("stem_text", "stem_truncated_or_wrong", "题干文本与金标不一致"))
+        if option_map_ok is False:
+            devs.append(_dev("option_text_map", "option_map_mismatch", "选项标号映射不一致"))
+    if routed_ok is False:
+        devs.append(_dev("router", "route_mismatch", "路由技能与预期不符"))
+    for b in (tp.get("blockers") or []):
+        if isinstance(b, dict):
+            devs.append(_dev("solver", str(b.get("code", "solver_blocker")),
+                             str(b.get("detail", ""))[:160]))
+    if not (tp.get("blockers") or []):
+        verdict = str((tp.get("verdict") or {}).get("verdict") or "")
+        if verdict == "ambiguous":
+            devs.append(_dev("solver", "ambiguous_candidates", "多规律候选不一致/不可区分"))
+    if not answered:
+        status = str(tp.get("status") or "")
+        if status == "not_applicable":
+            devs.append(_dev("solver", "channel_not_applicable", "变换通道结构上不适用"))
+        elif tp and status in ("failed", "unverified") and not tp.get("blockers"):
+            devs.append(_dev("solver", "no_rule", "变换规律不成立/不可唯一判定"))
+    if not answered and solution_answer is not None and verification_action in ("reject", "unverified"):
+        devs.append(_dev("verifier", f"verifier_{verification_action}",
+                         "Solver 有答案但独立复核未通过（受控弃权）"))
+    # 按链路顺序稳定排序
+    devs.sort(key=lambda d: DETECTION_ORDER.index(d["stage"]))
+    if not devs:
+        return {"first_detected_error": None,
+                "blocking_failure": "unresolved" if not answered else "wrong_answer",
+                "secondary_errors": []}
+    order = {s: i for i, s in enumerate(DETECTION_ORDER)}
+    first = devs[0]
+    # blocking：直接阻断作答的**最下游**偏差；solver 与 verifier 并存时取 verifier，
+    # 都没到下游就取最上游（说明上游缺失根本没让下游有机会）。
+    hard = [d for d in devs if d["stage"] in ("solver", "verifier", "router",
+                                              "structure_grid", "vision_api",
+                                              "vision_schema", "vision_structure")]
+    blocking = hard[-1] if hard else first
+    rest = [d for d in devs if d is not blocking]
+    return {"first_detected_error": f"{first['stage']}:{first['code']}",
+            "blocking_failure": f"{blocking['stage']}:{blocking['code']}",
+            "secondary_errors": rest}

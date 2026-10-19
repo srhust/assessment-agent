@@ -1,0 +1,186 @@
+{
+  "case_id": "ft-grid-10",
+  "skill": "figure_reasoning",
+  "expected": "A",
+  "predicted": null,
+  "correct": false,
+  "status": "failed",
+  "verification_action": "reject",
+  "latency_ms": 41017.533,
+  "expected_status": "solved",
+  "failure_reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 0.810474, 'B': 0.928034, 'C': 1.0, 'D': 0.919608}, 'rotate_flip_grid_col': {'A': 0.810474, 'B': 0.928034, 'C': 1.0, 'D': 0.919608}}",
+  "predicted_option": null,
+  "tags": [
+    "figtrans",
+    "R4a",
+    "grid3",
+    "行列一致",
+    "完整截图",
+    "R4b"
+  ],
+  "routed_skill": "figure_reasoning",
+  "route_source": "explicit",
+  "route_confidence": 1.0,
+  "input_mode": "image_only",
+  "extraction_accurate": false,
+  "region_iou": 0.9195,
+  "option_map_ok": true,
+  "run_ref": "e2e-smoke-20261019T051724Z-ft-grid-10",
+  "failure_class": "extraction_text_error",
+  "vision": {
+    "parse_failed": false,
+    "stem_exact": false,
+    "stem_cer": 0.1429,
+    "option_label_recall": 1.0,
+    "option_label_fp": 0.0,
+    "option_text_accuracy": 0.0,
+    "option_text_cer_mean": 1.0,
+    "option_iou_mean": 0.5574,
+    "option_iou_scored": 4,
+    "diagram_recall": 1.0,
+    "diagram_iou_mean": 0.9195,
+    "diagram_iou_scored": 1,
+    "region_detection_failure": false,
+    "table_cell_accuracy": null,
+    "grid_parse_correct": true,
+    "crops_complete": true,
+    "crops_scored": 5,
+    "vision_http_success": true,
+    "vision_schema_valid": true,
+    "vision_extraction_valid": true,
+    "vision_payload_source": "vision_parser",
+    "legacy_payload_fallback": false,
+    "evidence_complete": true,
+    "region_evidence_complete": true,
+    "structural_evidence_complete": true,
+    "solver_ready": true
+  },
+  "usage": {
+    "calls": 1,
+    "prompt_tokens": 878,
+    "completion_tokens": 2809,
+    "total_tokens": 3687,
+    "model": "glm-5.3-flash"
+  },
+  "answerability": "has_unique_answer",
+  "capability_status": "supported",
+  "root_cause": "extraction_ocr",
+  "verification_outcome": "no_answer",
+  "first_detected_error": "stem_text:stem_truncated_or_wrong",
+  "blocking_failure": "solver:no_rule",
+  "secondary_errors": [
+    {
+      "stage": "stem_text",
+      "code": "stem_truncated_or_wrong",
+      "detail": "题干文本与金标不一致"
+    },
+    {
+      "stage": "solver",
+      "code": "ambiguous_candidates",
+      "detail": "多规律候选不一致/不可区分"
+    }
+  ],
+  "gold": {
+    "stem": "根据题目图形中蕴含的规律，选择最符合规律的一项补全图形。",
+    "options": {
+      "A": "图",
+      "B": "图",
+      "C": "图",
+      "D": "图"
+    },
+    "answer": "A",
+    "regions": {
+      "bbox_format": "pixel_xywh",
+      "image_size": [
+        380,
+        304
+      ],
+      "option_regions": [
+        {
+          "bbox": [
+            50,
+            232,
+            48,
+            48
+          ],
+          "crop_path": "E:\\assessment-agent\\data\\benchmark_figshots\\regions\\dev\\ft-grid-10\\option_A.png",
+          "figure_bbox": [
+            50,
+            232,
+            48,
+            48
+          ],
+          "has_figure": true,
+          "label": "A",
+          "text": "图"
+        },
+        {
+          "bbox": [
+            136,
+            232,
+            48,
+            48
+          ],
+          "crop_path": "E:\\assessment-agent\\data\\benchmark_figshots\\regions\\dev\\ft-grid-10\\option_B.png",
+          "figure_bbox": [
+            136,
+            232,
+            48,
+            48
+          ],
+          "has_figure": true,
+          "label": "B",
+          "text": "图"
+        },
+        {
+          "bbox": [
+            222,
+            232,
+            48,
+            48
+          ],
+          "crop_path": "E:\\assessment-agent\\data\\benchmark_figshots\\regions\\dev\\ft-grid-10\\option_C.png",
+          "figure_bbox": [
+            222,
+            232,
+            48,
+            48
+          ],
+          "has_figure": true,
+          "label": "C",
+          "text": "图"
+        },
+        {
+          "bbox": [
+            308,
+            232,
+            48,
+            48
+          ],
+          "crop_path": "E:\\assessment-agent\\data\\benchmark_figshots\\regions\\dev\\ft-grid-10\\option_D.png",
+          "figure_bbox": [
+            308,
+            232,
+            48,
+            48
+          ],
+          "has_figure": true,
+          "label": "D",
+          "text": "图"
+        }
+      ],
+      "stem_matrix_bbox": [
+        24,
+        64,
+        144,
+        144
+      ],
+      "stem_matrix_crop": "E:\\assessment-agent\\data\\benchmark_figshots\\regions\\dev\\ft-grid-10\\stem.png",
+      "stem_matrix_grid": [
+        3,
+        3
+      ]
+    }
+  },
+  "run_dir": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-grid-10"
+}

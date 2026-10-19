@@ -1,0 +1,194 @@
+{
+  "kind": "r4e_same_input_replay",
+  "label": "pre_fix",
+  "generated_at": "20261019T040126Z",
+  "code_sha": "1e96958",
+  "evidence_run": "smoke-20261019T022717Z",
+  "api_calls_made": 0,
+  "note": "视觉输入=首跑 VisionParser 落盘裁剪与网格几何，完全相同；回放只重跑六类+变换求解/验证链路，零模型调用。首跑产物只读。",
+  "cases": [
+    {
+      "case_id": "q_39b82e15aadf",
+      "expected": null,
+      "first_run": {
+        "solver_proposed": null,
+        "predicted_option": null,
+        "predicted": null,
+        "failure_class": null,
+        "failure_reason": "",
+        "grid_vlm": [
+          3,
+          3
+        ],
+        "grid_gold": null
+      },
+      "replay_inputs": {
+        "stem_crop": "evidence\\real_vlm_first_run\\smoke-20261019T022717Z\\runs\\e2e-smoke-20261019T022717Z-ft-grid-10\\regions\\diagram_d1.png",
+        "grid": [
+          3,
+          3
+        ],
+        "option_labels": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则"
+      },
+      "transform": {
+        "status": "error",
+        "reason": "ValueError: operands could not be broadcast together with shapes (46,47) (46,48) "
+      }
+    },
+    {
+      "case_id": "q_ecf6d6599708",
+      "expected": null,
+      "first_run": {
+        "solver_proposed": null,
+        "predicted_option": null,
+        "predicted": null,
+        "failure_class": null,
+        "failure_reason": "",
+        "grid_vlm": [
+          3,
+          3
+        ],
+        "grid_gold": null
+      },
+      "replay_inputs": {
+        "stem_crop": "evidence\\real_vlm_first_run\\smoke-20261019T022717Z\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\regions\\diagram_d1.png",
+        "grid": [
+          3,
+          3
+        ],
+        "option_labels": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则"
+      },
+      "transform": {
+        "status": "failed",
+        "answer": null,
+        "mode": "grid3",
+        "verdict": "ambiguous",
+        "reason": "canvas_mismatch：格间画布尺寸/纵横不一致（裁剪异常），尺度维度不可信，整体降级",
+        "n_candidates": 0,
+        "parameter_stable": false,
+        "independently_verified": false,
+        "verifier_action": "unverified",
+        "blockers": null,
+        "coord_contract": null,
+        "stem_fingerprint": {
+          "cell_count": 8,
+          "ink": [
+            160,
+            224,
+            256,
+            160,
+            224,
+            256,
+            160,
+            224
+          ],
+          "canvas": [
+            [
+              48,
+              42
+            ],
+            [
+              48,
+              42
+            ],
+            [
+              48,
+              42
+            ],
+            [
+              48,
+              42
+            ],
+            [
+              48,
+              42
+            ],
+            [
+              48,
+              42
+            ],
+            [
+              48,
+              42
+            ],
+            [
+              48,
+              42
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "q_59886350c348",
+      "expected": null,
+      "first_run": {
+        "solver_proposed": null,
+        "predicted_option": null,
+        "predicted": null,
+        "failure_class": null,
+        "failure_reason": "",
+        "grid_vlm": [
+          1,
+          3
+        ],
+        "grid_gold": null
+      },
+      "replay_inputs": {
+        "stem_crop": "evidence\\real_vlm_first_run\\smoke-20261019T022717Z\\runs\\e2e-smoke-20261019T022717Z-ft-rot90-01\\regions\\diagram_d1.png",
+        "grid": [
+          1,
+          3
+        ],
+        "option_labels": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "reason": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 4 个选项匹配（无法唯一确定）"
+      },
+      "transform": {
+        "status": "not_applicable",
+        "answer": null,
+        "mode": null,
+        "verdict": "no_rule",
+        "reason": "空格不在行末或已知格不足，变换通道不适用（序列）",
+        "n_candidates": 0,
+        "parameter_stable": null,
+        "independently_verified": null,
+        "verifier_action": null,
+        "blockers": null,
+        "coord_contract": null,
+        "stem_fingerprint": null
+      }
+    }
+  ]
+}

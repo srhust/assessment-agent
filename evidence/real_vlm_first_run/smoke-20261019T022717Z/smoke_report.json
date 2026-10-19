@@ -1,0 +1,251 @@
+{
+  "phase": "R4d real-VLM image_only smoke 3 题（分阶段审计 + 每题三段记录判定，与 run_real_vlm_experiment 共用 execution_status）",
+  "generated_at": "2026-10-19T10:27:17+08:00",
+  "provider": "st8tp3ajl0df3n8b8l8qu.apigateway-cn-beijing.volceapi.com",
+  "vision_model": "glm-5.3-flash",
+  "text_model": "glm-5.3-flash",
+  "temperature": 0.0,
+  "max_tokens": 6144,
+  "api_key_present": true,
+  "offline_flag": false,
+  "input_images": [
+    "data/benchmark_figshots/images/dev/ft-rot90-01.png",
+    "data/benchmark_figshots/images/dev/ft-grid-10.png",
+    "data/benchmark_figshots/images/dev/ft-overlay-12.png"
+  ],
+  "eval_mode": "image_only",
+  "split": "figshots_dev",
+  "strict_input_contract": "image_only 模式 pipeline 仅接收原始完整页面图片：不提供题干文字/选项文本/区域坐标/grid/金标答案/layout 标签；金标 regions 只用于评测对照，不进入求解输入",
+  "artifacts_per_case": [
+    "原图",
+    "extraction.json",
+    "预测区域及裁剪",
+    "router 结果",
+    "solver 候选规律与答案",
+    "verifier 状态",
+    "延迟与 token usage",
+    "最终错误归因",
+    "llm_evidence.json（请求计数/状态码/回显模型）"
+  ],
+  "status": "EXECUTED",
+  "reason": "3/3 题完成真实视觉解析（vision 2xx 3，schema 合法 3，结构化可用 3，回显模型 ['glm-5.3-flash']）",
+  "health_gate": {
+    "ok": true,
+    "message": "链路健康：EXECUTED，至少 1 题结构化解析可用，允许扩大样本",
+    "next_stage_allowed": true
+  },
+  "audit": {
+    "requests_sent": 3,
+    "requests_succeeded": 3,
+    "http_status_counts": {
+      "200": 3
+    },
+    "error_types": {},
+    "echoed_models": [
+      "glm-5.3-flash"
+    ],
+    "request_ids_sample": [
+      "202610191027206d18846c45824b97",
+      "20261019102750818b3f7bda0e42e0",
+      "20261019102840135753e1d6cb4d71"
+    ],
+    "base_url_host": "st8tp3ajl0df3n8b8l8qu.apigateway-cn-beijing.volceapi.com",
+    "vision_model_configured": "glm-5.3-flash",
+    "mock_or_injected_transport": false,
+    "offline_mode": false,
+    "by_phase": {
+      "vision_parse": {
+        "http_succeeded": 3,
+        "http_failed": 0,
+        "malformed_envelope": 0,
+        "json_output_valid": 3,
+        "json_output_invalid": 0,
+        "latency_ms_sum": 149569.5
+      }
+    }
+  },
+  "vision_stage_summary": {
+    "cases": 3,
+    "vision_http_success": {
+      "numerator": 3,
+      "denominator": 3
+    },
+    "vision_schema_valid": {
+      "numerator": 3,
+      "denominator": 3
+    },
+    "vision_extraction_valid": {
+      "numerator": 3,
+      "denominator": 3
+    },
+    "evidence_complete": {
+      "numerator": 3,
+      "denominator": 3
+    },
+    "phase_audit": {
+      "http_succeeded": 3,
+      "http_failed": 0,
+      "malformed_envelope": 0,
+      "json_output_valid": 3,
+      "json_output_invalid": 0,
+      "latency_ms_sum": 149569.5
+    },
+    "note": "schema 合法但证据不完整（漏选项/九宫格识别成一行）不计入 evidence_complete"
+  },
+  "usage_total": {
+    "calls": 3,
+    "model": "glm-5.3-flash",
+    "prompt_tokens": 2592,
+    "completion_tokens": 8250,
+    "total_tokens": 10842
+  },
+  "latency": {
+    "latencies_ms": [
+      29560.852,
+      49835.156,
+      70615.12
+    ]
+  },
+  "metrics": {
+    "overall_answer_accuracy": {
+      "value": 0.0,
+      "hit": 0,
+      "denominator": 3
+    },
+    "answerable_coverage": 0.0,
+    "selective_accuracy": 0.0,
+    "vision": {
+      "cases": 3,
+      "stem_exact_match": {
+        "value": 0.0,
+        "denominator": 3
+      },
+      "stem_cer": {
+        "value": 0.1429,
+        "denominator": 3
+      },
+      "option_label_recall": {
+        "value": 1.0,
+        "denominator": 3
+      },
+      "option_text_accuracy": {
+        "value": 0.0,
+        "denominator": 3
+      },
+      "option_text_cer_mean": {
+        "value": 1.0,
+        "denominator": 3
+      },
+      "option_region_iou_mean": {
+        "value": 0.4479,
+        "denominator": 3,
+        "note": "按题取均值；全部金标准选项框参与，漏框按 0 计入每题分母"
+      },
+      "option_region_iou_pooled": {
+        "value": 0.112,
+        "denominator": 12
+      },
+      "diagram_region_recall": {
+        "value": 1.0,
+        "denominator": 3
+      },
+      "diagram_region_iou_mean": {
+        "value": 0.7485,
+        "denominator": 3,
+        "note": "IoU≥0.5 记命中；漏检按 0 计入分母"
+      },
+      "table_cell_accuracy": {
+        "value": null,
+        "denominator": 0
+      },
+      "region_detection_failure_rate": {
+        "value": 0.0,
+        "denominator": 3
+      }
+    }
+  },
+  "cases": [
+    {
+      "case_id": "ft-rot90-01",
+      "run_ref": "e2e-smoke-20261019T022717Z-ft-rot90-01",
+      "usage": {
+        "calls": 1,
+        "prompt_tokens": 836,
+        "completion_tokens": 1404,
+        "total_tokens": 2240,
+        "model": "glm-5.3-flash"
+      },
+      "latency_ms": 29560.852,
+      "parse_failed": false,
+      "vision_http_success": true,
+      "vision_schema_valid": true,
+      "vision_extraction_valid": true,
+      "evidence_complete": true,
+      "extraction_accurate": false,
+      "region_iou": 0.5123,
+      "option_map_ok": true,
+      "status": "failed",
+      "predicted_option": null,
+      "predicted": null,
+      "expected": "A",
+      "correct": false,
+      "verification_action": "reject"
+    },
+    {
+      "case_id": "ft-grid-10",
+      "run_ref": "e2e-smoke-20261019T022717Z-ft-grid-10",
+      "usage": {
+        "calls": 1,
+        "prompt_tokens": 878,
+        "completion_tokens": 2766,
+        "total_tokens": 3644,
+        "model": "glm-5.3-flash"
+      },
+      "latency_ms": 49835.156,
+      "parse_failed": false,
+      "vision_http_success": true,
+      "vision_schema_valid": true,
+      "vision_extraction_valid": true,
+      "evidence_complete": true,
+      "extraction_accurate": false,
+      "region_iou": 0.945,
+      "option_map_ok": true,
+      "status": "failed",
+      "predicted_option": null,
+      "predicted": null,
+      "expected": "A",
+      "correct": false,
+      "verification_action": "reject"
+    },
+    {
+      "case_id": "ft-overlay-12",
+      "run_ref": "e2e-smoke-20261019T022717Z-ft-overlay-12",
+      "usage": {
+        "calls": 1,
+        "prompt_tokens": 878,
+        "completion_tokens": 4080,
+        "total_tokens": 4958,
+        "model": "glm-5.3-flash"
+      },
+      "latency_ms": 70615.12,
+      "parse_failed": false,
+      "vision_http_success": true,
+      "vision_schema_valid": true,
+      "vision_extraction_valid": true,
+      "evidence_complete": true,
+      "extraction_accurate": false,
+      "region_iou": 0.7881,
+      "option_map_ok": true,
+      "status": "failed",
+      "predicted_option": null,
+      "predicted": null,
+      "expected": "A",
+      "correct": false,
+      "verification_action": "reject"
+    }
+  ],
+  "expansion_policy": "扩大标准（评审 2026-10-19）：0/3 结构化成功=停止，先修 API/模型参数/Schema；1–2/3=保留报告、定位失败原因、不自动扩大；3/3=先检查证据完整率、选项映射与实际裁剪质量，人工审查后才决定进入 15 题 Dev。3/3 结构化成功 ≠ 3/3 答题正确 ≠真实场景误放率可靠。run_real_vlm_experiment.py 是自动分阶段执行器（健康门通过即连跑 15/35，--force-continue 不是人工继续按钮），首跑不得直接运行主脚本。",
+  "evaluation_output_dir": "E:\\assessment-agent\\results\\figshots_dev\\smoke_20261019T022717Z",
+  "stderr_tail": null,
+  "note": "真实执行报告写入 results/real_vlm/；仓库 phase6_vlm_smoke.json 未被本路径修改"
+}
