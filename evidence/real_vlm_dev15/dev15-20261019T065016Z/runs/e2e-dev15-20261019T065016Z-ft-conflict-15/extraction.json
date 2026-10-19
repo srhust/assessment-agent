@@ -1,0 +1,122 @@
+{
+  "stem": "根据题目图形中蕴含的规律，选择最符合规律的一",
+  "options": [
+    {
+      "label": "A",
+      "text": ""
+    },
+    {
+      "label": "B",
+      "text": ""
+    },
+    {
+      "label": "C",
+      "text": ""
+    }
+  ],
+  "question_type": "single_choice",
+  "skill_hint": "figure_reasoning",
+  "has_diagram": true,
+  "raw_text": "根据题目图形中蕴含的规律，选择最符合规律的一",
+  "model": "glm-5.3-flash",
+  "confidence": 0.85,
+  "warnings": [],
+  "schema_version": 2,
+  "bbox_format": "pixel_xywh",
+  "image_width": 348,
+  "image_height": 304,
+  "text_regions": [
+    {
+      "region_id": "t1",
+      "bbox": [
+        10,
+        30,
+        336,
+        30
+      ],
+      "text": "根据题目图形中蕴含的规律，选择最符合规律的一"
+    }
+  ],
+  "diagram_regions": [
+    {
+      "region_id": "d1",
+      "role": "stem_matrix",
+      "bbox": [
+        30,
+        74,
+        132,
+        124
+      ],
+      "grid": {
+        "rows": 3,
+        "cols": 3
+      },
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-conflict-15\\regions\\diagram_d1.png"
+    }
+  ],
+  "option_regions": [
+    {
+      "label": "A",
+      "bbox": [
+        26,
+        242,
+        68,
+        32
+      ],
+      "text": "",
+      "has_figure": true,
+      "figure_bbox": [
+        62,
+        244,
+        28,
+        26
+      ],
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-conflict-15\\regions\\option_A.png"
+    },
+    {
+      "label": "B",
+      "bbox": [
+        112,
+        242,
+        66,
+        32
+      ],
+      "text": "",
+      "has_figure": true,
+      "figure_bbox": [
+        147,
+        244,
+        28,
+        26
+      ],
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-conflict-15\\regions\\option_B.png"
+    },
+    {
+      "label": "C",
+      "bbox": [
+        198,
+        244,
+        56,
+        30
+      ],
+      "text": "",
+      "has_figure": true,
+      "figure_bbox": [
+        232,
+        251,
+        16,
+        16
+      ],
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-conflict-15\\regions\\option_C.png"
+    }
+  ],
+  "table_regions": [],
+  "reading_order": [
+    "t1",
+    "d1",
+    "A",
+    "B",
+    "C"
+  ],
+  "parser": "vision_parser"
+}

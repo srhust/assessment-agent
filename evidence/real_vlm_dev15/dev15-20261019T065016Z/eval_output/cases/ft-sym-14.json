@@ -1,0 +1,138 @@
+{
+  "case_id": "ft-sym-14",
+  "skill": "figure_reasoning",
+  "expected": null,
+  "predicted": null,
+  "correct": true,
+  "status": "failed",
+  "verification_action": "reject",
+  "latency_ms": 29778.658,
+  "expected_status": "failed",
+  "failure_reason": null,
+  "predicted_option": null,
+  "tags": [
+    "figtrans",
+    "R4a",
+    "ambiguous",
+    "对称不可区分",
+    "诚实failed",
+    "完整截图",
+    "R4b"
+  ],
+  "routed_skill": "figure_reasoning",
+  "route_source": "explicit",
+  "route_confidence": 1.0,
+  "input_mode": "image_only",
+  "extraction_accurate": false,
+  "region_iou": 0.4236,
+  "option_map_ok": true,
+  "run_ref": "e2e-dev15-20261019T065016Z-ft-sym-14",
+  "failure_class": null,
+  "vision": {
+    "parse_failed": false,
+    "stem_exact": false,
+    "stem_cer": 0.2143,
+    "option_label_recall": 1.0,
+    "option_label_fp": 0.0,
+    "option_text_accuracy": 0.0,
+    "option_text_cer_mean": 1.0,
+    "option_iou_mean": 0.4333,
+    "option_iou_scored": 2,
+    "diagram_recall": 0.0,
+    "diagram_iou_mean": 0.4236,
+    "diagram_iou_scored": 1,
+    "region_detection_failure": true,
+    "table_cell_accuracy": null,
+    "grid_parse_correct": false,
+    "crops_complete": true,
+    "crops_scored": 3,
+    "vision_http_success": true,
+    "vision_schema_valid": true,
+    "vision_extraction_valid": true,
+    "vision_payload_source": "vision_parser",
+    "legacy_payload_fallback": false,
+    "evidence_complete": false,
+    "region_evidence_complete": false,
+    "structural_evidence_complete": false,
+    "solver_ready": false
+  },
+  "usage": {
+    "calls": 1,
+    "prompt_tokens": 829,
+    "completion_tokens": 1434,
+    "total_tokens": 2263,
+    "model": "glm-5.3-flash"
+  },
+  "answerability": "undecidable",
+  "capability_status": "supported",
+  "root_cause": "none",
+  "verification_outcome": "correct_abstention",
+  "first_detected_error": null,
+  "blocking_failure": null,
+  "secondary_errors": [],
+  "gold": {
+    "stem": "根据题目图形中蕴含的规律，选择最符合规律的一项补全图形。",
+    "options": {
+      "A": "图",
+      "B": "图"
+    },
+    "answer": null,
+    "regions": {
+      "bbox_format": "pixel_xywh",
+      "image_size": [
+        348,
+        208
+      ],
+      "option_regions": [
+        {
+          "bbox": [
+            50,
+            136,
+            48,
+            48
+          ],
+          "crop_path": "E:\\assessment-agent\\data\\benchmark_figshots\\regions\\dev\\ft-sym-14\\option_A.png",
+          "figure_bbox": [
+            50,
+            136,
+            48,
+            48
+          ],
+          "has_figure": true,
+          "label": "A",
+          "text": "图"
+        },
+        {
+          "bbox": [
+            136,
+            136,
+            48,
+            48
+          ],
+          "crop_path": "E:\\assessment-agent\\data\\benchmark_figshots\\regions\\dev\\ft-sym-14\\option_B.png",
+          "figure_bbox": [
+            136,
+            136,
+            48,
+            48
+          ],
+          "has_figure": true,
+          "label": "B",
+          "text": "图"
+        }
+      ],
+      "stem_matrix_bbox": [
+        24,
+        64,
+        192,
+        48
+      ],
+      "stem_matrix_crop": "E:\\assessment-agent\\data\\benchmark_figshots\\regions\\dev\\ft-sym-14\\stem.png",
+      "stem_matrix_grid": [
+        1,
+        4
+      ]
+    }
+  },
+  "run_dir": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-sym-14"
+}

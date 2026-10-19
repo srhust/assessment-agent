@@ -1,0 +1,70 @@
+{
+  "passed": false,
+  "action": "unverified",
+  "checks": [
+    {
+      "name": "solution.status",
+      "passed": true,
+      "detail": "求解状态 = solved",
+      "severity": "blocking"
+    },
+    {
+      "name": "solution.answer_present",
+      "passed": true,
+      "detail": "答案 = 'A'",
+      "severity": "blocking"
+    },
+    {
+      "name": "answer.in_options",
+      "passed": true,
+      "detail": "选项集合 ['A', 'B', 'C', 'D']",
+      "severity": "blocking"
+    },
+    {
+      "name": "solution.confidence",
+      "passed": true,
+      "detail": "置信度 0.92，阈值 0.50",
+      "severity": "warning"
+    },
+    {
+      "name": "figure.independent_substitution",
+      "passed": false,
+      "detail": "[unverified] Solver 声称规律 'sides'，但独立复测无法从题干重建该约束（可重建：['count', 'symmetry']），不能借无关约束自证",
+      "severity": "blocking"
+    },
+    {
+      "name": "figure.rerun_consistent",
+      "passed": true,
+      "detail": "区域模式阈值 otsu → 127 自我一致性重跑：A（Solver 记录 A）",
+      "severity": "blocking"
+    },
+    {
+      "name": "figure.rule_stable",
+      "passed": true,
+      "detail": "两次阈值命中的规律：sides vs sides",
+      "severity": "warning"
+    },
+    {
+      "name": "figure.unique_match",
+      "passed": true,
+      "detail": "能唯一匹配选项的规律：['fill', 'sides', 'symmetry']（命中规律 sides）",
+      "severity": "blocking"
+    },
+    {
+      "name": "figure.labels_from_regions",
+      "passed": true,
+      "detail": "答案 A 是否来自区域标号 ['A', 'B', 'C', 'D']（裁剪证据 4 份）",
+      "severity": "blocking"
+    },
+    {
+      "name": "verify.unverified_action",
+      "passed": false,
+      "detail": "独立复核无法确认候选答案，按未验证处理（不通过、不计入误放）",
+      "severity": "blocking"
+    }
+  ],
+  "final_answer": null,
+  "repaired_answer": null,
+  "notes": "结构校验 + 题型专属复核",
+  "duration_ms": 25.816
+}

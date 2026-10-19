@@ -1,0 +1,145 @@
+{
+  "stem": "根据题目图形中蕴含的规律，选择最符合规律的一项补",
+  "options": [
+    {
+      "label": "A",
+      "text": "A."
+    },
+    {
+      "label": "B",
+      "text": "B."
+    },
+    {
+      "label": "C",
+      "text": "C."
+    },
+    {
+      "label": "D",
+      "text": "D."
+    }
+  ],
+  "question_type": "single_choice",
+  "skill_hint": "figure_reasoning",
+  "has_diagram": true,
+  "raw_text": "根据题目图形中蕴含的规律，选择最符合规律的一项补",
+  "model": "glm-5.3-flash",
+  "confidence": 0.82,
+  "warnings": [],
+  "schema_version": 2,
+  "bbox_format": "pixel_xywh",
+  "image_width": 380,
+  "image_height": 208,
+  "text_regions": [
+    {
+      "region_id": "t1",
+      "bbox": [
+        14,
+        26,
+        366,
+        24
+      ],
+      "text": "根据题目图形中蕴含的规律，选择最符合规律的一项补"
+    }
+  ],
+  "diagram_regions": [
+    {
+      "region_id": "d1",
+      "role": "stem_figure",
+      "bbox": [
+        25,
+        70,
+        140,
+        42
+      ],
+      "grid": {
+        "rows": 1,
+        "cols": 3
+      },
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-rot90-01\\regions\\diagram_d1.png"
+    }
+  ],
+  "option_regions": [
+    {
+      "label": "A",
+      "bbox": [
+        18,
+        142,
+        70,
+        46
+      ],
+      "text": "A.",
+      "has_figure": true,
+      "figure_bbox": [
+        52,
+        146,
+        30,
+        36
+      ],
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-rot90-01\\regions\\option_A.png"
+    },
+    {
+      "label": "B",
+      "bbox": [
+        105,
+        145,
+        66,
+        42
+      ],
+      "text": "B.",
+      "has_figure": true,
+      "figure_bbox": [
+        138,
+        148,
+        28,
+        24
+      ],
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-rot90-01\\regions\\option_B.png"
+    },
+    {
+      "label": "C",
+      "bbox": [
+        195,
+        148,
+        64,
+        40
+      ],
+      "text": "C.",
+      "has_figure": true,
+      "figure_bbox": [
+        226,
+        152,
+        28,
+        26
+      ],
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-rot90-01\\regions\\option_C.png"
+    },
+    {
+      "label": "D",
+      "bbox": [
+        278,
+        145,
+        66,
+        40
+      ],
+      "text": "D.",
+      "has_figure": true,
+      "figure_bbox": [
+        312,
+        148,
+        30,
+        22
+      ],
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-rot90-01\\regions\\option_D.png"
+    }
+  ],
+  "table_regions": [],
+  "reading_order": [
+    "t1",
+    "d1",
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "parser": "vision_parser"
+}

@@ -1,0 +1,344 @@
+{
+  "split": "figshots_dev",
+  "eval_mode": "image_only",
+  "total": 15,
+  "accuracy": 0.1333,
+  "duration_s": 699.585,
+  "output_dir": "E:\\assessment-agent\\results\\figshots_dev\\dev15_20261019T065016Z",
+  "metrics": {
+    "total": 15,
+    "correct": 2,
+    "accuracy": 0.1333,
+    "route_mode": "image_only",
+    "capability": {
+      "objective_total": 13,
+      "overall_answer_accuracy": {
+        "value": 0.0,
+        "hit": 0,
+        "denominator": 13
+      },
+      "supported_objective_total": 13,
+      "supported_answer_accuracy": {
+        "value": 0.0,
+        "hit": 0,
+        "denominator": 13
+      },
+      "capability_coverage": {
+        "value": 1.0,
+        "hit": 13,
+        "denominator": 13
+      },
+      "overall_answered_coverage": {
+        "value": 0.0,
+        "hit": 0,
+        "denominator": 13
+      },
+      "honest_abstention": {
+        "value": 1.0,
+        "hit": 2,
+        "denominator": 2
+      },
+      "undecidable_abstention": {
+        "value": 1.0,
+        "hit": 2,
+        "denominator": 2
+      },
+      "subjective_abstention": {
+        "value": null,
+        "hit": 0,
+        "denominator": 0
+      },
+      "objective_unlabeled": {
+        "total": 0,
+        "answered": 0
+      },
+      "unsupported_answerable_refusals": 0,
+      "verification_outcomes": {
+        "no_answer": 12,
+        "correct_abstention": 2,
+        "unverified_answerable": 1
+      },
+      "root_causes": {
+        "region_crop": 8,
+        "extraction_ocr": 4,
+        "none": 2,
+        "solver_rule_selection": 1
+      },
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "unverified_answerable_total": 1,
+      "over_answer_total": 0,
+      "capability_source": "skill_registry",
+      "registered_supported_skills": [
+        "data_analysis",
+        "figure_reasoning",
+        "language_reasoning",
+        "logical_reasoning",
+        "number_series",
+        "numeric_calculation",
+        "verbal_understanding"
+      ]
+    },
+    "primary_answer_accuracy": {
+      "value": 0.0,
+      "hit": 0,
+      "denominator": 13
+    },
+    "primary_capability_coverage": {
+      "value": 1.0,
+      "hit": 13,
+      "denominator": 13
+    },
+    "primary_answered_coverage": {
+      "value": 0.0,
+      "hit": 0,
+      "denominator": 13
+    },
+    "primary_honest_abstention": {
+      "value": 1.0,
+      "hit": 2,
+      "denominator": 2
+    },
+    "overall_answer_accuracy": {
+      "value": 0.0,
+      "hit": 0,
+      "denominator": 13
+    },
+    "capability_coverage": {
+      "value": 1.0,
+      "hit": 13,
+      "denominator": 13
+    },
+    "answerable": 13,
+    "answer_accuracy": 0.0,
+    "covered_count": 0,
+    "coverage_ratio": 0.0,
+    "answerable_coverage": 0.0,
+    "selective_accuracy": 0.0,
+    "abstention_total": 2,
+    "abstention_correct": 2,
+    "abstention_accuracy": 1.0,
+    "route_total": 15,
+    "route_correct": 15,
+    "route_accuracy": 1.0,
+    "e2e": {
+      "cases": 15,
+      "extraction_accuracy": 0.0,
+      "extraction_scored": 15,
+      "region_iou_mean": 0.5257,
+      "region_iou_scored": 15,
+      "option_mapping_accuracy": 1.0,
+      "primary_answer_accuracy": {
+        "value": 0.0,
+        "hit": 0,
+        "denominator": 13
+      },
+      "primary_answered_coverage": {
+        "value": 0.0,
+        "hit": 0,
+        "denominator": 13
+      },
+      "primary_honest_abstention": {
+        "value": 1.0,
+        "hit": 2,
+        "denominator": 2
+      },
+      "primary_false_accept": 0,
+      "primary_unverified": 1,
+      "legacy_fields": [
+        "answer_accuracy",
+        "answer_scored",
+        "abstention_accuracy",
+        "abstention_scored",
+        "answerable_coverage",
+        "end_to_end_accuracy_mixed"
+      ],
+      "legacy_note": "answer_accuracy 等字段分母=标注 expected_status==solved 的样本，与 answerability 口径不同源；报告与对比一律以 primary_*/capability 为准",
+      "answer_accuracy": 0.0,
+      "answer_scored": 13,
+      "abstention_accuracy": 1.0,
+      "abstention_scored": 2,
+      "answerable_coverage": 0.0,
+      "end_to_end_accuracy_mixed": 0.1333,
+      "mixed_note": "旧口径：分母含应拒答样本，仅作历史对照；R2b 起以 answer_accuracy/abstention_accuracy 为准，R3a 起以 primary_* 为准",
+      "capability": {
+        "objective_total": 13,
+        "overall_answer_accuracy": {
+          "value": 0.0,
+          "hit": 0,
+          "denominator": 13
+        },
+        "supported_objective_total": 13,
+        "supported_answer_accuracy": {
+          "value": 0.0,
+          "hit": 0,
+          "denominator": 13
+        },
+        "capability_coverage": {
+          "value": 1.0,
+          "hit": 13,
+          "denominator": 13
+        },
+        "overall_answered_coverage": {
+          "value": 0.0,
+          "hit": 0,
+          "denominator": 13
+        },
+        "honest_abstention": {
+          "value": 1.0,
+          "hit": 2,
+          "denominator": 2
+        },
+        "undecidable_abstention": {
+          "value": 1.0,
+          "hit": 2,
+          "denominator": 2
+        },
+        "subjective_abstention": {
+          "value": null,
+          "hit": 0,
+          "denominator": 0
+        },
+        "objective_unlabeled": {
+          "total": 0,
+          "answered": 0
+        },
+        "unsupported_answerable_refusals": 0,
+        "verification_outcomes": {
+          "no_answer": 12,
+          "correct_abstention": 2,
+          "unverified_answerable": 1
+        },
+        "root_causes": {
+          "region_crop": 8,
+          "extraction_ocr": 4,
+          "none": 2,
+          "solver_rule_selection": 1
+        },
+        "false_accept_total": 0,
+        "false_reject_total": 0,
+        "unverified_answerable_total": 1,
+        "over_answer_total": 0
+      }
+    },
+    "unsupported": 0,
+    "failed": 14,
+    "mean_latency_ms": 46638.91,
+    "p50_latency_ms": 41321.669,
+    "p95_latency_ms": 70318.813,
+    "failure_reasons": {
+      "题干可见图形只有 1 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）": 3,
+      "题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）": 2,
+      "空白格不在行末，当前只支持“求下一格”的序列题；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）": 2,
+      "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定": 2,
+      "wrong_answer": 1,
+      "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）": 1,
+      "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}}": 1,
+      "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 0.997204, 'B': 0.31781, 'C': 1.0}}": 1
+    },
+    "failure_classes": {
+      "region_missing_or_shifted": 9,
+      "extraction_text_error": 4
+    },
+    "per_skill": {
+      "figure_reasoning": {
+        "skill": "figure_reasoning",
+        "total": 15,
+        "correct": 2,
+        "accuracy": 0.1333,
+        "answerable": 13,
+        "answer_accuracy": 0.0,
+        "covered_count": 0,
+        "coverage_ratio": 0.0,
+        "answerable_coverage": 0.0,
+        "selective_accuracy": 0.0,
+        "abstention_total": 2,
+        "abstention_correct": 2,
+        "abstention_accuracy": 1.0,
+        "route_total": 15,
+        "route_correct": 15,
+        "route_accuracy": 1.0,
+        "route_mode": "image_only",
+        "objective_total": 13,
+        "objective_answered_correct": 0,
+        "overall_answer_accuracy": 0.0,
+        "false_accept_total": 0,
+        "false_reject_total": 0,
+        "solved": 1,
+        "unsupported": 0,
+        "failed": 14,
+        "repaired": 0,
+        "rejected": 14,
+        "mean_latency_ms": 46638.91,
+        "p50_latency_ms": 41321.669,
+        "p95_latency_ms": 70318.813,
+        "failure_reasons": {
+          "题干可见图形只有 1 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）": 3,
+          "题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）": 2,
+          "空白格不在行末，当前只支持“求下一格”的序列题；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）": 2,
+          "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定": 2,
+          "wrong_answer": 1,
+          "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）": 1,
+          "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}}": 1,
+          "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 0.997204, 'B': 0.31781, 'C': 1.0}}": 1
+        }
+      }
+    },
+    "eval_batch": "dev15-20261019T065016Z",
+    "vision": {
+      "cases": 15,
+      "stem_exact_match": {
+        "value": 0.0,
+        "denominator": 15
+      },
+      "stem_cer": {
+        "value": 0.2453,
+        "denominator": 15
+      },
+      "option_label_recall": {
+        "value": 1.0,
+        "denominator": 15
+      },
+      "option_text_accuracy": {
+        "value": 0.0,
+        "denominator": 15
+      },
+      "option_text_cer_mean": {
+        "value": 1.0,
+        "denominator": 15
+      },
+      "option_region_iou_mean": {
+        "value": 0.4256,
+        "denominator": 15,
+        "note": "按题取均值；全部金标准选项框参与，漏框按 0 计入每题分母"
+      },
+      "option_region_iou_pooled": {
+        "value": 0.4226,
+        "denominator": 48,
+        "note": "逐题金标框数加权的框级均值 Σ(n_i·mean_i)/Σn_i（R4f 修正；旧口径 Σmean_i/Σn_i 已废弃）"
+      },
+      "diagram_region_recall": {
+        "value": 0.5333,
+        "denominator": 15
+      },
+      "diagram_region_iou_mean": {
+        "value": 0.5257,
+        "denominator": 15,
+        "note": "IoU≥0.5 记命中；漏检按 0 计入分母"
+      },
+      "diagram_region_iou_pooled": {
+        "value": 0.5257,
+        "denominator": 15,
+        "note": "同 option pooled 修正口径"
+      },
+      "table_cell_accuracy": {
+        "value": null,
+        "denominator": 0
+      },
+      "region_detection_failure_rate": {
+        "value": 0.4667,
+        "denominator": 15
+      }
+    }
+  }
+}

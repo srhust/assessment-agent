@@ -1,0 +1,45 @@
+{
+  "run_id": "e2e-dev15-20261019T065016Z-ft-conflict-15",
+  "started_at": "2026-10-19T07:01:15.783047+00:00",
+  "finished_at": "2026-10-19T07:01:57.094419+00:00",
+  "skill": "figure_reasoning",
+  "route_source": "explicit",
+  "status": "failed",
+  "answer": null,
+  "solver_answer": null,
+  "verification": {
+    "passed": false,
+    "action": "reject"
+  },
+  "latency_ms": {
+    "extraction_ms": 41154.009,
+    "route_ms": 0.009,
+    "solve_ms": 155.676,
+    "verify_ms": 0.039,
+    "total_ms": 41309.733
+  },
+  "settings": {
+    "offline": false,
+    "llm_enabled": true,
+    "base_url": "https://st8tp3ajl0df3n8b8l8qu.apigateway-cn-beijing.volceapi.com/v1",
+    "text_model": "gpt-4o-mini",
+    "vision_model": "glm-5.3-flash",
+    "api_key_present": true,
+    "runs_dir": "E:\\assessment-agent\\runs",
+    "results_dir": "E:\\assessment-agent\\results",
+    "data_dir": "E:\\assessment-agent\\data",
+    "vision_parser": true,
+    "r2c_flags": {
+      "word_problem": true,
+      "figure_verify": true,
+      "router_structure": true,
+      "data_analysis": true,
+      "verbal_understanding": true,
+      "r3c_epistemic": true,
+      "r3c_language": true,
+      "r4a_transform": true,
+      "r4a_indep_verifier": true,
+      "r4a_disable_six_rules": false
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "id": "q_67975bf201af",
+  "stem": "根据题目图形中蕴含的规律，选择最符合规律的一\n（题干下方为两个向右的箭头图形：第一个较大，第二个较小）",
+  "options": [
+    {
+      "label": "A",
+      "text": "A.（向左的箭头图形）"
+    },
+    {
+      "label": "B",
+      "text": "B.（向右的箭头图形）"
+    },
+    {
+      "label": "C",
+      "text": "C.（向左的箭头图形）"
+    }
+  ],
+  "skill": null,
+  "question_type": "single_choice",
+  "image_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-mirror-05\\image\\original.png",
+  "source": "image",
+  "meta": {
+    "extraction_confidence": 0.85,
+    "has_diagram": true,
+    "vision": {
+      "bbox_format": "pixel_xywh",
+      "image_size": [
+        348,
+        208
+      ],
+      "stem_matrix_bbox": [
+        26,
+        72,
+        86,
+        26
+      ],
+      "stem_matrix_grid": [
+        1,
+        2
+      ],
+      "stem_matrix_crop": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-mirror-05\\regions\\diagram_d1.png",
+      "diagram_regions": [
+        {
+          "region_id": "d1",
+          "role": "stem_figure",
+          "bbox": [
+            26,
+            72,
+            86,
+            26
+          ],
+          "grid": {
+            "rows": 1,
+            "cols": 2
+          },
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-mirror-05\\regions\\diagram_d1.png"
+        }
+      ],
+      "option_regions": [
+        {
+          "label": "A",
+          "bbox": [
+            26,
+            144,
+            80,
+            24
+          ],
+          "text": "A.（向左的箭头图形）",
+          "has_figure": true,
+          "figure_bbox": [
+            58,
+            143,
+            48,
+            24
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-mirror-05\\regions\\option_A.png"
+        },
+        {
+          "label": "B",
+          "bbox": [
+            115,
+            144,
+            66,
+            24
+          ],
+          "text": "B.（向右的箭头图形）",
+          "has_figure": true,
+          "figure_bbox": [
+            144,
+            143,
+            38,
+            24
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-mirror-05\\regions\\option_B.png"
+        },
+        {
+          "label": "C",
+          "bbox": [
+            202,
+            144,
+            72,
+            24
+          ],
+          "text": "C.（向左的箭头图形）",
+          "has_figure": true,
+          "figure_bbox": [
+            231,
+            143,
+            42,
+            24
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-mirror-05\\regions\\option_C.png"
+        }
+      ],
+      "table_regions": [],
+      "text_regions": [
+        {
+          "region_id": "t1",
+          "bbox": [
+            18,
+            33,
+            330,
+            20
+          ],
+          "text": "根据题目图形中蕴含的规律，选择最符合规律的一"
+        }
+      ],
+      "reading_order": [
+        "t1",
+        "d1",
+        "A",
+        "B",
+        "C"
+      ],
+      "parser": "vision_parser",
+      "confidence": 0.85
+    },
+    "grid": [
+      1,
+      2
+    ]
+  }
+}

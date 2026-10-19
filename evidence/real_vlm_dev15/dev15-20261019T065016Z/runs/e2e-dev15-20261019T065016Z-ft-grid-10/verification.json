@@ -1,0 +1,34 @@
+{
+  "passed": false,
+  "action": "reject",
+  "checks": [
+    {
+      "name": "solution.status",
+      "passed": false,
+      "detail": "求解状态 = failed（已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}}）",
+      "severity": "blocking"
+    },
+    {
+      "name": "solution.answer_present",
+      "passed": false,
+      "detail": "答案 = None",
+      "severity": "blocking"
+    },
+    {
+      "name": "answer.in_options",
+      "passed": false,
+      "detail": "选项集合 ['A', 'B', 'C', 'D']",
+      "severity": "blocking"
+    },
+    {
+      "name": "solution.confidence",
+      "passed": false,
+      "detail": "置信度 0.00，阈值 0.50",
+      "severity": "warning"
+    }
+  ],
+  "final_answer": null,
+  "repaired_answer": null,
+  "notes": "结构校验 + 题型专属复核",
+  "duration_ms": 0.02
+}

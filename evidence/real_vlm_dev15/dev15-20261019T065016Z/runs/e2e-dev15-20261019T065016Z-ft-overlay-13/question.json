@@ -1,0 +1,166 @@
+{
+  "id": "q_52c39d4d7eb3",
+  "stem": "根据题目图形中蕴含的规律，选择最符合规律的一项",
+  "options": [
+    {
+      "label": "A",
+      "text": "A."
+    },
+    {
+      "label": "B",
+      "text": "B."
+    },
+    {
+      "label": "C",
+      "text": "C."
+    },
+    {
+      "label": "D",
+      "text": "D."
+    }
+  ],
+  "skill": null,
+  "question_type": "single_choice",
+  "image_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-overlay-13\\image\\original.png",
+  "source": "image",
+  "meta": {
+    "extraction_confidence": 0.72,
+    "has_diagram": true,
+    "vision": {
+      "bbox_format": "pixel_xywh",
+      "image_size": [
+        380,
+        304
+      ],
+      "stem_matrix_bbox": [
+        20,
+        58,
+        150,
+        158
+      ],
+      "stem_matrix_grid": [
+        3,
+        3
+      ],
+      "stem_matrix_crop": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-overlay-13\\regions\\diagram_d1.png",
+      "diagram_regions": [
+        {
+          "region_id": "d1",
+          "role": "stem_matrix",
+          "bbox": [
+            20,
+            58,
+            150,
+            158
+          ],
+          "grid": {
+            "rows": 3,
+            "cols": 3
+          },
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-overlay-13\\regions\\diagram_d1.png"
+        }
+      ],
+      "option_regions": [
+        {
+          "label": "A",
+          "bbox": [
+            18,
+            240,
+            78,
+            44
+          ],
+          "text": "A.",
+          "has_figure": true,
+          "figure_bbox": [
+            46,
+            236,
+            48,
+            44
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-overlay-13\\regions\\option_A.png"
+        },
+        {
+          "label": "B",
+          "bbox": [
+            108,
+            240,
+            76,
+            44
+          ],
+          "text": "B.",
+          "has_figure": true,
+          "figure_bbox": [
+            138,
+            236,
+            45,
+            44
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-overlay-13\\regions\\option_B.png"
+        },
+        {
+          "label": "C",
+          "bbox": [
+            200,
+            245,
+            66,
+            30
+          ],
+          "text": "C.",
+          "has_figure": true,
+          "figure_bbox": [
+            232,
+            248,
+            34,
+            22
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-overlay-13\\regions\\option_C.png"
+        },
+        {
+          "label": "D",
+          "bbox": [
+            286,
+            245,
+            76,
+            25
+          ],
+          "text": "D.",
+          "has_figure": true,
+          "figure_bbox": [
+            322,
+            248,
+            40,
+            18
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-overlay-13\\regions\\option_D.png"
+        }
+      ],
+      "table_regions": [],
+      "text_regions": [
+        {
+          "region_id": "t1",
+          "bbox": [
+            18,
+            30,
+            362,
+            22
+          ],
+          "text": "根据题目图形中蕴含的规律，选择最符合规律的一项"
+        }
+      ],
+      "reading_order": [
+        "t1",
+        "d1",
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "parser": "vision_parser",
+      "confidence": 0.72
+    },
+    "grid": [
+      3,
+      3
+    ]
+  }
+}

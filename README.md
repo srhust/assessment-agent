@@ -963,13 +963,69 @@ grid-10 rotate_flip 候选在选项层面不可区分说明 VLM 裁剪内容仍�
 overlay-12 的格内内容位移超演示容差是几何证据极限，不是可以调参掩盖的
 失败——扩大样本决策仍归人工评审。
 
+### 6.13 R4f：评测审计修复 + 真实 VLM 15 题 Dev 诊断（2026-10-19）
+
+评审裁决（有条件批准扩样）先要求闭合两项评测缺陷（阶段 A，零 API），随后
+执行 15 题真实诊断（阶段 B/C）。阶段 A 固定基线 `224c06c`+`308b5bd`，
+几何/阈值/Prompt 相对 `a71d708` 零改动（src 仅 vision_metrics 汇总层）。
+
+- **P0 pooled IoU 公式修正**：旧 `option_region_iou_pooled = Σmean_i/Σn_i`
+  把每题均值又除以一次该题框数（三题×4 选项时约为真值 1/4）。修正为逐题
+  金标框数加权 **Σ(n_i·mean_i)/Σn_i**（diagram 同型补齐）。原始两次 Smoke
+  一字未改，勘误见 `evidence/metric_errata/r4f_option_region_iou_pooled.json`
+  （首跑 0.112→**0.4479**、二跑 0.0994→**0.3977**；旧公式复算精确命中原
+  报告值，证明缺陷来源；干净克隆可由入库逐题数据独立重算，测试锁定）。
+- **P1 证据包自包含**：根因是 `.gitignore` 未锚定的 `runs/` 把
+  `evidence/**/runs/` 冻结裁剪整体屏蔽（评审 404 的路径其实从未入库）。
+  现 `runs/ results/` 锚定为根目录专用；两跑各 53 文件（question/extraction/
+  solution/verification/route/trace/report + 原图 + 题干与四选项裁剪）入库，
+  附 `manifest.sha256.json` 全量清单；`.gitattributes` 对 `evidence/**`
+  关闭 EOL 规范化（`-text`），blob 字节=磁盘字节=清单哈希，逐字节可校验。
+- **回放溯源**：`r4e_replay_first_run.py` 升级——run_ref↔基准题号唯一映射
+  （expected/failure 不再 null；内部 q_* 仅留档）、自动记录实际 git SHA
+  （+dirty 标记）与 5 个关键模块 SHA-256（禁止空 code_sha）、逐裁剪内容
+  哈希、相对路径。发布 `evidence/r4e_replay/r4f_{first,second}_run/`
+  （历史 pre_fix/post_fix 不回写）。新增 7 项审计测试（干净克隆零 API 重放
+  与已发布几何输出一致）。全量 **423 passed / 2 skipped**。
+- **阶段 B 实验**（batch `dev15-20261019T065016Z`，运行前声明全部 15 题、
+  不按结果筛样；单次 `eval --split figshots_dev --eval-mode image_only`，
+  未用自动扩 35 的主脚本）：
+  - HTTP/审计：**16 请求 = 15×200 + 1 ReadTimeout（自动重试后成功）**，
+    回显 `glm-5.3-flash`，vision_parse 阶段 json 合法 15/15，usage
+    prompt 12,667 / completion 29,290 / total **41,957**（每 ~844 prompt
+    与 Smoke 期一致）；总墙钟 701s。
+  - 分层：**Vision 15/15/15 → 区域档 8/15 → 结构档 5/15 → solver_ready
+    5/15 → 提议 1/15 → 释放 0/15**。Option IoU（修复后口径）pooled
+    **0.4226**（48 框）/ mean 0.4256；Diagram pooled 0.5257；Stem exact
+    0/15、CER 0.2453；选项标号召回 1.0；router 全 explicit 直通（1.0 不
+    含信息量，如实标注）。
+  - 七类归因（+设计题档）：**class1 VLM 解析错误致不可用 ×8**（rot180/270、
+    mirror×2、comp、trans-07、trans-08、scale-09——全部为网格维度错或选项
+    裁剪缺失）；**class2 结构完整但裁剪内容损失 ×2**（overlay-12/13，
+    `overlay_residual_over_tol`，演示残差 0.609/0.721 ≫ 0.12）；**class4
+    多候选歧义正确弃权 ×2**（grid-10 全选项 1.0 残差；grid-11 次优 0.318
+    亦远离容差）；**class5 正解被拦 ×1**（rot90-01 提议 A=金标，独立代入
+    无法重建 fill 约束→不释放——按纪律宁误杀不错放）；**class6 ×0、
+    class7 错误接受 ×0**；另 sym-14/conflict-15 为**设计性禁答题
+    （answer=None）×2，均如实拒答（合规 2/2）**。
+  - 逐题明细（gold/提议/最终/阻断/候选残差/失败验证项）随
+    `evidence/real_vlm_dev15/<batch>/dev15_report.json` 入库（238 文件 +
+    SHA-256 清单，密钥扫描 NONE）。
+
+**评审五问的实测分布**（15 题）：结构完整 **5/15**——VisionParser 是当前
+主瓶颈（8/15 直接因视觉解析错误不可用）；结构完整但不能解 **4/5**（叠加
+内容损失 2 + 几何歧义 2）；Solver 给过候选答案 **1/15**；Verifier 拦截
+提议 1 次（恰为金标，class5，纪律正确）；错误接受 **0**。按评审预案，下一
+阶段重心应指向 VisionParser 与几何证据表示，而非扩规则；是否进入 35 题
+跨题型由人工裁决——**本轮在此暂停**。
+
 ---
 
 ## 7. 测试
 
 ```bash
 python -m pytest -q
-# 393 passed, 2 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
+# 423 passed, 2 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
 ```
 
 覆盖范围：

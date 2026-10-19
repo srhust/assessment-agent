@@ -1,0 +1,2091 @@
+{
+  "kind": "r4f_real_vlm_dev15",
+  "batch": "dev15-20261019T065016Z",
+  "generated_utc": "2026-10-19T07:12:20+00:00",
+  "code_sha": "308b5bd3f5f38e7602d3be89e84bae1282807f64",
+  "model": "glm-5.3-flash",
+  "temperature": 0,
+  "max_tokens": 6144,
+  "eval_mode": "image_only",
+  "split": "figshots_dev",
+  "cases_declared_before_run": 15,
+  "api_audit": {
+    "requests_sent": 16,
+    "http_status_counts": {
+      "200": 15
+    },
+    "echoed_models": [
+      "glm-5.3-flash"
+    ],
+    "request_ids_sample": [
+      "20261019145018dd37ee16a2864cf9",
+      "2026101914505975f909ee15a24245",
+      "202610191451429f1754f7ac944ecd",
+      "20261019145220071c078928eb4905",
+      "2026101914531342fad74ab0724b62"
+    ],
+    "usage": {
+      "calls": 15,
+      "model": "glm-5.3-flash",
+      "prompt_tokens": 12667,
+      "completion_tokens": 29290,
+      "total_tokens": 41957
+    }
+  },
+  "headline": {
+    "router_accuracy": 1.0,
+    "route_sources": {
+      "explicit": 15
+    },
+    "vision_http_success": 15,
+    "vision_schema_valid": 15,
+    "vision_extraction_valid": 15,
+    "region_evidence_complete": 8,
+    "structural_evidence_complete": 5,
+    "solver_ready": 5,
+    "solver_proposal_coverage": 1,
+    "final_answer_coverage": 0,
+    "verified_correct_yield": 0,
+    "false_accept": 0,
+    "false_reject": 1,
+    "designed_abstain_expected": 2,
+    "designed_abstain_compliant": 2,
+    "unverified": 1,
+    "option_iou_mean_fixed_pooled": {
+      "value": 0.4226,
+      "denominator": 48,
+      "note": "逐题金标框数加权的框级均值 Σ(n_i·mean_i)/Σn_i（R4f 修正；旧口径 Σmean_i/Σn_i 已废弃）"
+    },
+    "option_iou_mean": {
+      "value": 0.4256,
+      "denominator": 15,
+      "note": "按题取均值；全部金标准选项框参与，漏框按 0 计入每题分母"
+    },
+    "diagram_iou_pooled": {
+      "value": 0.5257,
+      "denominator": 15,
+      "note": "同 option pooled 修正口径"
+    },
+    "stem_exact_match": {
+      "value": 0.0,
+      "denominator": 15
+    },
+    "stem_cer": {
+      "value": 0.2453,
+      "denominator": 15
+    },
+    "option_label_recall": {
+      "value": 1.0,
+      "denominator": 15
+    }
+  },
+  "attribution_distribution": {
+    "class_1": {
+      "name": "VLM 解析错误导致 Solver 不可用",
+      "count": 8
+    },
+    "class_2": {
+      "name": "视觉结构正确但裁剪图形内容损失",
+      "count": 2
+    },
+    "class_4": {
+      "name": "多候选几何歧义导致正确弃权",
+      "count": 2
+    },
+    "class_5": {
+      "name": "Solver 正解被 Verifier 拦截（误杀风险）",
+      "count": 1
+    },
+    "class_8": {
+      "name": "设计性禁答题（answer=None）：如实拒答为正确行为",
+      "count": 2
+    }
+  },
+  "cases": [
+    {
+      "case_id": "ft-rot90-01",
+      "gold": "A",
+      "expected_status": "solved",
+      "compliant_abstention": false,
+      "solver_proposed": "A",
+      "final_answer": null,
+      "status": "solved",
+      "correct": false,
+      "verification_action": "unverified",
+      "verification_outcome": "unverified_answerable",
+      "root_cause": "solver_rule_selection",
+      "failure_class": "region_missing_or_shifted",
+      "first_detected_error": "structure_grid:grid_parse_mismatch",
+      "blocking_failure": "verifier:verifier_unverified",
+      "secondary_errors": [
+        {
+          "stage": "structure_grid",
+          "code": "grid_parse_mismatch",
+          "detail": "VLM 网格维度与金标不一致"
+        },
+        {
+          "stage": "stem_text",
+          "code": "stem_truncated_or_wrong",
+          "detail": "题干文本与金标不一致"
+        },
+        {
+          "stage": "solver",
+          "code": "channel_not_applicable",
+          "detail": "变换通道结构上不适用"
+        }
+      ],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": true,
+        "structural_evidence_complete": false,
+        "solver_ready": false,
+        "grid_parse_correct": false,
+        "crops_complete": true,
+        "stem_cer": 0.1429
+      },
+      "region_iou": 0.638,
+      "option_iou_mean": 0.387,
+      "diagram_iou_mean": 0.638,
+      "transform": {
+        "status": "not_applicable",
+        "mode": null,
+        "verdict": {
+          "verdict": "no_rule",
+          "answer": null,
+          "support": {}
+        },
+        "candidates": [],
+        "blockers": null,
+        "overlay_eval": null,
+        "coord_contract": null
+      },
+      "six_rules": {
+        "status": "solved",
+        "answer": "A",
+        "rule": "sides",
+        "error": ""
+      },
+      "failed_verifier_checks": [
+        "figure.independent_substitution",
+        "verify.unverified_action"
+      ],
+      "attribution_bucket": 5,
+      "attribution_why": "提议=金标但未释放",
+      "latency_ms": 40434.986
+    },
+    {
+      "case_id": "ft-rot180-02",
+      "gold": "A",
+      "expected_status": "solved",
+      "compliant_abstention": false,
+      "solver_proposed": null,
+      "final_answer": null,
+      "status": "failed",
+      "correct": false,
+      "verification_action": "reject",
+      "verification_outcome": "no_answer",
+      "root_cause": "region_crop",
+      "failure_class": "region_missing_or_shifted",
+      "first_detected_error": "vision_structure:regions_unusable",
+      "blocking_failure": "solver:channel_not_applicable",
+      "secondary_errors": [
+        {
+          "stage": "vision_structure",
+          "code": "regions_unusable",
+          "detail": "结构化区域产物缺失或必需区域漏检"
+        },
+        {
+          "stage": "structure_grid",
+          "code": "grid_parse_mismatch",
+          "detail": "VLM 网格维度与金标不一致"
+        },
+        {
+          "stage": "stem_text",
+          "code": "stem_truncated_or_wrong",
+          "detail": "题干文本与金标不一致"
+        }
+      ],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": false,
+        "structural_evidence_complete": false,
+        "solver_ready": false,
+        "grid_parse_correct": false,
+        "crops_complete": true,
+        "stem_cer": 0.2143
+      },
+      "region_iou": 0.25,
+      "option_iou_mean": 0.5014,
+      "diagram_iou_mean": 0.25,
+      "transform": {
+        "status": "not_applicable",
+        "mode": null,
+        "verdict": {
+          "verdict": "no_rule",
+          "answer": null,
+          "support": {}
+        },
+        "candidates": [],
+        "blockers": null,
+        "overlay_eval": null,
+        "coord_contract": null
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "error": "题干可见图形只有 1 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      "failed_verifier_checks": [
+        "solution.status",
+        "solution.answer_present",
+        "answer.in_options",
+        "solution.confidence"
+      ],
+      "attribution_bucket": 1,
+      "attribution_why": "证据档不足 region=False structural=False",
+      "latency_ms": 42920.8
+    },
+    {
+      "case_id": "ft-rot270-03",
+      "gold": "A",
+      "expected_status": "solved",
+      "compliant_abstention": false,
+      "solver_proposed": null,
+      "final_answer": null,
+      "status": "failed",
+      "correct": false,
+      "verification_action": "reject",
+      "verification_outcome": "no_answer",
+      "root_cause": "region_crop",
+      "failure_class": "region_missing_or_shifted",
+      "first_detected_error": "vision_structure:regions_unusable",
+      "blocking_failure": "solver:channel_not_applicable",
+      "secondary_errors": [
+        {
+          "stage": "vision_structure",
+          "code": "regions_unusable",
+          "detail": "结构化区域产物缺失或必需区域漏检"
+        },
+        {
+          "stage": "structure_grid",
+          "code": "grid_parse_mismatch",
+          "detail": "VLM 网格维度与金标不一致"
+        },
+        {
+          "stage": "stem_text",
+          "code": "stem_truncated_or_wrong",
+          "detail": "题干文本与金标不一致"
+        }
+      ],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": false,
+        "structural_evidence_complete": false,
+        "solver_ready": false,
+        "grid_parse_correct": false,
+        "crops_complete": true,
+        "stem_cer": 0.2143
+      },
+      "region_iou": 0.1111,
+      "option_iou_mean": 0.4306,
+      "diagram_iou_mean": 0.1111,
+      "transform": {
+        "status": "not_applicable",
+        "mode": null,
+        "verdict": {
+          "verdict": "no_rule",
+          "answer": null,
+          "support": {}
+        },
+        "candidates": [],
+        "blockers": null,
+        "overlay_eval": null,
+        "coord_contract": null
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "error": "题干可见图形只有 1 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      "failed_verifier_checks": [
+        "solution.status",
+        "solution.answer_present",
+        "answer.in_options",
+        "solution.confidence"
+      ],
+      "attribution_bucket": 1,
+      "attribution_why": "证据档不足 region=False structural=False",
+      "latency_ms": 37403.713
+    },
+    {
+      "case_id": "ft-mirror-04",
+      "gold": "A",
+      "expected_status": "solved",
+      "compliant_abstention": false,
+      "solver_proposed": null,
+      "final_answer": null,
+      "status": "failed",
+      "correct": false,
+      "verification_action": "reject",
+      "verification_outcome": "no_answer",
+      "root_cause": "region_crop",
+      "failure_class": "region_missing_or_shifted",
+      "first_detected_error": "vision_structure:regions_unusable",
+      "blocking_failure": "solver:channel_not_applicable",
+      "secondary_errors": [
+        {
+          "stage": "vision_structure",
+          "code": "regions_unusable",
+          "detail": "结构化区域产物缺失或必需区域漏检"
+        },
+        {
+          "stage": "structure_grid",
+          "code": "grid_parse_mismatch",
+          "detail": "VLM 网格维度与金标不一致"
+        },
+        {
+          "stage": "stem_text",
+          "code": "stem_truncated_or_wrong",
+          "detail": "题干文本与金标不一致"
+        }
+      ],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": false,
+        "structural_evidence_complete": false,
+        "solver_ready": false,
+        "grid_parse_correct": false,
+        "crops_complete": true,
+        "stem_cer": 0.2143
+      },
+      "region_iou": 0.1053,
+      "option_iou_mean": 0.4773,
+      "diagram_iou_mean": 0.1053,
+      "transform": {
+        "status": "not_applicable",
+        "mode": null,
+        "verdict": {
+          "verdict": "no_rule",
+          "answer": null,
+          "support": {}
+        },
+        "candidates": [],
+        "blockers": null,
+        "overlay_eval": null,
+        "coord_contract": null
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "error": "题干可见图形只有 1 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      "failed_verifier_checks": [
+        "solution.status",
+        "solution.answer_present",
+        "answer.in_options",
+        "solution.confidence"
+      ],
+      "attribution_bucket": 1,
+      "attribution_why": "证据档不足 region=False structural=False",
+      "latency_ms": 53082.359
+    },
+    {
+      "case_id": "ft-mirror-05",
+      "gold": "B",
+      "expected_status": "solved",
+      "compliant_abstention": false,
+      "solver_proposed": null,
+      "final_answer": null,
+      "status": "failed",
+      "correct": false,
+      "verification_action": "reject",
+      "verification_outcome": "no_answer",
+      "root_cause": "region_crop",
+      "failure_class": "region_missing_or_shifted",
+      "first_detected_error": "vision_structure:regions_unusable",
+      "blocking_failure": "solver:channel_not_applicable",
+      "secondary_errors": [
+        {
+          "stage": "vision_structure",
+          "code": "regions_unusable",
+          "detail": "结构化区域产物缺失或必需区域漏检"
+        },
+        {
+          "stage": "structure_grid",
+          "code": "grid_parse_mismatch",
+          "detail": "VLM 网格维度与金标不一致"
+        },
+        {
+          "stage": "stem_text",
+          "code": "stem_truncated_or_wrong",
+          "detail": "题干文本与金标不一致"
+        }
+      ],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": false,
+        "structural_evidence_complete": false,
+        "solver_ready": false,
+        "grid_parse_correct": false,
+        "crops_complete": true,
+        "stem_cer": 0.9286
+      },
+      "region_iou": 0.3235,
+      "option_iou_mean": 0.3865,
+      "diagram_iou_mean": 0.3235,
+      "transform": {
+        "status": "not_applicable",
+        "mode": null,
+        "verdict": {
+          "verdict": "no_rule",
+          "answer": null,
+          "support": {}
+        },
+        "candidates": [],
+        "blockers": null,
+        "overlay_eval": null,
+        "coord_contract": null
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "error": "题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      "failed_verifier_checks": [
+        "solution.status",
+        "solution.answer_present",
+        "answer.in_options",
+        "solution.confidence"
+      ],
+      "attribution_bucket": 1,
+      "attribution_why": "证据档不足 region=False structural=False",
+      "latency_ms": 32443.233
+    },
+    {
+      "case_id": "ft-comp-06",
+      "gold": "A",
+      "expected_status": "solved",
+      "compliant_abstention": false,
+      "solver_proposed": null,
+      "final_answer": null,
+      "status": "failed",
+      "correct": false,
+      "verification_action": "reject",
+      "verification_outcome": "no_answer",
+      "root_cause": "region_crop",
+      "failure_class": "region_missing_or_shifted",
+      "first_detected_error": "vision_structure:regions_unusable",
+      "blocking_failure": "solver:channel_not_applicable",
+      "secondary_errors": [
+        {
+          "stage": "vision_structure",
+          "code": "regions_unusable",
+          "detail": "结构化区域产物缺失或必需区域漏检"
+        },
+        {
+          "stage": "structure_grid",
+          "code": "grid_parse_mismatch",
+          "detail": "VLM 网格维度与金标不一致"
+        },
+        {
+          "stage": "stem_text",
+          "code": "stem_truncated_or_wrong",
+          "detail": "题干文本与金标不一致"
+        }
+      ],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": false,
+        "structural_evidence_complete": false,
+        "solver_ready": false,
+        "grid_parse_correct": false,
+        "crops_complete": true,
+        "stem_cer": 0.2143
+      },
+      "region_iou": 0.3179,
+      "option_iou_mean": 0.5003,
+      "diagram_iou_mean": 0.3179,
+      "transform": {
+        "status": "not_applicable",
+        "mode": null,
+        "verdict": {
+          "verdict": "no_rule",
+          "answer": null,
+          "support": {}
+        },
+        "candidates": [],
+        "blockers": null,
+        "overlay_eval": null,
+        "coord_contract": null
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "error": "题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      "failed_verifier_checks": [
+        "solution.status",
+        "solution.answer_present",
+        "answer.in_options",
+        "solution.confidence"
+      ],
+      "attribution_bucket": 1,
+      "attribution_why": "证据档不足 region=False structural=False",
+      "latency_ms": 40652.988
+    },
+    {
+      "case_id": "ft-trans-07",
+      "gold": "A",
+      "expected_status": "solved",
+      "compliant_abstention": false,
+      "solver_proposed": null,
+      "final_answer": null,
+      "status": "failed",
+      "correct": false,
+      "verification_action": "reject",
+      "verification_outcome": "no_answer",
+      "root_cause": "region_crop",
+      "failure_class": "region_missing_or_shifted",
+      "first_detected_error": "vision_structure:regions_unusable",
+      "blocking_failure": "solver:channel_not_applicable",
+      "secondary_errors": [
+        {
+          "stage": "vision_structure",
+          "code": "regions_unusable",
+          "detail": "结构化区域产物缺失或必需区域漏检"
+        },
+        {
+          "stage": "structure_grid",
+          "code": "grid_parse_mismatch",
+          "detail": "VLM 网格维度与金标不一致"
+        },
+        {
+          "stage": "stem_text",
+          "code": "stem_truncated_or_wrong",
+          "detail": "题干文本与金标不一致"
+        }
+      ],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": false,
+        "structural_evidence_complete": false,
+        "solver_ready": false,
+        "grid_parse_correct": false,
+        "crops_complete": true,
+        "stem_cer": 0.2143
+      },
+      "region_iou": 0.1944,
+      "option_iou_mean": 0.2932,
+      "diagram_iou_mean": 0.1944,
+      "transform": {
+        "status": "not_applicable",
+        "mode": null,
+        "verdict": {
+          "verdict": "no_rule",
+          "answer": null,
+          "support": {}
+        },
+        "candidates": [],
+        "blockers": null,
+        "overlay_eval": null,
+        "coord_contract": null
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      "failed_verifier_checks": [
+        "solution.status",
+        "solution.answer_present",
+        "answer.in_options",
+        "solution.confidence"
+      ],
+      "attribution_bucket": 1,
+      "attribution_why": "证据档不足 region=False structural=False",
+      "latency_ms": 99189.323
+    },
+    {
+      "case_id": "ft-trans-08",
+      "gold": "A",
+      "expected_status": "solved",
+      "compliant_abstention": false,
+      "solver_proposed": null,
+      "final_answer": null,
+      "status": "failed",
+      "correct": false,
+      "verification_action": "reject",
+      "verification_outcome": "no_answer",
+      "root_cause": "region_crop",
+      "failure_class": "region_missing_or_shifted",
+      "first_detected_error": "structure_grid:grid_parse_mismatch",
+      "blocking_failure": "solver:channel_not_applicable",
+      "secondary_errors": [
+        {
+          "stage": "structure_grid",
+          "code": "grid_parse_mismatch",
+          "detail": "VLM 网格维度与金标不一致"
+        },
+        {
+          "stage": "stem_text",
+          "code": "stem_truncated_or_wrong",
+          "detail": "题干文本与金标不一致"
+        }
+      ],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": true,
+        "structural_evidence_complete": false,
+        "solver_ready": false,
+        "grid_parse_correct": false,
+        "crops_complete": true,
+        "stem_cer": 0.2143
+      },
+      "region_iou": 0.633,
+      "option_iou_mean": 0.4124,
+      "diagram_iou_mean": 0.633,
+      "transform": {
+        "status": "not_applicable",
+        "mode": null,
+        "verdict": {
+          "verdict": "no_rule",
+          "answer": null,
+          "support": {}
+        },
+        "candidates": [],
+        "blockers": null,
+        "overlay_eval": null,
+        "coord_contract": null
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "error": "空白格不在行末，当前只支持“求下一格”的序列题；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      "failed_verifier_checks": [
+        "solution.status",
+        "solution.answer_present",
+        "answer.in_options",
+        "solution.confidence"
+      ],
+      "attribution_bucket": 1,
+      "attribution_why": "证据档不足 region=True structural=False",
+      "latency_ms": 39963.542
+    },
+    {
+      "case_id": "ft-scale-09",
+      "gold": "A",
+      "expected_status": "solved",
+      "compliant_abstention": false,
+      "solver_proposed": null,
+      "final_answer": null,
+      "status": "failed",
+      "correct": false,
+      "verification_action": "reject",
+      "verification_outcome": "no_answer",
+      "root_cause": "region_crop",
+      "failure_class": "region_missing_or_shifted",
+      "first_detected_error": "structure_grid:grid_parse_mismatch",
+      "blocking_failure": "solver:channel_not_applicable",
+      "secondary_errors": [
+        {
+          "stage": "structure_grid",
+          "code": "grid_parse_mismatch",
+          "detail": "VLM 网格维度与金标不一致"
+        },
+        {
+          "stage": "stem_text",
+          "code": "stem_truncated_or_wrong",
+          "detail": "题干文本与金标不一致"
+        }
+      ],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": true,
+        "structural_evidence_complete": false,
+        "solver_ready": false,
+        "grid_parse_correct": false,
+        "crops_complete": true,
+        "stem_cer": 0.2143
+      },
+      "region_iou": 0.5924,
+      "option_iou_mean": 0.5098,
+      "diagram_iou_mean": 0.5924,
+      "transform": {
+        "status": "not_applicable",
+        "mode": null,
+        "verdict": {
+          "verdict": "no_rule",
+          "answer": null,
+          "support": {}
+        },
+        "candidates": [],
+        "blockers": null,
+        "overlay_eval": null,
+        "coord_contract": null
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "error": "空白格不在行末，当前只支持“求下一格”的序列题；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      "failed_verifier_checks": [
+        "solution.status",
+        "solution.answer_present",
+        "answer.in_options",
+        "solution.confidence"
+      ],
+      "attribution_bucket": 1,
+      "attribution_why": "证据档不足 region=True structural=False",
+      "latency_ms": 42823.944
+    },
+    {
+      "case_id": "ft-grid-10",
+      "gold": "A",
+      "expected_status": "solved",
+      "compliant_abstention": false,
+      "solver_proposed": null,
+      "final_answer": null,
+      "status": "failed",
+      "correct": false,
+      "verification_action": "reject",
+      "verification_outcome": "no_answer",
+      "root_cause": "extraction_ocr",
+      "failure_class": "extraction_text_error",
+      "first_detected_error": "stem_text:stem_truncated_or_wrong",
+      "blocking_failure": "solver:no_rule",
+      "secondary_errors": [
+        {
+          "stage": "stem_text",
+          "code": "stem_truncated_or_wrong",
+          "detail": "题干文本与金标不一致"
+        },
+        {
+          "stage": "solver",
+          "code": "ambiguous_candidates",
+          "detail": "多规律候选不一致/不可区分"
+        }
+      ],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": true,
+        "structural_evidence_complete": true,
+        "solver_ready": true,
+        "grid_parse_correct": true,
+        "crops_complete": true,
+        "stem_cer": 0.1429
+      },
+      "region_iou": 0.8611,
+      "option_iou_mean": 0.4286,
+      "diagram_iou_mean": 0.8611,
+      "transform": {
+        "status": "failed",
+        "mode": null,
+        "verdict": {
+          "verdict": "ambiguous",
+          "answer": null,
+          "support": {},
+          "detail": {
+            "rotate_flip_grid_row": {
+              "A": 1.0,
+              "B": 1.0,
+              "C": 1.0,
+              "D": 1.0
+            },
+            "rotate_flip_grid_col": {
+              "A": 1.0,
+              "B": 1.0,
+              "C": 1.0,
+              "D": 1.0
+            }
+          }
+        },
+        "candidates": [
+          {
+            "rule": "rotate_flip_grid_row",
+            "name": "R270",
+            "scores": {
+              "A": 1.0,
+              "B": 1.0,
+              "C": 1.0,
+              "D": 1.0
+            }
+          },
+          {
+            "rule": "rotate_flip_grid_col",
+            "name": "R270",
+            "scores": {
+              "A": 1.0,
+              "B": 1.0,
+              "C": 1.0,
+              "D": 1.0
+            }
+          }
+        ],
+        "blockers": [],
+        "overlay_eval": {
+          "overlay_grid_row:xor": {
+            "best_demo_residual": 0.864,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:or": {
+            "best_demo_residual": 0.888,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:and": {
+            "best_demo_residual": 1.0,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:xor": {
+            "best_demo_residual": 0.828,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:or": {
+            "best_demo_residual": 0.839,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:and": {
+            "best_demo_residual": 1.0,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          }
+        },
+        "coord_contract": {
+          "stem_canvas": [
+            138,
+            148
+          ],
+          "cell_bboxes": [
+            [
+              0,
+              0,
+              49,
+              46
+            ],
+            [
+              49,
+              0,
+              99,
+              46
+            ],
+            [
+              99,
+              0,
+              148,
+              46
+            ],
+            [
+              0,
+              46,
+              49,
+              92
+            ],
+            [
+              49,
+              46,
+              99,
+              92
+            ],
+            [
+              99,
+              46,
+              148,
+              92
+            ],
+            [
+              0,
+              92,
+              49,
+              138
+            ],
+            [
+              49,
+              92,
+              99,
+              138
+            ]
+          ],
+          "pair_align": {
+            "0-1": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                46,
+                50
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                -1
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            },
+            "0-3": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                46,
+                49
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                0
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            }
+          },
+          "tol_px": 3
+        }
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "error": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}}"
+      },
+      "failed_verifier_checks": [
+        "solution.status",
+        "solution.answer_present",
+        "answer.in_options",
+        "solution.confidence"
+      ],
+      "attribution_bucket": 4,
+      "attribution_why": "多候选歧义弃权",
+      "latency_ms": 44839.796
+    },
+    {
+      "case_id": "ft-grid-11",
+      "gold": "B",
+      "expected_status": "solved",
+      "compliant_abstention": false,
+      "solver_proposed": null,
+      "final_answer": null,
+      "status": "failed",
+      "correct": false,
+      "verification_action": "reject",
+      "verification_outcome": "no_answer",
+      "root_cause": "extraction_ocr",
+      "failure_class": "extraction_text_error",
+      "first_detected_error": "stem_text:stem_truncated_or_wrong",
+      "blocking_failure": "solver:no_rule",
+      "secondary_errors": [
+        {
+          "stage": "stem_text",
+          "code": "stem_truncated_or_wrong",
+          "detail": "题干文本与金标不一致"
+        },
+        {
+          "stage": "solver",
+          "code": "ambiguous_candidates",
+          "detail": "多规律候选不一致/不可区分"
+        }
+      ],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": true,
+        "structural_evidence_complete": true,
+        "solver_ready": true,
+        "grid_parse_correct": true,
+        "crops_complete": true,
+        "stem_cer": 0.2143
+      },
+      "region_iou": 0.9023,
+      "option_iou_mean": 0.468,
+      "diagram_iou_mean": 0.9023,
+      "transform": {
+        "status": "failed",
+        "mode": null,
+        "verdict": {
+          "verdict": "ambiguous",
+          "answer": null,
+          "support": {},
+          "detail": {
+            "rotate_flip_grid_row": {
+              "A": 0.997204,
+              "B": 0.31781,
+              "C": 1.0
+            }
+          }
+        },
+        "candidates": [
+          {
+            "rule": "rotate_flip_grid_row",
+            "name": "FH",
+            "scores": {
+              "A": 0.997204,
+              "B": 0.31781,
+              "C": 1.0
+            }
+          }
+        ],
+        "blockers": [],
+        "overlay_eval": {
+          "overlay_grid_row:xor": {
+            "best_demo_residual": 0.649,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:or": {
+            "best_demo_residual": 0.613,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:and": {
+            "best_demo_residual": 0.9,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:xor": {
+            "best_demo_residual": 0.864,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:or": {
+            "best_demo_residual": 0.875,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:and": {
+            "best_demo_residual": 0.977,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          }
+        },
+        "coord_contract": {
+          "stem_canvas": [
+            135,
+            150
+          ],
+          "cell_bboxes": [
+            [
+              0,
+              0,
+              50,
+              45
+            ],
+            [
+              50,
+              0,
+              100,
+              45
+            ],
+            [
+              100,
+              0,
+              150,
+              45
+            ],
+            [
+              0,
+              45,
+              50,
+              90
+            ],
+            [
+              50,
+              45,
+              100,
+              90
+            ],
+            [
+              100,
+              45,
+              150,
+              90
+            ],
+            [
+              0,
+              90,
+              50,
+              135
+            ],
+            [
+              50,
+              90,
+              100,
+              135
+            ]
+          ],
+          "pair_align": {
+            "0-1": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                45,
+                50
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                0
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            },
+            "0-3": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                45,
+                50
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                0
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            }
+          },
+          "tol_px": 3
+        }
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "error": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 0.997204, 'B': 0.31781, 'C': 1.0}}"
+      },
+      "failed_verifier_checks": [
+        "solution.status",
+        "solution.answer_present",
+        "answer.in_options",
+        "solution.confidence"
+      ],
+      "attribution_bucket": 4,
+      "attribution_why": "多候选歧义弃权",
+      "latency_ms": 41172.33
+    },
+    {
+      "case_id": "ft-overlay-12",
+      "gold": "A",
+      "expected_status": "solved",
+      "compliant_abstention": false,
+      "solver_proposed": null,
+      "final_answer": null,
+      "status": "failed",
+      "correct": false,
+      "verification_action": "reject",
+      "verification_outcome": "no_answer",
+      "root_cause": "extraction_ocr",
+      "failure_class": "extraction_text_error",
+      "first_detected_error": "stem_text:stem_truncated_or_wrong",
+      "blocking_failure": "solver:overlay_residual_over_tol",
+      "secondary_errors": [
+        {
+          "stage": "stem_text",
+          "code": "stem_truncated_or_wrong",
+          "detail": "题干文本与金标不一致"
+        }
+      ],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": true,
+        "structural_evidence_complete": true,
+        "solver_ready": true,
+        "grid_parse_correct": true,
+        "crops_complete": true,
+        "stem_cer": 0.1429
+      },
+      "region_iou": 0.8692,
+      "option_iou_mean": 0.2932,
+      "diagram_iou_mean": 0.8692,
+      "transform": {
+        "status": "failed",
+        "mode": null,
+        "verdict": {
+          "verdict": "no_rule",
+          "answer": null,
+          "support": {}
+        },
+        "candidates": [],
+        "blockers": [
+          {
+            "code": "overlay_residual_over_tol",
+            "stage": "overlay_eval",
+            "cells": [],
+            "detail": "overlay_grid_row:or 最小演示残差 0.514 > 容差 0.12"
+          }
+        ],
+        "overlay_eval": {
+          "overlay_grid_row:xor": {
+            "best_demo_residual": 0.529,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:or": {
+            "best_demo_residual": 0.514,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:and": {
+            "best_demo_residual": 0.927,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:xor": {
+            "best_demo_residual": 0.654,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:or": {
+            "best_demo_residual": 0.654,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:and": {
+            "best_demo_residual": 1.0,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          }
+        },
+        "coord_contract": {
+          "stem_canvas": [
+            140,
+            136
+          ],
+          "cell_bboxes": [
+            [
+              0,
+              0,
+              45,
+              47
+            ],
+            [
+              45,
+              0,
+              91,
+              47
+            ],
+            [
+              91,
+              0,
+              136,
+              47
+            ],
+            [
+              0,
+              47,
+              45,
+              93
+            ],
+            [
+              45,
+              47,
+              91,
+              93
+            ],
+            [
+              91,
+              47,
+              136,
+              93
+            ],
+            [
+              0,
+              93,
+              45,
+              140
+            ],
+            [
+              45,
+              93,
+              91,
+              140
+            ]
+          ],
+          "pair_align": {
+            "0-1": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                47,
+                46
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                -1
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            },
+            "0-3": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                47,
+                45
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                1,
+                0
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            }
+          },
+          "tol_px": 3
+        }
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "error": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定"
+      },
+      "failed_verifier_checks": [
+        "solution.status",
+        "solution.answer_present",
+        "answer.in_options",
+        "solution.confidence"
+      ],
+      "attribution_bucket": 2,
+      "attribution_why": "叠加演示残差超限（格内内容位移=裁剪内容损失）",
+      "latency_ms": 55610.57
+    },
+    {
+      "case_id": "ft-overlay-13",
+      "gold": "B",
+      "expected_status": "solved",
+      "compliant_abstention": false,
+      "solver_proposed": null,
+      "final_answer": null,
+      "status": "failed",
+      "correct": false,
+      "verification_action": "reject",
+      "verification_outcome": "no_answer",
+      "root_cause": "extraction_ocr",
+      "failure_class": "extraction_text_error",
+      "first_detected_error": "stem_text:stem_truncated_or_wrong",
+      "blocking_failure": "solver:overlay_residual_over_tol",
+      "secondary_errors": [
+        {
+          "stage": "stem_text",
+          "code": "stem_truncated_or_wrong",
+          "detail": "题干文本与金标不一致"
+        }
+      ],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": true,
+        "structural_evidence_complete": true,
+        "solver_ready": true,
+        "grid_parse_correct": true,
+        "crops_complete": true,
+        "stem_cer": 0.1786
+      },
+      "region_iou": 0.8749,
+      "option_iou_mean": 0.458,
+      "diagram_iou_mean": 0.8749,
+      "transform": {
+        "status": "failed",
+        "mode": null,
+        "verdict": {
+          "verdict": "no_rule",
+          "answer": null,
+          "support": {}
+        },
+        "candidates": [],
+        "blockers": [
+          {
+            "code": "overlay_residual_over_tol",
+            "stage": "overlay_eval",
+            "cells": [],
+            "detail": "overlay_grid_row:xor 最小演示残差 0.478 > 容差 0.12"
+          }
+        ],
+        "overlay_eval": {
+          "overlay_grid_row:xor": {
+            "best_demo_residual": 0.478,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:or": {
+            "best_demo_residual": 0.478,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:and": {
+            "best_demo_residual": 1.0,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:xor": {
+            "best_demo_residual": 0.79,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:or": {
+            "best_demo_residual": 0.79,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:and": {
+            "best_demo_residual": 1.0,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          }
+        },
+        "coord_contract": {
+          "stem_canvas": [
+            158,
+            150
+          ],
+          "cell_bboxes": [
+            [
+              0,
+              0,
+              50,
+              53
+            ],
+            [
+              50,
+              0,
+              100,
+              53
+            ],
+            [
+              100,
+              0,
+              150,
+              53
+            ],
+            [
+              0,
+              53,
+              50,
+              105
+            ],
+            [
+              50,
+              53,
+              100,
+              105
+            ],
+            [
+              100,
+              53,
+              150,
+              105
+            ],
+            [
+              0,
+              105,
+              50,
+              158
+            ],
+            [
+              50,
+              105,
+              100,
+              158
+            ]
+          ],
+          "pair_align": {
+            "0-1": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                53,
+                50
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                0
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            },
+            "0-3": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                53,
+                50
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                1,
+                0
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            }
+          },
+          "tol_px": 3
+        }
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "error": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定"
+      },
+      "failed_verifier_checks": [
+        "solution.status",
+        "solution.answer_present",
+        "answer.in_options",
+        "solution.confidence"
+      ],
+      "attribution_bucket": 2,
+      "attribution_why": "叠加演示残差超限（格内内容位移=裁剪内容损失）",
+      "latency_ms": 57945.737
+    },
+    {
+      "case_id": "ft-sym-14",
+      "gold": null,
+      "expected_status": "failed",
+      "compliant_abstention": true,
+      "solver_proposed": null,
+      "final_answer": null,
+      "status": "failed",
+      "correct": true,
+      "verification_action": "reject",
+      "verification_outcome": "correct_abstention",
+      "root_cause": "none",
+      "failure_class": null,
+      "first_detected_error": null,
+      "blocking_failure": null,
+      "secondary_errors": [],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": false,
+        "structural_evidence_complete": false,
+        "solver_ready": false,
+        "grid_parse_correct": false,
+        "crops_complete": true,
+        "stem_cer": 0.2143
+      },
+      "region_iou": 0.4236,
+      "option_iou_mean": 0.4333,
+      "diagram_iou_mean": 0.4236,
+      "transform": {
+        "status": "not_applicable",
+        "mode": null,
+        "verdict": {
+          "verdict": "no_rule",
+          "answer": null,
+          "support": {}
+        },
+        "candidates": [],
+        "blockers": null,
+        "overlay_eval": null,
+        "coord_contract": null
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 2 个选项匹配（无法唯一确定）; 边数外推为 4，但有 2 个选项匹配; 对称性应为 垂直=True 水平=True，但有 2 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      "failed_verifier_checks": [
+        "solution.status",
+        "solution.answer_present",
+        "answer.in_options",
+        "solution.confidence"
+      ],
+      "attribution_bucket": 8,
+      "attribution_why": "设计性禁答题：如实拒答（正确行为）（但证据档亦不足）",
+      "latency_ms": 29778.658
+    },
+    {
+      "case_id": "ft-conflict-15",
+      "gold": null,
+      "expected_status": "failed",
+      "compliant_abstention": true,
+      "solver_proposed": null,
+      "final_answer": null,
+      "status": "failed",
+      "correct": true,
+      "verification_action": "reject",
+      "verification_outcome": "correct_abstention",
+      "root_cause": "none",
+      "failure_class": null,
+      "first_detected_error": null,
+      "blocking_failure": null,
+      "secondary_errors": [],
+      "vision": {
+        "vision_http_success": true,
+        "vision_schema_valid": true,
+        "vision_extraction_valid": true,
+        "region_evidence_complete": true,
+        "structural_evidence_complete": true,
+        "solver_ready": true,
+        "grid_parse_correct": true,
+        "crops_complete": true,
+        "stem_cer": 0.2143
+      },
+      "region_iou": 0.7894,
+      "option_iou_mean": 0.4044,
+      "diagram_iou_mean": 0.7894,
+      "transform": {
+        "status": "failed",
+        "mode": null,
+        "verdict": {
+          "verdict": "ambiguous",
+          "answer": null,
+          "support": {},
+          "detail": {
+            "rotate_flip_grid_row": {
+              "A": 1.0,
+              "B": 1.0,
+              "C": 0.691753
+            },
+            "rotate_flip_grid_col": {
+              "A": 1.0,
+              "B": 1.0,
+              "C": 0.691753
+            },
+            "rotate_flip_seq": {
+              "A": 1.0,
+              "B": 1.0,
+              "C": 0.691753
+            }
+          }
+        },
+        "candidates": [
+          {
+            "rule": "rotate_flip_grid_row",
+            "name": "FH",
+            "scores": {
+              "A": 1.0,
+              "B": 1.0,
+              "C": 0.691753
+            }
+          },
+          {
+            "rule": "rotate_flip_grid_row",
+            "name": "FV",
+            "scores": {
+              "A": 1.0,
+              "B": 1.0,
+              "C": 0.691753
+            }
+          },
+          {
+            "rule": "rotate_flip_grid_row",
+            "name": "I",
+            "scores": {
+              "A": 1.0,
+              "B": 1.0,
+              "C": 0.691753
+            }
+          },
+          {
+            "rule": "rotate_flip_grid_row",
+            "name": "R180",
+            "scores": {
+              "A": 1.0,
+              "B": 1.0,
+              "C": 0.691753
+            }
+          },
+          {
+            "rule": "rotate_flip_grid_col",
+            "name": "FH",
+            "scores": {
+              "A": 1.0,
+              "B": 1.0,
+              "C": 0.691753
+            }
+          },
+          {
+            "rule": "rotate_flip_grid_col",
+            "name": "FV",
+            "scores": {
+              "A": 1.0,
+              "B": 1.0,
+              "C": 0.691753
+            }
+          }
+        ],
+        "blockers": [],
+        "overlay_eval": {
+          "overlay_grid_row:xor": {
+            "best_demo_residual": 0.951,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:or": {
+            "best_demo_residual": 0.727,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:and": {
+            "best_demo_residual": 0.597,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:xor": {
+            "best_demo_residual": 0.918,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:or": {
+            "best_demo_residual": 0.812,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:and": {
+            "best_demo_residual": 0.789,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          }
+        },
+        "coord_contract": {
+          "stem_canvas": [
+            124,
+            132
+          ],
+          "cell_bboxes": [
+            [
+              0,
+              0,
+              44,
+              41
+            ],
+            [
+              44,
+              0,
+              88,
+              41
+            ],
+            [
+              88,
+              0,
+              132,
+              41
+            ],
+            [
+              0,
+              41,
+              44,
+              83
+            ],
+            [
+              44,
+              41,
+              88,
+              83
+            ],
+            [
+              88,
+              41,
+              132,
+              83
+            ],
+            [
+              0,
+              83,
+              44,
+              124
+            ],
+            [
+              44,
+              83,
+              88,
+              124
+            ]
+          ],
+          "pair_align": {
+            "0-1": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                41,
+                44
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                0
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            },
+            "0-3": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                42,
+                44
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                -1,
+                0
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            }
+          },
+          "tol_px": 3
+        }
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "error": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 0.691753}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 0.691753}, 'rotate_flip_seq': {'A': 1.0, 'B': 1.0, "
+      },
+      "failed_verifier_checks": [
+        "solution.status",
+        "solution.answer_present",
+        "answer.in_options",
+        "solution.confidence"
+      ],
+      "attribution_bucket": 8,
+      "attribution_why": "设计性禁答题：如实拒答（正确行为）",
+      "latency_ms": 41321.669
+    }
+  ],
+  "note": "结构化成功≠答题正确；本表逐题给出最终输出与七类归因。class_5（正解被拦）与 class_7（错答被放）为最高优先复核项。"
+}

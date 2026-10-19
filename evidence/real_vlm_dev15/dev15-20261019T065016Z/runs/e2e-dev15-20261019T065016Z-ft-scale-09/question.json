@@ -1,0 +1,143 @@
+{
+  "id": "q_e29fffb0bdfb",
+  "stem": "根据题目图形中蕴含的规律，选择最符合规律的一",
+  "options": [
+    {
+      "label": "A",
+      "text": ""
+    },
+    {
+      "label": "B",
+      "text": ""
+    },
+    {
+      "label": "C",
+      "text": ""
+    }
+  ],
+  "skill": null,
+  "question_type": "single_choice",
+  "image_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-scale-09\\image\\original.png",
+  "source": "image",
+  "meta": {
+    "extraction_confidence": 0.78,
+    "has_diagram": true,
+    "vision": {
+      "bbox_format": "pixel_xywh",
+      "image_size": [
+        348,
+        208
+      ],
+      "stem_matrix_bbox": [
+        35,
+        66,
+        130,
+        42
+      ],
+      "stem_matrix_grid": [
+        1,
+        3
+      ],
+      "stem_matrix_crop": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-scale-09\\regions\\diagram_d1.png",
+      "diagram_regions": [
+        {
+          "region_id": "d1",
+          "role": "stem_figure",
+          "bbox": [
+            35,
+            66,
+            130,
+            42
+          ],
+          "grid": {
+            "rows": 1,
+            "cols": 3
+          },
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-scale-09\\regions\\diagram_d1.png"
+        }
+      ],
+      "option_regions": [
+        {
+          "label": "A",
+          "bbox": [
+            16,
+            133,
+            82,
+            52
+          ],
+          "text": "",
+          "has_figure": true,
+          "figure_bbox": [
+            52,
+            135,
+            44,
+            48
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-scale-09\\regions\\option_A.png"
+        },
+        {
+          "label": "B",
+          "bbox": [
+            113,
+            145,
+            65,
+            32
+          ],
+          "text": "",
+          "has_figure": true,
+          "figure_bbox": [
+            150,
+            149,
+            26,
+            25
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-scale-09\\regions\\option_B.png"
+        },
+        {
+          "label": "C",
+          "bbox": [
+            203,
+            143,
+            68,
+            34
+          ],
+          "text": "",
+          "has_figure": true,
+          "figure_bbox": [
+            238,
+            145,
+            30,
+            30
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-scale-09\\regions\\option_C.png"
+        }
+      ],
+      "table_regions": [],
+      "text_regions": [
+        {
+          "region_id": "t1",
+          "bbox": [
+            15,
+            33,
+            333,
+            27
+          ],
+          "text": "根据题目图形中蕴含的规律，选择最符合规律的一"
+        }
+      ],
+      "reading_order": [
+        "t1",
+        "d1",
+        "A",
+        "B",
+        "C"
+      ],
+      "parser": "vision_parser",
+      "confidence": 0.78
+    },
+    "grid": [
+      1,
+      3
+    ]
+  }
+}

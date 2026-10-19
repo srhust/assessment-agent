@@ -1,0 +1,99 @@
+{
+  "stem": "根据题目图形中蕴含的规律，选择最符合规律的一",
+  "options": [
+    {
+      "label": "A",
+      "text": "A."
+    },
+    {
+      "label": "B",
+      "text": "B."
+    }
+  ],
+  "question_type": "single_choice",
+  "skill_hint": "figure_reasoning",
+  "has_diagram": true,
+  "raw_text": "根据题目图形中蕴含的规律，选择最符合规律的一",
+  "model": "glm-5.3-flash",
+  "confidence": 0.8,
+  "warnings": [],
+  "schema_version": 2,
+  "bbox_format": "pixel_xywh",
+  "image_width": 348,
+  "image_height": 208,
+  "text_regions": [
+    {
+      "region_id": "t1",
+      "bbox": [
+        20,
+        18,
+        322,
+        26
+      ],
+      "text": "根据题目图形中蕴含的规律，选择最符合规律的一"
+    }
+  ],
+  "diagram_regions": [
+    {
+      "region_id": "d1",
+      "role": "stem_figure",
+      "bbox": [
+        36,
+        72,
+        122,
+        32
+      ],
+      "grid": {
+        "rows": 1,
+        "cols": 3
+      },
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-sym-14\\regions\\diagram_d1.png"
+    }
+  ],
+  "option_regions": [
+    {
+      "label": "A",
+      "bbox": [
+        22,
+        142,
+        68,
+        36
+      ],
+      "text": "A.",
+      "has_figure": true,
+      "figure_bbox": [
+        58,
+        146,
+        30,
+        28
+      ],
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-sym-14\\regions\\option_A.png"
+    },
+    {
+      "label": "B",
+      "bbox": [
+        112,
+        142,
+        62,
+        36
+      ],
+      "text": "B.",
+      "has_figure": true,
+      "figure_bbox": [
+        146,
+        146,
+        26,
+        28
+      ],
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-sym-14\\regions\\option_B.png"
+    }
+  ],
+  "table_regions": [],
+  "reading_order": [
+    "t1",
+    "d1",
+    "A",
+    "B"
+  ],
+  "parser": "vision_parser"
+}

@@ -1,0 +1,117 @@
+{
+  "status": "failed",
+  "skill": "figure_reasoning",
+  "answer": null,
+  "answer_text": null,
+  "steps": [
+    "[区域适配] 题干裁剪 diagram_d1.png（自动布局）+ 3 个选项裁剪按标号 ['A', 'B', 'C'] 映射，合成证据画布后按原规律引擎推断",
+    "空白格不在行末，当前只支持“求下一格”的序列题"
+  ],
+  "confidence": 0.0,
+  "method": "figure_rules_adapter",
+  "tool_calls": [
+    {
+      "tool": "figure_rules_adapter",
+      "args": {
+        "stem_crop": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-trans-08\\regions\\diagram_d1.png",
+        "option_labels": [
+          "A",
+          "B",
+          "C"
+        ],
+        "grid": null
+      },
+      "ok": true,
+      "result": {
+        "status": "failed",
+        "mode": "sequence",
+        "rule": null,
+        "answer": null,
+        "reason": "空白格不在行末，当前只支持“求下一格”的序列题",
+        "agreement": []
+      },
+      "error": null,
+      "duration_ms": 0.0
+    }
+  ],
+  "error": "空白格不在行末，当前只支持“求下一格”的序列题；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）",
+  "meta": {
+    "stage": 1,
+    "image": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-trans-08\\image\\original.png",
+    "mode": "sequence",
+    "rule": null,
+    "agreement": [],
+    "layout": {
+      "threshold": "otsu",
+      "size": [
+        294,
+        186
+      ],
+      "mode": "regions",
+      "grid": null,
+      "pitch": [
+        24.0,
+        24.0
+      ],
+      "grid_regular": true,
+      "cells_per_band": [
+        6,
+        3
+      ],
+      "columns_per_band": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "blanks": 1
+    },
+    "predicted": null,
+    "options_from_image": [],
+    "candidates": [],
+    "regions": {
+      "stem_crop": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-trans-08\\regions\\diagram_d1.png",
+      "option_labels": [
+        "A",
+        "B",
+        "C"
+      ],
+      "option_crops": [
+        "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-trans-08\\regions\\option_A.png",
+        "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-trans-08\\regions\\option_B.png",
+        "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-trans-08\\regions\\option_C.png"
+      ],
+      "stem_grid": null
+    },
+    "tool": "figure_rules_adapter",
+    "transform": {
+      "status": "not_applicable",
+      "answer": null,
+      "reason": "空格不在行末或已知格不足，变换通道不适用（序列）",
+      "verdict": {
+        "verdict": "no_rule",
+        "answer": null,
+        "support": {}
+      },
+      "candidates": [],
+      "parameter_stable": null,
+      "independently_verified": null,
+      "symmetry_unresolvable": null,
+      "stem_fingerprint": null,
+      "verification": null,
+      "blockers": null,
+      "overlay_eval": null,
+      "coord_contract": null
+    },
+    "latency_ms": 42.46
+  }
+}

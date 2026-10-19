@@ -1,0 +1,383 @@
+{
+  "status": "failed",
+  "skill": "figure_reasoning",
+  "answer": null,
+  "answer_text": null,
+  "steps": [
+    "[区域适配] 题干裁剪 diagram_d1.png（显式网格 (3, 3)）+ 4 个选项裁剪按标号 ['A', 'B', 'C', 'D'] 映射，合成证据画布后按原规律引擎推断",
+    "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则"
+  ],
+  "confidence": 0.0,
+  "method": "figure_rules_adapter",
+  "tool_calls": [
+    {
+      "tool": "figure_rules_adapter",
+      "args": {
+        "stem_crop": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-overlay-13\\regions\\diagram_d1.png",
+        "option_labels": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "grid": [
+          3,
+          3
+        ]
+      },
+      "ok": true,
+      "result": {
+        "status": "failed",
+        "mode": "grid",
+        "rule": null,
+        "answer": null,
+        "reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则",
+        "agreement": []
+      },
+      "error": null,
+      "duration_ms": 0.0
+    }
+  ],
+  "error": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定",
+  "meta": {
+    "stage": 1,
+    "image": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-overlay-13\\image\\original.png",
+    "mode": "grid",
+    "rule": null,
+    "agreement": [],
+    "layout": {
+      "threshold": "otsu",
+      "size": [
+        312,
+        274
+      ],
+      "mode": "regions",
+      "grid": [
+        3,
+        3
+      ],
+      "pitch": [
+        50.0,
+        52.667
+      ],
+      "grid_regular": true,
+      "cells_per_band": [
+        3,
+        3,
+        3,
+        4
+      ],
+      "columns_per_band": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "blanks": 1
+    },
+    "predicted": null,
+    "options_from_image": [],
+    "candidates": [
+      {
+        "rule": "overlay",
+        "label": null,
+        "detail": "未找到能同时解释所有完整行的叠加规则",
+        "predicted": {
+          "iou": {
+            "xor": 0.5079,
+            "or": 0.5079,
+            "and": 0.0
+          }
+        },
+        "score": null
+      }
+    ],
+    "regions": {
+      "stem_crop": "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-overlay-13\\regions\\diagram_d1.png",
+      "option_labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "option_crops": [
+        "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-overlay-13\\regions\\option_A.png",
+        "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-overlay-13\\regions\\option_B.png",
+        "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-overlay-13\\regions\\option_C.png",
+        "E:\\assessment-agent\\runs\\e2e-dev15-20261019T065016Z-ft-overlay-13\\regions\\option_D.png"
+      ],
+      "stem_grid": [
+        3,
+        3
+      ]
+    },
+    "tool": "figure_rules_adapter",
+    "transform": {
+      "status": "failed",
+      "answer": null,
+      "reason": "变换规律不可唯一判定",
+      "verdict": {
+        "verdict": "no_rule",
+        "answer": null,
+        "support": {}
+      },
+      "candidates": [],
+      "parameter_stable": false,
+      "independently_verified": false,
+      "symmetry_unresolvable": [
+        "cell1: 对称不可区分 ['FH', 'FV', 'I', 'R180']",
+        "cell7: 对称不可区分 ['FH', 'FV', 'I', 'R180']"
+      ],
+      "stem_fingerprint": {
+        "cell_count": 8,
+        "ink": [
+          168,
+          160,
+          328,
+          216,
+          352,
+          448,
+          230,
+          160
+        ],
+        "canvas": [
+          [
+            53,
+            50
+          ],
+          [
+            53,
+            50
+          ],
+          [
+            53,
+            50
+          ],
+          [
+            52,
+            50
+          ],
+          [
+            52,
+            50
+          ],
+          [
+            52,
+            50
+          ],
+          [
+            53,
+            50
+          ],
+          [
+            53,
+            50
+          ]
+        ]
+      },
+      "verification": {
+        "passed": false,
+        "action": "unverified",
+        "checks": [
+          {
+            "name": "figure_transform.abstain",
+            "passed": true,
+            "detail": "求解器未作答，无验证对象",
+            "severity": "info"
+          }
+        ],
+        "final_answer": null,
+        "repaired_answer": null,
+        "notes": "abstain",
+        "duration_ms": 0.0
+      },
+      "blockers": [
+        {
+          "code": "overlay_residual_over_tol",
+          "stage": "overlay_eval",
+          "cells": [],
+          "detail": "overlay_grid_row:xor 最小演示残差 0.478 > 容差 0.12"
+        }
+      ],
+      "overlay_eval": {
+        "overlay_grid_row:xor": {
+          "best_demo_residual": 0.478,
+          "accepted": false,
+          "alignment": [
+            "grid_top_left",
+            null
+          ],
+          "tol": 0.12
+        },
+        "overlay_grid_row:or": {
+          "best_demo_residual": 0.478,
+          "accepted": false,
+          "alignment": [
+            "grid_top_left",
+            null
+          ],
+          "tol": 0.12
+        },
+        "overlay_grid_row:and": {
+          "best_demo_residual": 1.0,
+          "accepted": false,
+          "alignment": [
+            "grid_top_left",
+            null
+          ],
+          "tol": 0.12
+        },
+        "overlay_grid_col:xor": {
+          "best_demo_residual": 0.79,
+          "accepted": false,
+          "alignment": [
+            "grid_top_left",
+            null
+          ],
+          "tol": 0.12
+        },
+        "overlay_grid_col:or": {
+          "best_demo_residual": 0.79,
+          "accepted": false,
+          "alignment": [
+            "grid_top_left",
+            null
+          ],
+          "tol": 0.12
+        },
+        "overlay_grid_col:and": {
+          "best_demo_residual": 1.0,
+          "accepted": false,
+          "alignment": [
+            "grid_top_left",
+            null
+          ],
+          "tol": 0.12
+        }
+      },
+      "coord_contract": {
+        "stem_canvas": [
+          158,
+          150
+        ],
+        "cell_bboxes": [
+          [
+            0,
+            0,
+            50,
+            53
+          ],
+          [
+            50,
+            0,
+            100,
+            53
+          ],
+          [
+            100,
+            0,
+            150,
+            53
+          ],
+          [
+            0,
+            53,
+            50,
+            105
+          ],
+          [
+            50,
+            53,
+            100,
+            105
+          ],
+          [
+            100,
+            53,
+            150,
+            105
+          ],
+          [
+            0,
+            105,
+            50,
+            158
+          ],
+          [
+            50,
+            105,
+            100,
+            158
+          ]
+        ],
+        "pair_align": {
+          "0-1": {
+            "verified": true,
+            "mode": "grid_top_left",
+            "common_canvas": [
+              53,
+              50
+            ],
+            "offsets": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "jitter": [
+              0,
+              0
+            ],
+            "reason": "同行/列网格原点整数平移对齐"
+          },
+          "0-3": {
+            "verified": true,
+            "mode": "grid_top_left",
+            "common_canvas": [
+              53,
+              50
+            ],
+            "offsets": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "jitter": [
+              1,
+              0
+            ],
+            "reason": "同行/列网格原点整数平移对齐"
+          }
+        },
+        "tol_px": 3
+      }
+    },
+    "latency_ms": 132.246
+  }
+}
