@@ -1,0 +1,129 @@
+{
+  "status": "failed",
+  "skill": "figure_reasoning",
+  "answer": null,
+  "answer_text": null,
+  "steps": [
+    "[区域适配] 题干裁剪 diagram_d1.png（显式网格 (1, 3)）+ 4 个选项裁剪按标号 ['A', 'B', 'C', 'D'] 映射，合成证据画布后按原规律引擎推断",
+    "已有规律无法唯一匹配选项：图形个数外推为 1，但有 4 个选项匹配（无法唯一确定）"
+  ],
+  "confidence": 0.0,
+  "method": "figure_rules_adapter",
+  "tool_calls": [
+    {
+      "tool": "figure_rules_adapter",
+      "args": {
+        "stem_crop": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-rot90-01\\regions\\diagram_d1.png",
+        "option_labels": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "grid": [
+          1,
+          3
+        ]
+      },
+      "ok": true,
+      "result": {
+        "status": "failed",
+        "mode": "sequence",
+        "rule": null,
+        "answer": null,
+        "reason": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 4 个选项匹配（无法唯一确定）",
+        "agreement": []
+      },
+      "error": null,
+      "duration_ms": 0.0
+    }
+  ],
+  "error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 4 个选项匹配（无法唯一确定）；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）",
+  "meta": {
+    "stage": 1,
+    "image": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-rot90-01\\image\\original.png",
+    "mode": "sequence",
+    "rule": null,
+    "agreement": [],
+    "layout": {
+      "threshold": "otsu",
+      "size": [
+        216,
+        144
+      ],
+      "mode": "regions",
+      "grid": [
+        1,
+        3
+      ],
+      "pitch": [
+        50.0,
+        42.0
+      ],
+      "grid_regular": true,
+      "cells_per_band": [
+        3,
+        4
+      ],
+      "columns_per_band": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "blanks": 0
+    },
+    "predicted": null,
+    "options_from_image": [],
+    "candidates": [
+      {
+        "rule": "count",
+        "label": null,
+        "detail": "图形个数外推为 1，但有 4 个选项匹配（无法唯一确定）",
+        "predicted": {
+          "shape_count": 1
+        },
+        "score": null
+      }
+    ],
+    "regions": {
+      "stem_crop": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-rot90-01\\regions\\diagram_d1.png",
+      "option_labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "option_crops": [
+        "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-rot90-01\\regions\\option_A.png",
+        "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-rot90-01\\regions\\option_B.png",
+        "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-rot90-01\\regions\\option_C.png",
+        "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-rot90-01\\regions\\option_D.png"
+      ],
+      "stem_grid": [
+        1,
+        3
+      ]
+    },
+    "tool": "figure_rules_adapter",
+    "transform": {
+      "verdict": {
+        "verdict": "no_rule",
+        "answer": null,
+        "support": {}
+      },
+      "candidates": [],
+      "parameter_stable": null,
+      "independently_verified": null,
+      "symmetry_unresolvable": null
+    },
+    "latency_ms": 73.256
+  }
+}

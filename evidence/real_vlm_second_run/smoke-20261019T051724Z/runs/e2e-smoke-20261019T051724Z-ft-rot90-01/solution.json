@@ -1,0 +1,228 @@
+{
+  "status": "solved",
+  "skill": "figure_reasoning",
+  "answer": "A",
+  "answer_text": "",
+  "steps": [
+    "[区域适配] 题干裁剪 diagram_d1.png（显式网格 (1, 3)）+ 4 个选项裁剪按标号 ['A', 'B', 'C', 'D'] 映射，合成证据画布后按原规律引擎推断",
+    "[fill] 墨迹面积按等差变化到约 168px（容差 20px）"
+  ],
+  "confidence": 0.85,
+  "method": "figure_rules_adapter",
+  "tool_calls": [
+    {
+      "tool": "figure_rules_adapter",
+      "args": {
+        "stem_crop": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-rot90-01\\regions\\diagram_d1.png",
+        "option_labels": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "grid": [
+          1,
+          3
+        ]
+      },
+      "ok": true,
+      "result": {
+        "status": "solved",
+        "mode": "sequence",
+        "rule": "fill",
+        "answer": "A",
+        "reason": null,
+        "agreement": [
+          "fill"
+        ]
+      },
+      "error": null,
+      "duration_ms": 0.0
+    }
+  ],
+  "error": null,
+  "meta": {
+    "stage": 1,
+    "image": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-rot90-01\\image\\original.png",
+    "mode": "sequence",
+    "rule": "fill",
+    "agreement": [
+      "fill"
+    ],
+    "layout": {
+      "threshold": "otsu",
+      "size": [
+        264,
+        148
+      ],
+      "mode": "regions",
+      "grid": [
+        1,
+        3
+      ],
+      "pitch": [
+        44.0,
+        42.0
+      ],
+      "grid_regular": true,
+      "cells_per_band": [
+        3,
+        4
+      ],
+      "columns_per_band": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "blanks": 0
+    },
+    "predicted": {
+      "ink_pixels": 168.0
+    },
+    "options_from_image": [
+      {
+        "label": "A",
+        "shape_count": 1,
+        "sides": 6,
+        "area_ratio": 0.1373,
+        "centroid": [
+          0.506,
+          0.611
+        ],
+        "symmetric": [
+          false,
+          false
+        ]
+      },
+      {
+        "label": "B",
+        "shape_count": 1,
+        "sides": 6,
+        "area_ratio": 0.1633,
+        "centroid": [
+          0.632,
+          0.31
+        ],
+        "symmetric": [
+          false,
+          true
+        ]
+      },
+      {
+        "label": "C",
+        "shape_count": 1,
+        "sides": 4,
+        "area_ratio": 0.05,
+        "centroid": [
+          0.734,
+          0.933
+        ],
+        "symmetric": [
+          true,
+          true
+        ]
+      },
+      {
+        "label": "D",
+        "shape_count": 1,
+        "sides": 4,
+        "area_ratio": 0.0513,
+        "centroid": [
+          0.777,
+          0.12
+        ],
+        "symmetric": [
+          false,
+          false
+        ]
+      }
+    ],
+    "candidates": [
+      {
+        "rule": "count",
+        "label": null,
+        "detail": "图形个数外推为 1，但有 4 个选项匹配（无法唯一确定）",
+        "predicted": {
+          "shape_count": 1
+        },
+        "score": null
+      },
+      {
+        "rule": "sides",
+        "label": null,
+        "detail": "边数外推为 6，但有 2 个选项匹配",
+        "predicted": {
+          "sides": 6
+        },
+        "score": null
+      },
+      {
+        "rule": "symmetry",
+        "label": null,
+        "detail": "对称性应为 垂直=False 水平=False，但有 2 个选项匹配",
+        "predicted": {
+          "vertical": false,
+          "horizontal": false
+        },
+        "score": null
+      },
+      {
+        "rule": "fill",
+        "label": "A",
+        "detail": "墨迹面积按等差变化到约 168px（容差 20px）",
+        "predicted": {
+          "ink_pixels": 168.0
+        },
+        "score": 0.0
+      }
+    ],
+    "regions": {
+      "stem_crop": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-rot90-01\\regions\\diagram_d1.png",
+      "option_labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "option_crops": [
+        "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-rot90-01\\regions\\option_A.png",
+        "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-rot90-01\\regions\\option_B.png",
+        "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-rot90-01\\regions\\option_C.png",
+        "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-rot90-01\\regions\\option_D.png"
+      ],
+      "stem_grid": [
+        1,
+        3
+      ]
+    },
+    "tool": "figure_rules_adapter",
+    "transform": {
+      "status": "not_applicable",
+      "answer": null,
+      "reason": "空格不在行末或已知格不足，变换通道不适用（序列）",
+      "verdict": {
+        "verdict": "no_rule",
+        "answer": null,
+        "support": {}
+      },
+      "candidates": [],
+      "parameter_stable": null,
+      "independently_verified": null,
+      "symmetry_unresolvable": null,
+      "stem_fingerprint": null,
+      "verification": null,
+      "blockers": null,
+      "overlay_eval": null,
+      "coord_contract": null
+    },
+    "latency_ms": 74.711
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "kind": "assessment-agent-evidence-manifest",
+  "generated_utc": "2026-10-19T06:38:43+00:00",
+  "hash": "sha256",
+  "dir": "evidence/metric_errata",
+  "file_count": 1,
+  "files": {
+    "r4f_option_region_iou_pooled.json": {
+      "sha256": "e983bd5b34667fac9ed9badc29c664d6d4b2f66fb1bd0d2aa8e469cc4b6232f3",
+      "bytes": 3059
+    }
+  }
+}

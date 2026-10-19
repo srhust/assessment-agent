@@ -1,0 +1,93 @@
+{
+  "id": "errata-r4f-option-region-iou-pooled",
+  "issued_utc": "2026-10-19T06:32:48+00:00",
+  "code_fix": "src/assessment_agent/evaluation/vision_metrics.py aggregate_vision (R4f)",
+  "defect": "旧实现 pooled = Σ(每题均值)/Σ(每题金标框数)：分子是逐题平均IoU的和，分母却是框总数，等价于把每题均值又除以了一次该题选项数，系统性低估（n 选项等量时约为真值的 1/n）。",
+  "corrected_formula": "pooled = Σ_i (n_i · mean_i) / Σ_i n_i",
+  "impact": "不影响 Solver/Verifier 作答与放行判定，仅误导视觉框选质量分析；diagram_region_iou_mean 与 option_region_iou_mean 本身无错。",
+  "discipline": "原始两次 Smoke 与历史回放文件一字未改；R4f 起新报告直接输出修复后口径。",
+  "records": [
+    {
+      "run": "E:/assessment-agent/evidence/real_vlm_first_run/smoke-20261019T022717Z",
+      "per_case": [
+        {
+          "case_id": "ft-grid-10",
+          "option_iou_mean": 0.4705,
+          "option_n": 4,
+          "diagram_iou_mean": 0.945,
+          "diagram_n": 1
+        },
+        {
+          "case_id": "ft-overlay-12",
+          "option_iou_mean": 0.4516,
+          "option_n": 4,
+          "diagram_iou_mean": 0.7881,
+          "diagram_n": 1
+        },
+        {
+          "case_id": "ft-rot90-01",
+          "option_iou_mean": 0.4216,
+          "option_n": 4,
+          "diagram_iou_mean": 0.5123,
+          "diagram_n": 1
+        }
+      ],
+      "original_reported": {
+        "option_region_iou_mean": 0.4479,
+        "option_region_iou_pooled": 0.112
+      },
+      "legacy_formula_recomputed": 0.112,
+      "corrected": {
+        "option_region_iou_pooled": {
+          "value": 0.4479,
+          "denominator": 12
+        },
+        "diagram_region_iou_pooled": {
+          "value": 0.7485,
+          "denominator": 3
+        }
+      }
+    },
+    {
+      "run": "E:/assessment-agent/evidence/real_vlm_second_run/smoke-20261019T051724Z",
+      "per_case": [
+        {
+          "case_id": "ft-grid-10",
+          "option_iou_mean": 0.5574,
+          "option_n": 4,
+          "diagram_iou_mean": 0.9195,
+          "diagram_n": 1
+        },
+        {
+          "case_id": "ft-overlay-12",
+          "option_iou_mean": 0.3461,
+          "option_n": 4,
+          "diagram_iou_mean": 0.7949,
+          "diagram_n": 1
+        },
+        {
+          "case_id": "ft-rot90-01",
+          "option_iou_mean": 0.2895,
+          "option_n": 4,
+          "diagram_iou_mean": 0.5148,
+          "diagram_n": 1
+        }
+      ],
+      "original_reported": {
+        "option_region_iou_mean": 0.3977,
+        "option_region_iou_pooled": 0.0994
+      },
+      "legacy_formula_recomputed": 0.0994,
+      "corrected": {
+        "option_region_iou_pooled": {
+          "value": 0.3977,
+          "denominator": 12
+        },
+        "diagram_region_iou_pooled": {
+          "value": 0.7431,
+          "denominator": 3
+        }
+      }
+    }
+  ]
+}

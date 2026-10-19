@@ -6,9 +6,9 @@
 *.pem
 secrets/
 
-# 运行产物
-runs/
-results/
+# 运行产物（锚定仓库根：evidence/**/runs/ 是入库的冻结回放证据，不得被波及）
+/runs/
+/results/
 data/private/
 *.log
 

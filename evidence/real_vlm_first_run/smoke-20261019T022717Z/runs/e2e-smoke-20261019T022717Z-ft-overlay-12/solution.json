@@ -1,0 +1,155 @@
+{
+  "status": "failed",
+  "skill": "figure_reasoning",
+  "answer": null,
+  "answer_text": null,
+  "steps": [
+    "[区域适配] 题干裁剪 diagram_d1.png（显式网格 (3, 3)）+ 4 个选项裁剪按标号 ['A', 'B', 'C', 'D'] 映射，合成证据画布后按原规律引擎推断",
+    "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则"
+  ],
+  "confidence": 0.0,
+  "method": "figure_rules_adapter",
+  "tool_calls": [
+    {
+      "tool": "figure_rules_adapter",
+      "args": {
+        "stem_crop": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\regions\\diagram_d1.png",
+        "option_labels": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "grid": [
+          3,
+          3
+        ]
+      },
+      "ok": true,
+      "result": {
+        "status": "failed",
+        "mode": "grid",
+        "rule": null,
+        "answer": null,
+        "reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则",
+        "agreement": []
+      },
+      "error": null,
+      "duration_ms": 0.0
+    }
+  ],
+  "error": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：canvas_mismatch：格间画布尺寸/纵横不一致（裁剪异常），尺度维度不可信，整体降级",
+  "meta": {
+    "stage": 1,
+    "image": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\image\\original.png",
+    "mode": "grid",
+    "rule": null,
+    "agreement": [],
+    "layout": {
+      "threshold": "otsu",
+      "size": [
+        248,
+        254
+      ],
+      "mode": "regions",
+      "grid": [
+        3,
+        3
+      ],
+      "pitch": [
+        42.0,
+        48.0
+      ],
+      "grid_regular": true,
+      "cells_per_band": [
+        3,
+        3,
+        3,
+        4
+      ],
+      "columns_per_band": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "blanks": 1
+    },
+    "predicted": null,
+    "options_from_image": [],
+    "candidates": [
+      {
+        "rule": "overlay",
+        "label": null,
+        "detail": "未找到能同时解释所有完整行的叠加规则",
+        "predicted": {
+          "iou": {
+            "xor": 0.1727,
+            "or": 0.2374,
+            "and": 0.1233
+          }
+        },
+        "score": null
+      }
+    ],
+    "regions": {
+      "stem_crop": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\regions\\diagram_d1.png",
+      "option_labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "option_crops": [
+        "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\regions\\option_A.png",
+        "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\regions\\option_B.png",
+        "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\regions\\option_C.png",
+        "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\regions\\option_D.png"
+      ],
+      "stem_grid": [
+        3,
+        3
+      ]
+    },
+    "tool": "figure_rules_adapter",
+    "transform": {
+      "verdict": {
+        "verdict": "ambiguous",
+        "answer": null,
+        "support": {},
+        "detail": "canvas_mismatch：格间画布尺寸/纵横不一致（裁剪异常），尺度维度不可信，整体降级"
+      },
+      "candidates": [],
+      "parameter_stable": false,
+      "independently_verified": false,
+      "symmetry_unresolvable": [
+        "cell0: 对称不可区分 ['FH', 'FV', 'I', 'R180']",
+        "cell1: 对称不可区分 ['FH', 'FV', 'I', 'R180']",
+        "cell3: 对称不可区分 ['FH', 'FV', 'I', 'R180']",
+        "cell4: 对称不可区分 ['FH', 'FV', 'I', 'R180']",
+        "cell5: 对称不可区分 ['FV', 'I']",
+        "cell6: 对称不可区分 ['FH', 'FV', 'I', 'R180']",
+        "cell7: 对称不可区分 ['FH', 'FV', 'I', 'R180']",
+        "canvas_mismatch：格间画布尺寸/纵横不一致（裁剪异常），尺度维度不可信，整体降级"
+      ]
+    },
+    "latency_ms": 116.61
+  }
+}

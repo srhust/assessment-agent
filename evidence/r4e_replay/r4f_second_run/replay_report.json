@@ -1,0 +1,666 @@
+{
+  "kind": "r4e_same_input_replay",
+  "label": "r4f_second_run",
+  "generated_at": "20261019T063723Z",
+  "code_sha": "a71d7087f040b216799c131c5888726fe70da3be-dirty",
+  "code_provenance": {
+    "git_sha": "a71d7087f040b216799c131c5888726fe70da3be",
+    "worktree_dirty_src": true,
+    "dirty_files": [
+      "cripts/r4e_replay_first_run.py",
+      "src/assessment_agent/evaluation/vision_metrics.py",
+      "scripts/r4f_metric_errata.py"
+    ],
+    "python": "3.9.21",
+    "module_sha256": {
+      "src/assessment_agent/tools/figure_transform.py": "de234b70626bb6cfc255f93c7db8723726742170b85fd12ce31db3d2b1e9c460",
+      "src/assessment_agent/tools/figure_transform_tools.py": "ecf52da7cd0a5752fc8f4f9af257eedbd7020c1fc63d46c24038a177351508e2",
+      "src/assessment_agent/tools/figure_adapter.py": "4b167d3c96bd1eecb722726a4895037d926a2d6f3c85d3b58e96c5636b21088c",
+      "src/assessment_agent/evaluation/vision_metrics.py": "7ee67fb8dd51adf0a7a78e85817aec113a32ebaad0d0a942db9f32d42f0c188c",
+      "src/assessment_agent/skills/figure_reasoning.py": "9cc922910be89176aa414fcd7ceeec2fc0cac5b256e881bc968b1632b6277281"
+    },
+    "effective_code_sha": "a71d7087f040b216799c131c5888726fe70da3be-dirty"
+  },
+  "code_sha_override_note": "",
+  "evidence_run": "smoke-20261019T051724Z",
+  "api_calls_made": 0,
+  "note": "视觉输入=真实跑 VisionParser 落盘裁剪与网格几何，完全相同（逐文件 sha256 随报告）；回放只重跑六类+变换求解/验证链路，零模型调用。真实跑产物只读。",
+  "cases": [
+    {
+      "case_id": "ft-grid-10",
+      "question_id": "q_54044df91e7f",
+      "run_ref": "e2e-smoke-20261019T051724Z-ft-grid-10",
+      "expected": "A",
+      "first_run": {
+        "solver_proposed": null,
+        "predicted_option": null,
+        "predicted": null,
+        "failure_class": "extraction_text_error",
+        "failure_reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 0.810474, 'B': 0.928034, 'C': 1.0, 'D': 0.919608}, 'rotate_flip_grid_col': {'A': 0.810474, 'B': 0.928034, 'C': 1.0, 'D': 0.919608}}",
+        "first_detected_error": "stem_text:stem_truncated_or_wrong",
+        "blocking_failure": "solver:no_rule",
+        "grid_vlm": [
+          3,
+          3
+        ],
+        "grid_gold": null
+      },
+      "replay_inputs": {
+        "stem_crop": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-grid-10/regions/diagram_d1.png",
+        "stem_crop_sha256": "b3ba4b7fd5f2172888a98e92e539b128566fefbfb80a472c3609a3c578d98646",
+        "grid": [
+          3,
+          3
+        ],
+        "option_labels": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "option_crops": {
+          "A": {
+            "path": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-grid-10/regions/option_A.png",
+            "sha256": "26279f781eedcdbf6e7e8b536862baeca9c19f2d9fbf932f179c70a81a67fd56"
+          },
+          "B": {
+            "path": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-grid-10/regions/option_B.png",
+            "sha256": "e3d4eeb18e8ea3d0fb9f2df8f2fdaa3c0c4081592e58f98cb9f2a7396c09b61c"
+          },
+          "C": {
+            "path": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-grid-10/regions/option_C.png",
+            "sha256": "a534b8b222de7e2defbb686194d4d20d91576410d8aba029f52b54739c17076e"
+          },
+          "D": {
+            "path": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-grid-10/regions/option_D.png",
+            "sha256": "08844fc19083cd3519eb8628901dc3e10b617925786433b82ffea7b4cc1122e5"
+          }
+        }
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则"
+      },
+      "transform": {
+        "status": "failed",
+        "answer": null,
+        "mode": "grid3",
+        "verdict": "ambiguous",
+        "reason": "{'rotate_flip_grid_row': {'A': 0.810474, 'B': 0.928034, 'C': 1.0, 'D': 0.919608}, 'rotate_flip_grid_col': {'A': 0.810474, 'B': 0.928034, 'C': 1.0, 'D': 0.919608}}",
+        "n_candidates": 2,
+        "parameter_stable": false,
+        "independently_verified": false,
+        "verifier_action": "unverified",
+        "blockers": [],
+        "overlay_eval": {
+          "overlay_grid_row:xor": {
+            "best_demo_residual": 0.833,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:or": {
+            "best_demo_residual": 0.859,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:and": {
+            "best_demo_residual": 1.0,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:xor": {
+            "best_demo_residual": 0.809,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:or": {
+            "best_demo_residual": 0.821,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:and": {
+            "best_demo_residual": 1.0,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          }
+        },
+        "coord_contract": {
+          "stem_canvas": [
+            138,
+            142
+          ],
+          "cell_bboxes": [
+            [
+              0,
+              0,
+              47,
+              46
+            ],
+            [
+              47,
+              0,
+              95,
+              46
+            ],
+            [
+              95,
+              0,
+              142,
+              46
+            ],
+            [
+              0,
+              46,
+              47,
+              92
+            ],
+            [
+              47,
+              46,
+              95,
+              92
+            ],
+            [
+              95,
+              46,
+              142,
+              92
+            ],
+            [
+              0,
+              92,
+              47,
+              138
+            ],
+            [
+              47,
+              92,
+              95,
+              138
+            ]
+          ],
+          "pair_align": {
+            "0-1": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                46,
+                48
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                -1
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            },
+            "0-3": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                46,
+                47
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                0
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            }
+          },
+          "tol_px": 3
+        },
+        "stem_fingerprint": {
+          "cell_count": 8,
+          "ink": [
+            168,
+            168,
+            168,
+            168,
+            168,
+            168,
+            168,
+            168
+          ],
+          "canvas": [
+            [
+              46,
+              47
+            ],
+            [
+              46,
+              48
+            ],
+            [
+              46,
+              47
+            ],
+            [
+              46,
+              47
+            ],
+            [
+              46,
+              48
+            ],
+            [
+              46,
+              47
+            ],
+            [
+              46,
+              47
+            ],
+            [
+              46,
+              48
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "ft-overlay-12",
+      "question_id": "q_c00f18d8490e",
+      "run_ref": "e2e-smoke-20261019T051724Z-ft-overlay-12",
+      "expected": "A",
+      "first_run": {
+        "solver_proposed": null,
+        "predicted_option": null,
+        "predicted": null,
+        "failure_class": "extraction_text_error",
+        "failure_reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定",
+        "first_detected_error": "stem_text:stem_truncated_or_wrong",
+        "blocking_failure": "solver:overlay_residual_over_tol",
+        "grid_vlm": [
+          3,
+          3
+        ],
+        "grid_gold": null
+      },
+      "replay_inputs": {
+        "stem_crop": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-overlay-12/regions/diagram_d1.png",
+        "stem_crop_sha256": "d0b9535937ca146e7b3f4ca64c11ebe4218cf0f3ad9304f9e656abdec84ca6c8",
+        "grid": [
+          3,
+          3
+        ],
+        "option_labels": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "option_crops": {
+          "A": {
+            "path": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-overlay-12/regions/option_A.png",
+            "sha256": "880ac43f645e735abb41cb23b7eb6d299b2adfefbef8f04e587b7ac1d3e560da"
+          },
+          "B": {
+            "path": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-overlay-12/regions/option_B.png",
+            "sha256": "f6577068f8ed030823c1370eb7995948c988cc93b5e3035ec6e88a44d307107f"
+          },
+          "C": {
+            "path": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-overlay-12/regions/option_C.png",
+            "sha256": "c7eebb63edc88cbde3227434fa8066f8faaf7602e071ba650c4b8ae22211f8c8"
+          },
+          "D": {
+            "path": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-overlay-12/regions/option_D.png",
+            "sha256": "8c5b7a32180715abbfc0046c37ec77689b8829e45603010ab51b560d7755a171"
+          }
+        }
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则"
+      },
+      "transform": {
+        "status": "failed",
+        "answer": null,
+        "mode": "grid3",
+        "verdict": "no_rule",
+        "reason": "变换规律不可唯一判定",
+        "n_candidates": 0,
+        "parameter_stable": false,
+        "independently_verified": false,
+        "verifier_action": "unverified",
+        "blockers": [
+          {
+            "code": "overlay_residual_over_tol",
+            "stage": "overlay_eval",
+            "cells": [],
+            "detail": "overlay_grid_col:xor 最小演示残差 0.721 > 容差 0.12"
+          }
+        ],
+        "overlay_eval": {
+          "overlay_grid_row:xor": {
+            "best_demo_residual": 0.82,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:or": {
+            "best_demo_residual": 0.755,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:and": {
+            "best_demo_residual": 0.876,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:xor": {
+            "best_demo_residual": 0.721,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:or": {
+            "best_demo_residual": 0.721,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:and": {
+            "best_demo_residual": 1.0,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          }
+        },
+        "coord_contract": {
+          "stem_canvas": [
+            138,
+            126
+          ],
+          "cell_bboxes": [
+            [
+              0,
+              0,
+              42,
+              46
+            ],
+            [
+              42,
+              0,
+              84,
+              46
+            ],
+            [
+              84,
+              0,
+              126,
+              46
+            ],
+            [
+              0,
+              46,
+              42,
+              92
+            ],
+            [
+              42,
+              46,
+              84,
+              92
+            ],
+            [
+              84,
+              46,
+              126,
+              92
+            ],
+            [
+              0,
+              92,
+              42,
+              138
+            ],
+            [
+              42,
+              92,
+              84,
+              138
+            ]
+          ],
+          "pair_align": {
+            "0-1": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                46,
+                42
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                0
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            },
+            "0-3": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                46,
+                42
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                0
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            }
+          },
+          "tol_px": 3
+        },
+        "stem_fingerprint": {
+          "cell_count": 8,
+          "ink": [
+            160,
+            224,
+            256,
+            160,
+            224,
+            256,
+            160,
+            224
+          ],
+          "canvas": [
+            [
+              46,
+              42
+            ],
+            [
+              46,
+              42
+            ],
+            [
+              46,
+              42
+            ],
+            [
+              46,
+              42
+            ],
+            [
+              46,
+              42
+            ],
+            [
+              46,
+              42
+            ],
+            [
+              46,
+              42
+            ],
+            [
+              46,
+              42
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "ft-rot90-01",
+      "question_id": "q_95626d85d1d3",
+      "run_ref": "e2e-smoke-20261019T051724Z-ft-rot90-01",
+      "expected": "A",
+      "first_run": {
+        "solver_proposed": null,
+        "predicted_option": "A",
+        "predicted": null,
+        "failure_class": "region_missing_or_shifted",
+        "failure_reason": "wrong_answer",
+        "first_detected_error": "structure_grid:grid_parse_mismatch",
+        "blocking_failure": "verifier:verifier_unverified",
+        "grid_vlm": [
+          1,
+          3
+        ],
+        "grid_gold": null
+      },
+      "replay_inputs": {
+        "stem_crop": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-rot90-01/regions/diagram_d1.png",
+        "stem_crop_sha256": "7a6e9db9646427287f024d3500f6a0568a02672ad460a9d82226e30c35dbce94",
+        "grid": [
+          1,
+          3
+        ],
+        "option_labels": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "option_crops": {
+          "A": {
+            "path": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-rot90-01/regions/option_A.png",
+            "sha256": "b9cb5d12cd75193334df8b91acb275b683f24c4125b3f665294194f8ff68e357"
+          },
+          "B": {
+            "path": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-rot90-01/regions/option_B.png",
+            "sha256": "3e5e00c75a74e115bceadeed8ef836d62851f0d91668e304b5cb74e8ccab16f7"
+          },
+          "C": {
+            "path": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-rot90-01/regions/option_C.png",
+            "sha256": "c75449256a4cc969662bc43fd2e6aa2ef3eb69c8849800da3ee6eba5bcc554e8"
+          },
+          "D": {
+            "path": "evidence/real_vlm_second_run/smoke-20261019T051724Z/runs/e2e-smoke-20261019T051724Z-ft-rot90-01/regions/option_D.png",
+            "sha256": "d8378b22706830a9efebd8e4c65440e52b14845b4c25e62df3a015a9e2fa9ea7"
+          }
+        }
+      },
+      "six_rules": {
+        "status": "solved",
+        "answer": "A",
+        "rule": "fill",
+        "reason": ""
+      },
+      "transform": {
+        "status": "not_applicable",
+        "answer": null,
+        "mode": null,
+        "verdict": "no_rule",
+        "reason": "空格不在行末或已知格不足，变换通道不适用（序列）",
+        "n_candidates": 0,
+        "parameter_stable": null,
+        "independently_verified": null,
+        "verifier_action": null,
+        "blockers": null,
+        "overlay_eval": null,
+        "coord_contract": null,
+        "stem_fingerprint": null
+      }
+    }
+  ]
+}

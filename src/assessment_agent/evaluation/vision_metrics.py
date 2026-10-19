@@ -294,15 +294,32 @@ def aggregate_vision(per_case: List[Dict[str, Any]]) -> Dict[str, Any]:
     text_cer_mean, text_cer_n = _mean(text_cers)
     opt_ious = [v for v in (i.get("option_iou_mean") for i in scored) if v is not None]
     opt_iou_mean, opt_iou_n = _mean(opt_ious)
-    opt_iou_cases = sum(int(i.get("option_iou_scored") or 0) for i in scored)
     diagram_values = [v for v in (i.get("diagram_iou_mean") for i in scored) if v is not None]
     diagram_iou_mean, diagram_iou_n = _mean(diagram_values)
-    diagram_cases = sum(int(i.get("diagram_iou_scored") or 0) for i in scored)
     recalls = [v for v in (i.get("diagram_recall") for i in scored) if v is not None]
     diagram_recall, diagram_recall_n = _mean(recalls)
     table_values = [v for v in (i.get("table_cell_accuracy") for i in scored) if v is not None]
     table_acc, table_acc_n = _mean(table_values)
     region_fail, region_fail_n = _ratio([bool(i.get("region_detection_failure")) for i in scored])
+
+    def _pooled(mean_key: str, count_key: str):
+        """R4f 修正：pooled = Σ(n_i·mean_i)/Σn_i（逐题按金标框数加权）。
+        旧实现 Σmean_i/Σn_i 把每题均值又除以了一次该题选项数，系统性低估
+        （三题×4 选项时约为真值的 1/4）。"""
+        num, den = 0.0, 0
+        for i in scored:
+            m = i.get(mean_key)
+            if m is None:
+                continue
+            n = int(i.get(count_key) or 0)
+            if n <= 0:
+                continue
+            num += float(m) * n
+            den += n
+        return (round(num / den, 4) if den else None), den
+
+    opt_pooled, opt_pooled_n = _pooled("option_iou_mean", "option_iou_scored")
+    dia_pooled, dia_pooled_n = _pooled("diagram_iou_mean", "diagram_iou_scored")
 
     return {
         "cases": len(scored),
@@ -317,14 +334,20 @@ def aggregate_vision(per_case: List[Dict[str, Any]]) -> Dict[str, Any]:
             "note": "按题取均值；全部金标准选项框参与，漏框按 0 计入每题分母",
         },
         "option_region_iou_pooled": {
-            "value": round(sum(v for v in opt_ious) / opt_iou_cases, 4) if opt_iou_cases else None,
-            "denominator": opt_iou_cases,
+            "value": opt_pooled,
+            "denominator": opt_pooled_n,
+            "note": "逐题金标框数加权的框级均值 Σ(n_i·mean_i)/Σn_i（R4f 修正；旧口径 Σmean_i/Σn_i 已废弃）",
         },
         "diagram_region_recall": {"value": diagram_recall, "denominator": diagram_recall_n},
         "diagram_region_iou_mean": {
             "value": diagram_iou_mean,
             "denominator": diagram_iou_n,
             "note": "IoU≥0.5 记命中；漏检按 0 计入分母",
+        },
+        "diagram_region_iou_pooled": {
+            "value": dia_pooled,
+            "denominator": dia_pooled_n,
+            "note": "同 option pooled 修正口径",
         },
         "table_cell_accuracy": {"value": table_acc, "denominator": table_acc_n},
         "region_detection_failure_rate": {"value": region_fail, "denominator": region_fail_n},

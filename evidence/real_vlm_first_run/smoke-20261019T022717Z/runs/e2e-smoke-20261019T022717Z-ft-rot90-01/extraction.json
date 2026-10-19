@@ -1,0 +1,145 @@
+{
+  "stem": "根据题目图形中蕴含的规律，选择最符合规律的一项补",
+  "options": [
+    {
+      "label": "A",
+      "text": ""
+    },
+    {
+      "label": "B",
+      "text": ""
+    },
+    {
+      "label": "C",
+      "text": ""
+    },
+    {
+      "label": "D",
+      "text": ""
+    }
+  ],
+  "question_type": "single_choice",
+  "skill_hint": "figure_reasoning",
+  "has_diagram": true,
+  "raw_text": "根据题目图形中蕴含的规律，选择最符合规律的一项补",
+  "model": "glm-5.3-flash",
+  "confidence": 0.8,
+  "warnings": [],
+  "schema_version": 2,
+  "bbox_format": "pixel_xywh",
+  "image_width": 380,
+  "image_height": 208,
+  "text_regions": [
+    {
+      "region_id": "t1",
+      "bbox": [
+        18,
+        32,
+        360,
+        18
+      ],
+      "text": "根据题目图形中蕴含的规律，选择最符合规律的一项补"
+    }
+  ],
+  "diagram_regions": [
+    {
+      "region_id": "d1",
+      "role": "stem_figure",
+      "bbox": [
+        20,
+        58,
+        150,
+        42
+      ],
+      "grid": {
+        "rows": 1,
+        "cols": 3
+      },
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-rot90-01\\regions\\diagram_d1.png"
+    }
+  ],
+  "option_regions": [
+    {
+      "label": "A",
+      "bbox": [
+        20,
+        140,
+        65,
+        40
+      ],
+      "text": "",
+      "has_figure": true,
+      "figure_bbox": [
+        52,
+        145,
+        24,
+        30
+      ],
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-rot90-01\\regions\\option_A.png"
+    },
+    {
+      "label": "B",
+      "bbox": [
+        108,
+        140,
+        62,
+        40
+      ],
+      "text": "",
+      "has_figure": true,
+      "figure_bbox": [
+        138,
+        143,
+        24,
+        30
+      ],
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-rot90-01\\regions\\option_B.png"
+    },
+    {
+      "label": "C",
+      "bbox": [
+        198,
+        140,
+        64,
+        40
+      ],
+      "text": "",
+      "has_figure": true,
+      "figure_bbox": [
+        233,
+        147,
+        24,
+        26
+      ],
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-rot90-01\\regions\\option_C.png"
+    },
+    {
+      "label": "D",
+      "bbox": [
+        283,
+        140,
+        58,
+        40
+      ],
+      "text": "",
+      "has_figure": true,
+      "figure_bbox": [
+        310,
+        143,
+        24,
+        28
+      ],
+      "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-rot90-01\\regions\\option_D.png"
+    }
+  ],
+  "table_regions": [],
+  "reading_order": [
+    "t1",
+    "d1",
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "parser": "vision_parser"
+}

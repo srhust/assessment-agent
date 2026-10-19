@@ -1,0 +1,166 @@
+{
+  "id": "q_ecf6d6599708",
+  "stem": "根据题目图形中蕴含的规律，选择最符合规律的一项补",
+  "options": [
+    {
+      "label": "A",
+      "text": "由小方块组成的小十字形"
+    },
+    {
+      "label": "B",
+      "text": "大十字形"
+    },
+    {
+      "label": "C",
+      "text": "小实心方块"
+    },
+    {
+      "label": "D",
+      "text": "短横条"
+    }
+  ],
+  "skill": null,
+  "question_type": "single_choice",
+  "image_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\image\\original.png",
+  "source": "image",
+  "meta": {
+    "extraction_confidence": 0.82,
+    "has_diagram": true,
+    "vision": {
+      "bbox_format": "pixel_xywh",
+      "image_size": [
+        380,
+        304
+      ],
+      "stem_matrix_bbox": [
+        30,
+        56,
+        126,
+        144
+      ],
+      "stem_matrix_grid": [
+        3,
+        3
+      ],
+      "stem_matrix_crop": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\regions\\diagram_d1.png",
+      "diagram_regions": [
+        {
+          "region_id": "d1",
+          "role": "stem_matrix",
+          "bbox": [
+            30,
+            56,
+            126,
+            144
+          ],
+          "grid": {
+            "rows": 3,
+            "cols": 3
+          },
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\regions\\diagram_d1.png"
+        }
+      ],
+      "option_regions": [
+        {
+          "label": "A",
+          "bbox": [
+            22,
+            231,
+            70,
+            42
+          ],
+          "text": "由小方块组成的小十字形",
+          "has_figure": true,
+          "figure_bbox": [
+            60,
+            232,
+            30,
+            38
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\regions\\option_A.png"
+        },
+        {
+          "label": "B",
+          "bbox": [
+            112,
+            231,
+            66,
+            42
+          ],
+          "text": "大十字形",
+          "has_figure": true,
+          "figure_bbox": [
+            147,
+            232,
+            30,
+            38
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\regions\\option_B.png"
+        },
+        {
+          "label": "C",
+          "bbox": [
+            200,
+            236,
+            56,
+            34
+          ],
+          "text": "小实心方块",
+          "has_figure": true,
+          "figure_bbox": [
+            238,
+            243,
+            15,
+            15
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\regions\\option_C.png"
+        },
+        {
+          "label": "D",
+          "bbox": [
+            286,
+            238,
+            64,
+            30
+          ],
+          "text": "短横条",
+          "has_figure": true,
+          "figure_bbox": [
+            317,
+            246,
+            32,
+            14
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T022717Z-ft-overlay-12\\regions\\option_D.png"
+        }
+      ],
+      "table_regions": [],
+      "text_regions": [
+        {
+          "region_id": "t1",
+          "bbox": [
+            14,
+            22,
+            360,
+            22
+          ],
+          "text": "根据题目图形中蕴含的规律，选择最符合规律的一项补"
+        }
+      ],
+      "reading_order": [
+        "t1",
+        "d1",
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "parser": "vision_parser",
+      "confidence": 0.82
+    },
+    "grid": [
+      3,
+      3
+    ]
+  }
+}

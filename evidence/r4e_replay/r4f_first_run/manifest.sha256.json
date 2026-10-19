@@ -1,0 +1,13 @@
+{
+  "kind": "assessment-agent-evidence-manifest",
+  "generated_utc": "2026-10-19T06:38:42+00:00",
+  "hash": "sha256",
+  "dir": "evidence/r4e_replay/r4f_first_run",
+  "file_count": 1,
+  "files": {
+    "replay_report.json": {
+      "sha256": "2671276a7f0862afe60b3ff38a06c18f576b492530f182f1ca0b8dd7ebd83982",
+      "bytes": 19756
+    }
+  }
+}

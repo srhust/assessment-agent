@@ -1,0 +1,166 @@
+{
+  "id": "q_c00f18d8490e",
+  "stem": "根据题目图形中蕴含的规律，选择最符合规律的一项补",
+  "options": [
+    {
+      "label": "A",
+      "text": ""
+    },
+    {
+      "label": "B",
+      "text": ""
+    },
+    {
+      "label": "C",
+      "text": ""
+    },
+    {
+      "label": "D",
+      "text": ""
+    }
+  ],
+  "skill": null,
+  "question_type": "single_choice",
+  "image_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-overlay-12\\image\\original.png",
+  "source": "image",
+  "meta": {
+    "extraction_confidence": 0.82,
+    "has_diagram": true,
+    "vision": {
+      "bbox_format": "pixel_xywh",
+      "image_size": [
+        380,
+        304
+      ],
+      "stem_matrix_bbox": [
+        28,
+        60,
+        126,
+        138
+      ],
+      "stem_matrix_grid": [
+        3,
+        3
+      ],
+      "stem_matrix_crop": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-overlay-12\\regions\\diagram_d1.png",
+      "diagram_regions": [
+        {
+          "region_id": "d1",
+          "role": "stem_matrix",
+          "bbox": [
+            28,
+            60,
+            126,
+            138
+          ],
+          "grid": {
+            "rows": 3,
+            "cols": 3
+          },
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-overlay-12\\regions\\diagram_d1.png"
+        }
+      ],
+      "option_regions": [
+        {
+          "label": "A",
+          "bbox": [
+            18,
+            236,
+            68,
+            34
+          ],
+          "text": "",
+          "has_figure": true,
+          "figure_bbox": [
+            56,
+            236,
+            28,
+            32
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-overlay-12\\regions\\option_A.png"
+        },
+        {
+          "label": "B",
+          "bbox": [
+            106,
+            236,
+            66,
+            34
+          ],
+          "text": "",
+          "has_figure": true,
+          "figure_bbox": [
+            146,
+            236,
+            28,
+            32
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-overlay-12\\regions\\option_B.png"
+        },
+        {
+          "label": "C",
+          "bbox": [
+            196,
+            238,
+            60,
+            30
+          ],
+          "text": "",
+          "has_figure": true,
+          "figure_bbox": [
+            238,
+            244,
+            16,
+            16
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-overlay-12\\regions\\option_C.png"
+        },
+        {
+          "label": "D",
+          "bbox": [
+            280,
+            238,
+            62,
+            30
+          ],
+          "text": "",
+          "has_figure": true,
+          "figure_bbox": [
+            312,
+            246,
+            30,
+            14
+          ],
+          "crop_path": "E:\\assessment-agent\\runs\\e2e-smoke-20261019T051724Z-ft-overlay-12\\regions\\option_D.png"
+        }
+      ],
+      "table_regions": [],
+      "text_regions": [
+        {
+          "region_id": "t1",
+          "bbox": [
+            10,
+            22,
+            368,
+            26
+          ],
+          "text": "根据题目图形中蕴含的规律，选择最符合规律的一项补"
+        }
+      ],
+      "reading_order": [
+        "t1",
+        "d1",
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "parser": "vision_parser",
+      "confidence": 0.82
+    },
+    "grid": [
+      3,
+      3
+    ]
+  }
+}

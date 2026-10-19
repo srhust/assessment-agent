@@ -1,26 +1,36 @@
-"""R4e 同输入离线回放：对冻结的首次真实 VLM 产物重跑求解/验证链路（零 API）。
+"""R4e 同输入离线回放：对冻结的真实 VLM 产物重跑求解/验证链路（零 API）。
 
 背景（评审裁决 P1-3/评测要求）：旧码与新码必须在**完全相同的视觉输入**上对照。
-视觉输入 = 首跑 `evidence/real_vlm_first_run/<smoke-run>/runs/<run_ref>/` 里
-VisionParser 落盘的裁剪（diagram/选项 crop）+ extraction.json 的网格几何。
-本脚本不发起任何模型调用，仅重放 figure 适配层（六类通道 + 变换通道），
-输出与首跑 predictions 可并排的对照表。
+视觉输入 = `evidence/real_vlm_*/<smoke-run>/runs/<run_ref>/` 里 VisionParser
+落盘的裁剪（diagram/选项 crop）+ question.json 的网格几何。本脚本不发起任何
+模型调用，仅重放 figure 适配层（六类通道 + 变换通道）。
+
+R4f 审计升级（评审阶段A）：
+- run_ref ↔ 基准题号（ft-*）可靠映射：run 目录名以 `--case-ids` 的基准题号
+  结尾，内部 q_* 仅作为 question.id 留档；expected/failure 字段按映射取自
+  原始 predictions，不再为 null。
+- 自动代码溯源：实际 git SHA（含 dirty 标记）+ 关键模块 SHA-256 + Python 版本
+  写入报告，**禁止空 code_sha**。
+- 每个裁剪文件内容 SHA-256 随报告发布：干净克隆可逐字节校验输入同一性。
 
 用法：
     $env:PYTHONPATH="src"
-    python scripts/r4e_replay_first_run.py --label pre_fix --publish
     python scripts/r4e_replay_first_run.py --label post_fix --publish
+    python scripts/r4e_replay_first_run.py --label second --publish \
+        --evidence evidence/real_vlm_second_run/smoke-20261019T051724Z
 
 产物：
 - results/r4e_replay/<label>-<ts>/replay_report.json（全部明细，不覆盖历史）
 - --publish 时把报告同步一份到 evidence/r4e_replay/<label>/（入库供评审复核；
-  首跑 evidence 目录只读，绝不写入）
+  首跑/二跑 evidence 目录只读，绝不写入）
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -33,12 +43,48 @@ from assessment_agent.tools.figure_adapter import (  # noqa: E402
 )
 
 EVIDENCE = ROOT / "evidence" / "real_vlm_first_run" / "smoke-20261019T022717Z"
+KEY_MODULES = (
+    "src/assessment_agent/tools/figure_transform.py",
+    "src/assessment_agent/tools/figure_transform_tools.py",
+    "src/assessment_agent/tools/figure_adapter.py",
+    "src/assessment_agent/evaluation/vision_metrics.py",
+    "src/assessment_agent/skills/figure_reasoning.py",
+)
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def code_provenance() -> dict:
+    """实际 git SHA + dirty 标记 + 关键模块内容哈希（禁止空 code_sha）。"""
+    def git(*args):
+        try:
+            p = subprocess.run(["git", *args], cwd=str(ROOT), capture_output=True,
+                               text=True, timeout=20)
+            return (p.stdout or "").strip() if p.returncode == 0 else ""
+        except Exception:  # noqa: BLE001
+            return ""
+    sha = git("rev-parse", "HEAD")
+    dirty_files = git("status", "--porcelain", "--", "src", "scripts", "tests")
+    prov = {
+        "git_sha": sha or "UNAVAILABLE",
+        "worktree_dirty_src": bool(dirty_files),
+        "dirty_files": [ln[3:] for ln in dirty_files.splitlines()][:20],
+        "python": sys.version.split()[0],
+        "module_sha256": {m: _sha256(ROOT / m) for m in KEY_MODULES
+                          if (ROOT / m).is_file()},
+    }
+    prov["effective_code_sha"] = (
+        f"{prov['git_sha']}{'-dirty' if prov['worktree_dirty_src'] else ''}")
+    return prov
 
 
 def _relocate(p: str, run_dir: Path) -> str:
     """把首跑机器上的绝对裁剪路径映射到 evidence 冻结副本内的同名文件。"""
     name = Path(str(p)).name
-    for cand in ((run_dir / "regions" / name), (run_dir / "image" / name)):
+    for cand in ((run_dir / "regions" / name), (run_dir / "image" / name),
+                 (run_dir / "regions" / "image" / name)):
         if cand.is_file():
             return str(cand)
     return str(p)
@@ -49,7 +95,7 @@ def _short(text, limit: int = 240) -> str:
     return s[:limit]
 
 
-def replay_case(run_dir: Path, out_dir: Path, gold: dict) -> dict:
+def replay_case(run_dir: Path, out_dir: Path, gold: dict, cid: str) -> dict:
     question = json.loads((run_dir / "question.json").read_text(encoding="utf-8"))
     vision = (question.get("meta") or {}).get("vision") or {}
     stem = _relocate(vision.get("stem_matrix_crop") or "", run_dir)
@@ -58,26 +104,34 @@ def replay_case(run_dir: Path, out_dir: Path, gold: dict) -> dict:
                if r.get("has_figure") and r.get("crop_path")]
     grid_raw = vision.get("stem_matrix_grid")
     grid = tuple(int(x) for x in grid_raw) if grid_raw else None
-    case_id = question["id"]
+    g = gold.get(cid, {})
     row: dict = {
-        "case_id": case_id,
-        "expected": gold.get(case_id, {}).get("expected"),
+        "case_id": cid,                       # 基准题号（predictions 同域）
+        "question_id": question["id"],        # 内部 q_*（仅留档）
+        "run_ref": run_dir.name,
+        "expected": g.get("expected"),
         "first_run": {
-            "solver_proposed": gold.get(case_id, {}).get("solver_proposed_answer"),
-            "predicted_option": gold.get(case_id, {}).get("predicted_option"),
-            "predicted": gold.get(case_id, {}).get("predicted"),
-            "failure_class": gold.get(case_id, {}).get("failure_class"),
-            "failure_reason": _short(gold.get(case_id, {}).get("failure_reason")),
+            "solver_proposed": g.get("solver_proposed_answer"),
+            "predicted_option": g.get("predicted_option"),
+            "predicted": g.get("predicted"),
+            "failure_class": g.get("failure_class"),
+            "failure_reason": _short(g.get("failure_reason")),
+            "first_detected_error": g.get("first_detected_error"),
+            "blocking_failure": g.get("blocking_failure"),
             "grid_vlm": list(grid_raw) if grid_raw else None,
-            "grid_gold": gold.get(case_id, {}).get("gold_grid"),
+            "grid_gold": g.get("gold_grid"),
         },
         "replay_inputs": {
-            "stem_crop": str(Path(stem).resolve().relative_to(ROOT)),
+            "stem_crop": str(Path(stem).resolve().relative_to(ROOT)).replace("\\", "/"),
+            "stem_crop_sha256": _sha256(Path(stem)),
             "grid": list(grid) if grid else None,
             "option_labels": [label for label, _ in options],
+            "option_crops": {label: {"path": str(Path(cp).resolve().relative_to(ROOT)).replace("\\", "/"),
+                                     "sha256": _sha256(Path(cp))}
+                             for label, cp in options if Path(cp).is_file()},
         },
     }
-    canvas_path = out_dir / f"{case_id}_adapter_canvas.png"
+    canvas_path = out_dir / f"{cid}_adapter_canvas.png"
     try:
         six = solve_figure_regions(stem, options, grid=grid,
                                    canvas_path=str(canvas_path))
@@ -117,7 +171,9 @@ def main(argv=None) -> int:
     ap.add_argument("--results", default=str(ROOT / "results" / "r4e_replay"))
     ap.add_argument("--publish", action="store_true",
                     help="复制报告到 evidence/r4e_replay/<label>/（入库）")
-    ap.add_argument("--code-sha", default="")
+    ap.add_argument("--code-sha", default="",
+                    help="（可选）人工说明，如 pre_fix 对应历史基线 1e96958；"
+                         "实际溯源始终另记 code_provenance，code_sha 不为空")
     args = ap.parse_args(argv)
 
     evidence = Path(args.evidence)
@@ -143,17 +199,29 @@ def main(argv=None) -> int:
         if cid in gold:
             gold[cid]["gold_grid"] = c.get("gold", {}).get("grid")
 
-    rows = [replay_case(rd, out_dir, gold) for rd in sorted((evidence / "runs").iterdir())
-            if rd.is_dir() and (rd / "question.json").is_file()]
+    run_dirs = sorted(rd for rd in (evidence / "runs").iterdir()
+                      if rd.is_dir() and (rd / "question.json").is_file())
+    # run_ref ↔ 基准题号：run 目录名以 `--case-ids` 传入的 predictions 题号结尾
+    def resolve_cid(run_dir: Path) -> str:
+        hits = [cid for cid in gold if run_dir.name.endswith("-" + cid)]
+        if len(hits) != 1:
+            raise RuntimeError(f"run_ref 无法唯一映射基准题号：{run_dir.name} -> {hits}")
+        return hits[0]
+
+    prov = code_provenance()
+    rows = [replay_case(rd, out_dir, gold, resolve_cid(rd)) for rd in run_dirs]
     report = {
         "kind": "r4e_same_input_replay",
         "label": args.label,
         "generated_at": ts,
-        "code_sha": args.code_sha,
+        "code_sha": prov["effective_code_sha"],
+        "code_provenance": prov,
+        "code_sha_override_note": args.code_sha or "",
         "evidence_run": evidence.name,
         "api_calls_made": 0,
-        "note": ("视觉输入=首跑 VisionParser 落盘裁剪与网格几何，完全相同；"
-                 "回放只重跑六类+变换求解/验证链路，零模型调用。首跑产物只读。"),
+        "note": ("视觉输入=真实跑 VisionParser 落盘裁剪与网格几何，完全相同"
+                 "（逐文件 sha256 随报告）；回放只重跑六类+变换求解/验证链路，"
+                 "零模型调用。真实跑产物只读。"),
         "cases": rows,
     }
     (out_dir / "replay_report.json").write_text(

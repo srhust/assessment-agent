@@ -1,0 +1,666 @@
+{
+  "kind": "r4e_same_input_replay",
+  "label": "r4f_first_run2",
+  "generated_at": "20261019T063648Z",
+  "code_sha": "a71d7087f040b216799c131c5888726fe70da3be-dirty",
+  "code_provenance": {
+    "git_sha": "a71d7087f040b216799c131c5888726fe70da3be",
+    "worktree_dirty_src": true,
+    "dirty_files": [
+      "cripts/r4e_replay_first_run.py",
+      "src/assessment_agent/evaluation/vision_metrics.py",
+      "scripts/r4f_metric_errata.py"
+    ],
+    "python": "3.9.21",
+    "module_sha256": {
+      "src/assessment_agent/tools/figure_transform.py": "de234b70626bb6cfc255f93c7db8723726742170b85fd12ce31db3d2b1e9c460",
+      "src/assessment_agent/tools/figure_transform_tools.py": "ecf52da7cd0a5752fc8f4f9af257eedbd7020c1fc63d46c24038a177351508e2",
+      "src/assessment_agent/tools/figure_adapter.py": "4b167d3c96bd1eecb722726a4895037d926a2d6f3c85d3b58e96c5636b21088c",
+      "src/assessment_agent/evaluation/vision_metrics.py": "7ee67fb8dd51adf0a7a78e85817aec113a32ebaad0d0a942db9f32d42f0c188c",
+      "src/assessment_agent/skills/figure_reasoning.py": "9cc922910be89176aa414fcd7ceeec2fc0cac5b256e881bc968b1632b6277281"
+    },
+    "effective_code_sha": "a71d7087f040b216799c131c5888726fe70da3be-dirty"
+  },
+  "code_sha_override_note": "",
+  "evidence_run": "smoke-20261019T022717Z",
+  "api_calls_made": 0,
+  "note": "视觉输入=真实跑 VisionParser 落盘裁剪与网格几何，完全相同（逐文件 sha256 随报告）；回放只重跑六类+变换求解/验证链路，零模型调用。真实跑产物只读。",
+  "cases": [
+    {
+      "case_id": "ft-grid-10",
+      "question_id": "q_39b82e15aadf",
+      "run_ref": "e2e-smoke-20261019T022717Z-ft-grid-10",
+      "expected": "A",
+      "first_run": {
+        "solver_proposed": null,
+        "predicted_option": null,
+        "predicted": null,
+        "failure_class": "extraction_text_error",
+        "failure_reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换通道异常：ValueError: operands could not be broadcast together with shapes (46,47) (46,48) ",
+        "first_detected_error": null,
+        "blocking_failure": null,
+        "grid_vlm": [
+          3,
+          3
+        ],
+        "grid_gold": null
+      },
+      "replay_inputs": {
+        "stem_crop": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-grid-10/regions/diagram_d1.png",
+        "stem_crop_sha256": "1a55a2e228c708a36d3280e3e67b03013755b2d3bac987e9f213930800177308",
+        "grid": [
+          3,
+          3
+        ],
+        "option_labels": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "option_crops": {
+          "A": {
+            "path": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-grid-10/regions/option_A.png",
+            "sha256": "ac986b6038bb6355d61c918bc544afc4265a53f144dac13033e5930ffb4c9ef6"
+          },
+          "B": {
+            "path": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-grid-10/regions/option_B.png",
+            "sha256": "308503af0a211e5d4337fa00e94d77484ed8f06668399c2808f51147cb8ac1ee"
+          },
+          "C": {
+            "path": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-grid-10/regions/option_C.png",
+            "sha256": "dbc609315f89697c38e6682494bf921ab312f451cfcfed1383bcb1f50600a002"
+          },
+          "D": {
+            "path": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-grid-10/regions/option_D.png",
+            "sha256": "b96bcbc9e98f2bfcf5eefe4d4cab336a2a6322bab09318aebae6960b07ac3efe"
+          }
+        }
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则"
+      },
+      "transform": {
+        "status": "failed",
+        "answer": null,
+        "mode": "grid3",
+        "verdict": "ambiguous",
+        "reason": "{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}}",
+        "n_candidates": 2,
+        "parameter_stable": false,
+        "independently_verified": false,
+        "verifier_action": "unverified",
+        "blockers": [],
+        "overlay_eval": {
+          "overlay_grid_row:xor": {
+            "best_demo_residual": 0.79,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:or": {
+            "best_demo_residual": 0.824,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:and": {
+            "best_demo_residual": 1.0,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:xor": {
+            "best_demo_residual": 0.812,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:or": {
+            "best_demo_residual": 0.829,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:and": {
+            "best_demo_residual": 1.0,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          }
+        },
+        "coord_contract": {
+          "stem_canvas": [
+            138,
+            142
+          ],
+          "cell_bboxes": [
+            [
+              0,
+              0,
+              47,
+              46
+            ],
+            [
+              47,
+              0,
+              95,
+              46
+            ],
+            [
+              95,
+              0,
+              142,
+              46
+            ],
+            [
+              0,
+              46,
+              47,
+              92
+            ],
+            [
+              47,
+              46,
+              95,
+              92
+            ],
+            [
+              95,
+              46,
+              142,
+              92
+            ],
+            [
+              0,
+              92,
+              47,
+              138
+            ],
+            [
+              47,
+              92,
+              95,
+              138
+            ]
+          ],
+          "pair_align": {
+            "0-1": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                46,
+                48
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                -1
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            },
+            "0-3": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                46,
+                47
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                0
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            }
+          },
+          "tol_px": 3
+        },
+        "stem_fingerprint": {
+          "cell_count": 8,
+          "ink": [
+            168,
+            168,
+            168,
+            168,
+            168,
+            168,
+            168,
+            168
+          ],
+          "canvas": [
+            [
+              46,
+              47
+            ],
+            [
+              46,
+              48
+            ],
+            [
+              46,
+              47
+            ],
+            [
+              46,
+              47
+            ],
+            [
+              46,
+              48
+            ],
+            [
+              46,
+              47
+            ],
+            [
+              46,
+              47
+            ],
+            [
+              46,
+              48
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "ft-overlay-12",
+      "question_id": "q_ecf6d6599708",
+      "run_ref": "e2e-smoke-20261019T022717Z-ft-overlay-12",
+      "expected": "A",
+      "first_run": {
+        "solver_proposed": null,
+        "predicted_option": null,
+        "predicted": null,
+        "failure_class": "extraction_text_error",
+        "failure_reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：canvas_mismatch：格间画布尺寸/纵横不一致（裁剪异常），尺度维度不可信，整体降级",
+        "first_detected_error": null,
+        "blocking_failure": null,
+        "grid_vlm": [
+          3,
+          3
+        ],
+        "grid_gold": null
+      },
+      "replay_inputs": {
+        "stem_crop": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-overlay-12/regions/diagram_d1.png",
+        "stem_crop_sha256": "fd0278d3ab5e822bab18a12138a132a29d48af913512c33f17185713de4f2516",
+        "grid": [
+          3,
+          3
+        ],
+        "option_labels": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "option_crops": {
+          "A": {
+            "path": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-overlay-12/regions/option_A.png",
+            "sha256": "e984904706406d8747cd856094b830e70a591076568be45f253dac4cfef8124d"
+          },
+          "B": {
+            "path": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-overlay-12/regions/option_B.png",
+            "sha256": "429d4fd2676cd19fe6bf7ee6b8539b21e0e7ef8acecf6f288e7924c302a08afd"
+          },
+          "C": {
+            "path": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-overlay-12/regions/option_C.png",
+            "sha256": "54a96d045d55f8a02104e95ba99a4bbe74d83b4a3f493e4ab7c531b60308e7d6"
+          },
+          "D": {
+            "path": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-overlay-12/regions/option_D.png",
+            "sha256": "b51c0efae9733cdce5b40c4e1d68da93f43b4488cf5f6dd8acfe11d10f86200b"
+          }
+        }
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则"
+      },
+      "transform": {
+        "status": "failed",
+        "answer": null,
+        "mode": "grid3",
+        "verdict": "no_rule",
+        "reason": "变换规律不可唯一判定",
+        "n_candidates": 0,
+        "parameter_stable": false,
+        "independently_verified": false,
+        "verifier_action": "unverified",
+        "blockers": [
+          {
+            "code": "overlay_residual_over_tol",
+            "stage": "overlay_eval",
+            "cells": [],
+            "detail": "overlay_grid_col:xor 最小演示残差 0.609 > 容差 0.12"
+          }
+        ],
+        "overlay_eval": {
+          "overlay_grid_row:xor": {
+            "best_demo_residual": 0.819,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:or": {
+            "best_demo_residual": 0.753,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_row:and": {
+            "best_demo_residual": 0.874,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:xor": {
+            "best_demo_residual": 0.609,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:or": {
+            "best_demo_residual": 0.609,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          },
+          "overlay_grid_col:and": {
+            "best_demo_residual": 1.0,
+            "accepted": false,
+            "alignment": [
+              "grid_top_left",
+              null
+            ],
+            "tol": 0.12
+          }
+        },
+        "coord_contract": {
+          "stem_canvas": [
+            144,
+            126
+          ],
+          "cell_bboxes": [
+            [
+              0,
+              0,
+              42,
+              48
+            ],
+            [
+              42,
+              0,
+              84,
+              48
+            ],
+            [
+              84,
+              0,
+              126,
+              48
+            ],
+            [
+              0,
+              48,
+              42,
+              96
+            ],
+            [
+              42,
+              48,
+              84,
+              96
+            ],
+            [
+              84,
+              48,
+              126,
+              96
+            ],
+            [
+              0,
+              96,
+              42,
+              144
+            ],
+            [
+              42,
+              96,
+              84,
+              144
+            ]
+          ],
+          "pair_align": {
+            "0-1": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                48,
+                42
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                0
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            },
+            "0-3": {
+              "verified": true,
+              "mode": "grid_top_left",
+              "common_canvas": [
+                48,
+                42
+              ],
+              "offsets": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ]
+              ],
+              "jitter": [
+                0,
+                0
+              ],
+              "reason": "同行/列网格原点整数平移对齐"
+            }
+          },
+          "tol_px": 3
+        },
+        "stem_fingerprint": {
+          "cell_count": 8,
+          "ink": [
+            160,
+            224,
+            256,
+            160,
+            224,
+            256,
+            160,
+            224
+          ],
+          "canvas": [
+            [
+              48,
+              42
+            ],
+            [
+              48,
+              42
+            ],
+            [
+              48,
+              42
+            ],
+            [
+              48,
+              42
+            ],
+            [
+              48,
+              42
+            ],
+            [
+              48,
+              42
+            ],
+            [
+              48,
+              42
+            ],
+            [
+              48,
+              42
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "ft-rot90-01",
+      "question_id": "q_59886350c348",
+      "run_ref": "e2e-smoke-20261019T022717Z-ft-rot90-01",
+      "expected": "A",
+      "first_run": {
+        "solver_proposed": null,
+        "predicted_option": null,
+        "predicted": null,
+        "failure_class": "extraction_text_error",
+        "failure_reason": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 4 个选项匹配（无法唯一确定）；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）",
+        "first_detected_error": null,
+        "blocking_failure": null,
+        "grid_vlm": [
+          1,
+          3
+        ],
+        "grid_gold": null
+      },
+      "replay_inputs": {
+        "stem_crop": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-rot90-01/regions/diagram_d1.png",
+        "stem_crop_sha256": "03a894fefd11632c6571b4b5ab6e98a5b8e7e822f30498aabbce6e6778454bb9",
+        "grid": [
+          1,
+          3
+        ],
+        "option_labels": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "option_crops": {
+          "A": {
+            "path": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-rot90-01/regions/option_A.png",
+            "sha256": "5b2aadea34078c790fd58508f868ac1c887daca279123b6a99b5c28e47076e5c"
+          },
+          "B": {
+            "path": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-rot90-01/regions/option_B.png",
+            "sha256": "554a064d427569e1e0a638daf1d55d3e26927c15f95d9e1fdaa1cab74edfb413"
+          },
+          "C": {
+            "path": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-rot90-01/regions/option_C.png",
+            "sha256": "592dad124389688184e502a9105df925fd7d1f1bf4f755ac6323110f8c854b92"
+          },
+          "D": {
+            "path": "evidence/real_vlm_first_run/smoke-20261019T022717Z/runs/e2e-smoke-20261019T022717Z-ft-rot90-01/regions/option_D.png",
+            "sha256": "c56a7c87e5a51fcdb21f2905eb9583f5dc31b452c49e8f856bed95b9a808dbc5"
+          }
+        }
+      },
+      "six_rules": {
+        "status": "failed",
+        "answer": null,
+        "rule": null,
+        "reason": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 4 个选项匹配（无法唯一确定）"
+      },
+      "transform": {
+        "status": "not_applicable",
+        "answer": null,
+        "mode": null,
+        "verdict": "no_rule",
+        "reason": "空格不在行末或已知格不足，变换通道不适用（序列）",
+        "n_candidates": 0,
+        "parameter_stable": null,
+        "independently_verified": null,
+        "verifier_action": null,
+        "blockers": null,
+        "overlay_eval": null,
+        "coord_contract": null,
+        "stem_fingerprint": null
+      }
+    }
+  ]
+}
