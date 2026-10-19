@@ -235,6 +235,42 @@ class NumericCalculationSkill(BaseSkill):
                 detail=f"题干 {len(stem_nums)} 个数量均被计划操作数绑定（{sorted(consumed)}）",
             )
         )
+        # R6-B 退化拷贝（blocking）：若计算结果只是某个题干数量的单位换算搬运
+        # （值 ∈ {s, s/100, 100·s}），且计划没有多步运算，则"计算"并未回答问题
+        # ——没有超出题干已知量的计算证据，禁止释放（典型：问"需提价多少"却把
+        # 题干的 20% 原样搬回）。同样是语义无关的数值不变式，不是题型模板。
+        value = solution.meta.get("value")
+        single_step = not plan or len(plan.get("steps", [])) <= 1
+        if value is not None and single_step:
+            degenerate = next(
+                (s for s in stem_nums
+                 if _close(float(value), s) or _close(float(value) * 100, s) or _close(float(value), s * 100)),
+                None,
+            )
+            if degenerate is not None:
+                checks.append(
+                    VerificationCheck(
+                        name="numeric.degenerate_copy",
+                        passed=False,
+                        severity="blocking",
+                        detail=(f"结果 {float(value):g} 只是题干数量 {degenerate:g} 的同值搬运"
+                                "（无多步计算证据）——不释放"),
+                    )
+                )
+                return Verification(
+                    passed=False,
+                    action="unverified",
+                    checks=checks,
+                    final_answer=None,
+                    notes="退化拷贝核验未通过：答案未超出题干已知量，缺少真实计算证据",
+                )
+            checks.append(
+                VerificationCheck(
+                    name="numeric.degenerate_copy",
+                    passed=True,
+                    detail="结果超出题干数量等值类（存在真实计算证据）",
+                )
+            )
         if plan:
             # R2c：应用题计划链独立重放（关系步骤 → Fraction 重算），
             # 与下面的单一表达式 Fraction 求值是两条独立计算路径

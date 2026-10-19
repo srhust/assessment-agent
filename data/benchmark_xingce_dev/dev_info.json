@@ -1,0 +1,14 @@
+{
+  "split": "dev",
+  "count": 23,
+  "sha256": "64fefec1bac6cf9a53e3e3793bb36938d7f28f153e700c51bcc905200b02a88e",
+  "by_skill": {
+    "numeric_calculation": 13,
+    "data_analysis": 3,
+    "logical_reasoning": 2,
+    "language_reasoning": 1,
+    "number_series": 2,
+    "figure_reasoning": 2
+  },
+  "note": "R6 开发集：可反复用于规则开发与回归，不属于 held-out"
+}

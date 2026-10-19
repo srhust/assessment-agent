@@ -64,6 +64,21 @@ def test_year_tokens_are_exempt_from_quantity_coverage():
     assert 400.0 in nums and 25.0 in nums
 
 
+def test_degenerate_copy_blocked_even_with_full_coverage():
+    # 反百分比"需提价多少"：计划把题干 20% 原样搬运（0.2=20/100）。
+    # 数量覆盖通过（题干只有 20），但结果未超出题干等值类 → 仍须 unverified。
+    skill = NumericCalculationSkill()
+    q = Question(stem="某商品现价比原价降低了 20%。要恢复原价，需要提价多少？",
+                 options=[{"label": "A", "text": "25%"}, {"label": "B", "text": "20%"},
+                          {"label": "C", "text": "30%"}, {"label": "D", "text": "16.7%"}])
+    sol = Solution(status="solved", skill="numeric_calculation", answer="B",
+                   meta={"expression": "20*(1/100)", "value": 0.2, "exact": "1/5",
+                         "matched_label": "B"})
+    ver = skill.verify(q, sol, None)  # type: ignore[arg-type]
+    assert ver is not None and ver.action == "unverified"
+    assert next(c for c in ver.checks if c.name == "numeric.degenerate_copy").passed is False
+
+
 def test_coverage_invariant_on_partial_plan():
     # 单元级：直接验证部分消费计划的拒绝逻辑（不依赖 solver 行为）
     settings = Settings.from_env() if hasattr(Settings, "from_env") else Settings()
