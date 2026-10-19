@@ -33,9 +33,15 @@ def _format_fraction(value: Fraction) -> str:
 # 通用不变式（与题型/答案无关）：**解必须是对全部题干数量的计算**。计划若遗漏题干
 # 数量（如"先打 8 折、再降价 10%"只用了 8 折；"60 克加 20 克水"只用了浓度数），
 # 无论其表达式内部算术多么自洽，都缺少完整题意证据——禁止释放，返回 unverified。
-# 这不是题型模板：它不识别"折扣/浓度"语义，只做数值 token 的双向绑定核验。
+#
+# R6.1 加固（评审对抗样本）：**步骤描述文本中的数字不算消费**——只有实际参与
+# 计算的表达式操作数（含除法项值）才能绑定题干数量。"描述里提到 10% 但表达式
+# 没有 10/0.1/0.9/1.1 任何形态"仍须拦截。长期正确方向是数量→运算节点的
+# 结构化依赖图；本检查是其数值近似（必要条件，不是语义充分证明）。
 
 _YEAR_RE = _re.compile(r"20\d{2}\s*年")  # 年份标签是时间标识而非可运算数量（通用豁免）
+_DIV_RE = _re.compile(r"(\d+(?:\.\d+)?)\s*/\s*(\d+(?:\.\d+)?)")
+_RATIO_RE = _re.compile(r"\d+(?:[∶:]\d+)+")
 
 
 def _stem_numbers(stem: str) -> List[float]:
@@ -49,18 +55,59 @@ def _stem_numbers(stem: str) -> List[float]:
     return out
 
 
-def _plan_numbers(plan: Optional[dict], expression: Optional[str]) -> set:
-    src_parts: List[str] = [expression or ""]
+def _ratio_groups(stem: str) -> List[List[float]]:
+    """比例式数字组（2∶3∶4）：结构项，其成员共享绑定命运（分母/总份数参与计算即可）。"""
+    groups = []
+    for m in _RATIO_RE.finditer(stem or ""):
+        groups.append([float(x) for x in _re.split(r"[∶:]", m.group(0))])
+    return groups
+
+
+def _expr_values(plan: Optional[dict], expression: Optional[str]) -> set:
+    """**仅表达式操作数**的值集：数字 token + 除法项值（a/b）。
+    步骤描述文本（source）一律不参与——描述提到数字 ≠ 数字参与计算。"""
+    srcs: List[str] = [expression or ""]
     if plan:
         for step in plan.get("steps", []):
-            src_parts.extend(str(part) for part in step)
-    consumed: set = set()
-    for tok in _re.findall(r"\d+(?:\.\d+)?", " ".join(src_parts)):
-        try:
-            consumed.add(float(tok))
-        except ValueError:
-            continue
-    return consumed
+            if len(step) >= 2:
+                srcs.append(str(step[1]))
+    vals: set = set()
+    for src in srcs:
+        for tok in _re.findall(r"\d+(?:\.\d+)?", src):
+            try:
+                vals.add(float(tok))
+            except ValueError:
+                continue
+        for m in _DIV_RE.finditer(src):
+            try:
+                a, b = float(m.group(1)), float(m.group(2))
+            except ValueError:
+                continue
+            if b:
+                vals.add(a / b)
+    return vals
+
+
+def _bound(x: float, vals: set, has_zhe: bool, group: Optional[List[float]]) -> bool:
+    """题干数量 x 是否被表达式绑定：允许 百分/折扣换算值与派生差值（360-300=60）。"""
+    cands = {x, x / 100.0, 1.0 - x / 100.0, 1.0 + x / 100.0}
+    if has_zhe and 0 < x < 10:
+        cands |= {x / 10.0, 1.0 - x / 10.0, 1.0 + x / 10.0}
+    if any(_close(v, c) for v in vals for c in cands):
+        return True
+    for a in vals:
+        for b in vals:
+            if any(_close(a - b, c) for c in (x, x / 100.0)):
+                return True
+    if group:  # 比例组结构豁免：任一成员或总份数进入表达式即整组绑定
+        tot = sum(group)
+        if any(any(_close(v, g) for g in group) or _close(v, tot) for v in vals):
+            return True
+    return False
+
+
+def _plan_numbers(plan: Optional[dict], expression: Optional[str]) -> set:
+    return _expr_values(plan, expression)
 
 
 class NumericCalculationSkill(BaseSkill):
@@ -206,10 +253,14 @@ class NumericCalculationSkill(BaseSkill):
         checks: List[VerificationCheck] = []
         repaired: Optional[str] = None
         plan = solution.meta.get("word_problem")
-        # R6-B 操作数覆盖（blocking）：题干数量必须全部被计算计划绑定消费，否则拒绝释放
+        # R6-B/R6.1 操作数覆盖（blocking）：题干数量必须全部被**表达式操作数**绑定
         stem_nums = _stem_numbers(question.stem)
-        consumed = _plan_numbers(plan, solution.meta.get("expression"))
-        uncovered = [n for n in stem_nums if not any(_close(n, c) for c in consumed)]
+        consumed = _expr_values(plan, solution.meta.get("expression"))
+        has_zhe = "折" in (question.stem or "")
+        groups = _ratio_groups(question.stem)
+        uncovered = [n for n in stem_nums
+                     if not _bound(n, consumed, has_zhe,
+                                    next((g for g in groups if any(_close(n, m) for m in g)), None))]
         if uncovered:
             checks.append(
                 VerificationCheck(

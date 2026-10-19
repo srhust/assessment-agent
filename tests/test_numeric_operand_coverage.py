@@ -79,6 +79,41 @@ def test_degenerate_copy_blocked_even_with_full_coverage():
     assert next(c for c in ver.checks if c.name == "numeric.degenerate_copy").passed is False
 
 
+def test_r61_adversarial_description_contains_numbers_but_expression_does_not():
+    """R6.1 评审对抗样本：步骤**描述文本**写了"再降价 10%"，但表达式没消费 10。
+    数字出现在描述里 ≠ 参与计算——必须仍被拦截（旧实现用描述文本会放行）。"""
+    skill = NumericCalculationSkill()
+    q = Question(stem="原价 300 元的商品先打 8 折，再降价 10%，最终价格是多少元？",
+                 options=[{"label": "A", "text": "240"}, {"label": "B", "text": "210"},
+                          {"label": "C", "text": "270"}, {"label": "D", "text": "216"}])
+    sol = Solution(status="solved", skill="numeric_calculation", answer="A",
+                   meta={"expression": "300*4/5", "value": 240.0, "exact": "240",
+                         "matched_label": "A",
+                         "word_problem": {"kind": "discount", "final_var": "result",
+                                          "steps": [["result", "300*4/5",
+                                                     "原价300元，8折，再降价10%"]]}})
+    ver = skill.verify(q, sol, None)  # type: ignore[arg-type]
+    assert ver is not None and ver.action == "unverified", "描述涵盖数字但表达式未消费仍被放行=漏洞"
+    assert ver.final_answer is None
+
+
+def test_r61_full_two_stage_expression_is_releasable():
+    """正向：表达式真实消费全部题干数量（含第二段的 1-10/100 形态）时必须放行，
+    证明拦截不是无差别弃权。216 = 300×4/5×(1-10/100)。"""
+    skill = NumericCalculationSkill()
+    q = Question(stem="原价 300 元的商品先打 8 折，再降价 10%，最终价格是多少元？",
+                 options=[{"label": "A", "text": "240"}, {"label": "B", "text": "210"},
+                          {"label": "C", "text": "270"}, {"label": "D", "text": "216"}])
+    sol = Solution(status="solved", skill="numeric_calculation", answer="D",
+                   meta={"expression": "300*4/5*(1-10/100)", "value": 216.0, "exact": "216",
+                         "matched_label": "D",
+                         "word_problem": {"kind": "discount", "final_var": "result",
+                                          "steps": [["t1", "300*4/5", "原价×折扣"],
+                                                    ["result", "t1*(1-10/100)", "再降价"]]}})
+    ver = skill.verify(q, sol, None)  # type: ignore[arg-type]
+    assert ver is not None and ver.action == "accept"
+
+
 def test_coverage_invariant_on_partial_plan():
     # 单元级：直接验证部分消费计划的拒绝逻辑（不依赖 solver 行为）
     settings = Settings.from_env() if hasattr(Settings, "from_env") else Settings()

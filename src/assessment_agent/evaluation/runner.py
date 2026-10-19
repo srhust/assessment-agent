@@ -655,6 +655,16 @@ class EvaluationRunner:
             # R4g P1-1：候选答案是否有足够证据获准释放（金标无关的在线语义）
             vision_detail["answer_evidence_sufficient"] = verification.action in (
                 "accept", "repair")
+            # R6.1：独立验证的真实判定——取 Solver 产物之外的复核检查项
+            # （重算/覆盖/退化/几何/裁剪/一致性），不用 action 代理；
+            # 纯 Solver 状态自检（status/answer_present/confidence/in_options）排除
+            _self_names = {"solution.status", "solution.answer_present", "solution.confidence",
+                           "answer.in_options"}
+            _ind_checks = [c for c in (verification.checks or []) if c.name not in _self_names]
+            vision_detail["independent_checks_all_passed"] = bool(_ind_checks) and all(
+                c.passed for c in _ind_checks)
+            vision_detail["independent_checks_total"] = len(_ind_checks)
+            vision_detail["independent_checks_failing"] = [c.name for c in _ind_checks if not c.passed]
             # R6-D：oracle/auto 分支同样产出运行时布局自检诊断（评审裁定——自检
             # 结果必须与金标网格核对分开报告；字段全部金标无关）。
             # 优先记录 **Solver 实际消费的**重建结果（meta.diagram_layout，
@@ -670,6 +680,10 @@ class EvaluationRunner:
                     "detected_rows": dl.get("rows"),
                     "detected_cols": dl.get("cols"),
                     "detected_units": len(dl.get("units") or []),
+                    # R6.1：空白格**像素证据**（frame 空白目标假设），外推假设不算定位
+                    "blank_pixel_evidence": any(
+                        str(h.get("kind")) == "frame_blank_target"
+                        for h in (dl.get("hypotheses") or [])),
                 })
             elif mode != "image_only" and case.regions and case.image:
                 vision_detail.update(self._vision_stages(

@@ -162,6 +162,34 @@ def lg_rows():
     ]
 
 
+def vb_rows():
+    """R6.1 补样本：2 道言语理解 + 1 道唯一答案语言推理（原 23 题缺 verbal 族）。"""
+    return [
+        mk_row("xd-vu-22", "verbal_understanding",
+               "许多写字楼更换了节能照明系统后，由于使用习惯没有改变，省电效果并不明显。"
+               "只有把系统升级和用能行为管理结合起来，才能达到预期的节能目标。"
+               "这段文字的主旨是？",
+               [("A", "节能照明系统的省电效果值得怀疑"),
+                ("B", "只有把系统升级和用能行为管理结合起来，才能达到节能目标"),
+                ("C", "写字楼员工的使用习惯亟待纠正"),
+                ("D", "系统升级比行为管理更为重要")],
+               "B", "main-idea",
+               "'只有…才…'对策句为主旨（结论覆盖核对族；场景为 dev 新写）"),
+        mk_row("xd-vu-23", "verbal_understanding",
+               "一些自媒体为了博取关注（ ），对事件原貌进行夸张改编，完全背离了新闻报道的真实性要求。",
+               [("A", "挺身而出"), ("B", "耸人听闻"), ("C", "当仁不让"), ("D", "据实直书")],
+               "B", "cloze-idiom",
+               "'耸人听闻'=故意夸大使人震惊，与'夸张改编'语境一致（区别于'骇人听闻'=事实本身可怕，"
+               "经典易混对；成语搭配族 dev-target）"),
+        mk_row("xd-lang-24", "language_reasoning",
+               "笔∶文具 与下列哪组词语逻辑关系最为相似？",
+               [("A", "桌子∶家具"), ("B", "轮胎∶橡胶"), ("C", "文具∶笔"), ("D", "医生∶医院")],
+               "A", "analogy-genus-down",
+               "GENUS_DOWN 唯一解：笔是文具、桌子是家具（词库 hyper 证据）；B 材料关系，"
+               "C 方向相反，D 人物∶场所（补 dev 唯一答案类比缺口）"),
+    ]
+
+
 def ns_rows():
     return [
         mk_row("xd-ns-17", "number_series",
@@ -318,7 +346,7 @@ def leak_against_xingce(rows):
 
 
 def main():
-    rows = nc_rows() + da_rows() + lg_rows() + ns_rows() + fig_rows()
+    rows = nc_rows() + da_rows() + lg_rows() + vb_rows() + ns_rows() + fig_rows()
     rows = assemble(rows)
     hits = leak_against_xingce(rows)
     if hits:

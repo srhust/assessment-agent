@@ -51,18 +51,24 @@ def funnel_rows(pred_path: Path, ds_path: Path) -> list:
             recall = round(units / (int(g[0]) * int(g[1])), 3)
         blank_loc = None
         if gold_ok is not None:
-            blank_loc = bool(gold_ok and p.get("runtime_layout_consistent"))
+            blank_loc = bool(gold_ok and p.get("runtime_layout_consistent"))  # noqa: F841 保留对照参考
         rows.append({
             "id": cid,
             "runtime_layout_verified": p.get("runtime_layout_consistent"),
             "gold_grid": g, "detected_grid": [d_rows, d_cols] if d_rows is not None else None,
             "gold_grid_correct": gold_ok,
             "complete_cell_recall": recall,
-            "target_blank_localized": blank_loc,
+            # R6.1：空白格定位=**像素 frame 空白证据**（金标无关的独立证据）；
+            # 外推假设与金标推导都不算定位
+            "target_blank_localized": p.get("blank_pixel_evidence"),
+            # 几何证据可用：区域证据齐 且 空白格不在其中缺席（对 seq 题）
             "geometric_evidence_usable": bool(p.get("region_evidence_complete"))
                 and bool(p.get("crop_content_integrity", True)),
-            "solver_proposed": p.get("predicted") is not None,
-            "independently_verified": p.get("verification_action") in ("accept", "repair"),
+            # R6.1：Solver 候选 ≠ 最终释放。predicted_option=Solver 提出（含被拦截的）
+            "solver_proposed": p.get("predicted_option") is not None,
+            # R6.1：独立验证读**真实检查项**（排除 Solver 状态自检的 blocking 全过），
+            # 不再是 verification_action 代理
+            "independently_verified": p.get("independent_checks_all_passed"),
             "final_released": p.get("verification_action") in ("accept", "repair")
                 and p.get("predicted") is not None,
             "layout_source": p.get("layout_source"),
