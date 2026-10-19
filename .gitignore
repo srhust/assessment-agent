@@ -36,5 +36,6 @@ data/**/*.jpg
 !data/screens/images/*.png
 !data/screens/regions/**/*.png
 !data/benchmark_real/**/*.png
+!data/benchmark_xingce/**/*.png
 !data/screens/images/*.png
 !data/screens/regions/**/*.png
