@@ -29,6 +29,40 @@ def _format_fraction(value: Fraction) -> str:
     return f"{float(value):g}"
 
 
+# ------------------------------------------------------------------ R6 任务B：操作数覆盖复核
+# 通用不变式（与题型/答案无关）：**解必须是对全部题干数量的计算**。计划若遗漏题干
+# 数量（如"先打 8 折、再降价 10%"只用了 8 折；"60 克加 20 克水"只用了浓度数），
+# 无论其表达式内部算术多么自洽，都缺少完整题意证据——禁止释放，返回 unverified。
+# 这不是题型模板：它不识别"折扣/浓度"语义，只做数值 token 的双向绑定核验。
+
+_YEAR_RE = _re.compile(r"20\d{2}\s*年")  # 年份标签是时间标识而非可运算数量（通用豁免）
+
+
+def _stem_numbers(stem: str) -> List[float]:
+    text = _YEAR_RE.sub("", stem or "")
+    out: List[float] = []
+    for tok in _re.findall(r"\d+(?:\.\d+)?", text):
+        try:
+            out.append(float(tok))
+        except ValueError:
+            continue
+    return out
+
+
+def _plan_numbers(plan: Optional[dict], expression: Optional[str]) -> set:
+    src_parts: List[str] = [expression or ""]
+    if plan:
+        for step in plan.get("steps", []):
+            src_parts.extend(str(part) for part in step)
+    consumed: set = set()
+    for tok in _re.findall(r"\d+(?:\.\d+)?", " ".join(src_parts)):
+        try:
+            consumed.add(float(tok))
+        except ValueError:
+            continue
+    return consumed
+
+
 class NumericCalculationSkill(BaseSkill):
     id = "numeric_calculation"
     name_zh = "数字计算"
@@ -172,6 +206,35 @@ class NumericCalculationSkill(BaseSkill):
         checks: List[VerificationCheck] = []
         repaired: Optional[str] = None
         plan = solution.meta.get("word_problem")
+        # R6-B 操作数覆盖（blocking）：题干数量必须全部被计算计划绑定消费，否则拒绝释放
+        stem_nums = _stem_numbers(question.stem)
+        consumed = _plan_numbers(plan, solution.meta.get("expression"))
+        uncovered = [n for n in stem_nums if not any(_close(n, c) for c in consumed)]
+        if uncovered:
+            checks.append(
+                VerificationCheck(
+                    name="numeric.operand_coverage",
+                    passed=False,
+                    severity="blocking",
+                    detail=(f"题干数量 {sorted(set(uncovered))} 未出现在计算计划的操作数/步骤依据中"
+                            f"（已消费 {sorted(consumed)}）——缺少完整题意证据，不释放"),
+                )
+            )
+            return Verification(
+                passed=False,
+                action="unverified",
+                checks=checks,
+                final_answer=None,
+                notes="操作数覆盖核验未通过：计划遗漏题干数量，禁止无完整计算证据的释放",
+            )
+        checks.append(
+            VerificationCheck(
+                name="numeric.operand_coverage",
+                passed=True,
+                severity="blocking",
+                detail=f"题干 {len(stem_nums)} 个数量均被计划操作数绑定（{sorted(consumed)}）",
+            )
+        )
         if plan:
             # R2c：应用题计划链独立重放（关系步骤 → Fraction 重算），
             # 与下面的单一表达式 Fraction 求值是两条独立计算路径
