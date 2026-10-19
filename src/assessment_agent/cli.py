@@ -46,13 +46,14 @@ def build_parser() -> argparse.ArgumentParser:
                   "verbal_dev", "verbal_blind", "verbal_epistemic_dev",
                   "language_dev", "language_blind", "verbal_blind2",
                   "figtrans_dev", "figtrans_test",
-                  "figshots_dev", "figshots_test"],
+                  "figshots_dev", "figshots_test", "xingce_test"],
         help="screens=合成截图回归基线；bench_dev/bench_holdout=独立泛化基准（可调参/冻结）；"
               "verbal_epistemic_dev=R3c 命题归属对照组（最小对比对，可调参）；"
               "language_dev/language_blind=R3c 语言推理（可调参/冻结）；"
               "verbal_blind2=R3c 全新言语盲集（冻结）；"
               "figtrans_dev/figtrans_test=R4a 图形变换基准（可调参/冻结首评）；"
-              "figshots_dev/figshots_test=R4b 完整页面截图集（image_only 端到端，可调参/冻结）",
+              "figshots_dev/figshots_test=R4b 完整页面截图集（image_only 端到端，可调参/冻结）；"
+              "xingce_test=R5 行测全模块 held-out 综合测试集（创建即冻结，不参与任何训练/调参）",
     )
     evaluate.add_argument("--eval-batch", help="评测批次标识（image_only runs 产物按批次隔离，默认使用时间戳）")
     evaluate.add_argument("--skills", help="只评测指定题型，逗号分隔")
