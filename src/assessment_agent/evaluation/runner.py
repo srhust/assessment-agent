@@ -397,7 +397,8 @@ class EvaluationRunner:
 
     @staticmethod
     def _vision_stages(audit_before: Dict[str, Any], audit_after: Dict[str, Any],
-                       extraction: Any, vision_detail: Dict[str, Any]) -> Dict[str, bool]:
+                       extraction: Any, vision_detail: Dict[str, Any],
+                       image_path: Optional[str] = None) -> Dict[str, bool]:
         """每题视觉链路三段（R4d）：HTTP 2xx → JSON/schema 合法 → 结构化产物可用；
         再加证据完整（必需区域全命中）。差分口径避免把 router/solver 请求混计。
 
@@ -449,6 +450,58 @@ class EvaluationRunner:
                     crop_paths.append(str(cp))
         solver_ready = bool(structural and crop_paths
                             and all(Path(cp).is_file() for cp in crop_paths))
+        # --- R4g P1-1 运行时自检字段（金标无关，可用原图+模型输出+几何证据复算）---
+        # 旧键（grid_parse_correct 比对出的 structural/solver_ready）保留**离线评测**
+        # 语义不追改；在线决策与部署重试必须改用 runtime_* 组——尤其不得拿
+        # gold 比对结果去控制推理。
+        runtime: Dict[str, Any] = {
+            "runtime_layout_consistent": None, "layout_source": None,
+            "layout_hypotheses": None, "layout_ambiguity_reason": None,
+            "crop_content_integrity": None, "crops_cover_all_detected_units": None,
+            "solver_ready_runtime": None,
+        }
+        stem_regions: list = []
+        option_payload: list = []
+        if extraction is not None:
+            for r in (getattr(extraction, "diagram_regions", None) or []):
+                d = r.model_dump(mode="json") if hasattr(r, "model_dump") else dict(r or {})
+                if str(d.get("role")) in ("stem_figure", "stem_matrix"):
+                    stem_regions.append(d)
+            for r in (getattr(extraction, "option_regions", None) or []):
+                option_payload.append(r.model_dump(mode="json")
+                                      if hasattr(r, "model_dump") else dict(r or {}))
+        if (image_path and stem_regions and extraction is not None
+                and extraction_valid):
+            try:
+                from ..tools.diagram_layout import assemble_stem_layout, check_option_crop
+                from ..tools.figure_tools import load_mask
+
+                mask = load_mask(str(image_path))
+                res = assemble_stem_layout(mask, stem_regions, option_payload)
+                res.pop("_canvas", None)
+                runtime["runtime_layout_consistent"] = bool(res.get("verified"))
+                runtime["layout_source"] = res.get("layout_source")
+                runtime["layout_hypotheses"] = len(res.get("hypotheses") or [])
+                runtime["layout_ambiguity_reason"] = res.get("ambiguity_reason")
+                crops_ok = []
+                for reg in option_payload:
+                    cp = reg.get("crop_path")
+                    if reg.get("has_figure") and cp and Path(str(cp)).is_file():
+                        crops_ok.append(check_option_crop(load_mask(str(cp)))["passed"])
+                runtime["crop_content_integrity"] = bool(crops_ok and all(crops_ok))
+                und = next((c["detail"].get("undeclared_units") for c in res["checks"]
+                            if c["name"] == "undeclared_units"), None)
+                # 原图可见但 VLM 未声明的单元存在 → 裁剪未覆盖全部必需图形（如实）；
+                # 矩阵直通档 units 语义不适用 → None（不冒充判定）
+                runtime["crops_cover_all_detected_units"] = (
+                    None if res.get("layout_source") == "matrix_passthrough"
+                    else bool(und is not None and len(und) == 0))
+                runtime["solver_ready_runtime"] = bool(
+                    region_evidence and runtime["runtime_layout_consistent"]
+                    and runtime["crop_content_integrity"] and crop_paths
+                    and all(Path(cp).is_file() for cp in crop_paths))
+            except Exception as exc:  # noqa: BLE001 - fail-closed：复算失败不冒充证据
+                runtime["layout_ambiguity_reason"] = f"runtime_recompute_error:{type(exc).__name__}"
         return {
             "vision_http_success": http_ok,
             "vision_schema_valid": schema_ok,
@@ -460,6 +513,7 @@ class EvaluationRunner:
             "region_evidence_complete": region_evidence,
             "structural_evidence_complete": structural,
             "solver_ready": solver_ready,
+            **runtime,
         }
 
     @staticmethod
@@ -535,7 +589,8 @@ class EvaluationRunner:
                 # vision_parser；旧版纯文本降级为 legacy_payload（不算结构化成功）；
                 # 由 client 分阶段审计补 HTTP/schema 层级
                 stages = self._vision_stages(_pre_audit, self._audit(),
-                                             run.extraction, vision_detail)
+                                             run.extraction, vision_detail,
+                                             image_path=case.image)
                 vision_detail.update(stages)
                 run_ref = run.run_id
             else:
@@ -588,6 +643,9 @@ class EvaluationRunner:
             else:
                 correct = solution.status == "solved" and answers_match(predicted, case.answer)
             latency = (time.perf_counter() - started) * 1000.0
+            # R4g P1-1：候选答案是否有足够证据获准释放（金标无关的在线语义）
+            vision_detail["answer_evidence_sufficient"] = verification.action in (
+                "accept", "repair")
             # R4e P1-2：先构建错误链，再让 failure_class 看到结构/几何阻塞（不再
             # 被题干文本截断的早期判定遮蔽）
             transform_meta = (solution.meta or {}).get("transform") or {}

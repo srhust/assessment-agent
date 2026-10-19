@@ -20,6 +20,8 @@ TARGETS = [
     "evidence/r4e_replay/r4f_first_run",
     "evidence/r4e_replay/r4f_second_run",
     "evidence/metric_errata",
+    "evidence/real_vlm_dev15/dev15-20261019T065016Z",
+    "evidence/r4g_ablation",
 ]
 
 

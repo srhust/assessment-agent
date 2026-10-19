@@ -148,6 +148,10 @@ VERIFICATION_OUTCOMES = (
     "correct_reject",       # 客观有答案：Solver 给了错答被拦下，Verifier 正确拒绝（拦截有效）
     "no_answer",            # 客观有答案：Solver 本身无解（诚实失败/能力缺口）
     "unverified_answerable",  # 独立复核无法确认（可答题）→ 受控弃权
+    # R4g P1-2：提议命中金标但证据链不足获准释放（unverified）——这是**纪律正确的
+    # 扣留**，与 verifier 误杀（false_reject：证据完整仍被拒）必须分开统计，
+    # 否则会把"正确防御"误计为"验证器缺陷"（评审裁决口径）。
+    "evidence_insufficient_correct_withheld",
     "correct_abstention",   # 不可判定/无客观答案：未输出通过校验的答案（诚实弃权）
     "unverified_abstention",  # 不可判定样本被 Solver 作答但复核未确认（仍属诚实处理）
     "over_answer",          # 不可判定/主观样本却输出了通过校验的答案（越权作答）
@@ -172,6 +176,8 @@ ROOT_CAUSES = (
     "solver_data_reference",  # R3a：计算计划无法把题意唯一绑定到数据证据（目标/时间/引用歧义）
     "solver_overreach",     # 本应弃权却强行作答
     "verifier",             # 验证器误杀（false reject）
+    # R4g：提议=金标但证据不足以获准释放——归因在感知/重建证据侧，不是验证器缺陷
+    "evidence_insufficient_withheld",
     "pipeline",             # 框架/接口异常
     "unresolved",           # 无法可靠定位（显式承认可见，不伪装归因）
 )
@@ -192,6 +198,9 @@ def derive_verification_outcome(
     if action == _UNVERIFIED_MARK:
         if answerability in {"undecidable", "subjective"}:
             return "unverified_abstention"
+        if gold is not None and solution_answer is not None \
+                and str(solution_answer) == str(gold):
+            return "evidence_insufficient_correct_withheld"
         return "unverified_answerable"
     if answered:
         if answerability == "has_unique_answer":
@@ -227,6 +236,8 @@ def derive_root_cause(
     error = solution_error or ""
     if outcome == "false_reject":
         return "verifier"
+    if outcome == "evidence_insufficient_correct_withheld":
+        return "evidence_insufficient_withheld"
     if outcome == "over_answer":
         return "solver_overreach"
     if "资料分析" in error:

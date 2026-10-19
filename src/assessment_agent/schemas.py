@@ -330,7 +330,13 @@ class ExtractionResult(BaseModel):
         )
 
     def vision_meta(self) -> Dict[str, Any]:
-        """注入 ``Question.meta["vision"]`` 的精简结构（供 Skill / 适配器消费）。"""
+        """注入 ``Question.meta["vision"]`` 的精简结构（供 Skill / 适配器消费）。
+
+        R4g 注：单数 ``stem_matrix_*`` 字段只是**默认兼容视图**（首个矩阵或
+        区域）；完整的 ``diagram_regions`` 列表同样在此输出中保留。适配器
+        （tools/diagram_layout）必须消费完整列表——多 ``stem_figure`` 序列题
+        只取第一区域会丢弃已检测图形，这是 R4f 定位的 P0 接口缺陷。
+        """
         if not self.has_regions:
             return {}
         stem_matrix = next(

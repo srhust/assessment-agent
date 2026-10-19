@@ -1,6 +1,6 @@
 {
   "kind": "assessment-agent-evidence-manifest",
-  "generated_utc": "2026-10-19T06:38:42+00:00",
+  "generated_utc": "2026-10-19T09:18:28+00:00",
   "hash": "sha256",
   "dir": "evidence/real_vlm_first_run/smoke-20261019T022717Z",
   "file_count": 53,

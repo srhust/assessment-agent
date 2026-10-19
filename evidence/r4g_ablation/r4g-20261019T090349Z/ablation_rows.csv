@@ -1,0 +1,61 @@
+﻿arm,case_id,gold,solver_status,proposal,released,correct,false_accept,verification_action,failure_reason,layout_source,layout_verified,layout_mode,layout_cols,declared_cols,ambiguity_reason,channel,rule,ms
+A,ft-comp-06,A,failed,,,False,False,reject,题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,,,,,,,,,63.1
+A,ft-conflict-15,,failed,,,False,False,reject,"已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 0.691753}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 0.691753}, 'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 0.691753}}",,,,,,,,,82.1
+A,ft-grid-10,A,failed,,,False,False,reject,"已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}}",,,,,,,,,82.0
+A,ft-grid-11,B,failed,,,False,False,reject,"已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 0.997204, 'B': 0.31781, 'C': 1.0}}",,,,,,,,,68.5
+A,ft-mirror-04,A,failed,,,False,False,reject,题干可见图形只有 1 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,,,,,,,,,8.3
+A,ft-mirror-05,B,failed,,,False,False,reject,题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,,,,,,,,,9.6
+A,ft-overlay-12,A,failed,,,False,False,reject,已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定,,,,,,,,,68.7
+A,ft-overlay-13,B,failed,,,False,False,reject,已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定,,,,,,,,,54.7
+A,ft-rot180-02,A,failed,,,False,False,reject,题干可见图形只有 1 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,,,,,,,,,11.4
+A,ft-rot270-03,A,failed,,,False,False,reject,题干可见图形只有 1 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,,,,,,,,,9.5
+A,ft-rot90-01,A,solved,A,,False,False,unverified,,,,,,,,,sides,32.7
+A,ft-scale-09,A,failed,,,False,False,reject,空白格不在行末，当前只支持“求下一格”的序列题；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,,,,,,,,,14.5
+A,ft-sym-14,,failed,,,False,False,reject,已有规律无法唯一匹配选项：图形个数外推为 1，但有 2 个选项匹配（无法唯一确定）; 边数外推为 4，但有 2 个选项匹配; 对称性应为 垂直=True 水平=True，但有 2 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,,,,,,,,,9.0
+A,ft-trans-07,A,failed,,,False,False,reject,已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,,,,,,,,,10.5
+A,ft-trans-08,A,failed,,,False,False,reject,空白格不在行末，当前只支持“求下一格”的序列题；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,,,,,,,,,15.3
+B,ft-comp-06,A,failed,,,False,False,reject,题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,vlm_single_region,True,sequence,2,2,declared_passthrough,,,12.6
+B,ft-conflict-15,,failed,,,False,False,reject,"已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 0.691753}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 0.691753}, 'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 0.691753}}",matrix_passthrough,True,grid,3,3,,,,86.3
+B,ft-grid-10,A,failed,,,False,False,reject,"已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}}",matrix_passthrough,True,grid,3,3,,,,78.7
+B,ft-grid-11,B,failed,,,False,False,reject,"已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 0.997204, 'B': 0.31781, 'C': 1.0}}",matrix_passthrough,True,grid,3,3,,,,67.4
+B,ft-mirror-04,A,failed,,,False,False,reject,题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,multi_region_merged,True,sequence,2,,,,,12.1
+B,ft-mirror-05,B,failed,,,False,False,reject,题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,vlm_single_region,True,sequence,2,2,declared_passthrough,,,10.1
+B,ft-overlay-12,A,failed,,,False,False,reject,已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定,matrix_passthrough,True,grid,3,3,,,,57.9
+B,ft-overlay-13,B,failed,,,False,False,reject,已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定,matrix_passthrough,True,grid,3,3,,,,51.4
+B,ft-rot180-02,A,failed,,,False,False,reject,题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,multi_region_merged,True,sequence,2,,,,,22.9
+B,ft-rot270-03,A,solved,A,,False,False,unverified,,multi_region_merged,True,sequence,3,,,,symmetry,29.4
+B,ft-rot90-01,A,solved,A,,False,False,unverified,,vlm_single_region,True,sequence,3,3,declared_passthrough,,sides,32.0
+B,ft-scale-09,A,failed,,,False,False,reject,空白格不在行末，当前只支持“求下一格”的序列题；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,vlm_single_region,True,sequence,3,3,declared_passthrough,,,14.1
+B,ft-sym-14,,failed,,,False,False,reject,已有规律无法唯一匹配选项：图形个数外推为 1，但有 2 个选项匹配（无法唯一确定）; 边数外推为 4，但有 2 个选项匹配; 对称性应为 垂直=True 水平=True，但有 2 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,vlm_single_region,True,sequence,3,3,declared_passthrough,,,9.4
+B,ft-trans-07,A,failed,,,False,False,reject,已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,vlm_single_region,True,sequence,3,3,declared_passthrough,,,10.0
+B,ft-trans-08,A,failed,,,False,False,reject,空白格不在行末，当前只支持“求下一格”的序列题；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,none,False,unverified,,,layout_unverified,,,15.0
+C,ft-comp-06,A,failed,,,False,False,reject,题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_recount,True,sequence,2,2,vlm_grid_confirmed_by_pixels,,,25.2
+C,ft-conflict-15,,failed,,,False,False,reject,"已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 0.691753}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 0.691753}, 'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 0.691753}}",matrix_passthrough,True,grid,3,3,,,,84.1
+C,ft-grid-10,A,failed,,,False,False,reject,"已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}}",matrix_passthrough,True,grid,3,3,,,,78.8
+C,ft-grid-11,B,failed,,,False,False,reject,"已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 0.997204, 'B': 0.31781, 'C': 1.0}}",matrix_passthrough,True,grid,3,3,,,,68.3
+C,ft-mirror-04,A,failed,,,False,False,reject,题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,multi_region_merged,True,sequence,2,,,,,12.3
+C,ft-mirror-05,B,failed,,,False,False,reject,题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_recount,True,sequence,2,2,vlm_grid_confirmed_by_pixels,,,11.9
+C,ft-overlay-12,A,failed,,,False,False,reject,已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定,matrix_passthrough,True,grid,3,3,,,,57.5
+C,ft-overlay-13,B,failed,,,False,False,reject,已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定,matrix_passthrough,True,grid,3,3,,,,53.4
+C,ft-rot180-02,A,failed,,,False,False,reject,题干可见图形只有 1 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,none,False,unverified,,,layout_unverified,,,11.3
+C,ft-rot270-03,A,solved,A,,False,False,unverified,,multi_region_merged,True,sequence,3,,,,symmetry,28.2
+C,ft-rot90-01,A,solved,A,,False,False,unverified,,pixel_recount,True,sequence,3,3,vlm_grid_confirmed_by_pixels,,sides,38.4
+C,ft-scale-09,A,failed,,,False,False,reject,已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_recount,True,sequence,3,3,vlm_grid_confirmed_by_pixels,,,16.5
+C,ft-sym-14,,solved,A,,False,False,unverified,,pixel_recount,True,sequence,3,3,vlm_grid_confirmed_by_pixels,,fill,24.4
+C,ft-trans-07,A,failed,,,False,False,reject,已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_recount,True,sequence,3,3,vlm_grid_confirmed_by_pixels,,,12.3
+C,ft-trans-08,A,failed,,,False,False,reject,已有规律无法唯一匹配选项：图形个数外推为 2，但有 3 个选项匹配（无法唯一确定）; 对称性应为 垂直=False 水平=False，但有 3 个选项匹配; 墨迹面积外推到 230px，多个选项接近，无法唯一确定；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_recount,True,sequence,3,,,,,18.7
+D,ft-comp-06,A,failed,,,False,False,reject,题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_only,True,sequence,2,,pixel_recount_deterministic,,,17.5
+D,ft-conflict-15,,failed,,,False,False,reject,已有规律无法唯一匹配选项：对称性应为 垂直=True 水平=True，但有 3 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_only,True,sequence,3,,pixel_recount_deterministic,,,18.3
+D,ft-grid-10,A,failed,,,False,False,reject,已有规律无法唯一匹配选项：对称性应为 垂直=False 水平=False，但有 4 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_only,True,sequence,3,,pixel_recount_deterministic,,,20.0
+D,ft-grid-11,B,failed,,,False,False,reject,已有规律无法唯一匹配选项：对称性应为 垂直=False 水平=False，但有 3 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_only,True,sequence,3,,pixel_recount_deterministic,,,21.3
+D,ft-mirror-04,A,failed,,,False,False,reject,题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_only,True,sequence,2,,pixel_recount_deterministic,,,11.9
+D,ft-mirror-05,B,failed,,,False,False,reject,题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_only,True,sequence,2,,pixel_recount_deterministic,,,17.9
+D,ft-overlay-12,A,failed,,,False,False,reject,没有支持范围内的规律能解释已知图形（当前支持：个数、边数、面积、平移、对称性）；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_only,True,sequence,3,,pixel_recount_deterministic,,,25.5
+D,ft-overlay-13,B,failed,,,False,False,reject,已有规律无法唯一匹配选项：对称性应为 垂直=True 水平=False，但有 0 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_only,True,sequence,3,,pixel_recount_deterministic,,,24.5
+D,ft-rot180-02,A,failed,,,False,False,reject,题干可见图形只有 1 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,none,False,unverified,,,layout_unverified,,,12.2
+D,ft-rot270-03,A,solved,A,,False,False,unverified,,pixel_only,True,sequence,3,,pixel_recount_deterministic,,symmetry,28.2
+D,ft-rot90-01,A,solved,A,,False,False,unverified,,pixel_only,True,sequence,3,,pixel_recount_deterministic,,sides,32.9
+D,ft-scale-09,A,failed,,,False,False,reject,已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_only,True,sequence,3,,pixel_recount_deterministic,,,16.5
+D,ft-sym-14,,solved,A,,False,False,unverified,,pixel_only,True,sequence,3,,pixel_recount_deterministic,,fill,24.3
+D,ft-trans-07,A,failed,,,False,False,reject,已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_only,True,sequence,3,,pixel_recount_deterministic,,,13.1
+D,ft-trans-08,A,failed,,,False,False,reject,已有规律无法唯一匹配选项：图形个数外推为 2，但有 3 个选项匹配（无法唯一确定）; 对称性应为 垂直=False 水平=False，但有 3 个选项匹配; 墨迹面积外推到 230px，多个选项接近，无法唯一确定；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）,pixel_only,True,sequence,3,,pixel_recount_deterministic,,,18.7

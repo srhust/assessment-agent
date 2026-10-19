@@ -130,6 +130,11 @@ class Settings(BaseModel):
     r4a_indep_verifier: bool = True
     # 消融臂 r1（仅新变换规则）专用：禁用六类规则通道，只允许变换通道作答
     r4a_disable_six_rules: bool = False
+    # R4g 布局重建档位（同输入消融开关，默认 off=完全保持 R4f 行为）：
+    #   off / merge(多区域直接合并，不做像素复核) /
+    #   merge_pixel(合并 + 确定性像素校验，默认推荐) / pixel_only(忽略 VLM 网格声明)
+    # env ASSESSMENT_R4G_LAYOUT=merge|merge_pixel|pixel_only
+    r4g_layout: str = "off"
 
     @property
     def llm_enabled(self) -> bool:
@@ -206,6 +211,7 @@ class Settings(BaseModel):
             r4a_transform="transform" not in r4a_off,
             r4a_indep_verifier="indep_verifier" not in r4a_off,
             r4a_disable_six_rules="six_rules" in r4a_off,
+            r4g_layout=(merged.get("ASSESSMENT_R4G_LAYOUT") or "off").strip().lower(),
         )
 
     def describe(self) -> Dict[str, object]:

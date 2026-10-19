@@ -62,7 +62,7 @@ class FigureReasoningSkill(BaseSkill):
 
     # ------------------------------------------------------ 区域模式（R2a）
     @staticmethod
-    def _region_inputs(question: Question) -> Optional[Dict[str, Any]]:
+    def _basic_region_inputs(question: Question) -> Optional[Dict[str, Any]]:
         """从 VisionParser 的区域 meta 中提取题干矩阵裁剪与选项裁剪。"""
         vision = (question.meta or {}).get("vision") or {}
         stem_crop = vision.get("stem_matrix_crop")
@@ -79,6 +79,70 @@ class FigureReasoningSkill(BaseSkill):
                 "grid": tuple(vision["stem_matrix_grid"]) if vision.get("stem_matrix_grid") else None,
             }
         return None
+
+    def _region_inputs(self, question: Question,
+                       ctx: Optional[SkillContext] = None) -> Optional[Dict[str, Any]]:
+        """R4g：按 ``settings.r4g_layout`` 档位在原始区域输入上叠加布局重建。
+
+        重建 verified 时用等分画布替换题干输入（Solver 与 Verifier 不改动、
+        阈值不放宽）；未 verified 时保持现有输入，resolution 证据仍随行记录。
+        """
+        inputs = self._basic_region_inputs(question)
+        profile = str(getattr(ctx.settings, "r4g_layout", "off") if ctx else "off").lower()
+        if profile not in ("merge", "merge_pixel", "pixel_only"):
+            return inputs
+        vision = (question.meta or {}).get("vision") or {}
+        stem_regions = [d for d in (vision.get("diagram_regions") or [])
+                        if str(d.get("role")) in ("stem_figure", "stem_matrix")]
+        if not stem_regions or not question.image_path:
+            if inputs:
+                inputs["layout_resolution"] = {
+                    "layout_source": "none", "mode": "unverified", "verified": False,
+                    "ambiguity_reason": "no_stem_regions_or_image", "profile": profile}
+            return inputs
+        try:
+            import cv2  # noqa: F401
+            import numpy as np
+            from ..tools.diagram_layout import assemble_stem_layout
+            from ..tools.figure_tools import load_mask
+
+            mask = load_mask(str(question.image_path))
+            res = assemble_stem_layout(
+                mask, stem_regions, vision.get("option_regions") or [],
+                profile=profile, trust_vlm_grid=(profile != "pixel_only"))
+            canvas = res.pop("_canvas", None)
+            res["profile"] = profile
+            res["algorithm"] = "r4g-diagram-layout-v1"
+            res["image"] = str(question.image_path)
+            if res.get("verified") and canvas is not None:
+                if ctx is not None and ctx.artifacts is not None:
+                    target = ctx.artifacts.dir / "regions" / "stem_reconstructed.png"
+                else:
+                    import tempfile
+                    target = Path(tempfile.gettempdir()) / "assessment_r4g" / "stem_reconstructed.png"
+                image = np.where(canvas, 0, 255).astype(np.uint8)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                if cv2.imwrite(str(target), image):
+                    option_regions = vision.get("option_regions") or []
+                    options = [
+                        (str(r.get("label")), str(r.get("crop_path")))
+                        for r in option_regions
+                        if r.get("has_figure") and r.get("crop_path")]
+                    if inputs is None and len(options) >= 2:
+                        inputs = {"options": options}
+                    if inputs is not None:
+                        inputs["stem_crop"] = str(target)
+                        inputs["grid"] = (int(res["rows"] or 1), int(res["cols"]))
+            if inputs is not None:
+                inputs["layout_resolution"] = res
+            return inputs
+        except Exception as exc:  # noqa: BLE001 - 重建失败保持原输入，记录原因
+            if inputs is not None:
+                inputs["layout_resolution"] = {
+                    "layout_source": "none", "mode": "unverified", "verified": False,
+                    "ambiguity_reason": f"assembler_error:{type(exc).__name__}: {exc}",
+                    "profile": profile}
+            return inputs
 
     def _region_incomplete(self, question: Question) -> Solution:
         """v2 区域证据不完整：说明缺什么，返回结构化失败（不猜测、不回退整图）。"""
@@ -123,7 +187,17 @@ class FigureReasoningSkill(BaseSkill):
             canvas_path=canvas_path,
         )
 
-    def _solve_regions(self, question: Question, ctx: SkillContext, inputs: Dict[str, Any]) -> Solution:
+    def _solve_regions(self, question: Question, ctx: SkillContext,
+                       inputs: Dict[str, Any]) -> Solution:
+        """R4g：布局重建证据随行——resolution 记入 meta.diagram_layout。"""
+        res = inputs.pop("layout_resolution", None)
+        sol = self._solve_regions_core(question, ctx, inputs)
+        if res is not None:
+            sol.meta["diagram_layout"] = res
+        return sol
+
+    def _solve_regions_core(self, question: Question, ctx: SkillContext,
+                            inputs: Dict[str, Any]) -> Solution:
         """有区域裁剪证据时走适配层；适配异常 → 结构化失败（不回退整图猜测）。"""
         if getattr(ctx.settings, "r4a_disable_six_rules", False):
             # 消融臂 r1：六类通道禁用，仅变换通道可作答
@@ -317,7 +391,7 @@ class FigureReasoningSkill(BaseSkill):
 
         # R2a：区域裁剪证据优先（不再假定整图最后一行是选项，也不需要整图 grid）
         vision_present = isinstance((question.meta or {}).get("vision"), dict)
-        region_inputs = self._region_inputs(question) if vision_present else None
+        region_inputs = self._region_inputs(question, ctx) if vision_present else None
         if region_inputs is not None:
             return self._solve_regions(question, ctx, region_inputs)
         if vision_present:
@@ -422,7 +496,7 @@ class FigureReasoningSkill(BaseSkill):
             # 不复用 solution.meta 中求解器留下的结论）
             try:
                 from ..tools.figure_adapter import solve_figure_transform_regions
-                inputs = self._region_inputs(question)
+                inputs = self._region_inputs(question, ctx)
                 if not inputs:
                     raise RuntimeError("区域裁剪不可用")
                 fresh = solve_figure_transform_regions(

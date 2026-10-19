@@ -1,0 +1,27 @@
+{
+  "id": "r4g_dev15_false_reject_semantics",
+  "issued_utc": "2026-10-19T08:49:27+00:00",
+  "code_fix": "diagnosis.derive_verification_outcome 拆分 unverified+proposal=gold 为 evidence_insufficient_correct_withheld；metrics 单列计数",
+  "defect": "dev15_report.headline.false_reject（临时汇编口径）与 metrics.json 标准口径不一致：把'提议=金标但证据不足未释放'计为 false_reject",
+  "impact": {
+    "dev15_report_false_reject_as_published": 1,
+    "metrics_json_false_reject_total": 0,
+    "metrics_json_unverified_answerable_total": 1,
+    "corrected": {
+      "verifier_false_reject": 0,
+      "evidence_insufficient_correct_withheld": 1,
+      "affected_cases": [
+        "ft-rot90-01"
+      ],
+      "evidence": {
+        "case": "ft-rot90-01",
+        "proposal": "A",
+        "gold": "A",
+        "verification_action": "unverified",
+        "outcome_published": 1,
+        "blocking_check": "figure.independent_substitution（独立重建不能确认约束）→ 扣留是纪律正确行为，不计验证器缺陷"
+      }
+    }
+  },
+  "discipline": "原始 dev15_report.json / metrics.json 一字不改；本文件为追加式勘误。false_accept=0 仅为观察值（15 题无答案被接受），不足以证明低误放率——评审口径如实保留。"
+}

@@ -1021,11 +1021,60 @@ overlay-12 的格内内容位移超演示容差是几何证据极限，不是可
 
 ---
 
+## 6.14 R4g：多区域布局重建 + 像素级校验 + 四臂消融（2026-10-19）
+
+评审驳回 35 题扩样，改下 R4g 指令（基线 `c7515f1`）。本轮**零 API、离线**，
+不修改图形规律/参数容差/Verifier 放行准则；开关 `ASSESSMENT_R4G_LAYOUT=off
+（默认）/merge/merge_pixel/pixel_only`，默认 off 保证既有行为与测试零退化。
+
+- **P0-1 `tools/diagram_layout.py`（r4g-diagram-layout-v1）**：
+  `ExtractionResult.vision_meta()` 的"只取第一区域"是 R4f 定位的接口缺陷——
+  适配器现在消费**全部**有效 stem 区域。`assemble_stem_layout` 以内容单元
+  列切分 + 间隙聚类统一表达单图/横排序列/矩阵；**不因多区域存在自动推定
+  行列数**；目标空格无像素证据时 `layout_unverified`（外推假设记录在案但
+  `accepted=False`）；签名级测试禁止 answer/gold/case_id 进入布局判定。
+  figshots 页无框线（实测），像素证据=内容单元分组；有框页另支持
+  frame_blank_target 确认（合成扰动测试覆盖）。
+- **P0-2 确定性像素校验六项**：regions_in_image / sequence_band /
+  pitch_support / stem_option_overlap / crop_content_integrity /
+  undeclared_units——全部保存证据与拒绝原因（`hypotheses`/`rejected`）。
+- **P0-3 四臂同输入消融**（`scripts/r4g_ablation.py`，15 题真实 dev15 输入，
+  发布 `evidence/r4g_ablation/r4g-20261019T090349Z/`，含逐题 CSV、可视化、
+  SHA/图像哈希）：A 臂重跑与 dev15 冻结结果**逐题一致**（回归等价成立）。
+  结构证据（gold 口径 structural 5/15 → C 臂运行时几何口径 **14/15**，唯一
+  未恢复 rot180-02 是 VLM bbox 与像素错位 ≈20px 的保守正确拒绝）；候选覆盖
+  **1/15 → 3/15**（rot270-03 三图合并→六规则命中 symmetry=gold A；sym-14
+  设计禁答题出现候选但未释放——观察项）；释放 **0/15、false_accept 0/15**。
+- **P1-1 运行时字段**：`runtime_layout_consistent / layout_source /
+  layout_hypotheses / layout_ambiguity_reason / crop_content_integrity /
+  crops_cover_all_detected_units / solver_ready_runtime /
+  answer_evidence_sufficient`——gold 比对（grid_parse_correct）只保留离线
+  语义，在线判定用纯几何复算（`test_runtime_independent_of_gold_disagreement`
+  机器钉住解耦）。
+- **P1-2 归因拆分**：unverified∧提议=gold →
+  `evidence_insufficient_correct_withheld`（root cause 同名），**不并入**
+  false_reject_total；dev15 口径勘误入库
+  `evidence/metric_errata/r4g_dev15_false_reject_semantics.json`
+  （rot90-01 重分类；原文件一字未改；false_accept=0 仅观察值）。
+- **P1-3 防模板过拟合**：`tests/test_r4g_layout.py` 21 项——页面平移/缩放、
+  非均匀边距、stem-option 距离、行列 pitch、**区域顺序置换**、干扰图元、
+  遮挡缺失格等扰动下结构结论不变；含"布局判定函数签名无金标参数"的
+  回归测试。
+
+**读数与判断**（评审决策矩阵）：多区域重建使旋转题 rot270-03 **恢复**了
+可靠结构证据并使 Solver 命中金标候选（被独立复核按纪律扣留）——工程接口
+确是重要瓶颈，且修复后仍未增加任何模型调用。但候选仍不能释放的瓶颈已移到
+**规律判别/独立重建表达力**（trans-07/08、scale-09 结构恢复却规律不唯一）。
+小样本真实 VLM 复测**尚不是下一步**：先用离线臂把 Solver/Verifier 的表达力
+问题做透。按纪律，**本轮在此暂停，等待裁决**。
+
+---
+
 ## 7. 测试
 
 ```bash
 python -m pytest -q
-# 423 passed, 2 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
+# 456 passed, 2 skipped（真实模型端到端用例在未配置 LLM_VISION_MODEL 时明确跳过）
 ```
 
 覆盖范围：

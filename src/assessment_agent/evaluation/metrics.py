@@ -196,6 +196,10 @@ def compute_capability_metrics(results: List["CaseResult"]) -> Dict[str, Any]:
         "root_causes": dict(sorted(root_causes.items(), key=lambda x: -x[1])),
         "false_accept_total": outcomes.get("false_accept", 0),
         "false_reject_total": outcomes.get("false_reject", 0),
+        # R4g P1-2：提议=金标但证据不足未释放（纪律正确的扣留）单列，
+        # **不并入** false_reject_total（后者=证据完整仍被拒的真误杀口径）
+        "evidence_insufficient_correct_withheld_total": outcomes.get(
+            "evidence_insufficient_correct_withheld", 0),
         "unverified_answerable_total": outcomes.get("unverified_answerable", 0),
         "over_answer_total": outcomes.get("over_answer", 0),
     }
