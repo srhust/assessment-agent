@@ -111,6 +111,11 @@ def main() -> None:
             "reason": ("环境未配置 LLM_API_KEY / LLM_VISION_MODEL 或 ASSESSMENT_OFFLINE=1。"
                        "按纪律不得以 mock 或离线解析器冒充真实模型端到端结果；"
                        "真实执行报告将写入 results/real_vlm/<run_id>/，不回写本文件。"),
+            "expansion_policy": ("首跑只允许本 3 题 Smoke；扩大标准（评审）：0/3 停止修 "
+                                 "API/模型参数/Schema；1–2/3 保留报告不自动扩大；3/3 先查"
+                                 "证据完整率/选项映射/裁剪质量再人工决定 15 题。主脚本为自动"
+                                 "分阶段执行器，首跑不得直接运行；3/3 结构化成功 ≠ 答题正确 ≠"
+                                 "误放率可靠。"),
             "what_would_run": "python -m assessment_agent.cli eval --split "
                               "figshots_dev --eval-mode image_only（截图输入，"
                               "区域定位由 VisionParser→真实 VLM 完成），逐题记录 "
@@ -172,6 +177,12 @@ def main() -> None:
     summary = vision_stage_summary(rows_for_status, audit)
     gate_ok, gate_msg = health_gate(status, summary)
     lat = [r["latency_ms"] for r in rows if isinstance(r.get("latency_ms"), (int, float))]
+    expansion_rule = (
+        "扩大标准（评审 2026-10-19）：0/3 结构化成功=停止，先修 API/模型参数/Schema；"
+        "1–2/3=保留报告、定位失败原因、不自动扩大；3/3=先检查证据完整率、选项映射与"
+        "实际裁剪质量，人工审查后才决定进入 15 题 Dev。3/3 结构化成功 ≠ 3/3 答题正确 ≠"
+        "真实场景误放率可靠。run_real_vlm_experiment.py 是自动分阶段执行器（健康门通过"
+        "即连跑 15/35，--force-continue 不是人工继续按钮），首跑不得直接运行主脚本。")
     report = {
         **base,
         "status": status,
@@ -186,6 +197,7 @@ def main() -> None:
                     if len(lat) >= 5 else {"latencies_ms": lat}),
         "metrics": metrics_view,
         "cases": rows,
+        "expansion_policy": expansion_rule,
         "evaluation_output_dir": str(out_dir) if out_dir else None,
         "stderr_tail": proc.stderr[-400:] if proc.returncode != 0 else None,
         "note": "真实执行报告写入 results/real_vlm/；仓库 phase6_vlm_smoke.json 未被本路径修改",

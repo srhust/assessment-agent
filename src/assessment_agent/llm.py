@@ -4,13 +4,17 @@
 - 只依赖 ``httpx``，``base_url`` 可指向任意兼容 Chat Completions 的服务；
 - 文本模型与视觉模型分开配置（``LLM_TEXT_MODEL`` / ``LLM_VISION_MODEL``）；
 - 支持 ``response_format={"type":"json_object"}``，不支持时自动降级并容错解析；
-- 失败一律抛 ``LLMError``，调用方决定降级策略，不吞异常也不伪造结果。
+- 失败一律抛 ``LLMError``，调用方决定降级策略，不吞异常也不伪造结果；
+- **错误不落响应正文原文**（R4d 收尾，评审建议）：异常字符串只含状态码、
+  服务端 error type/code 与脱敏摘要（密钥形态一律打码），避免 4xx/5xx 正文
+  经 failure_reason、stderr_tail、报告等诊断链路泄露敏感内容。
 """
 
 from __future__ import annotations
 
 import base64
 import json
+import re
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -25,6 +29,45 @@ from .prompts import (
     VISION_EXTRACT_SYSTEM,
     VISION_PARSE_SYSTEM,
 )
+
+
+# 密钥形态脱敏（sk-*/Bearer/api_key 值等）：诊断信息只允许出现打码后的摘要
+_SECRET_RE = re.compile(
+    r"(?i)(sk-[A-Za0-9_\-]{6,}|bearer\s+[A-Za-z0-9._\-]+|"
+    r"(?:api[_-]?key|access[_-]?token|authorization)\s*[:=]\s*[^\s,;\"'}]+)"
+)
+
+
+def redact_secrets(text: str) -> str:
+    return _SECRET_RE.sub(lambda m: m.group(0)[:6] + "***REDACTED***", text)
+
+
+def _safe_error_summary(response: "httpx.Response") -> str:
+    """HTTP 错误的脱敏摘要：状态码 + error 协议字段 + ≤120 字符打码正文片段。
+    原始正文不落任何持久化路径（异常字符串是 runner/报告唯一的错误出口）。"""
+    bits = [f"HTTP {response.status_code}"]
+    try:
+        data = response.json()
+    except (json.JSONDecodeError, ValueError):
+        data = None
+    if isinstance(data, dict):
+        err = data.get("error")
+        if isinstance(err, dict):
+            for key in ("type", "code"):
+                if err.get(key):
+                    bits.append(f"{key}={str(err[key])[:60]}")
+            message = str(err.get("message") or "")[:200]
+        else:
+            message = str(data.get("message") or data.get("detail") or data)[:200]
+        if message:
+            bits.append("msg=" + redact_secrets(message).replace("\n", " ")[:120])
+        if data.get("request_id") or data.get("id"):
+            bits.append(f"server_id={str(data.get('request_id') or data.get('id'))[:40]}")
+    else:
+        raw = (response.text or "")[:120]
+        if raw:
+            bits.append("body=" + redact_secrets(raw).replace("\n", " ")[:120])
+    return " | ".join(bits)
 
 
 class LLMError(RuntimeError):
@@ -174,7 +217,8 @@ class OpenAICompatibleClient:
                 continue
             if response.status_code >= 500 or response.status_code in (408, 409, 429):
                 self._record_status(response, ok=False)
-                last_error = LLMError(f"模型服务返回 {response.status_code}: {response.text[:300]}")
+                last_error = LLMError(
+                    f"模型服务返回 {response.status_code}: {_safe_error_summary(response)}")
                 if attempt + 1 >= attempts:
                     break
                 retry_after = response.headers.get("Retry-After")
@@ -183,13 +227,18 @@ class OpenAICompatibleClient:
                 continue
             if response.status_code >= 400:
                 self._record_status(response, ok=False)
-                raise LLMError(f"模型服务返回 {response.status_code}: {response.text[:300]}")
+                raise LLMError(
+                    f"模型服务返回 {response.status_code}: {_safe_error_summary(response)}")
             self._record_status(response, ok=True)
             try:
                 data = response.json()
             except json.JSONDecodeError as exc:  # pragma: no cover - 非 JSON 响应
                 self._error_types["NonJsonResponse"] = self._error_types.get("NonJsonResponse", 0) + 1
-                raise LLMError(f"模型响应不是 JSON: {exc}") from exc
+                # 正文不落原文：只留状态码 + 打码后的短摘要
+                raise LLMError(
+                    f"模型响应不是 JSON: HTTP {response.status_code} · "
+                    f"{redact_secrets((response.text or '')[:120]).replace(chr(10), ' ')}"
+                ) from exc
             self._requests_succeeded += 1
             if isinstance(data, dict):
                 if data.get("model"):
@@ -255,11 +304,19 @@ class OpenAICompatibleClient:
         try:
             raw = self._post(payload)
         except LLMError as exc:
-            unsupported = "response_format" in str(exc) or "json_object" in str(exc)
+            text = str(exc)
+            unsupported = ("response_format" in text or "json_object" in text
+                           or "400" in text)
             if want_json and unsupported:
-                self._json_mode_supported = False
-                payload.pop("response_format", None)
-                raw = self._post(payload)
+                # 仅对可诊断的 json_object 拒绝原文重试一次；正文本身不落盘
+                # （_post 抛出的已是脱敏摘要），但摘要没有 error.code 证据时
+                # 不再猜测性重试，避免把真正的鉴权/配额错误当成格式问题。
+                if ("response_format" in text or "json_object" in text):
+                    self._json_mode_supported = False
+                    payload.pop("response_format", None)
+                    raw = self._post(payload)
+                else:
+                    raise
             else:
                 self._phase(phase)["http_failed"] += 1
                 raise

@@ -1,6 +1,6 @@
 {
   "phase": "R4d real-VLM image_only smoke 3 题（分阶段审计 + 每题三段记录判定，与 run_real_vlm_experiment 共用 execution_status）",
-  "generated_at": "2026-10-19T01:03:27+08:00",
+  "generated_at": "2026-10-19T09:46:53+08:00",
   "provider": "api.openai.com",
   "vision_model": null,
   "text_model": "gpt-4o-mini",
@@ -29,6 +29,7 @@
   ],
   "status": "NOT_CONFIGURED",
   "reason": "环境未配置 LLM_API_KEY / LLM_VISION_MODEL 或 ASSESSMENT_OFFLINE=1。按纪律不得以 mock 或离线解析器冒充真实模型端到端结果；真实执行报告将写入 results/real_vlm/<run_id>/，不回写本文件。",
+  "expansion_policy": "首跑只允许本 3 题 Smoke；扩大标准（评审）：0/3 停止修 API/模型参数/Schema；1–2/3 保留报告不自动扩大；3/3 先查证据完整率/选项映射/裁剪质量再人工决定 15 题。主脚本为自动分阶段执行器，首跑不得直接运行；3/3 结构化成功 ≠ 答题正确 ≠误放率可靠。",
   "what_would_run": "python -m assessment_agent.cli eval --split figshots_dev --eval-mode image_only（截图输入，区域定位由 VisionParser→真实 VLM 完成），逐题记录 extraction/区域 bbox/答案/验证状态/usage/latency，并以 output_dir/llm_evidence.json 的请求计数判定状态",
   "status_semantics": {
     "NOT_CONFIGURED": "缺少真实模型配置（或离线开关）",
