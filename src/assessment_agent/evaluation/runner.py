@@ -462,6 +462,9 @@ class EvaluationRunner:
             "layout_hypotheses": None, "layout_ambiguity_reason": None,
             "crop_content_integrity": None, "crops_cover_all_detected_units": None,
             "solver_ready_runtime": None,
+            # R6-D：几何重建实际检测到的结构（金标无关的运行时事实，供离线漏斗比对）
+            "detected_rows": None, "detected_cols": None,
+            "detected_units": None, "detected_blank_units": None,
         }
         stem_regions: list = []
         option_payload: list = []
@@ -486,6 +489,9 @@ class EvaluationRunner:
                 runtime["layout_source"] = res.get("layout_source")
                 runtime["layout_hypotheses"] = len(res.get("hypotheses") or [])
                 runtime["layout_ambiguity_reason"] = res.get("ambiguity_reason")
+                runtime["detected_rows"] = res.get("rows")
+                runtime["detected_cols"] = res.get("cols")
+                runtime["detected_units"] = len(res.get("units") or [])
                 crops_ok = []
                 for reg in option_payload:
                     cp = reg.get("crop_path")
@@ -649,6 +655,26 @@ class EvaluationRunner:
             # R4g P1-1：候选答案是否有足够证据获准释放（金标无关的在线语义）
             vision_detail["answer_evidence_sufficient"] = verification.action in (
                 "accept", "repair")
+            # R6-D：oracle/auto 分支同样产出运行时布局自检诊断（评审裁定——自检
+            # 结果必须与金标网格核对分开报告；字段全部金标无关）。
+            # 优先记录 **Solver 实际消费的**重建结果（meta.diagram_layout，
+            # R4G_LAYOUT 档位产物）；regions 注入路径没有 ExtractionResult，
+            # 不能只依赖 _vision_stages（其条件在 oracle 分支不成立）。
+            dl = (solution.meta or {}).get("diagram_layout") or {}
+            if dl:
+                vision_detail.update({
+                    "runtime_layout_consistent": bool(dl.get("verified")),
+                    "layout_source": dl.get("layout_source"),
+                    "layout_hypotheses": len(dl.get("hypotheses") or []),
+                    "layout_ambiguity_reason": dl.get("ambiguity_reason"),
+                    "detected_rows": dl.get("rows"),
+                    "detected_cols": dl.get("cols"),
+                    "detected_units": len(dl.get("units") or []),
+                })
+            elif mode != "image_only" and case.regions and case.image:
+                vision_detail.update(self._vision_stages(
+                    _pre_audit, self._audit(), run.extraction, vision_detail,
+                    image_path=case.image))
             # R4e P1-2：先构建错误链，再让 failure_class 看到结构/几何阻塞（不再
             # 被题干文本截断的早期判定遮蔽）
             transform_meta = (solution.meta or {}).get("transform") or {}
