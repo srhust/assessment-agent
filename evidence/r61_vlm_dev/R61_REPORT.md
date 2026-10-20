@@ -5,8 +5,11 @@
   Prompt/Solver/Verifier 均为现有配置，未做任何调整
 - 样本：**预先固定 12 题**（族内 id 升序取配额，未按可解性筛选）：
   nc×2 / ns×1 / da×2 / fig×2 / lg×2 / lang×1 / vu×2；未扩样、未触碰冻结 xingce_test
-- 运行名 `r61_vlm_dev12`，用时 277.2s；**用量 12 次调用，prompt 11,213 /
-  completion 14,740，合计 25,953 tokens**（成本未计价：无定价依据，不编造）
+- 运行名 `r61_vlm_dev12`，用时 277.2s；LLM 审计（`run/llm_evidence.json`）：
+  **共 14 次调用 = vision_parse 12 + solver_or_skill 2**（后者是 verbal 技能的
+  既有 LLM 规划通道，属现有 Solver 配置，非本轮改动），全部 HTTP 200；
+  **prompt 13,324 / completion 18,836，合计 32,160 tokens**
+  （成本未计价：无定价依据，不编造）
 
 ## 一、裁决要求的四项指标
 

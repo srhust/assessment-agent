@@ -16,7 +16,7 @@
       "202610200858468ae5080462be4ea9",
       "2026102008590597ec9f0f0fb943cc"
     ],
-    "base_url_host": "st8tp3ajl0df3n8b8l8qu.apigateway-cn-beijing.volceapi.com",
+    "base_url_host": "REDACTED_GATEWAY_HOST",
     "vision_model_configured": "glm-5.3-flash",
     "mock_or_injected_transport": false,
     "offline_mode": false,
