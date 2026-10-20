@@ -285,8 +285,8 @@ def parse_statements(stem: str) -> Tuple[List[F], Dict[str, str]]:
         sent = sent.strip()
         if not sent or re.match(r"^以下|^根据|^由此", sent):
             continue
-        # 去掉"题干："等前缀
-        sent = re.sub(r"^(?:题干|已知|据)[：:].*", "", sent) or sent
+        # 剥离引述前缀（题干：/已知：/规定：…），保留句子本身
+        sent = re.sub(r"^(?:题干|已知|据|规定|提示|假设)[：:]?", "", sent).strip()
         f = parse_chinese_sentence(sent, atoms)
         if f is not None:
             out.append(f)
