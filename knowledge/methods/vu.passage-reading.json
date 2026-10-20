@@ -1,0 +1,61 @@
+{
+  "method_id": "vu.passage-reading",
+  "skill": "verbal_understanding",
+  "problem_family": "篇章阅读（多题一组）",
+  "concepts": [
+    "跨题共享语境",
+    "题间指代",
+    "先总览后作答"
+  ],
+  "applicability_conditions": [
+    "一篇 600—900 字文章带 5 道小题（大纲题型结构）",
+    "细节题定位段落、主旨题聚合全文、逻辑填空先段落语境再词",
+    "小题间答案互斥线索（同一选项在两题不可同时最优）",
+    "不适用: 单句填空（cloze 卡）；无文章的多文本比较（新任务）"
+  ],
+  "required_quantities": [
+    "段落主题向量",
+    "题干回指对象",
+    "共享选项池"
+  ],
+  "reasoning_operations": [
+    "paragraph_index",
+    "coreference_resolve",
+    "shared_option_check"
+  ],
+  "solution_procedure": [
+    "先读各题题干圈定定位区间",
+    "逐题作答并记录所引段落",
+    "回头做一致性检查：主旨题结论与各细节题不冲突"
+  ],
+  "verification_strategy": [
+    "每题证据可逐字定位到文章区间（spans 机制沿用）",
+    "题间冲突检测：两题引用同一句而结论相反须复核"
+  ],
+  "common_pitfalls": [
+    "逐题独立作答丢全局（主旨与细节矛盾）",
+    "指代跨段找错先行词",
+    "篇章长文超证据窗口截断"
+  ],
+  "source_references": [
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    },
+    {
+      "title": "公考备考手册（判断推理章节，GitHub Pages 公开页）",
+      "url": "https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html",
+      "license": "个人公开讲义，要点级引用"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "（示例流程）文章三段：现象段/原因段/对策段。主旨题引用应以对策段为锚；细节题引用原因段数据——两题引用区间不同即互不污染（自撰演示）",
+    "answer": "流程练习，无固定金标",
+    "note": "卡内练习为方法演示非成题，避免与任何评测集结构重合"
+  },
+  "executable": {
+    "channel": "spans+audit（沿用言语验证六层）"
+  }
+}

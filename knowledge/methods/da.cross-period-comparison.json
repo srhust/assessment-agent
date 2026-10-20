@@ -1,0 +1,60 @@
+{
+  "method_id": "da.cross-period-comparison",
+  "skill": "data_analysis",
+  "problem_family": "跨期比较（累计/季度折年/两期基数）",
+  "concepts": [
+    "累计折年",
+    "同期口径",
+    "比较基准锁定"
+  ],
+  "applicability_conditions": [
+    "材料给累计值（1—6 月）而问单季/单月→先做差拆出当期",
+    "两期比较（A 与 B 谁大/倍数）必须同为现期或同为基期再比",
+    "不适用: 材料只有增速没有可定位基期值（不得外推——rb-09 教训）"
+  ],
+  "required_quantities": [
+    "累计序列",
+    "当期拆分值",
+    "比较对象的同口径值"
+  ],
+  "reasoning_operations": [
+    "cumulative_to_current",
+    "same_period_align",
+    "compare_ratio"
+  ],
+  "solution_procedure": [
+    "累计→当期：本期累计−上期累计（季/月同法）",
+    "比较前锁定两对象的年份口径与单位",
+    "倍数/百分比问法决定表达：A/B 或 (A−B)/B"
+  ],
+  "verification_strategy": [
+    "拆分后的当期值回加累计链应闭合（Σ当期=末期累计）",
+    "比较结论反向复述检查（说'A 高于 B'则 A>B 数值成立）"
+  ],
+  "common_pitfalls": [
+    "拿累计值直接当当期比",
+    "基期现期混比（一边 2022 一边 2023 增量）",
+    "单位（万/亿）未对齐即比较"
+  ],
+  "source_references": [
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    },
+    {
+      "title": "华图·数字推理之多级数列（吉林站公开页）",
+      "url": "http://jl.huatu.com/2022/0221/2125422.html",
+      "license": "机构免费公开页，要点级引用"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "1—6 月累计 540 亿元，1—4 月累计 320 亿元，问 5—6 月月均？（自撰练习）",
+    "answer": "110 亿元",
+    "note": "(540−320)/2=110；拆分闭合 320+220=540"
+  },
+  "executable": {
+    "tool": "data_plan 构建（time_pair 校验已实现）"
+  }
+}

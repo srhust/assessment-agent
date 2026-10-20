@@ -30,6 +30,12 @@
         "action": "soft_flag"
       },
       {
+        "item": "v2-11",
+        "near": "card:ns.fraction-sequence",
+        "similarity": 0.6,
+        "action": "soft_flag"
+      },
+      {
         "item": "v2-14",
         "action": "dropped_structural",
         "near": [
@@ -76,6 +82,12 @@
       {
         "item": "v2-17",
         "near": "card:nc.tiered-pricing",
+        "similarity": 0.8,
+        "action": "dropped"
+      },
+      {
+        "item": "v2-17",
+        "near": "card:ns.fraction-sequence",
         "similarity": 0.8,
         "action": "dropped"
       },
@@ -136,6 +148,12 @@
       {
         "item": "v2-19",
         "near": "card:nc.tiered-pricing",
+        "similarity": 0.6,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-19",
+        "near": "card:ns.fraction-sequence",
         "similarity": 0.6,
         "action": "soft_flag"
       },
@@ -244,7 +262,7 @@
         ]
       }
     ],
-    "dropped": 7
+    "dropped": 8
   },
   "validity_rejected": 0,
   "note": "独立命题：全部新数值/新结构；每题含唯一性证明（proofs.json）；四层验证+暴力穷举+双维泄漏检查；冻结时间待预注册时填写",

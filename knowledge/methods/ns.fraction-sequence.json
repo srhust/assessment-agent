@@ -1,0 +1,60 @@
+{
+  "method_id": "ns.fraction-sequence",
+  "skill": "number_series",
+  "problem_family": "分数数列",
+  "concepts": [
+    "分子分母独立成列",
+    "机械分组改写",
+    "反约分还原"
+  ],
+  "applicability_conditions": [
+    "各项呈分数形式（含可改写的整数/小数）→分子分母分别找规律",
+    "规律不同时先统一分母（机械分组）再观察分子",
+    "不适用: 分数仅作结果表达（数值列先做差）；根式分数混合（先幂次改写）"
+  ],
+  "required_quantities": [
+    "分子列",
+    "分母列",
+    "改写通分值"
+  ],
+  "reasoning_operations": [
+    "split_num_den",
+    "rebase_common_den",
+    "pattern_match_x2"
+  ],
+  "solution_procedure": [
+    "逐项拆分子分母",
+    "各自找等差/等比/摆动规律",
+    "反约分还原检查：预测分数须与改写前的原项口径一致"
+  ],
+  "verification_strategy": [
+    "预测分数按原序列约分风格回写后再验分子分母双列续推",
+    "候选唯一：两列规律组合续项唯一"
+  ],
+  "common_pitfalls": [
+    "只约分不还原（丢失分子分母结构信息）",
+    "整数项未改写成分母 1 导致错位",
+    "分子分母规律张冠李戴"
+  ],
+  "source_references": [
+    {
+      "title": "华图在线·数字推理题的分析（类型学：多级/多重/分数/幂次/递推）",
+      "url": "https://wx.huatu.com/beikao/20110729/28649.html",
+      "license": "机构免费公开页，要点级引用"
+    },
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "1/2, 3/6, 5/12, 7/24, 9/48, ( )",
+    "answer": "11/96",
+    "note": "分子 1,3,5,7,9,11 等差；分母 2,6,12,24,48,96 二阶等比（×2 自第二项）——演示双列拆解"
+  },
+  "executable": {
+    "tool": "solve_series（分数解析已实现）"
+  }
+}

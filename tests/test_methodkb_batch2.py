@@ -13,8 +13,9 @@ B2_IDS = [
     "ns.multi-stage-diff", "ns.power-adjust", "ns.interleaved-group", "ns.recursive-relation",
     "da.mixed-growth-rate", "da.annual-average-timing",
     "lg.categorical-syllogism", "lg.definition-judgment", "lg.propositional-formula",
-    "vu.sentence-insertion", "vu.intent-attitude",
+    "vu.sentence-insertion", "vu.intent-attitude", "vu.passage-reading",
     "fig.count-elements", "fig.solid-view", "fig.analogy-classification", "fig.sequence-rule",
+    "ns.fraction-sequence", "da.cross-period-comparison",
 ]
 
 
