@@ -147,19 +147,26 @@ def _option_number(text: str) -> Optional[float]:
     return value
 
 
-def match_option(value: float, options: Sequence[Tuple[str, str]]) -> Optional[str]:
-    """把计算结果匹配到选项标号。"""
+def match_option(value: float, options: Sequence[Tuple[str, str]],
+                 rel_tol: float = 1e-6) -> Optional[str]:
+    """把计算结果匹配到选项标号。R7：题干含"约"时调用方可放宽 rel_tol。"""
     best_label: Optional[str] = None
     best_delta = float("inf")
+    ambiguous = False
     for label, text in options:
         candidate = _option_number(text)
         if candidate is None:
             continue
         delta = abs(candidate - value)
-        tolerance = max(1e-9, abs(value) * 1e-6)
-        if delta <= tolerance and delta < best_delta:
-            best_label, best_delta = label, delta
-    return best_label
+        tolerance = max(1e-9, abs(value) * rel_tol)
+        if delta <= tolerance:
+            if best_label is not None and delta < best_delta * 0.5:
+                ambiguous = False  # 明显更接近者胜出
+            elif best_label is not None:
+                ambiguous = True
+            if delta < best_delta:
+                best_label, best_delta = label, delta
+    return None if ambiguous else best_label
 
 
 class PythonMathTool(Tool):

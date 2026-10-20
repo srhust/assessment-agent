@@ -11,7 +11,7 @@ from __future__ import annotations
 import math
 import re as _re
 from fractions import Fraction
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from ..schemas import Question, Solution, Verification, VerificationCheck
 from ..tools.math_tool import fraction_eval, match_option, option_value
@@ -21,6 +21,17 @@ from .base import BaseSkill, SkillContext
 
 def _close(left: float, right: float) -> bool:
     return math.isclose(left, right, rel_tol=1e-6, abs_tol=1e-9)
+
+
+def _close_approx(left: float, right: float) -> bool:
+    """R7：行测"约为多少"类选项按四舍五入给值（19.0% vs 精确 19.0476%），
+    仅当题干或选项文本含"约"时启用 0.5% 相对容差；多选项同时落入则视为歧义不匹配。"""
+    return math.isclose(left, right, rel_tol=5e-3, abs_tol=1e-6)
+
+
+def _rel_tol(stem: Optional[str]) -> float:
+    """题面"约/大约/最接近"决定选项匹配容差（solve 与 verify 同一口径）。"""
+    return 5e-3 if _re.search(r"约|大约|大概|最接近", stem or "") else 1e-6
 
 
 def _format_fraction(value: Fraction) -> str:
@@ -110,6 +121,22 @@ def _plan_numbers(plan: Optional[dict], expression: Optional[str]) -> set:
     return _expr_values(plan, expression)
 
 
+def _degenerate_percent(expression: str, stem: str) -> bool:
+    """R7 §6 归因结论：直接抽取通道把"浓度变为多少/需提价多少"抽成了
+    **原样换算**（如 12*(1/100)），完全没有建模题干的变化过程——伪计划。
+    判定：表达式除常数换算外只用到 ≤1 个题面数字，且题干明含变化词。"""
+    if not expression:
+        return False
+    if not _re.search(r"加入|加水|加盐|加糖|混合|注入|倒入|变为|变成|恢复|升高|降低|增加|减少",
+                      stem or ""):
+        return False
+    nums = [float(n) for n in _re.findall(r"\d+(?:\.\d+)?", expression)]
+    core = [n for n in nums if n not in (1.0, 100.0, 1000.0)]
+    if len(core) >= 2:
+        return False
+    return True
+
+
 class NumericCalculationSkill(BaseSkill):
     id = "numeric_calculation"
     name_zh = "数字计算"
@@ -146,10 +173,12 @@ class NumericCalculationSkill(BaseSkill):
             f"数值结果：{value:g}",
         ]
         if question.options:
-            label = payload.get("matched_label")
+            raw_label = payload.get("matched_label")
+            degenerate = raw_label is not None and _degenerate_percent(expression, question.stem)
+            label = None if degenerate else raw_label
             if label is None:
-                # 直接抽取的算式可能本身抽错（如把"比…便宜20%"读成减 20）：
-                # 结果与所有选项不匹配时，再走自然语言数量关系理解层（R2c）
+                # 直接抽取的算式可能本身抽错（如把"比…便宜20%"读成减 20、
+                # 或把"浓度变为多少"原样换算成 12%）：先走数量关系建模层（R2c/R7）
                 word_solution = self._solve_word_problem(question, ctx, options)
                 if word_solution is not None:
                     word_solution.tool_calls = [invocation] + list(word_solution.tool_calls or [])
@@ -157,14 +186,19 @@ class NumericCalculationSkill(BaseSkill):
                 planner_solution = self._solve_planner(question, ctx, options)
                 if planner_solution is not None:
                     return planner_solution
-                return Solution(
-                    status="failed",
-                    skill=self.id,
-                    method="sympy_exact",
-                    error="计算结果与所有选项均不匹配",
-                    tool_calls=[invocation],
-                    meta={"expression": expression, "value": value, "exact": exact},
-                )
+                if not degenerate:
+                    return Solution(
+                        status="failed",
+                        skill=self.id,
+                        method="sympy_exact",
+                        error="计算结果与所有选项均不匹配",
+                        tool_calls=[invocation],
+                        meta={"expression": expression, "value": value, "exact": exact},
+                    )
+                # 退化表达式但建模层也无产出：保留原匹配（由 verify 独立把关），
+                # 记录诊断标记供归因
+                label = raw_label
+                steps.append("注：直接抽取为原样换算，建模层无更优计划（保留待验证）")
             steps.append(f"与选项比对，匹配到 {label}. {question.option_text(label) or ''}".strip())
             return Solution(
                 status="solved",
@@ -192,6 +226,26 @@ class NumericCalculationSkill(BaseSkill):
         )
 
     # ------------------------------------------------ R7 路径二：知识增强规划
+    @staticmethod
+    def _stale_target_probe(plan, final, stem: str) -> str:
+        """R7 §6 结构诊断：题干明说变化（加入/变为/混合…）而计划结果恰等于某个
+        给定原始量——目标量没有随情境更新（典型如稀释后仍报原浓度）。返回反馈文本
+        或空串。不含任何答案信息，只指出结构缺陷。"""
+        if not _re.search(r"加入|加水|加盐|增加|减少|变为|混合|注入|倒入|恢复|升高|降低", stem or ""):
+            return ""
+        for g in plan.givens or []:
+            try:
+                gv = Fraction(str(g.value))
+            except (ValueError, ZeroDivisionError):
+                continue
+            if gv == final:
+                return (f"你的 target 计算结果 {g.value} 恰等于题干引用的原始量"
+                        f"（{g.stem_span[:40]}），但题目描述了变化过程，"
+                        "所问量应是变化后的新值：变化后的总量/新基准必须进入 target 表达式"
+                        "（例如稀释后浓度=溶质/新溶液总量，恢复原价的提价率以现价为基准）。"
+                        "请重新规划。")
+        return ""
+
     def _solve_planner(self, question: Question, ctx: SkillContext, options) -> Optional[Solution]:
         """规则通道无法建模时，用方法卡 + LLM 结构化规划 + Fraction 执行。
         产出候选必须带完整依赖图（structured_plan），由 verify() 独立复核后才可释放。"""
@@ -213,6 +267,15 @@ class NumericCalculationSkill(BaseSkill):
                 error=f"结构化规划未成立: {why}",
                 meta={"planner_failure": str(why)[:200]})
         ex = execute_plan(plan)
+        if ex.final is not None:
+            stale = self._stale_target_probe(plan, ex.final, question.stem)
+            if stale:
+                plan2, _c2, why2 = planner.plan_llm(question.stem, opts, self.id,
+                                                    feedback=stale)
+                if plan2 is not None:
+                    ex2 = execute_plan(plan2)
+                    if ex2.final is not None and ex2.final != ex.final:
+                        plan, ex = plan2, ex2
         if ex.final is None:
             return Solution(
                 status="failed", skill=self.id, method="reasoning_planner",
@@ -222,12 +285,23 @@ class NumericCalculationSkill(BaseSkill):
         exact = (f"{ex.final.numerator}/{ex.final.denominator}"
                  if ex.final.denominator != 1 else str(ex.final.numerator))
         label = None
+        approx_asked = bool(_re.search(r"约|大约|大概|最接近", question.stem or ""))
+        best: Optional[Tuple[float, str]] = None
         for opt in (question.options or []):
             otext = opt.get("text") if isinstance(opt, dict) else getattr(opt, "text", "")
             ov = option_value(otext or "")
-            if ov is not None and _close(ov, value):
-                label = opt.get("label") if isinstance(opt, dict) else getattr(opt, "label", "")
+            if ov is None:
+                continue
+            olabel = opt.get("label") if isinstance(opt, dict) else getattr(opt, "label", "")
+            if _close(ov, value):
+                label = olabel
                 break
+            if approx_asked and _close_approx(ov, value):
+                gap = abs(ov - value)
+                if best is None or gap < best[0]:
+                    best = (gap, olabel)
+        if label is None and best is not None:
+            label = best[1]
         meta = {"structured_plan": plan.to_dict(), "solver_source": "llm_planner",
                 "expression": ex.expression, "value": value, "exact": exact,
                 "planner_method": plan.method_id}
@@ -279,7 +353,7 @@ class NumericCalculationSkill(BaseSkill):
         steps = [f"关系抽取（{plan['kind']}）：{desc}" for _var, _expr, desc in plan["steps"]]
         steps.append(f"Fraction 精确求值 = {_format_fraction(final)}（数值 {float(final):g}）")
         if question.options:
-            label = match_option(float(final), options)
+            label = match_option(float(final), options, rel_tol=_rel_tol(question.stem))
             if label is None:
                 return Solution(
                     status="failed",
@@ -489,7 +563,7 @@ class NumericCalculationSkill(BaseSkill):
             )
             if not matched:
                 pairs = [(option.label, option.text) for option in question.options]
-                repaired = match_option(recomputed, pairs) or f"{recomputed:g}"
+                repaired = match_option(recomputed, pairs, rel_tol=_rel_tol(question.stem)) or f"{recomputed:g}"
         else:
             checks.append(
                 VerificationCheck(name="math.claim_consistent", passed=False, detail="缺少 Solver 数值结果")
@@ -508,7 +582,8 @@ class NumericCalculationSkill(BaseSkill):
             if in_options and not math.isnan(recomputed):
                 value = option_value(question.option_text(solution.answer) or "")
                 if value is not None:
-                    same = _close(value, recomputed)
+                    same = _close(value, recomputed) or (
+                        _rel_tol(question.stem) > 1e-5 and _close_approx(value, recomputed))
                     checks.append(
                         VerificationCheck(
                             name="answer.matches_recompute",
@@ -517,7 +592,8 @@ class NumericCalculationSkill(BaseSkill):
                         )
                     )
                     if not same:
-                        repaired = match_option(recomputed, [(o.label, o.text) for o in question.options]) or repaired
+                        repaired = match_option(recomputed, [(o.label, o.text) for o in question.options],
+                                rel_tol=_rel_tol(question.stem)) or repaired
 
         passed = all(check.passed for check in checks if check.severity == "blocking")
         if passed:

@@ -64,6 +64,9 @@ class CaseResult:
     first_detected_error: Optional[str] = None
     blocking_failure: Optional[str] = None
     secondary_errors: List[Dict[str, Any]] = field(default_factory=list)
+    # R7 §6：求解侧紧凑诊断元数据（solver_source/表达式/计划结构），
+    # 供错误归因循环使用；只含结构，不含金标信息。
+    solver_meta: Dict[str, Any] = field(default_factory=dict)
 
     def as_dict(self) -> Dict[str, Any]:
         return asdict(self)

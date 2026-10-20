@@ -280,7 +280,11 @@ PLAN_SYSTEM = """你是行测解题规划器（只做规划，不给选项答案
 3. 多次变化（连续折扣/复合增长/分步操作）必须逐步建模，每步基准量可能不同，
    百分比变化是乘法复合不是相加；
 4. 不允许输出选项字母或最终选项，只输出结构化计划；
-5. 只依据题干与选项文本与给出的方法卡。"""
+5. 只依据题干与选项文本与给出的方法卡。
+ 6. target 必须是**题目所问的那个量**，分母/基准随情境更新：
+    加水或加溶质后的浓度=新溶质/新溶液总量（分母不是原总量）；
+    降价 x% 后恢复原价所需的提价率以现价为基准（=x/(1-x)），不是原价的 x。
+"""
 
 
 class ReasoningPlanner:
@@ -290,7 +294,8 @@ class ReasoningPlanner:
 
     # ---------- 路径二：知识增强 LLM 规划 ----------
     def plan_llm(self, stem: str, options: List[Dict[str, Any]],
-                 skill: str, cards: Optional[List[MethodCard]] = None
+                 skill: str, cards: Optional[List[MethodCard]] = None,
+                 feedback: str = ""
                  ) -> Tuple[Optional[StructuredPlan], List[MethodCard], Optional[str]]:
         """返回 (plan, 使用的cards, 失败原因)。"""
         if self.llm is None:
@@ -301,6 +306,9 @@ class ReasoningPlanner:
         card_blocks = "\n\n".join(c.prompt_block() for c in cards)
         user = (f"方法卡:\n{card_blocks}\n\n题干:\n{stem}\n\n选项:\n"
                 + json.dumps(options, ensure_ascii=False)[:1200])
+        if feedback:
+            # R7 §6 诊断循环：结构性缺陷反馈（不含答案），请求修正后的新计划
+            user += "\n\n上一版计划的结构性诊断（请据此修正，勿原样重复）：\n- " + feedback
         try:
             payload = self.llm.complete_json(PLAN_SYSTEM, user)
         except Exception as exc:  # noqa: BLE001

@@ -279,6 +279,29 @@ def _failure_reason(status: str, action: str, error: Optional[str]) -> Optional[
     return "wrong_answer"
 
 
+def _solver_meta(solution) -> Dict[str, Any]:
+    """R7 §6：把求解侧结构信息（来源/表达式/依赖图摘要）带进 predictions，
+    支持错误归因，不泄漏金标。"""
+    m = getattr(solution, "meta", None) or {}
+    out: Dict[str, Any] = {}
+    for key in ("solver_source", "expression", "value", "exact", "method",
+                "question_kind", "planner_failure", "rule", "plan_source"):
+        if key in m:
+            out[key] = m[key]
+    sp = m.get("structured_plan")
+    if isinstance(sp, dict):
+        out["structured_plan"] = {
+            "family": sp.get("family"), "method_id": sp.get("method_id"),
+            "givens": [[g.get("label"), g.get("value"), g.get("stem_span")]
+                       for g in sp.get("givens", [])][:8],
+            "steps": [[s.get("var"), s.get("expr")] for s in sp.get("steps", [])][:8],
+            "target": sp.get("target"),
+        }
+    if getattr(solution, "method", None):
+        out["method"] = solution.method
+    return out
+
+
 def _compact(text: str) -> str:
     return re.sub(r"\s+", "", text or "")
 
@@ -750,6 +773,7 @@ class EvaluationRunner:
                 failure_reason=None if correct else _failure_reason(solution.status, verification.action, solution.error),
                 failure_class=failure_class,
                 predicted_option=solution.answer,
+                solver_meta=_solver_meta(solution),
                 tags=list(case.tags),
                 routed_skill=route.skill,
                 route_source=route.source,
