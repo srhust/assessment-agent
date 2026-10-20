@@ -1,0 +1,117 @@
+{
+  "id": "q_84eaff8c4107",
+  "stem": "许多写字楼更换了节能照明系统后，由于使用习惯没有改变，\n省电效果并不明显。只有把系统升级和用能行为管理结合起来，\n才能达到预期的节能目标。这段文字的主旨是?",
+  "options": [
+    {
+      "label": "A",
+      "text": "A. 节能照明系统的省电效果值得怀疑"
+    },
+    {
+      "label": "B",
+      "text": "B. 只有把系统升级和用能行为管理结合起来，才能达到节能目标"
+    },
+    {
+      "label": "C",
+      "text": "C. 写字楼员工的使用习惯亟待纠正"
+    },
+    {
+      "label": "D",
+      "text": "D. 系统升级比行为管理更为重要"
+    }
+  ],
+  "skill": null,
+  "question_type": "single_choice",
+  "image_path": "E:\\assessment-agent\\runs\\e2e-r61_vlm_dev12-xd-vu-22\\image\\original.png",
+  "source": "image",
+  "meta": {
+    "extraction_confidence": 0.94,
+    "has_diagram": false,
+    "vision": {
+      "bbox_format": "pixel_xywh",
+      "image_size": [
+        920,
+        290
+      ],
+      "stem_matrix_bbox": null,
+      "stem_matrix_grid": null,
+      "stem_matrix_crop": null,
+      "diagram_regions": [],
+      "option_regions": [
+        {
+          "label": "A",
+          "bbox": [
+            28,
+            128,
+            335,
+            26
+          ],
+          "text": "A. 节能照明系统的省电效果值得怀疑",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "B",
+          "bbox": [
+            28,
+            158,
+            600,
+            26
+          ],
+          "text": "B. 只有把系统升级和用能行为管理结合起来，才能达到节能目标",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "C",
+          "bbox": [
+            28,
+            188,
+            325,
+            26
+          ],
+          "text": "C. 写字楼员工的使用习惯亟待纠正",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "D",
+          "bbox": [
+            28,
+            218,
+            305,
+            26
+          ],
+          "text": "D. 系统升级比行为管理更为重要",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        }
+      ],
+      "table_regions": [],
+      "text_regions": [
+        {
+          "region_id": "t1",
+          "bbox": [
+            28,
+            30,
+            560,
+            92
+          ],
+          "text": "许多写字楼更换了节能照明系统后，由于使用习惯没有改变，\n省电效果并不明显。只有把系统升级和用能行为管理结合起来，\n才能达到预期的节能目标。这段文字的主旨是?"
+        }
+      ],
+      "reading_order": [
+        "t1",
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "parser": "vision_parser",
+      "confidence": 0.94
+    }
+  }
+}

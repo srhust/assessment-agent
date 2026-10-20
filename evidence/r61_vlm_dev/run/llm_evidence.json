@@ -1,0 +1,52 @@
+{
+  "audit": {
+    "requests_sent": 14,
+    "requests_succeeded": 14,
+    "http_status_counts": {
+      "200": 14
+    },
+    "error_types": {},
+    "echoed_models": [
+      "glm-5.3-flash"
+    ],
+    "request_ids_sample": [
+      "2026102008580153f7d7ec2d6845f9",
+      "202610200858132dd62c2a710c4278",
+      "20261020085825cc4c57b8ba6c4c80",
+      "202610200858468ae5080462be4ea9",
+      "2026102008590597ec9f0f0fb943cc"
+    ],
+    "base_url_host": "st8tp3ajl0df3n8b8l8qu.apigateway-cn-beijing.volceapi.com",
+    "vision_model_configured": "glm-5.3-flash",
+    "mock_or_injected_transport": false,
+    "offline_mode": false,
+    "by_phase": {
+      "solver_or_skill": {
+        "http_succeeded": 2,
+        "http_failed": 0,
+        "malformed_envelope": 0,
+        "json_output_valid": 0,
+        "json_output_invalid": 2,
+        "latency_ms_sum": 64859.5
+      },
+      "vision_parse": {
+        "http_succeeded": 12,
+        "http_failed": 0,
+        "malformed_envelope": 0,
+        "json_output_valid": 10,
+        "json_output_invalid": 2,
+        "latency_ms_sum": 211283.3
+      }
+    }
+  },
+  "usage": {
+    "calls": 14,
+    "model": "glm-5.3-flash",
+    "prompt_tokens": 13324,
+    "completion_tokens": 18836,
+    "total_tokens": 32160
+  },
+  "eval_mode": null,
+  "split": "xingce_dev",
+  "sample_count": 12
+}

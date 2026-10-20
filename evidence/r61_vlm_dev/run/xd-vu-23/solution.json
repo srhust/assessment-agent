@@ -1,0 +1,24 @@
+{
+  "status": "failed",
+  "skill": "verbal_understanding",
+  "answer": null,
+  "answer_text": null,
+  "steps": [],
+  "confidence": 0.0,
+  "method": "verbal_understanding:plan",
+  "tool_calls": [],
+  "error": "言语理解规则核无法可靠判定: no_collocation_hit {\"winners\": []}",
+  "meta": {
+    "failure": {
+      "code": "no_collocation_hit",
+      "detail": {
+        "winners": []
+      }
+    },
+    "llm_rejection": {
+      "code": "llm_call_failed"
+    },
+    "stage": 3,
+    "latency_ms": 36509.089
+  }
+}

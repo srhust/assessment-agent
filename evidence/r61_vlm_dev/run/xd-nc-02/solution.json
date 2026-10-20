@@ -1,0 +1,53 @@
+{
+  "status": "failed",
+  "skill": "numeric_calculation",
+  "answer": null,
+  "answer_text": null,
+  "steps": [],
+  "confidence": 0.0,
+  "method": "sympy_exact",
+  "tool_calls": [
+    {
+      "tool": "python_math",
+      "args": {
+        "text": "某商品按成本 200 元加价 25% 定价，之后按定价打九折出售，\n实际售价是多少元？",
+        "options": [
+          [
+            "A",
+            "A. 220"
+          ],
+          [
+            "B",
+            "B. 225"
+          ],
+          [
+            "C",
+            "C. 198"
+          ],
+          [
+            "D",
+            "D. 250"
+          ]
+        ]
+      },
+      "ok": true,
+      "result": {
+        "expression": "25*(1/100)",
+        "exact": "1/4",
+        "value": 0.25,
+        "is_integer": false,
+        "matched_label": null
+      },
+      "error": null,
+      "duration_ms": 1.556
+    }
+  ],
+  "error": "计算结果与所有选项均不匹配",
+  "meta": {
+    "expression": "25*(1/100)",
+    "value": 0.25,
+    "exact": "1/4",
+    "stage": 1,
+    "latency_ms": 1.64
+  }
+}

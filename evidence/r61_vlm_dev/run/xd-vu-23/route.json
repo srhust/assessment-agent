@@ -1,0 +1,11 @@
+{
+  "skill": "verbal_understanding",
+  "confidence": 1.0,
+  "source": "explicit",
+  "scores": {
+    "verbal_understanding": 1.0
+  },
+  "ambiguous": false,
+  "classified": true,
+  "notes": "题型由调用方显式指定"
+}

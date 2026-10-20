@@ -1,0 +1,117 @@
+{
+  "id": "q_ef3b247bebf4",
+  "stem": "只有提前预约的人才能进入展馆。李华进入了展馆，那么以下哪项必然为真？",
+  "options": [
+    {
+      "label": "A",
+      "text": "A.李华提前预约了"
+    },
+    {
+      "label": "B",
+      "text": "B.李华没有提前预约"
+    },
+    {
+      "label": "C",
+      "text": "C.提前预约的人都能进馆"
+    },
+    {
+      "label": "D",
+      "text": "D.进馆不一定需要预约"
+    }
+  ],
+  "skill": null,
+  "question_type": "single_choice",
+  "image_path": "E:\\assessment-agent\\runs\\e2e-r61_vlm_dev12-xd-lg-15\\image\\original.png",
+  "source": "image",
+  "meta": {
+    "extraction_confidence": 0.95,
+    "has_diagram": false,
+    "vision": {
+      "bbox_format": "pixel_xywh",
+      "image_size": [
+        920,
+        230
+      ],
+      "stem_matrix_bbox": null,
+      "stem_matrix_grid": null,
+      "stem_matrix_crop": null,
+      "diagram_regions": [],
+      "option_regions": [
+        {
+          "label": "A",
+          "bbox": [
+            35,
+            76,
+            160,
+            26
+          ],
+          "text": "A.李华提前预约了",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "B",
+          "bbox": [
+            35,
+            110,
+            168,
+            26
+          ],
+          "text": "B.李华没有提前预约",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "C",
+          "bbox": [
+            35,
+            143,
+            205,
+            26
+          ],
+          "text": "C.提前预约的人都能进馆",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "D",
+          "bbox": [
+            35,
+            177,
+            205,
+            26
+          ],
+          "text": "D.进馆不一定需要预约",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        }
+      ],
+      "table_regions": [],
+      "text_regions": [
+        {
+          "region_id": "t1",
+          "bbox": [
+            35,
+            38,
+            615,
+            26
+          ],
+          "text": "只有提前预约的人才能进入展馆。李华进入了展馆，那么以下哪项必然为真？"
+        }
+      ],
+      "reading_order": [
+        "t1",
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "parser": "vision_parser",
+      "confidence": 0.95
+    }
+  }
+}

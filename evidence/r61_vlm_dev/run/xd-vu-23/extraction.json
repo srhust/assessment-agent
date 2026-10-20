@@ -1,0 +1,119 @@
+{
+  "stem": "一些自媒体为了博取关注（ ），对事件原貌进行夸张改编，\n完全背离了新闻报道的真实性要求。",
+  "options": [
+    {
+      "label": "A",
+      "text": "脱身而出"
+    },
+    {
+      "label": "B",
+      "text": "耸人听闻"
+    },
+    {
+      "label": "C",
+      "text": "当仁不让"
+    },
+    {
+      "label": "D",
+      "text": "据实直书"
+    }
+  ],
+  "question_type": "single_choice",
+  "skill_hint": "verbal_understanding",
+  "has_diagram": false,
+  "raw_text": "一些自媒体为了博取关注（ ），对事件原貌进行夸张改编，\n完全背离了新闻报道的真实性要求。",
+  "model": "glm-5.3-flash",
+  "confidence": 0.95,
+  "warnings": [],
+  "schema_version": 2,
+  "bbox_format": "pixel_xywh",
+  "image_width": 920,
+  "image_height": 260,
+  "text_regions": [
+    {
+      "region_id": "t1",
+      "bbox": [
+        35,
+        36,
+        440,
+        24
+      ],
+      "text": "一些自媒体为了博取关注（ ），对事件原貌进行夸张改编，"
+    },
+    {
+      "region_id": "t2",
+      "bbox": [
+        35,
+        76,
+        250,
+        24
+      ],
+      "text": "完全背离了新闻报道的真实性要求。"
+    }
+  ],
+  "diagram_regions": [],
+  "option_regions": [
+    {
+      "label": "A",
+      "bbox": [
+        35,
+        110,
+        110,
+        24
+      ],
+      "text": "脱身而出",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "B",
+      "bbox": [
+        35,
+        140,
+        110,
+        24
+      ],
+      "text": "耸人听闻",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "C",
+      "bbox": [
+        35,
+        170,
+        110,
+        24
+      ],
+      "text": "当仁不让",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "D",
+      "bbox": [
+        35,
+        200,
+        110,
+        24
+      ],
+      "text": "据实直书",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    }
+  ],
+  "table_regions": [],
+  "reading_order": [
+    "t1",
+    "t2",
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "parser": "vision_parser"
+}

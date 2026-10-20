@@ -1,0 +1,53 @@
+{
+  "status": "failed",
+  "skill": "numeric_calculation",
+  "answer": null,
+  "answer_text": null,
+  "steps": [],
+  "confidence": 0.0,
+  "method": "sympy_exact",
+  "tool_calls": [
+    {
+      "tool": "python_math",
+      "args": {
+        "text": "笔记本原价 100 元，先降价 10%，又在此基础上降价 5%，\n最终价格是多少元?",
+        "options": [
+          [
+            "A",
+            "A. 85.5"
+          ],
+          [
+            "B",
+            "B. 85"
+          ],
+          [
+            "C",
+            "C. 90.5"
+          ],
+          [
+            "D",
+            "D. 94.5"
+          ]
+        ]
+      },
+      "ok": true,
+      "result": {
+        "expression": "10*(1/100)",
+        "exact": "1/10",
+        "value": 0.1,
+        "is_integer": false,
+        "matched_label": null
+      },
+      "error": null,
+      "duration_ms": 698.377
+    }
+  ],
+  "error": "计算结果与所有选项均不匹配",
+  "meta": {
+    "expression": "10*(1/100)",
+    "value": 0.1,
+    "exact": "1/10",
+    "stage": 1,
+    "latency_ms": 699.79
+  }
+}

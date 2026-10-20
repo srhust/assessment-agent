@@ -1,0 +1,108 @@
+{
+  "stem": "只有提前预约的人才能进入展馆。李华进入了展馆，那么以下哪项必然为真？",
+  "options": [
+    {
+      "label": "A",
+      "text": "A.李华提前预约了"
+    },
+    {
+      "label": "B",
+      "text": "B.李华没有提前预约"
+    },
+    {
+      "label": "C",
+      "text": "C.提前预约的人都能进馆"
+    },
+    {
+      "label": "D",
+      "text": "D.进馆不一定需要预约"
+    }
+  ],
+  "question_type": "single_choice",
+  "skill_hint": "logical_reasoning",
+  "has_diagram": false,
+  "raw_text": "只有提前预约的人才能进入展馆。李华进入了展馆，那么以下哪项必然为真？",
+  "model": "glm-5.3-flash",
+  "confidence": 0.95,
+  "warnings": [],
+  "schema_version": 2,
+  "bbox_format": "pixel_xywh",
+  "image_width": 920,
+  "image_height": 230,
+  "text_regions": [
+    {
+      "region_id": "t1",
+      "bbox": [
+        35,
+        38,
+        615,
+        26
+      ],
+      "text": "只有提前预约的人才能进入展馆。李华进入了展馆，那么以下哪项必然为真？"
+    }
+  ],
+  "diagram_regions": [],
+  "option_regions": [
+    {
+      "label": "A",
+      "bbox": [
+        35,
+        76,
+        160,
+        26
+      ],
+      "text": "A.李华提前预约了",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "B",
+      "bbox": [
+        35,
+        110,
+        168,
+        26
+      ],
+      "text": "B.李华没有提前预约",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "C",
+      "bbox": [
+        35,
+        143,
+        205,
+        26
+      ],
+      "text": "C.提前预约的人都能进馆",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "D",
+      "bbox": [
+        35,
+        177,
+        205,
+        26
+      ],
+      "text": "D.进馆不一定需要预约",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    }
+  ],
+  "table_regions": [],
+  "reading_order": [
+    "t1",
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "parser": "vision_parser"
+}

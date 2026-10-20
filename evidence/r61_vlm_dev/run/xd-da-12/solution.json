@@ -1,0 +1,32 @@
+{
+  "status": "failed",
+  "skill": "data_analysis",
+  "answer": null,
+  "answer_text": null,
+  "steps": [],
+  "confidence": 0.0,
+  "method": "data_analysis:inputs",
+  "tool_calls": [],
+  "error": "资料分析输入缺少表格/统计图数据区域（不做无证据作答）",
+  "meta": {
+    "failure": {
+      "code": "no_data_regions",
+      "vision_keys": [
+        "bbox_format",
+        "confidence",
+        "diagram_regions",
+        "image_size",
+        "option_regions",
+        "parser",
+        "reading_order",
+        "stem_matrix_bbox",
+        "stem_matrix_crop",
+        "stem_matrix_grid",
+        "table_regions",
+        "text_regions"
+      ]
+    },
+    "stage": 3,
+    "latency_ms": 0.044
+  }
+}

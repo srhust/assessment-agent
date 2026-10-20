@@ -1,0 +1,128 @@
+{
+  "id": "q_57fe5887142c",
+  "stem": "笔记本原价 100 元，先降价 10%，又在此基础上降价 5%，\n最终价格是多少元?",
+  "options": [
+    {
+      "label": "A",
+      "text": "A. 85.5"
+    },
+    {
+      "label": "B",
+      "text": "B. 85"
+    },
+    {
+      "label": "C",
+      "text": "C. 90.5"
+    },
+    {
+      "label": "D",
+      "text": "D. 94.5"
+    }
+  ],
+  "skill": null,
+  "question_type": "single_choice",
+  "image_path": "E:\\assessment-agent\\runs\\e2e-r61_vlm_dev12-xd-nc-01\\image\\original.png",
+  "source": "image",
+  "meta": {
+    "extraction_confidence": 0.97,
+    "has_diagram": false,
+    "vision": {
+      "bbox_format": "pixel_xywh",
+      "image_size": [
+        920,
+        260
+      ],
+      "stem_matrix_bbox": null,
+      "stem_matrix_grid": null,
+      "stem_matrix_crop": null,
+      "diagram_regions": [],
+      "option_regions": [
+        {
+          "label": "A",
+          "bbox": [
+            33,
+            105,
+            66,
+            20
+          ],
+          "text": "A. 85.5",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "B",
+          "bbox": [
+            33,
+            136,
+            55,
+            20
+          ],
+          "text": "B. 85",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "C",
+          "bbox": [
+            33,
+            166,
+            66,
+            20
+          ],
+          "text": "C. 90.5",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "D",
+          "bbox": [
+            33,
+            198,
+            66,
+            20
+          ],
+          "text": "D. 94.5",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        }
+      ],
+      "table_regions": [],
+      "text_regions": [
+        {
+          "region_id": "t1",
+          "bbox": [
+            33,
+            38,
+            470,
+            21
+          ],
+          "text": "笔记本原价 100 元，先降价 10%，又在此基础上降价 5%，"
+        },
+        {
+          "region_id": "t2",
+          "bbox": [
+            33,
+            62,
+            148,
+            22
+          ],
+          "text": "最终价格是多少元?"
+        }
+      ],
+      "reading_order": [
+        "t1",
+        "t2",
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "parser": "vision_parser",
+      "confidence": 0.97
+    }
+  }
+}

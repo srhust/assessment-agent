@@ -1,0 +1,11 @@
+{
+  "skill": "number_series",
+  "confidence": 1.0,
+  "source": "explicit",
+  "scores": {
+    "number_series": 1.0
+  },
+  "ambiguous": false,
+  "classified": true,
+  "notes": "题型由调用方显式指定"
+}

@@ -1,0 +1,11 @@
+{
+  "skill": "numeric_calculation",
+  "confidence": 1.0,
+  "source": "explicit",
+  "scores": {
+    "numeric_calculation": 1.0
+  },
+  "ambiguous": false,
+  "classified": true,
+  "notes": "题型由调用方显式指定"
+}

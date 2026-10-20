@@ -1,0 +1,108 @@
+{
+  "stem": "1/2, 3/4, 5/8, 7/16,  （ ）",
+  "options": [
+    {
+      "label": "A",
+      "text": "A. 9/32"
+    },
+    {
+      "label": "B",
+      "text": "B. 9/24"
+    },
+    {
+      "label": "C",
+      "text": "C. 8/32"
+    },
+    {
+      "label": "D",
+      "text": "D. 7/32"
+    }
+  ],
+  "question_type": "single_choice",
+  "skill_hint": "number_series",
+  "has_diagram": false,
+  "raw_text": "1/2, 3/4, 5/8, 7/16,  （ ）",
+  "model": "glm-5.3-flash",
+  "confidence": 0.95,
+  "warnings": [],
+  "schema_version": 2,
+  "bbox_format": "pixel_xywh",
+  "image_width": 920,
+  "image_height": 230,
+  "text_regions": [
+    {
+      "region_id": "t1",
+      "bbox": [
+        35,
+        38,
+        250,
+        22
+      ],
+      "text": "1/2, 3/4, 5/8, 7/16,  （ ）"
+    }
+  ],
+  "diagram_regions": [],
+  "option_regions": [
+    {
+      "label": "A",
+      "bbox": [
+        35,
+        73,
+        75,
+        20
+      ],
+      "text": "A. 9/32",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "B",
+      "bbox": [
+        35,
+        104,
+        75,
+        20
+      ],
+      "text": "B. 9/24",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "C",
+      "bbox": [
+        35,
+        135,
+        75,
+        20
+      ],
+      "text": "C. 8/32",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "D",
+      "bbox": [
+        35,
+        166,
+        75,
+        20
+      ],
+      "text": "D. 7/32",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    }
+  ],
+  "table_regions": [],
+  "reading_order": [
+    "t1",
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "parser": "vision_parser"
+}

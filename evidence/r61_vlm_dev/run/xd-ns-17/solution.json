@@ -1,0 +1,49 @@
+{
+  "status": "failed",
+  "skill": "number_series",
+  "answer": null,
+  "answer_text": null,
+  "steps": [
+    "解析数列：1/2, 3/4, 5/8, 7/16"
+  ],
+  "confidence": 0.0,
+  "method": "series_pattern",
+  "tool_calls": [
+    {
+      "tool": "number_series",
+      "args": {
+        "text": "1/2, 3/4, 5/8, 7/16,  （ ）"
+      },
+      "ok": true,
+      "result": {
+        "sequence": [
+          "1/2",
+          "3/4",
+          "5/8",
+          "7/16"
+        ],
+        "candidates": [],
+        "next_value": null,
+        "next_value_float": null,
+        "agreement": false,
+        "note": "没有匹配到任何已知规律"
+      },
+      "error": null,
+      "duration_ms": 0.652
+    }
+  ],
+  "error": "数列求解失败：没有匹配到任何已知规律",
+  "meta": {
+    "sequence": [
+      "1/2",
+      "3/4",
+      "5/8",
+      "7/16"
+    ],
+    "agreement": false,
+    "no_pattern": true,
+    "candidates": [],
+    "stage": 1,
+    "latency_ms": 0.801
+  }
+}

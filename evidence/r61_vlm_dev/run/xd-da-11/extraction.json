@@ -1,0 +1,130 @@
+{
+  "stem": "2023 年某区文化体育支出 23 亿元，比上年增长 15%。\n同年教育支出 41 亿元，增长 8%。\n根据以下资料回答问题。2022 年该区文化体育支出约为多少亿元？",
+  "options": [
+    {
+      "label": "A",
+      "text": "20"
+    },
+    {
+      "label": "B",
+      "text": "21"
+    },
+    {
+      "label": "C",
+      "text": "18"
+    },
+    {
+      "label": "D",
+      "text": "17.4"
+    }
+  ],
+  "question_type": "single_choice",
+  "skill_hint": "data_analysis",
+  "has_diagram": false,
+  "raw_text": "2023 年某区文化体育支出 23 亿元，比上年增长 15%。\n同年教育支出 41 亿元，增长 8%。\n根据以下资料回答问题。2022 年该区文化体育支出约为多少亿元？",
+  "model": "glm-5.3-flash",
+  "confidence": 0.95,
+  "warnings": [],
+  "schema_version": 2,
+  "bbox_format": "pixel_xywh",
+  "image_width": 920,
+  "image_height": 290,
+  "text_regions": [
+    {
+      "region_id": "t1",
+      "bbox": [
+        35,
+        34,
+        450,
+        22
+      ],
+      "text": "2023 年某区文化体育支出 23 亿元，比上年增长 15%。"
+    },
+    {
+      "region_id": "t2",
+      "bbox": [
+        35,
+        67,
+        280,
+        22
+      ],
+      "text": "同年教育支出 41 亿元，增长 8%。"
+    },
+    {
+      "region_id": "t3",
+      "bbox": [
+        35,
+        100,
+        535,
+        22
+      ],
+      "text": "根据以下资料回答问题。2022 年该区文化体育支出约为多少亿元？"
+    }
+  ],
+  "diagram_regions": [],
+  "option_regions": [
+    {
+      "label": "A",
+      "bbox": [
+        35,
+        133,
+        62,
+        22
+      ],
+      "text": "20",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "B",
+      "bbox": [
+        35,
+        168,
+        62,
+        22
+      ],
+      "text": "21",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "C",
+      "bbox": [
+        35,
+        203,
+        62,
+        22
+      ],
+      "text": "18",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "D",
+      "bbox": [
+        35,
+        238,
+        78,
+        22
+      ],
+      "text": "17.4",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    }
+  ],
+  "table_regions": [],
+  "reading_order": [
+    "t1",
+    "t2",
+    "t3",
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "parser": "vision_parser"
+}

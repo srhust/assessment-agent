@@ -1,0 +1,119 @@
+{
+  "stem": "某商品按成本 200 元加价 25% 定价，之后按定价打九折出售，\n实际售价是多少元？",
+  "options": [
+    {
+      "label": "A",
+      "text": "A. 220"
+    },
+    {
+      "label": "B",
+      "text": "B. 225"
+    },
+    {
+      "label": "C",
+      "text": "C. 198"
+    },
+    {
+      "label": "D",
+      "text": "D. 250"
+    }
+  ],
+  "question_type": "single_choice",
+  "skill_hint": "numeric_calculation",
+  "has_diagram": false,
+  "raw_text": "某商品按成本 200 元加价 25% 定价，之后按定价打九折出售，\n实际售价是多少元？",
+  "model": "glm-5.3-flash",
+  "confidence": 0.96,
+  "warnings": [],
+  "schema_version": 2,
+  "bbox_format": "pixel_xywh",
+  "image_width": 920,
+  "image_height": 260,
+  "text_regions": [
+    {
+      "region_id": "t1",
+      "bbox": [
+        28,
+        36,
+        540,
+        65
+      ],
+      "text": "某商品按成本 200 元加价 25% 定价，之后按定价打九折出售，"
+    },
+    {
+      "region_id": "t2",
+      "bbox": [
+        28,
+        74,
+        205,
+        25
+      ],
+      "text": "实际售价是多少元？"
+    }
+  ],
+  "diagram_regions": [],
+  "option_regions": [
+    {
+      "label": "A",
+      "bbox": [
+        28,
+        108,
+        75,
+        24
+      ],
+      "text": "A. 220",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "B",
+      "bbox": [
+        28,
+        138,
+        75,
+        24
+      ],
+      "text": "B. 225",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "C",
+      "bbox": [
+        28,
+        168,
+        75,
+        24
+      ],
+      "text": "C. 198",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "D",
+      "bbox": [
+        28,
+        198,
+        75,
+        24
+      ],
+      "text": "D. 250",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    }
+  ],
+  "table_regions": [],
+  "reading_order": [
+    "t1",
+    "t2",
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "parser": "vision_parser"
+}

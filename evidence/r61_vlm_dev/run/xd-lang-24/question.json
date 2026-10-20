@@ -1,0 +1,117 @@
+{
+  "id": "q_d78511230be3",
+  "stem": "笔：文具 与下列哪组词语逻辑关系最为相似?",
+  "options": [
+    {
+      "label": "A",
+      "text": "A. 桌子：家具"
+    },
+    {
+      "label": "B",
+      "text": "B. 轮胎：橡胶"
+    },
+    {
+      "label": "C",
+      "text": "C. 文具：笔"
+    },
+    {
+      "label": "D",
+      "text": "D. 医生：医院"
+    }
+  ],
+  "skill": null,
+  "question_type": "single_choice",
+  "image_path": "E:\\assessment-agent\\runs\\e2e-r61_vlm_dev12-xd-lang-24\\image\\original.png",
+  "source": "image",
+  "meta": {
+    "extraction_confidence": 0.95,
+    "has_diagram": false,
+    "vision": {
+      "bbox_format": "pixel_xywh",
+      "image_size": [
+        920,
+        230
+      ],
+      "stem_matrix_bbox": null,
+      "stem_matrix_grid": null,
+      "stem_matrix_crop": null,
+      "diagram_regions": [],
+      "option_regions": [
+        {
+          "label": "A",
+          "bbox": [
+            35,
+            72,
+            125,
+            24
+          ],
+          "text": "A. 桌子：家具",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "B",
+          "bbox": [
+            35,
+            106,
+            120,
+            24
+          ],
+          "text": "B. 轮胎：橡胶",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "C",
+          "bbox": [
+            35,
+            139,
+            105,
+            24
+          ],
+          "text": "C. 文具：笔",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "D",
+          "bbox": [
+            35,
+            172,
+            110,
+            24
+          ],
+          "text": "D. 医生：医院",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        }
+      ],
+      "table_regions": [],
+      "text_regions": [
+        {
+          "region_id": "t1",
+          "bbox": [
+            35,
+            32,
+            375,
+            24
+          ],
+          "text": "笔：文具 与下列哪组词语逻辑关系最为相似?"
+        }
+      ],
+      "reading_order": [
+        "t1",
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "parser": "vision_parser",
+      "confidence": 0.95
+    }
+  }
+}

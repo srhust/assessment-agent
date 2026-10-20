@@ -1,0 +1,1 @@
+{"ts": "2026-10-20T01:01:57.318897+00:00", "event": "run_start", "text": null, "image_path": "E:\\assessment-agent\\data\\benchmark_xingce_dev\\images\\dev\\xd-fig-20.png", "skill": null}

@@ -1,0 +1,119 @@
+{
+  "stem": "某景区 2023 年全年接待游客 90 万人次，\n其中四月份接待 21 万人次，\n五月份因天气原因接待量同比下降 20%。\n根据以下资料回答问题。2023 年四月份接待量约占全年的：",
+  "options": [
+    {
+      "label": "A",
+      "text": "A. 23.3%"
+    },
+    {
+      "label": "B",
+      "text": "B. 25.0%"
+    },
+    {
+      "label": "C",
+      "text": "C. 21.0%"
+    },
+    {
+      "label": "D",
+      "text": "D. 20.0%"
+    }
+  ],
+  "question_type": "single_choice",
+  "skill_hint": "data_analysis",
+  "has_diagram": false,
+  "raw_text": "某景区 2023 年全年接待游客 90 万人次，\n其中四月份接待 21 万人次，\n五月份因天气原因接待量同比下降 20%。\n根据以下资料回答问题。2023 年四月份接待量约占全年的：",
+  "model": "glm-5.3-flash",
+  "confidence": 0.93,
+  "warnings": [],
+  "schema_version": 2,
+  "bbox_format": "pixel_xywh",
+  "image_width": 920,
+  "image_height": 320,
+  "text_regions": [
+    {
+      "region_id": "t1",
+      "bbox": [
+        32,
+        36,
+        345,
+        98
+      ],
+      "text": "某景区 2023 年全年接待游客 90 万人次，\n其中四月份接待 21 万人次，\n五月份因天气原因接待量同比下降 20%。"
+    },
+    {
+      "region_id": "t2",
+      "bbox": [
+        32,
+        134,
+        435,
+        26
+      ],
+      "text": "根据以下资料回答问题。2023 年四月份接待量约占全年的："
+    }
+  ],
+  "diagram_regions": [],
+  "option_regions": [
+    {
+      "label": "A",
+      "bbox": [
+        32,
+        170,
+        105,
+        22
+      ],
+      "text": "A. 23.3%",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "B",
+      "bbox": [
+        32,
+        205,
+        105,
+        22
+      ],
+      "text": "B. 25.0%",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "C",
+      "bbox": [
+        32,
+        240,
+        105,
+        22
+      ],
+      "text": "C. 21.0%",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    },
+    {
+      "label": "D",
+      "bbox": [
+        32,
+        275,
+        105,
+        22
+      ],
+      "text": "D. 20.0%",
+      "has_figure": false,
+      "figure_bbox": null,
+      "crop_path": null
+    }
+  ],
+  "table_regions": [],
+  "reading_order": [
+    "t1",
+    "t2",
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "parser": "vision_parser"
+}

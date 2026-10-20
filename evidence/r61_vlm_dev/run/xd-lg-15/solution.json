@@ -1,0 +1,45 @@
+{
+  "status": "failed",
+  "skill": "logical_reasoning",
+  "answer": null,
+  "answer_text": null,
+  "steps": [],
+  "confidence": 0.0,
+  "method": "z3_constraints",
+  "tool_calls": [
+    {
+      "tool": "z3_logic",
+      "args": {
+        "stem": "只有提前预约的人才能进入展馆。李华进入了展馆，那么以下哪项必然为真？",
+        "options": [
+          [
+            "A",
+            "A.李华提前预约了"
+          ],
+          [
+            "B",
+            "B.李华没有提前预约"
+          ],
+          [
+            "C",
+            "C.提前预约的人都能进馆"
+          ],
+          [
+            "D",
+            "D.进馆不一定需要预约"
+          ]
+        ],
+        "entities": null
+      },
+      "ok": false,
+      "result": null,
+      "error": "未能识别出至少两个比较对象（可用 meta.logic_entities 显式指定）",
+      "duration_ms": 0.051
+    }
+  ],
+  "error": "未能识别出至少两个比较对象（可用 meta.logic_entities 显式指定）",
+  "meta": {
+    "stage": 1,
+    "latency_ms": 0.082
+  }
+}

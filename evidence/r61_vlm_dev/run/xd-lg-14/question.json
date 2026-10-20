@@ -1,0 +1,128 @@
+{
+  "id": "q_e192e3966628",
+  "stem": "所有通过笔试的员工都参加了培训。张明没有参加培训。\n由此可以推出:",
+  "options": [
+    {
+      "label": "A",
+      "text": "A.张明通过了笔试"
+    },
+    {
+      "label": "B",
+      "text": "B.张明没有通过笔试"
+    },
+    {
+      "label": "C",
+      "text": "C.无法确定张明是否通过笔试"
+    },
+    {
+      "label": "D",
+      "text": "D.参加培训的都是通过笔试的"
+    }
+  ],
+  "skill": null,
+  "question_type": "single_choice",
+  "image_path": "E:\\assessment-agent\\runs\\e2e-r61_vlm_dev12-xd-lg-14\\image\\original.png",
+  "source": "image",
+  "meta": {
+    "extraction_confidence": 0.95,
+    "has_diagram": false,
+    "vision": {
+      "bbox_format": "pixel_xywh",
+      "image_size": [
+        920,
+        260
+      ],
+      "stem_matrix_bbox": null,
+      "stem_matrix_grid": null,
+      "stem_matrix_crop": null,
+      "diagram_regions": [],
+      "option_regions": [
+        {
+          "label": "A",
+          "bbox": [
+            30,
+            104,
+            155,
+            24
+          ],
+          "text": "A.张明通过了笔试",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "B",
+          "bbox": [
+            30,
+            137,
+            168,
+            24
+          ],
+          "text": "B.张明没有通过笔试",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "C",
+          "bbox": [
+            30,
+            170,
+            232,
+            24
+          ],
+          "text": "C.无法确定张明是否通过笔试",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        },
+        {
+          "label": "D",
+          "bbox": [
+            30,
+            202,
+            232,
+            24
+          ],
+          "text": "D.参加培训的都是通过笔试的",
+          "has_figure": false,
+          "figure_bbox": null,
+          "crop_path": null
+        }
+      ],
+      "table_regions": [],
+      "text_regions": [
+        {
+          "region_id": "t1",
+          "bbox": [
+            30,
+            35,
+            430,
+            26
+          ],
+          "text": "所有通过笔试的员工都参加了培训。张明没有参加培训。"
+        },
+        {
+          "region_id": "t2",
+          "bbox": [
+            30,
+            68,
+            120,
+            24
+          ],
+          "text": "由此可以推出:"
+        }
+      ],
+      "reading_order": [
+        "t1",
+        "t2",
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "parser": "vision_parser",
+      "confidence": 0.95
+    }
+  }
+}

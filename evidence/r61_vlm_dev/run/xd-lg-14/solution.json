@@ -1,0 +1,45 @@
+{
+  "status": "failed",
+  "skill": "logical_reasoning",
+  "answer": null,
+  "answer_text": null,
+  "steps": [],
+  "confidence": 0.0,
+  "method": "z3_constraints",
+  "tool_calls": [
+    {
+      "tool": "z3_logic",
+      "args": {
+        "stem": "所有通过笔试的员工都参加了培训。张明没有参加培训。\n由此可以推出:",
+        "options": [
+          [
+            "A",
+            "A.张明通过了笔试"
+          ],
+          [
+            "B",
+            "B.张明没有通过笔试"
+          ],
+          [
+            "C",
+            "C.无法确定张明是否通过笔试"
+          ],
+          [
+            "D",
+            "D.参加培训的都是通过笔试的"
+          ]
+        ],
+        "entities": null
+      },
+      "ok": false,
+      "result": null,
+      "error": "未能识别出至少两个比较对象（可用 meta.logic_entities 显式指定）",
+      "duration_ms": 55.975
+    }
+  ],
+  "error": "未能识别出至少两个比较对象（可用 meta.logic_entities 显式指定）",
+  "meta": {
+    "stage": 1,
+    "latency_ms": 56.018
+  }
+}
