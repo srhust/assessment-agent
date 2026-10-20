@@ -1,0 +1,47 @@
+{
+  "method_id": "nc.travel-meeting-pursuit",
+  "skill": "numeric_calculation",
+  "problem_family": "motion",
+  "concepts": [
+    "路程=速度×时间",
+    "相遇用速度和，追及用速度差"
+  ],
+  "applicability_conditions": [
+    "两人/车相向或同向，给速度与时间或距离求另一量",
+    "流水行船"
+  ],
+  "required_quantities": [
+    "各方速度",
+    "时间或总路程",
+    "（流水题）船速与水速"
+  ],
+  "reasoning_operations": [
+    "相遇：总路程=(v1+v2)×t",
+    "追及：路程差=(v1−v2)×t",
+    "流水：顺=船+水，逆=船−水，船=(顺+逆)/2，水=(顺−逆)/2",
+    "平均速度=总路程÷总时间（不是速度算术平均）"
+  ],
+  "solution_procedure": [
+    "绑定速度/时间",
+    "解线性方程（Fraction）",
+    "选项匹配"
+  ],
+  "verification_strategy": [
+    "每个中间量必须可回溯到题干原文数值（来源绑定）",
+    "用 Fraction/SymPy 独立重算整个依赖图并与候选核对",
+    "答案与全部选项做数值一致性比对，多匹配即歧义不释放",
+    "分段行程必须按各段实际用时求和"
+  ],
+  "common_pitfalls": [
+    "平均速度取算术平均",
+    "环形相遇当直线（相遇和=一圈）",
+    "含休息时段未单列方程"
+  ],
+  "source_references": [
+    {
+      "title": "金标尺·行程问题",
+      "url": "https://www.jincaikj.com/new/gwy/kszd/xc/1302/28583.html"
+    }
+  ],
+  "version": "1"
+}

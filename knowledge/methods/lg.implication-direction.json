@@ -1,0 +1,50 @@
+{
+  "method_id": "lg.implication-direction",
+  "skill": "logical_reasoning",
+  "problem_family": "hypothetical",
+  "concepts": [
+    "充分条件前推后（如果A就B：A→B）",
+    "必要条件后推前（只有A才B：B→A）",
+    "逆否等价 A→B ⇔ ¬B→¬A"
+  ],
+  "applicability_conditions": [
+    "题干含 如果/只要/只有/除非/必要条件 等关联词的推出/真假题"
+  ],
+  "required_quantities": [
+    "各命题原子（P/Q 子句）",
+    "关联词类型"
+  ],
+  "reasoning_operations": [
+    "按关联词定向建蕴含式",
+    "连锁蕴含传递（A→B→C）",
+    "对选项做肯前/否后（有效）与肯后/否前（无效）判定"
+  ],
+  "solution_procedure": [
+    "抽取命题符号化（Z3 实数/布尔编码）",
+    "逐选项可满足性检验"
+  ],
+  "verification_strategy": [
+    "选项与题干同模型可满足性对比：能构造反例即排除",
+    "逆否等价互验"
+  ],
+  "common_pitfalls": [
+    "把‘只有…才…’当前推后",
+    "由 B 真反推 A 真（肯后）",
+    "否前当否后"
+  ],
+  "source_references": [
+    {
+      "title": "gkbook 判断推理公开讲义",
+      "url": "https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html"
+    },
+    {
+      "title": "2026 国考公共科目大纲（国家公务员局，政府网站转载）",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml"
+    },
+    {
+      "title": "OpenStax Contemporary Mathematics（CC BY-NC-SA 4.0，仅章节标题+自明公式）",
+      "url": "https://openstax.org/books/contemporary-mathematics/pages/preface"
+    }
+  ],
+  "version": "1"
+}

@@ -1,0 +1,53 @@
+{
+  "method_id": "nc.concentration-conservation",
+  "skill": "numeric_calculation",
+  "problem_family": "concentration",
+  "concepts": [
+    "浓度=溶质÷溶液",
+    "加水/蒸发时溶质质量守恒",
+    "加溶质时溶液同步增加"
+  ],
+  "applicability_conditions": [
+    "溶液加水/加溶质/蒸发/混合后求浓度或质量"
+  ],
+  "required_quantities": [
+    "原溶液质量",
+    "原浓度",
+    "变化量（水或溶质）"
+  ],
+  "reasoning_operations": [
+    "算原溶质=溶液×浓度",
+    "按守恒列方程：加水→溶质不变溶液+x；加溶质→双增",
+    "混合：总溶质=Σ各溶质，总溶液=Σ各溶液"
+  ],
+  "solution_procedure": [
+    "绑定三量",
+    "Fraction 解方程",
+    "结果化为百分数与选项对齐"
+  ],
+  "verification_strategy": [
+    "每个中间量必须可回溯到题干原文数值（来源绑定）",
+    "用 Fraction/SymPy 独立重算整个依赖图并与候选核对",
+    "答案与全部选项做数值一致性比对，多匹配即歧义不释放",
+    "守恒式两边同核对：水只进溶液侧，盐只进溶质侧"
+  ],
+  "common_pitfalls": [
+    "浓度分母误用溶剂质量",
+    "加水题把浓度直接减",
+    "加溶质题只加溶质侧忘加溶液侧"
+  ],
+  "source_references": [
+    {
+      "title": "闪能·浓度溶质守恒",
+      "url": "https://www.shannengedu.com/sys-nd/15670.html"
+    },
+    {
+      "title": "华图·十字交叉法",
+      "url": "https://www.huatu.com/2021/0902/2276929.html"
+    }
+  ],
+  "version": "1",
+  "executable": {
+    "formula_pattern": "c_new = solute / (solution + delta)"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "method_id": "lg.truth-lie",
+  "skill": "logical_reasoning",
+  "problem_family": "knights-knaves",
+  "concepts": [
+    "矛盾对必一真一假",
+    "三步法：找矛盾→看其余→回代"
+  ],
+  "applicability_conditions": [
+    "多人陈述+真假数量约束（如一真两假）"
+  ],
+  "required_quantities": [
+    "各人陈述",
+    "真话数量约束"
+  ],
+  "reasoning_operations": [
+    "找矛盾命题对（所有↔有的、A且B↔¬A或¬B、必然↔可能不）",
+    "其余陈述真假由总数约束定",
+    "Z3: 每条陈述建布尔变量+约束计数"
+  ],
+  "solution_procedure": [
+    "枚举/Z3 求解谁说真话",
+    "回代验证每句"
+  ],
+  "verification_strategy": [
+    "解必须满足全部陈述真值且计数吻合；多解即不唯一"
+  ],
+  "common_pitfalls": [
+    "反对关系当矛盾（所有A与所有¬A可同假）",
+    "‘有的’方向误推"
+  ],
+  "source_references": [
+    {
+      "title": "gkbook 判断推理公开讲义",
+      "url": "https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html"
+    }
+  ],
+  "version": "1"
+}

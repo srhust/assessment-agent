@@ -1,0 +1,45 @@
+{
+  "method_id": "nc.work-rate-lcm",
+  "skill": "numeric_calculation",
+  "problem_family": "engineering",
+  "concepts": [
+    "工作量=效率×时间",
+    "合作效率=各效率之和"
+  ],
+  "applicability_conditions": [
+    "只给各单独完成时间求合作时间",
+    "给效率比求分配"
+  ],
+  "required_quantities": [
+    "各主体单独完成时间或效率比",
+    "总量（可设 1 或最小公倍数）"
+  ],
+  "reasoning_operations": [
+    "只给时间→总量取时间 LCM，效率=总量÷时间",
+    "给效率比→直接设份数效率",
+    "合作：总量÷效率和"
+  ],
+  "solution_procedure": [
+    "设总量与效率",
+    "求合作时间",
+    "选项匹配"
+  ],
+  "verification_strategy": [
+    "每个中间量必须可回溯到题干原文数值（来源绑定）",
+    "用 Fraction/SymPy 独立重算整个依赖图并与候选核对",
+    "答案与全部选项做数值一致性比对，多匹配即歧义不释放",
+    "验算：各主体效率×合作时间之和=总量"
+  ],
+  "common_pitfalls": [
+    "时间直接相加",
+    "分段工程未重建方程",
+    "多台同效机器未按台数计"
+  ],
+  "source_references": [
+    {
+      "title": "中公网校·工程问题",
+      "url": "http://www.eoffcn.com/bkzl/ksjq/157420.html/"
+    }
+  ],
+  "version": "1"
+}

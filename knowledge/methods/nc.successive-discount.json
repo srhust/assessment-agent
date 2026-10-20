@@ -1,0 +1,53 @@
+{
+  "method_id": "nc.successive-discount",
+  "skill": "numeric_calculation",
+  "problem_family": "successive-percent-change",
+  "concepts": [
+    "百分比变化是乘法关系",
+    "多次变化按顺序复合",
+    "每步基准量可能不同"
+  ],
+  "applicability_conditions": [
+    "同一量经历两段及以上折扣/涨跌",
+    "求最终值或总变化率"
+  ],
+  "required_quantities": [
+    "初值",
+    "各段变化率（折扣率或百分数）"
+  ],
+  "reasoning_operations": [
+    "把每段变化转为乘因子（8折→4/5；降价10%→乘9/10；涨价x%→乘(1+x/100)）",
+    "按顺序连乘得最终值",
+    "总变化率=连乘积−1"
+  ],
+  "solution_procedure": [
+    "绑定初值与各段率",
+    "逐步相乘（Fraction 精确）",
+    "与选项匹配"
+  ],
+  "verification_strategy": [
+    "每个中间量必须可回溯到题干原文数值（来源绑定）",
+    "用 Fraction/SymPy 独立重算整个依赖图并与候选核对",
+    "答案与全部选项做数值一致性比对，多匹配即歧义不释放",
+    "核对每一段率都进入乘积链（缺一即错）"
+  ],
+  "common_pitfalls": [
+    "把多段百分比直接相加（10%+5%≠15%）",
+    "把折扣当降价额相减",
+    "第二段基准误用初值而非第一段结果"
+  ],
+  "source_references": [
+    {
+      "title": "燕诺教育·连续折扣折上折",
+      "url": "https://www.yannuoedu.com/sys-nd/13093.html"
+    },
+    {
+      "title": "OpenStax Contemporary Mathematics（CC BY-NC-SA 4.0，仅章节标题+自明公式）",
+      "url": "https://openstax.org/books/contemporary-mathematics/pages/preface"
+    }
+  ],
+  "version": "1",
+  "executable": {
+    "formula_pattern": "final = base * Π f_i, f_i ∈ {d/10, 1±r/100}"
+  }
+}

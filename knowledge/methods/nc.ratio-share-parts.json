@@ -1,0 +1,45 @@
+{
+  "method_id": "nc.ratio-share-parts",
+  "skill": "numeric_calculation",
+  "problem_family": "proportional-share",
+  "concepts": [
+    "份数之比代替实际量之比",
+    "多组比例经公共项统一"
+  ],
+  "applicability_conditions": [
+    "按 a∶b∶c 分配总量或部分量",
+    "给两两比例求三方连比"
+  ],
+  "required_quantities": [
+    "总量（或某部分量）",
+    "分配比例"
+  ],
+  "reasoning_operations": [
+    "统一比例（公共项同缩同扩）",
+    "每份量=量÷对应总份数",
+    "各部分=份数×每份量"
+  ],
+  "solution_procedure": [
+    "绑定比例与总量",
+    "求每份量再回乘",
+    "选项匹配"
+  ],
+  "verification_strategy": [
+    "每个中间量必须可回溯到题干原文数值（来源绑定）",
+    "用 Fraction/SymPy 独立重算整个依赖图并与候选核对",
+    "答案与全部选项做数值一致性比对，多匹配即歧义不释放",
+    "各部分和必须回到总量（校验）"
+  ],
+  "common_pitfalls": [
+    "比例基准未统一就相加",
+    "带余数分配未按最多/最少口径",
+    "把 a∶b 当成 a−b 实差"
+  ],
+  "source_references": [
+    {
+      "title": "人民网教育·比例份数法",
+      "url": "http://edu.people.com.cn/n1/2016/1026/c1053-28810719.html"
+    }
+  ],
+  "version": "1"
+}

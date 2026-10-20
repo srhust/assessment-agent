@@ -1,0 +1,43 @@
+{
+  "method_id": "vu.sentence-ordering",
+  "skill": "verbal_understanding",
+  "problem_family": "coherence",
+  "concepts": [
+    "首句判定：指代词/关联后半/补充句不作首句",
+    "标志词捆绑"
+  ],
+  "applicability_conditions": [
+    "语句排序/衔接题"
+  ],
+  "required_quantities": [
+    "待排句集",
+    "指代词与关联词清单"
+  ],
+  "reasoning_operations": [
+    "定首句",
+    "抓关联/指代/时间/重复词合并小集团",
+    "行文脉络（总分/时间/空间）定序"
+  ],
+  "solution_procedure": [
+    "逐候选序列做指代先行约束与关联词配对检查"
+  ],
+  "verification_strategy": [
+    "相邻捆绑对被拆即排除；指代词句必须晚于被指代句"
+  ],
+  "common_pitfalls": [
+    "‘该/这/其’前置",
+    "关联词半对分离",
+    "尾句当首句"
+  ],
+  "source_references": [
+    {
+      "title": "华图吉林·语句排序",
+      "url": "https://m.jl.huatu.com/2021/0628/1725516.html"
+    },
+    {
+      "title": "2026 国考公共科目大纲（国家公务员局，政府网站转载）",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml"
+    }
+  ],
+  "version": "1"
+}

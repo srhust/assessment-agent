@@ -1,0 +1,43 @@
+{
+  "method_id": "nc.alligation-cross",
+  "skill": "numeric_calculation",
+  "problem_family": "mixture-ratio",
+  "concepts": [
+    "两部分比值一高一低混成中间值",
+    "交叉作差得两部分基数之比"
+  ],
+  "applicability_conditions": [
+    "混合浓度/平均分/混合增长率给两侧与混合值求比例"
+  ],
+  "required_quantities": [
+    "两部分各自比值",
+    "混合后总比值"
+  ],
+  "reasoning_operations": [
+    "左列两比值上小下大或上大下小",
+    "中放混合值",
+    "交叉作差 |高−混| : |混−低| = 分母（基数）之比"
+  ],
+  "solution_procedure": [
+    "核对混合值确在两者之间",
+    "差比即需求量反比",
+    "选项匹配"
+  ],
+  "verification_strategy": [
+    "每个中间量必须可回溯到题干原文数值（来源绑定）",
+    "用 Fraction/SymPy 独立重算整个依赖图并与候选核对",
+    "答案与全部选项做数值一致性比对，多匹配即歧义不释放",
+    "交叉对象与所求比必须一致（交叉浓度得溶液比，不是溶质比）"
+  ],
+  "common_pitfalls": [
+    "求错分母口径",
+    "混合值不在两值之间仍强行交叉"
+  ],
+  "source_references": [
+    {
+      "title": "华图·十字交叉法",
+      "url": "https://www.huatu.com/2021/0902/2276929.html"
+    }
+  ],
+  "version": "1"
+}

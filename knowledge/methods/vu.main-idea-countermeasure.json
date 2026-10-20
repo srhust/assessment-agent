@@ -1,0 +1,46 @@
+{
+  "method_id": "vu.main-idea-countermeasure",
+  "skill": "verbal_understanding",
+  "problem_family": "main-idea",
+  "concepts": [
+    "重点句：转折/结论/尾句优先",
+    "含‘应/需/要/必须’的对策句优先"
+  ],
+  "applicability_conditions": [
+    "主旨概括/意图判断题（这段文字主要/意在说明）"
+  ],
+  "required_quantities": [
+    "文段各句",
+    "关联词位置"
+  ],
+  "reasoning_operations": [
+    "定位重点句",
+    "判性质（问题/原因/意义 vs 对策）",
+    "有对策倾向时排除纯复述项",
+    "客观陈述文段不可机械直排"
+  ],
+  "solution_procedure": [
+    "选项覆盖核对（结论句关键词命中率）",
+    "主体一致性"
+  ],
+  "verification_strategy": [
+    "正确项须覆盖核心问题且主体一致",
+    "对策跑偏（扩大/偏移话题）排除"
+  ],
+  "common_pitfalls": [
+    "只述问题的项误选",
+    "无暗示文段机械排对策",
+    "以偏概全项"
+  ],
+  "source_references": [
+    {
+      "title": "闪能·主旨题对策优先",
+      "url": "https://www.shannengedu.com/sys-nd/19515.html"
+    },
+    {
+      "title": "2026 国考公共科目大纲（国家公务员局，政府网站转载）",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml"
+    }
+  ],
+  "version": "1"
+}

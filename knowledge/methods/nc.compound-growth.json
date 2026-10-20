@@ -1,0 +1,45 @@
+{
+  "method_id": "nc.compound-growth",
+  "skill": "numeric_calculation",
+  "problem_family": "compound-change",
+  "concepts": [
+    "连续增长复合 (1+r1)(1+r2)",
+    "隔年增长率=r1+r2+r1r2"
+  ],
+  "applicability_conditions": [
+    "两年连续增速求总增速或间隔基期"
+  ],
+  "required_quantities": [
+    "现期值",
+    "两段增速"
+  ],
+  "reasoning_operations": [
+    "间隔增速=r1+r2+r1r2",
+    "间隔基期=现期÷((1+r1)(1+r2))"
+  ],
+  "solution_procedure": [
+    "绑定两段率",
+    "Fraction 复合",
+    "选项匹配"
+  ],
+  "verification_strategy": [
+    "每个中间量必须可回溯到题干原文数值（来源绑定）",
+    "用 Fraction/SymPy 独立重算整个依赖图并与候选核对",
+    "答案与全部选项做数值一致性比对，多匹配即歧义不释放",
+    "与逐段两步推算结果互验"
+  ],
+  "common_pitfalls": [
+    "漏 r1r2 交叉项",
+    "连续下降时把间隔率算成两率和"
+  ],
+  "source_references": [
+    {
+      "title": "博信·资料分析公式汇编（二手来源）",
+      "url": "https://www.boxinedu.com/index/arc/5189"
+    }
+  ],
+  "version": "1",
+  "executable": {
+    "formula_pattern": "R = r1 + r2 + r1*r2"
+  }
+}

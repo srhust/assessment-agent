@@ -1,0 +1,49 @@
+{
+  "method_id": "da.two-period-share",
+  "skill": "data_analysis",
+  "problem_family": "share-diff",
+  "concepts": [
+    "两期比重差=现期比重×(a−b)/(1+a)",
+    "a>b 则比重上升"
+  ],
+  "applicability_conditions": [
+    "部分量增速 a、整体增速 b，问占比变化方向与幅度"
+  ],
+  "required_quantities": [
+    "部分量",
+    "整体量",
+    "部分增速 a",
+    "整体增速 b"
+  ],
+  "reasoning_operations": [
+    "判方向：a 与 b 大小",
+    "差值=A/B×(a−b)/(1+a)",
+    "幅度必小于 |a−b| 个百分点"
+  ],
+  "solution_procedure": [
+    "绑定四值",
+    "Fraction 计算",
+    "结合方向+幅度唯一匹配"
+  ],
+  "verification_strategy": [
+    "每个中间量必须可回溯到题干原文数值（来源绑定）",
+    "用 Fraction/SymPy 独立重算整个依赖图并与候选核对",
+    "答案与全部选项做数值一致性比对，多匹配即歧义不释放",
+    "方向与数值双重筛（只合其一不释放）"
+  ],
+  "common_pitfalls": [
+    "选大于 |a−b| 的选项",
+    "a、b 与部分/整体对错位"
+  ],
+  "source_references": [
+    {
+      "title": "博信·资料分析公式汇编（二手来源）",
+      "url": "https://www.boxinedu.com/index/arc/5189"
+    },
+    {
+      "title": "优众·资料分析易错点",
+      "url": "http://www.scyouzhong.com/show-127-703-1.html"
+    }
+  ],
+  "version": "1"
+}

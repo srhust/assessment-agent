@@ -216,7 +216,7 @@ def normalize_table(cells: Sequence[Sequence[str]], *, bbox: Optional[List[int]]
                 has_number = True
                 entry["fraction"] = parsed["value"]
             cells_out.append(entry)
-        is_total = bool(re.search(r"合计|总计|总和", label))
+        is_total = bool(re.search(r"合计|总计|总和|全年|全总|累计", label))
         rows.append({
             "index": r, "label": label, "label_clean": normalize_text(label),
             "time": cell_time_token(label), "is_total": is_total, "cells": cells_out,

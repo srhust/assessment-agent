@@ -107,11 +107,11 @@ def nc_rows():
 
 
 def da_rows():
-    mat_a = ["2023 年某区文化体育支出 23 亿元，比上年增长 15%。",
+    mat_a = ["2023 年该区文化体育支出 23 亿元，比上年增长 15%。",
              "同年教育支出 41 亿元，增长 8%。"]
     mat_b = ["某景区 2023 年全年接待游客 90 万人次。其中四月份接待 21 万人次，",
              "五月份因天气原因接待量同比下降 20%。"]
-    t = [["年份", "营业收入(万元)"], ["2021", "320"], ["2022", "400"]]
+    t = [["年份", "营业收入(万元)"], ["2021年", "320"], ["2022年", "400"]]
     opts11 = opts_shuffled("20", ["18", "21", "17.4"], [0, 2, 1, 3])
     opts12 = opts_shuffled("23.3%", ["21.0%", "25.0%", "20.0%"], [0, 2, 1, 3])
     return [
@@ -292,6 +292,12 @@ def assemble(rows):
             stem_lines = wrap_text(row["stem"])
             opts_pairs = [(o["label"], o["text"]) for o in row["options"]]
             ink, regions = render_text_page(stem_lines, opts_pairs, material=material, table=table)
+            if material is not None:
+                # 真实考场卷面=材料+问题一体：oracle 注入的 stem 必须含材料文本，
+                # 否则文字材料题的已知条件进不了 Solver（R7-C2 修正；渲染仍分列不重复）
+                mat_text = ("\n".join(str(x) for x in material)
+                            if isinstance(material, (list, tuple)) else str(material))
+                row["stem"] = mat_text.strip() + "\n" + row["stem"]
             save_page(img_dir / f"{qid}.png", ink)
             row["image"] = f"benchmark_xingce_dev/images/{SPLIT}/{qid}.png"
             row["regions"] = regions

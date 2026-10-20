@@ -1,0 +1,43 @@
+{
+  "method_id": "lg.analogy-relations",
+  "skill": "language_reasoning",
+  "problem_family": "analogy",
+  "concepts": [
+    "外延关系（全同/种属/组成/交叉/并列）+逻辑关系+对应关系+语义关系"
+  ],
+  "applicability_conditions": [
+    "A∶B 与选项词组关系匹配"
+  ],
+  "required_quantities": [
+    "题干词对",
+    "各选项词对"
+  ],
+  "reasoning_operations": [
+    "先横向判题干关系类型",
+    "再纵向比选项亲密程度",
+    "方向一致（种属vs组成、顺序）"
+  ],
+  "solution_procedure": [
+    "词库关系证据（hyper/part_of/function…）",
+    "无证据词对不释放"
+  ],
+  "verification_strategy": [
+    "每选项与题干关系类型+方向双一致才命中；多命中即歧义"
+  ],
+  "common_pitfalls": [
+    "种属与组成混",
+    "方向反置（A是B一部分 vs B包含A）",
+    "成语语义方向错判"
+  ],
+  "source_references": [
+    {
+      "title": "gkbook 判断推理公开讲义",
+      "url": "https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html"
+    },
+    {
+      "title": "2026 国考公共科目大纲（国家公务员局，政府网站转载）",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml"
+    }
+  ],
+  "version": "1"
+}

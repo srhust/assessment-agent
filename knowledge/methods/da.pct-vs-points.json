@@ -1,0 +1,43 @@
+{
+  "method_id": "da.pct-vs-points",
+  "skill": "data_analysis",
+  "problem_family": "terminology",
+  "concepts": [
+    "百分数=比值（除法，带%）",
+    "百分点=两百分数相减的量纲"
+  ],
+  "applicability_conditions": [
+    "问‘增速提高/回落多少’或辨析选项单位"
+  ],
+  "required_quantities": [
+    "两个百分数"
+  ],
+  "reasoning_operations": [
+    "增速/比重的变化一律用百分点表述",
+    "‘增长 x%’与‘增长 x 个百分点’不可互换",
+    "成数（一成=10%）、翻番（翻N番=2^N 倍）换算"
+  ],
+  "solution_procedure": [
+    "识别问法口径",
+    "换算成数/番数",
+    "选项单位一致性核对"
+  ],
+  "verification_strategy": [
+    "先定口径再算数（选项带‘个百分点’用差值）"
+  ],
+  "common_pitfalls": [
+    "高40个百分点说成高40%",
+    "翻两番当作×2"
+  ],
+  "source_references": [
+    {
+      "title": "优众·资料分析易错点",
+      "url": "http://www.scyouzhong.com/show-127-703-1.html"
+    },
+    {
+      "title": "博信·资料分析公式汇编（二手来源）",
+      "url": "https://www.boxinedu.com/index/arc/5189"
+    }
+  ],
+  "version": "1"
+}

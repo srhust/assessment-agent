@@ -1,0 +1,163 @@
+# R7 阶段A：学习资料登记表（来源 / 链接 / 访问日期 / 许可 / 用途边界）
+# 纪律：未实际访问成功者标 UNAVAILABLE；商业题库/付费墙内容一律不采集。
+
+- id:Outline2026
+  title: 中央机关及其直属机构2026年度考试录用公务员公共科目笔试考试大纲
+  publisher: 国家公务员局（政府网站转载全文）
+  url: https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml
+  cross_check: https://www.ncss.cn/ncss/zt/2026gk.shtml
+  accessed: "2026-10-20"
+  license: 官方公文（政府公开信息）
+  usage: 六部分题型结构、官方题型描述原句、例题形式（含数字推理保留、概率区间、排列约束5小题、篇章阅读5小题）
+  note: 大纲不含模块题量；题量数据属第三方（见 eoffcn 条），只作背景不作金标
+
+- id: gkbook
+  title: 公考备考手册（判断推理章节，GitHub Pages 公开页）
+  url: https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html
+  accessed: "2026-10-20"
+  license: 个人公开讲义（无明示许可，仅取其方法要点级事实，逐条标注 URL）
+  usage: 假言方向/矛盾转化/真假话/排序/类比关系类型/定义判断要点
+
+- id: huatu_profit
+  title: 华图免费公开页·利润率与四法
+  url: https://www.huatu.com/2023-0712/2667480.html
+  accessed: "2026-10-20"
+  license: 机构免费公开页；仅取"核心公式+步骤+易错"要点级内容，不整段搬运
+  usage: 利润=售价-成本；利润率=利润÷成本（基准=成本）；四法（方程/特值/十字交叉/比例最值）
+
+- id: huatu_cross
+  title: 华图免费公开页·十字交叉法
+  url: https://www.huatu.com/2021/0902/2276929.html
+  accessed: "2026-10-20"
+  license: 同上
+  usage: 两比值混合→交叉作差得分母之比；前提=整体两部分且比值一高一低
+
+- id: shanneng_conc
+  title: 闪能教育公开页·浓度问题（溶质守恒）
+  url: https://www.shannengedu.com/sys-nd/15670.html
+  accessed: "2026-10-20"
+  license: 机构免费公开页，要点级引用
+  usage: 浓度=溶质÷溶液；加水/蒸发溶质守恒；加溶质方程；混合两边溶质相加
+
+- id: shanneng_zhuzhi
+  title: 闪能教育公开页·主旨题对策优先
+  url: https://www.shannengedu.com/sys-nd/19515.html
+  accessed: "2026-10-20"
+  license: 同上
+  usage: 重点句（转折/结论/尾句）→对策句优先；客观文段不可机械直排
+
+- id: yannuo_discount
+  title: 燕诺教育公开页·连续折扣折上折
+  url: https://www.yannuoedu.com/sys-nd/13093.html
+  accessed: "2026-10-20"
+  license: 同上
+  usage: 折上折=折扣率连续相乘（八折再九折=72%）；打折利润率公式
+
+- id: yannuo_detail
+  title: 燕诺教育公开页·细节判断三类偷换
+  url: https://www.yannuoedu.com/sys-nd/13050.html
+  accessed: "2026-10-20"
+  license: 同上
+  usage: 范围/属性/指代偷换；绝对化词警示
+
+- id: jincai_travel
+  title: 金标尺公开页·行程问题
+  url: https://www.jincaikj.com/new/gwy/kszd/xc/1302/28583.html
+  accessed: "2026-10-20"
+  license: 同上
+  usage: 相遇=速度和×时间、追及=速度差×时间；流水顺逆合成；平均速度=总路程÷总时间
+
+- id: eoffcn_engineering
+  title: 中公网校免费页·工程问题
+  url: http://www.eoffcn.com/bkzl/ksjq/157420.html/
+  accessed: "2026-10-20"
+  license: 机构免费公开页，要点级
+  usage: 只给时间→总量取最小公倍数；给效率比→直接设份数；合作=效率和
+
+- id: people_ratio
+  title: 人民网教育频道·比例份数法（历史公开讲义转载）
+  url: http://edu.people.com.cn/n1/2016/1026/c1053-28810719.html
+  accessed: "2026-10-20"
+  license: 官媒教育频道公开文章；要点级引用
+  usage: 份数之比代替实际量之比；统一比例（公共项同缩同扩）；和÷总份数
+
+- id: huatu_inclusion
+  title: 华图山东·容斥原理
+  url: https://sd.huatu.com/2025/0401/1588939.html
+  accessed: "2026-10-20"
+  license: 机构免费公开页，要点级
+  usage: 两/三集合标准公式；非标准型（只满足两个/三个都满足）；"只满足一个"用画图由内而外
+
+- id: boxinedu_data
+  title: 博信教育·资料分析公式汇编（自述部分来源于网络，二手来源）
+  url: https://www.boxinedu.com/index/arc/5189
+  accessed: "2026-10-20"
+  license: 免费公开页；引用须带 URL（二手来源声明）
+  usage: 基期/增长量/两期比重差/平均数增长率/隔年增长/年均增长率核心公式
+
+- id: scyouzhong_data
+  title: 优众教育·资料分析易错点
+  url: http://www.scyouzhong.com/show-127-703-1.html
+  accessed: "2026-10-20"
+  license: 同上
+  usage: 百分点vs百分数；同比/环比/成数/翻番定义；时间口径陷阱
+
+- id: jinbiao_cloze
+  title: 金标尺·逻辑填空语境八维
+  url: https://m.jinbiaochi.com/qggwy/news_236104.html
+  accessed: "2026-10-20"
+  license: 同上
+  usage: 语境先行+选项辨析8维（搭配/侧重/轻重/范围/对象/感情/语体/词性）
+
+- id: huatu_jl_order
+  title: 华图吉林·语句排序
+  url: https://m.jl.huatu.com/2021/0628/1725516.html
+  accessed: "2026-10-20"
+  license: 同上
+  usage: 首句判定（指代/关联后半/补充句不作首句）；标志词捆绑
+
+- id: eoffcn_counts
+  title: 中公网校·2025 题量表（第三方，非官方）
+  url: https://www.eoffcn.com/kszx/detail/1625284.html
+  accessed: "2026-10-20"
+  license: 免费公开页
+  usage: 背景信息（135/130 题拆分）；**不作为结构金标**——大纲原文优先
+
+- id: mit6042
+  title: MIT 6.042J Mathematics for CS (Spring 2015)
+  url: https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/
+  accessed: "2026-10-20"
+  license: 站点 CC BY-NC-SA 4.0；课本 PDF 为 CC BY-NC-SA 3.0（取保守者）；明示允许 AI 训练（须署名+NC+SA）
+  usage: 仅章节级主题与自明公式/定理陈述（Ch14 计数/容斥、Ch16-18 概率、Ch1/3 命题逻辑、Ch5 归纳）
+
+- id: openstax_cm
+  title: OpenStax Contemporary Mathematics
+  url: https://openstax.org/books/contemporary-mathematics/pages/preface
+  accessed: "2026-10-20"
+  license: ⚠️ CC BY-NC-SA 4.0（本书**不是**常见 CC BY；商用需联系 OpenStax）；派生须同许可+署名
+  usage: 仅章节级标题+自明公式（Ch2 Logic、Ch5.4 比例、Ch6.1-6.4 百分比/折扣/复利、Ch7 概率、Ch8 统计）
+
+- id: khan_ratios
+  title: Khan Academy Pre-algebra · Ratios and Rates
+  url: https://www.khanacademy.org/math/pre-algebra/pre-algebra-ratios-rates
+  accessed: "2026-10-20"
+  license: ⚠️ ToS(2026-01-30)：仅个人非商业访问；**§9 禁止抓取、禁止用于 AI 训练/微调**；CC 提及=CC BY-NC-SA 4.0
+  usage: 仅限小节标题级引用；不落地任何原文/题干；本仓库无训练环节但仍按最严口径处理
+
+unavailable:
+  - https://www.chinagwy.org/html/xczl/cs/201205/56_38878.html   # fetch 全失败
+  - https://v.huatu.com/beikao/20190415/224756.html              # 重定向首页
+  - fenbi.com 容斥/浓度详情页                                     # 需 App，仅列表页可达
+  - https://shiyebian.net/html/75773.html                        # JS 壳无正文
+
+excluded:
+  - GitHub MeAiXueXi/gongkao-2027    # README 网盘引流，疑盗版教材
+  - max.book118.com 原创力文档        # 疑商业教材全本
+  - bbs.marginnote.com.cn 用户PDF     # 疑商业教材扫描件
+  - socratopia.app 数量关系章          # 页面自述 AI 生成不保证准确；仅思路线索，不作方法卡来源
+
+gaps_recorded:
+  - 政治理论（大纲六部分之一，现系统无该技能）：本轮不实现，登记能力缺口
+  - 常识判断（大纲六部分之一）：知识依赖型，登记缺口
+  - "累计（同期累计）"权威定义：NO_PUBLIC_SOURCE，方法卡不引用
+  - 数字推理：2026 大纲保留（含例题），第三方 2025 题量表未单列 → 按双分支建模

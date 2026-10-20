@@ -1,0 +1,51 @@
+{
+  "method_id": "da.base-period",
+  "skill": "data_analysis",
+  "problem_family": "base-value",
+  "concepts": [
+    "基期=现期−增长量=现期÷(1+r)",
+    "小增速化除为乘近似"
+  ],
+  "applicability_conditions": [
+    "给现期与增速求上年/前年值"
+  ],
+  "required_quantities": [
+    "现期值",
+    "同比增速"
+  ],
+  "reasoning_operations": [
+    "识别时间口径（求上年=普通基期，前年=间隔基期）",
+    "基期=现期/(1+r)",
+    "|r|<5% 可近似 现期×(1−r)（偏大方向须判断）"
+  ],
+  "solution_procedure": [
+    "绑定现期与率到材料行列表",
+    "Fraction 精确除",
+    "选项近唯一匹配"
+  ],
+  "verification_strategy": [
+    "每个中间量必须可回溯到题干原文数值（来源绑定）",
+    "用 Fraction/SymPy 独立重算整个依赖图并与候选核对",
+    "答案与全部选项做数值一致性比对，多匹配即歧义不释放",
+    "近似方向校验：除法近似值与精确值同时算，跨度大不释放"
+  ],
+  "common_pitfalls": [
+    "时间口径错（把间隔当单期）",
+    "带单位问增长量误答增长率",
+    "近似估算偏了仍选最接近项"
+  ],
+  "source_references": [
+    {
+      "title": "博信·资料分析公式汇编（二手来源）",
+      "url": "https://www.boxinedu.com/index/arc/5189"
+    },
+    {
+      "title": "优众·资料分析易错点",
+      "url": "http://www.scyouzhong.com/show-127-703-1.html"
+    }
+  ],
+  "version": "1",
+  "executable": {
+    "formula_pattern": "base = now / (1 + r)"
+  }
+}

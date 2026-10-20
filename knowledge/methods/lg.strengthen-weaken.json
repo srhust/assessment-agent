@@ -1,0 +1,48 @@
+{
+  "method_id": "lg.strengthen-weaken",
+  "skill": "logical_reasoning",
+  "problem_family": "argumentation",
+  "concepts": [
+    "论点—论据—论证三段拆解",
+    "削弱力度：否论点>拆桥>他因>否论据"
+  ],
+  "applicability_conditions": [
+    "问支持/加强/削弱/质疑的论证题"
+  ],
+  "required_quantities": [
+    "论点",
+    "论据",
+    "隐含假设"
+  ],
+  "reasoning_operations": [
+    "拆结构",
+    "识别因果（因→果/果→因/无关）",
+    "搭桥=补论据到论点的必要前提（加非验证）",
+    "他因削弱引入替代解释"
+  ],
+  "solution_procedure": [
+    "抽取论点/论据/隐含前提并符号化",
+    "按题面方向选搭桥或拆桥操作",
+    "力度层级排序选最优"
+  ],
+  "verification_strategy": [
+    "选项与论点话题一致性核对",
+    "加非测试：否定选项后论证是否崩塌"
+  ],
+  "common_pitfalls": [
+    "话题无关项当削弱",
+    "举例强度高于理论（实际理论更强）",
+    "反例方向错"
+  ],
+  "source_references": [
+    {
+      "title": "gkbook 判断推理公开讲义",
+      "url": "https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html"
+    },
+    {
+      "title": "闪能·主旨题对策优先",
+      "url": "https://www.shannengedu.com/sys-nd/19515.html"
+    }
+  ],
+  "version": "1"
+}

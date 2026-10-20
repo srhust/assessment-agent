@@ -78,7 +78,7 @@ def _tokenize(text: str) -> List[str]:
 
 class MethodKB:
     def __init__(self, root: Optional[Path] = None):
-        base = Path(root) if root is not None else Path(__file__).resolve().parents[2] / "knowledge"
+        base = Path(root) if root is not None else Path(__file__).resolve().parents[3] / "knowledge"
         self.methods_dir = base / "methods"
         self.sources_file = base / "sources.yaml"
         self._cards: Optional[Dict[str, MethodCard]] = None

@@ -27,7 +27,7 @@ OPERATION_PATTERNS: List[Tuple[str, str]] = [
     ("current_value", r"(?:明年|下一年(?:度)?)[^。？]{0,14}(?:将达到|约为|达到|是多少|多少)|如果[^。？]{0,12}(?:保持|增速)[^。？]{0,16}(?:将达到|约为|达到|多少)"),
     ("growth_yoy", r"同比"),
     ("growth_mom", r"环比"),
-    ("share", r"占.{0,14}(?:比重|比例|份额)|比重|占比"),
+    ("share", r"占.{0,14}(?:比重|比例|份额)|比重|占比|占[^。]{0,12}的[：:？?]"),
     ("multiple", r"倍"),
     ("growth_amount", r"增长(?:了)?(?:约)?(?:多少|几)"),
     ("mean", r"平均"),
@@ -106,6 +106,10 @@ class TableContext:
         for row in self.table["rows"]:
             label = row["label_clean"]
             if len(label) >= 2 and label in self.qn and not row.get("is_total"):
+                # R7-C2：纯时间行（转置表的时间轴）不是指标行候选——否则题面里的
+                # 年份会把两个时间行同时选中报歧义，挡住"列指标 + 行时间"表。
+                if re.fullmatch(r"(?:20\d\d年?|第?[一二三四1-4]季度|\d{1,2}月)", label):
+                    continue
                 candidates.append(row)
         if len(candidates) > 1:
             longest = max(candidates, key=lambda r: len(r["label_clean"]))
@@ -226,7 +230,7 @@ OPERATION_EXPRESSION_TEMPLATES: Dict[str, str] = {
     "mean": r"\(O\d+(?: \+ O\d+)+\) / \d+",
     "difference": r"O\d+ - O\d+",
     "rank_extreme": r"O\d+",
-    "growth_amount": r"O\d+ - O\d+",
+    "growth_amount": r"O\d+ - O\d+|O\d+ \* O\d+ / \(1 \+ O\d+\)",
     "growth_yoy": r"\(O\d+ - O\d+\) / O\d+ \* 100|O\d+ - O\d+",
     "growth_mom": r"\(O\d+ - O\d+\) / O\d+ \* 100|O\d+ - O\d+",
     "avg_annual_growth": r"\(O\d+ / O\d+\) \^ \(1/\d+\) - 1",
@@ -384,6 +388,15 @@ def build_data_plan(question: str, tables: Sequence[Dict[str, Any]],
 
 def _build(question: str, tables: Sequence[Dict[str, Any]], chart: Optional[Dict[str, Any]]) -> DataCalculationPlan:
     op = detect_operation(question)
+    if not op and tables and len(tables) == 1:
+        # R7-C2 通用扩展：题面所问为**具体年份**、该年份不在表列中且恰为表最早
+        # 年份的前一期 → 基期语义（现期÷(1+率)）。不限本题型材料，任何单表适用。
+        qt = [t for t in question_times(question) if re.fullmatch(r"20\d\d", t or "")]
+        col_times = {c.get("time") for c in (tables[0].get("columns") or []) if c.get("time")}
+        if qt and col_times and all(t not in col_times for t in qt):
+            earliest = min((t for t in col_times if re.fullmatch(r"20\d\d", t)), default=None)
+            if earliest and all(int(earliest) - int(t) == 1 for t in qt):
+                op = ("base_value", qt[0] + " 年")
     if not op:
         raise PlanError("operation_unsupported", {"question": question})
     operation, focus = op
@@ -580,9 +593,53 @@ def _build(question: str, tables: Sequence[Dict[str, Any]], chart: Optional[Dict
             assumptions=[f"按 {n} 个增长期几何平均（{series_times[0]}→{series_times[-1]}）；"
                          f"开方非精确有理数时标记为近似"])
 
+    # ---------------- 增长量（现期+率，无两年列时用 n+1 数学式）----------------
+    # R7-C2：da.growth-amount 方法卡——增长量=现期×r÷(1+r)
+    if operation == "growth_amount":
+        cur = _inline_or_cell(ctx, row, question)
+        rate = _rate_operand_from_question(question)
+        if rate is None:
+            rate = _rate_cell_operand(ctx, question)
+        if cur is not None and rate is not None:
+            return DataCalculationPlan(operation="growth_amount", operands=[cur, rate],
+                                       expression="O1 * O2 / (1 + O2)",
+                                       result_unit=cur.unit, question_focus=focus)
+        # 无率证据 → 两期差值形态（题面两个时间 + 表内对应行/列可定位）
+        pair_t = sorted({t for t in ctx.times if t}, key=_time_sort_key)
+        if len(pair_t) >= 2:
+            base_t, cur_t = pair_t[-2], pair_t[-1]
+            colmap = ctx.cols_by_time()
+            if row is not None and base_t in colmap and cur_t in colmap:
+                base = ctx.single("O1", row, colmap[base_t])
+                cur2 = ctx.single("O2", row, colmap[cur_t])
+            else:
+                base_row = ctx.match_row_by_time(base_t)
+                cur_row = ctx.match_row_by_time(cur_t)
+                if base_row is None or cur_row is None:
+                    raise PlanError("time_pair_incomplete", {"pair": (base_t, cur_t)})
+                col = ctx.indicator_column_from_question() or _only_data_col(ctx)
+                base = ctx.single("O1", base_row, col)
+                cur2 = ctx.single("O2", cur_row, col)
+            return DataCalculationPlan(operation="growth_amount", operands=[base, cur2],
+                                       expression="O2 - O1", result_unit=cur2.unit,
+                                       question_focus=focus)
+        raise PlanError("target_not_found", {"why": "增长量计算需要现期值与增长率证据，或两个可定位时点"})
+
     # ---------------- 基期 / 现期（题干给率） ----------------
     if operation in {"base_value", "current_value"}:
         cur = _inline_or_cell(ctx, row, question)
+        if cur is None and ctx.times and row is not None:
+            # R7-C2：基期题所问年份不在表列 → 现期证据取紧邻后一期列（如问2022、
+            # 表有2023）。仅当"表列年 − 所问年 == 1"时成立，保持来源绑定诚实。
+            want = ctx.times[0]
+            colmap = ctx.cols_by_time()
+            if want.isdigit():
+                adj = next((t for t in colmap if t.isdigit() and int(t) - int(want) == 1), None)
+                if adj is not None:
+                    try:
+                        cur = ctx.single("O1", row, colmap[adj])
+                    except PlanError:
+                        cur = None
         rate = _rate_operand_from_question(question)
         if rate is None:
             rate_cell = _rate_cell_operand(ctx, question)
@@ -1089,6 +1146,13 @@ def _recompute_base(plan: DataCalculationPlan) -> Optional[Fraction]:
             return q - 1 if "O1 / O2 - 1" in plan.expression else q
         if op == "base_value" and len(vals) == 2:
             return vals[0] / (1 + vals[1])
+        if op == "growth_amount" and len(vals) == 2:
+            # R7-C2：现期+率形态用 现期×r/(1+r)；两年列形态用差值
+            if "O1 * O2" in plan.expression:
+                if vals[1] == -1:
+                    return None
+                return vals[0] * vals[1] / (1 + vals[1])
+            return vals[1] - vals[0]
         if op == "current_value" and len(vals) == 2:
             return vals[0] * (1 + vals[1])
         if op == "pct_point_diff" and len(vals) == 2:

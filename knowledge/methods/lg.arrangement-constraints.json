@@ -1,0 +1,45 @@
+{
+  "method_id": "lg.arrangement-constraints",
+  "skill": "logical_reasoning",
+  "problem_family": "ordering",
+  "concepts": [
+    "确定信息优先、重复元素切入",
+    "排除法优于代入法"
+  ],
+  "applicability_conditions": [
+    "排序/排队/货架/值班类约束题"
+  ],
+  "required_quantities": [
+    "元素集合",
+    "位置约束",
+    "相邻/间隔/先后关系"
+  ],
+  "reasoning_operations": [
+    "符号化约束（>、=、相邻、间隔）",
+    "Z3 序变量建模",
+    "问‘可能’求可满足例，问‘一定’证全部模型"
+  ],
+  "solution_procedure": [
+    "约束转 Z3",
+    "逐选项检验可满足性"
+  ],
+  "verification_strategy": [
+    "可能题给出一反证模型即可排除；一定题需穷举模型验证"
+  ],
+  "common_pitfalls": [
+    "紧挨与间隔一格混",
+    "只验一个模型就答‘一定’",
+    "漏附加条件"
+  ],
+  "source_references": [
+    {
+      "title": "gkbook 判断推理公开讲义",
+      "url": "https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html"
+    },
+    {
+      "title": "2026 国考公共科目大纲（国家公务员局，政府网站转载）",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml"
+    }
+  ],
+  "version": "1"
+}

@@ -1,0 +1,43 @@
+{
+  "method_id": "vu.detail-shift",
+  "skill": "verbal_understanding",
+  "problem_family": "detail-check",
+  "concepts": [
+    "三类偷换：范围/属性/指代",
+    "绝对化词警示"
+  ],
+  "applicability_conditions": [
+    "细节判断（正确/不正确/符合原文）"
+  ],
+  "required_quantities": [
+    "原文限定词短语",
+    "选项对应句"
+  ],
+  "reasoning_operations": [
+    "圈核心名词+限定词",
+    "比对内涵（属性）与外延（范围）",
+    "未提及新概念即无中生有"
+  ],
+  "solution_procedure": [
+    "逐选项回原文定位"
+  ],
+  "verification_strategy": [
+    "每选项须能在原文找到等值或可推出表述；找不到即不符"
+  ],
+  "common_pitfalls": [
+    "名称相似判一致",
+    "漏‘部分/可能/以来’限定",
+    "绝对化项（都/唯一）"
+  ],
+  "source_references": [
+    {
+      "title": "燕诺·细节判断三类偷换",
+      "url": "https://www.yannuoedu.com/sys-nd/13050.html"
+    },
+    {
+      "title": "2026 国考公共科目大纲（国家公务员局，政府网站转载）",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml"
+    }
+  ],
+  "version": "1"
+}

@@ -1,0 +1,51 @@
+{
+  "method_id": "lg.contradiction-transform",
+  "skill": "logical_reasoning",
+  "problem_family": "proposition-equiv",
+  "concepts": [
+    "A→B 的矛盾是 A∧¬B",
+    "A或B ⇔ ¬A→B（或蕴含互转）",
+    "除非A否则B ⇒ ¬B→A（否一推一）",
+    "德摩根律"
+  ],
+  "applicability_conditions": [
+    "命题等值改写、‘一定为真’判断、复联句推理"
+  ],
+  "required_quantities": [
+    "各原子命题",
+    "联结词结构"
+  ],
+  "reasoning_operations": [
+    "标准化为 ¬ ∧ ∨ → 公式",
+    "德摩根展开否定",
+    "互转消去 或/除非",
+    "Z3 判定等值或蕴含"
+  ],
+  "solution_procedure": [
+    "符号化",
+    "真值表/Z3 双通道"
+  ],
+  "verification_strategy": [
+    "对每个选项构造满足题干且违反选项的模型（有则排除）"
+  ],
+  "common_pitfalls": [
+    "相容或当要么…要么",
+    "否命题与逆命题混同",
+    "¬(A或B) 展开漏项"
+  ],
+  "source_references": [
+    {
+      "title": "gkbook 判断推理公开讲义",
+      "url": "https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html"
+    },
+    {
+      "title": "OpenStax Contemporary Mathematics（CC BY-NC-SA 4.0，仅章节标题+自明公式）",
+      "url": "https://openstax.org/books/contemporary-mathematics/pages/preface"
+    },
+    {
+      "title": "MIT 6.042J（CC BY-NC-SA，仅章节标题+定理陈述）",
+      "url": "https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/"
+    }
+  ],
+  "version": "1"
+}

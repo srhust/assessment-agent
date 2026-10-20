@@ -1,0 +1,50 @@
+{
+  "method_id": "da.growth-amount",
+  "skill": "data_analysis",
+  "problem_family": "growth-amount",
+  "concepts": [
+    "增长量=现期−基期=基期×r=现期×r÷(1+r)",
+    "r≈1/n 时 n+1 法则"
+  ],
+  "applicability_conditions": [
+    "给现期与增速求增长的具体数量"
+  ],
+  "required_quantities": [
+    "现期值",
+    "同比增速"
+  ],
+  "reasoning_operations": [
+    "识别 r 是否近 1/n（如 16.7%≈1/6→现期÷7）",
+    "精确：现期×r/(1+r)",
+    "单位与量纲保持"
+  ],
+  "solution_procedure": [
+    "绑定两值",
+    "Fraction 计算",
+    "带单位选项匹配"
+  ],
+  "verification_strategy": [
+    "每个中间量必须可回溯到题干原文数值（来源绑定）",
+    "用 Fraction/SymPy 独立重算整个依赖图并与候选核对",
+    "答案与全部选项做数值一致性比对，多匹配即歧义不释放",
+    "n+1 近似与精确值互验"
+  ],
+  "common_pitfalls": [
+    "现期×r 忘了除以(1+r)",
+    "百分号与单位混淆"
+  ],
+  "source_references": [
+    {
+      "title": "博信·资料分析公式汇编（二手来源）",
+      "url": "https://www.boxinedu.com/index/arc/5189"
+    },
+    {
+      "title": "优众·资料分析易错点",
+      "url": "http://www.scyouzhong.com/show-127-703-1.html"
+    }
+  ],
+  "version": "1",
+  "executable": {
+    "formula_pattern": "delta = now * r / (1 + r)"
+  }
+}

@@ -33,21 +33,54 @@ class DataAnalysisSkill(BaseSkill):
     question_types = ("single_choice", "fill_blank")
 
     # ------------------------------------------------------------------ solve
-    def solve(self, question: Question, ctx: SkillContext) -> Solution:
-        if getattr(ctx.settings, "r3a_data_analysis", True) is False:
-            return self.unsupported(question, "资料分析能力已由开关关闭（消融基线）")
+    @staticmethod
+    def _question_part(stem: str) -> str:
+        """题面问句 = 最后一个 '？' 句（材料句只作证据来源，不参与运算检测）。
+        多问题干（问句含多个 '？'）取最末问号所在句；无问号则原样返回。"""
+        if not stem:
+            return stem or ""
+        q_pos = max((i for i, c in enumerate(stem) if c in "？?：:"), default=-1)
+        if q_pos < 0:
+            return stem
+        start_candidates = [stem.rfind("。", 0, q_pos), stem.rfind("\n", 0, q_pos)]
+        start = max(start_candidates) + 1
+        seg = stem[start:q_pos + 1].strip()
+        # 句内含引导语（"根据以下资料回答问题。X？"）时取最后一个问号句的主体
+        inner = max((i for i, c in enumerate(seg[:-1]) if c == "。"), default=-1)
+        return seg[inner + 1:].strip() if inner >= 0 else seg
+
+    def _effective_inputs(self, question: Question):
+        """solve/verify 共用：vision 表格/统计图优先；纯文字材料规约为事实表（R7-C2）。
+        返回 (tables, table_failures, chart, text_material)。"""
         vision = (question.meta or {}).get("vision") or {}
         tables, table_failures = self._gather_tables(vision)
         chart = self._gather_chart(vision)
+        text_material = False
+        if not tables and chart is None:
+            from ..tools.table_tool import normalize_table
+            from ..tools.text_material import build_fact_table
+            built = build_fact_table(question.stem)
+            if built:
+                synth = normalize_table(built[0], region_id="txt1")
+                if synth.get("ok"):
+                    tables = [synth["table"]]
+                    text_material = True
+        return tables, table_failures, chart, text_material
+
+    def solve(self, question: Question, ctx: SkillContext) -> Solution:
+        if getattr(ctx.settings, "r3a_data_analysis", True) is False:
+            return self.unsupported(question, "资料分析能力已由开关关闭（消融基线）")
+        tables, table_failures, chart, text_material = self._effective_inputs(question)
         if not tables and chart is None:
             return Solution(
                 status="failed", skill=self.id, answer=None, confidence=0.0,
                 method="data_analysis:inputs",
                 error="资料分析输入缺少表格/统计图数据区域（不做无证据作答）",
-                meta={"failure": {"code": "no_data_regions", "vision_keys": sorted(vision)}},
+                meta={"failure": {"code": "no_data_regions",
+                                  "vision_keys": sorted((question.meta or {}).get("vision") or {})}},
             )
 
-        result = build_data_plan(question.stem, tables, chart)
+        result = build_data_plan(self._question_part(question.stem), tables, chart)
         plan_source = "rules"
         llm_rejection: Optional[Dict[str, Any]] = None
         if not result.get("ok") and ctx.llm is not None:
@@ -226,9 +259,8 @@ class DataAnalysisSkill(BaseSkill):
                                  checks=[VerificationCheck(name="data.plan_valid", passed=False,
                                                             detail="计划结构不可解析")],
                                  notes="资料分析计划不可解析，拒绝自动接受")
-        vision = (question.meta or {}).get("vision") or {}
-        tables, _ = self._gather_tables(vision)
-        chart = self._gather_chart(vision)
+        # R7-C2：verify 与 solve 用同一输入规约（文字材料题重读合成事实表）
+        tables, _, chart, _ = self._effective_inputs(question)
         checks: List[VerificationCheck] = []
         contradicted = False
         unverifiable = False

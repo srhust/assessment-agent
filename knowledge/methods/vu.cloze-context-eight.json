@@ -1,0 +1,44 @@
+{
+  "method_id": "vu.cloze-context-eight",
+  "skill": "verbal_understanding",
+  "problem_family": "logic-cloze",
+  "concepts": [
+    "语境先行：空前空后呼应+感情基调",
+    "选项辨析八维"
+  ],
+  "applicability_conditions": [
+    "逻辑填空（1-3 空，成语/实词）"
+  ],
+  "required_quantities": [
+    "空缺处语境提示词",
+    "各选项词的搭配/色彩/范围/词性"
+  ],
+  "reasoning_operations": [
+    "找解释/反对/递推/联合关系与标点提示",
+    "八维逐选项辨析（搭配>侧重>轻重>范围>对象>感情>语体>词性）",
+    "多空先破最确定空"
+  ],
+  "solution_procedure": [
+    "代入回读+搭配库核对"
+  ],
+  "verification_strategy": [
+    "正确项须同时满足语境方向与固定搭配",
+    "反义对应词出现即排除同义项"
+  ],
+  "common_pitfalls": [
+    "只凭语感",
+    "褒贬/语体错位",
+    "搭配不合事理"
+  ],
+  "source_references": [
+    {
+      "title": "金标尺·逻辑填空八维",
+      "url": "https://m.jinbiaochi.com/qggwy/news_236104.html"
+    },
+    {
+      "title": "2026 国考公共科目大纲（国家公务员局，政府网站转载）",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml"
+    }
+  ],
+  "version": "1"
+}

@@ -1,0 +1,50 @@
+{
+  "method_id": "nc.inclusion-exclusion",
+  "skill": "numeric_calculation",
+  "problem_family": "set-count",
+  "concepts": [
+    "容斥原理两/三集合公式",
+    "‘只满足一个’需画图由内而外标数"
+  ],
+  "applicability_conditions": [
+    "给各集合大小与交叠求都不满足/只满足某条件人数"
+  ],
+  "required_quantities": [
+    "全集总数",
+    "各集合大小",
+    "交集（两两/三个都）"
+  ],
+  "reasoning_operations": [
+    "两集合：A+B−A∩B=总数−都不",
+    "三集合标准型：A+B+C−AB−AC−BC+ABC=总数−都不",
+    "非标准型：总数−都不=A+B+C−只两−2×都三",
+    "问‘只满足一个’：从最深交集向外标数"
+  ],
+  "solution_procedure": [
+    "绑定各集合与交集",
+    "公式或标图",
+    "与选项核对"
+  ],
+  "verification_strategy": [
+    "每个中间量必须可回溯到题干原文数值（来源绑定）",
+    "用 Fraction/SymPy 独立重算整个依赖图并与候选核对",
+    "答案与全部选项做数值一致性比对，多匹配即歧义不释放",
+    "并集 ≤ 总数 的合法性检查"
+  ],
+  "common_pitfalls": [
+    "‘A∩B’与‘只在A∩B’口径混",
+    "三集合忘加回 ABC",
+    "占比题未先赋总人数"
+  ],
+  "source_references": [
+    {
+      "title": "华图山东·容斥原理",
+      "url": "https://sd.huatu.com/2025/0401/1588939.html"
+    },
+    {
+      "title": "MIT 6.042J（CC BY-NC-SA，仅章节标题+定理陈述）",
+      "url": "https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/"
+    }
+  ],
+  "version": "1"
+}

@@ -1,0 +1,45 @@
+{
+  "method_id": "da.yoy-mom-period",
+  "skill": "data_analysis",
+  "problem_family": "period-terms",
+  "concepts": [
+    "同比=与上年同一周期比",
+    "环比=与紧邻上一周期比"
+  ],
+  "applicability_conditions": [
+    "材料含月度/季度序列，问同比环比或时间口径"
+  ],
+  "required_quantities": [
+    "当期值",
+    "对应基期值（上年同月或上月）"
+  ],
+  "reasoning_operations": [
+    "先解析时间口径（3-10月/下半年/二季度起止）",
+    "同比找去年同月列，环比找上一月列",
+    "变化幅度最大才取绝对值"
+  ],
+  "solution_procedure": [
+    "绑定时间列",
+    "比值计算",
+    "口径复核"
+  ],
+  "verification_strategy": [
+    "引用单元格时间标签必须与问句时间一致（不一致即不释放）"
+  ],
+  "common_pitfalls": [
+    "月均/日均/累计口径混用",
+    "‘接近’当作相等",
+    "顺差逆差方向"
+  ],
+  "source_references": [
+    {
+      "title": "优众·资料分析易错点",
+      "url": "http://www.scyouzhong.com/show-127-703-1.html"
+    },
+    {
+      "title": "博信·资料分析公式汇编（二手来源）",
+      "url": "https://www.boxinedu.com/index/arc/5189"
+    }
+  ],
+  "version": "1"
+}
