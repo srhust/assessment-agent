@@ -39,6 +39,17 @@
 - **停止条件**：预算触顶或 60 题全部产出 verification_outcome。
 - 首评结果**只进 R8 终报**，任何改动后的重跑一律命名 `r8_v2_regression_*`。
 
+## 首评实际结果（r8_v2_first_eval，2026-10-20 21:04，2575s）
+
+- 60 题 oracle_solver 全管线：**correct_accept 15 / false_accept 0 / no_answer 45**。
+- 分域：number_series 7/7、verbal 3/8、numeric_calc 2/9、logical 2/11、data_analysis 1/8、
+  figure 0/7（全部要求截图，文本输入正确弃权）、language 0/6、personality 0/4（未支持域正确弃权）。
+- 机械验证 47 题放行 12；manual_only 13 题放行 3（文字语义题——放行计数仍受 Verifier 复核约束）。
+- 用量 29 次调用 / 63165 tokens，远低于 ≤220 预算；无预算触顶，60 题全部产出 outcome。
+- 逐题表：
+esults/xingce_blind_v2/r8_v2_first_eval/first_eval_item_table.json。
+- 首评成绩即本集**永久独立泛化数字**；任何后续对本集的运行一律命名 r8_v2_regression_*。
+
 ## 与 blind v1 的关系
 
 v1（sha `3af5f7f4dce63370`）14 题经 R8-A 审计：11 有效 / 1 缺陷（rb-05 舍入未声明）/
