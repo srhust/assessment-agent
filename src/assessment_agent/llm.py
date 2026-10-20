@@ -414,8 +414,16 @@ class OpenAICompatibleClient:
         phase = self._classify_phase([{"role": "system", "content": system}])
         try:
             parsed = extract_json_object(response.text)
-        except LLMError:
-            self._phase(phase)["json_output_invalid"] += 1
+        except LLMError as exc:
+            ph = self._phase(phase)
+            ph["json_output_invalid"] += 1
+            # R7（承接 R6.1 修正清单）：解析失败时持久化原始输出，
+            # 否则协议失败只能看到异常摘要、无法归因（fig-19/20 教训）。
+            choices = (response.raw or {}).get("choices") or [{}]
+            ph.setdefault("json_invalid_evidence", []).append(
+                {"error": str(exc)[:200], "raw": (response.text or "")[:2000],
+                 "finish_reason": (choices[0] or {}).get("finish_reason"),
+                 "usage": dict(response.usage or {})})
             raise
         self._phase(phase)["json_output_valid"] += 1
         return parsed

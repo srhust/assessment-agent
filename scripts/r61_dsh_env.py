@@ -42,6 +42,11 @@ def main() -> int:
         "LLM_TEMPERATURE": "0",
     })
     print(f"[r61-dsh] base={base} vision={VISION_MODEL} temperature=0")
+    if len(sys.argv) > 1:
+        # 通用注入模式：r61_dsh_env.py <cmd> [args...]（凭据只进子进程环境，不落盘）
+        proc = subprocess.run([sys.executable, "-X", "utf8"] + sys.argv[1:],
+                              cwd=str(ROOT), env=env)
+        return proc.returncode
     proc = subprocess.run(
         [sys.executable, "-X", "utf8", "scripts/r61_vlm_dev_run.py"],
         cwd=str(ROOT), env=env)

@@ -58,6 +58,17 @@ def _good_payload() -> dict:
 # ------------------------------------------------------------------ 执行器
 
 
+def test_execute_plan_spaced_expressions():
+    """R7 回归：LLM 表达式普遍含空格，parser 不得报'尾部有多余内容'。"""
+    payload = _good_payload()
+    payload["steps"][0]["expr"] = "price0 * f1"
+    payload["steps"][1]["expr"] = " after1 * r2 "
+    plan = StructuredPlan.from_dict(payload)
+    ex = execute_plan(plan)
+    assert ex.error is None, ex.error
+    assert ex.final == Fraction(300) * Fraction(4, 5) * Fraction(9, 10)
+
+
 def test_execute_plan_multi_stage_exact():
     p = ReasoningPlanner._bind_payload(_good_payload(), [_card()])
     assert p is not None

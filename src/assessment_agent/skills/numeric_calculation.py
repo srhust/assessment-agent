@@ -391,7 +391,15 @@ class NumericCalculationSkill(BaseSkill):
         # 题干的 20% 原样搬回）。同样是语义无关的数值不变式，不是题型模板。
         value = solution.meta.get("value")
         single_step = not plan or len(plan.get("steps", [])) <= 1
-        if value is not None and single_step:
+        # R7：planner 路径的步骤数看 structured_plan；且表达式含加/减复合运算时
+        # 即为真实计算证据（如 240/(60+40) 的 2.4 并非题干 240 的搬值），
+        # 不得被等值类误扣——保守拒答不能替代能力（工单 R7 总目标）。
+        sp_meta = solution.meta.get("structured_plan")
+        if sp_meta and sp_meta.get("steps"):
+            single_step = len(sp_meta["steps"]) <= 1
+        expr_txt = str(solution.meta.get("expression") or "")
+        real_computation = ("+" in expr_txt or "-" in expr_txt)
+        if value is not None and single_step and not real_computation:
             degenerate = next(
                 (s for s in stem_nums
                  if _close(float(value), s) or _close(float(value) * 100, s) or _close(float(value), s * 100)),

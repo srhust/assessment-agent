@@ -122,6 +122,9 @@ class _ExprParser:
         self.toks, self.i, self.env = toks, 0, env
 
     def peek(self) -> Optional[str]:
+        # 跳过空白 token（LLM 表达式普遍含空格：'P0 * (1 - r1)'）
+        while self.i < len(self.toks) and self.toks[self.i].strip() == "":
+            self.i += 1
         return self.toks[self.i].strip() if self.i < len(self.toks) else None
 
     def eat(self, want: str) -> None:
@@ -301,14 +304,34 @@ class ReasoningPlanner:
         try:
             payload = self.llm.complete_json(PLAN_SYSTEM, user)
         except Exception as exc:  # noqa: BLE001
-            return None, cards, f"llm_error: {exc}"
+            # R7：输出协议失败（空返回/坏 JSON）可重试——格式提醒后命中率提升。
+            try:
+                payload = self.llm.complete_json(
+                    PLAN_SYSTEM,
+                    user + "\n\n输出格式硬要求：只输出一个合法 JSON 对象；"
+                    "method_id 必须是上方方法卡的 id 原文；字符串值内不得出现未转义引号。")
+            except Exception:  # noqa: BLE001
+                return None, cards, f"llm_error: {exc}"
         plan = self._bind_payload(payload, cards)
         if plan is None:
-            return None, cards, "plan_unbound"
+            return None, cards, "plan_unbound"  # 结构不可解析/方法卡未绑定：确定性拒绝
         problems = validate_plan(plan, stem)
-        if problems:
-            return None, cards, "plan_invalid: " + "; ".join(problems[:4])
-        return plan, cards, None
+        if not problems:
+            return plan, cards, None
+        # R7：一次修正重试——把确定性校验器的缺陷清单反馈给模型。
+        # source/stem_span 必须是**题干逐字子串**是模型最常违反的硬规则，
+        # 明确报错内容后命中率显著提升（预算+1 次调用，仍受 max_plans 约束）。
+        retry_user = (user + "\n\n上一次输出未通过校验，缺陷如下：\n- "
+                      + "\n- ".join(problems[:6])
+                      + "\n请修正后重新输出完整 JSON（source/stem_span 必须逐字摘录题干）。")
+        try:
+            payload2 = self.llm.complete_json(PLAN_SYSTEM, retry_user)
+        except Exception as exc:  # noqa: BLE001
+            return None, cards, f"llm_error_retry: {exc}"
+        plan2 = self._bind_payload(payload2, cards)
+        if plan2 is not None and not validate_plan(plan2, stem):
+            return plan2, cards, None
+        return None, cards, "plan_invalid: " + "; ".join(problems[:4])
 
     @staticmethod
     def _bind_payload(payload: Any, cards: List[MethodCard]) -> Optional[StructuredPlan]:
