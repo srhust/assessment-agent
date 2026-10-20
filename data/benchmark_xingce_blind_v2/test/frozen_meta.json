@@ -1,0 +1,223 @@
+{
+  "count": 60,
+  "sha256_16": "8aea5255603652de",
+  "seed": 20261021,
+  "frozen_at": "2026-10-20T20:30+08:00（预注册提交即冻结点）",
+  "leak": {
+    "flags": [
+      {
+        "item": "v2-08",
+        "near": "xn-nc-03",
+        "similarity": 0.583,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-10",
+        "near": "xd-nc-05",
+        "similarity": 0.738,
+        "action": "dropped"
+      },
+      {
+        "item": "v2-14",
+        "action": "dropped_structural",
+        "near": [
+          "xn-ns-06"
+        ],
+        "sig": [
+          "12",
+          "2",
+          "20",
+          "30",
+          "6"
+        ]
+      },
+      {
+        "item": "v2-17",
+        "near": "xd-ns-17",
+        "similarity": 1.0,
+        "action": "dropped"
+      },
+      {
+        "item": "v2-17",
+        "near": "xd-ns-18",
+        "similarity": 0.6,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-17",
+        "near": "xn-ns-05",
+        "similarity": 0.6,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-17",
+        "near": "xn-ns-07",
+        "similarity": 1.0,
+        "action": "dropped"
+      },
+      {
+        "item": "v2-17",
+        "near": "xn-nc-04",
+        "similarity": 0.6,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-18",
+        "near": "xd-ns-17",
+        "similarity": 0.625,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-18",
+        "near": "xn-ns-05",
+        "similarity": 0.625,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-18",
+        "near": "xn-ns-07",
+        "similarity": 0.625,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-19",
+        "near": "xd-ns-17",
+        "similarity": 0.6,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-19",
+        "near": "xn-ns-02",
+        "similarity": 0.6,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-19",
+        "near": "xn-ns-05",
+        "similarity": 0.6,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-19",
+        "near": "xn-ns-07",
+        "similarity": 0.6,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-20",
+        "near": "xd-da-11",
+        "similarity": 0.582,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-20",
+        "near": "xn-da-10",
+        "similarity": 0.66,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-20",
+        "near": "xn-da-12",
+        "similarity": 0.565,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-21",
+        "near": "xd-da-11",
+        "similarity": 0.597,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-21",
+        "near": "xn-da-10",
+        "similarity": 0.596,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-21",
+        "near": "xn-da-12",
+        "similarity": 0.565,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-22",
+        "near": "xn-da-12",
+        "similarity": 0.565,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-23",
+        "near": "xn-da-10",
+        "similarity": 0.596,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-23",
+        "near": "xn-da-12",
+        "similarity": 0.565,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-24",
+        "near": "xn-da-10",
+        "similarity": 0.574,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-24",
+        "near": "xn-da-12",
+        "similarity": 0.587,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-26",
+        "near": "xn-da-10",
+        "similarity": 0.574,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-26",
+        "near": "xn-da-12",
+        "similarity": 0.565,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-35",
+        "action": "dropped_structural",
+        "near": [
+          "xn-da-06"
+        ],
+        "sig": [
+          "6"
+        ]
+      },
+      {
+        "item": "v2-42",
+        "action": "dropped_structural",
+        "near": [
+          "xn-da-06"
+        ],
+        "sig": [
+          "6"
+        ]
+      }
+    ],
+    "dropped": 6
+  },
+  "validity_rejected": 0,
+  "note": "独立命题：全部新数值/新结构；每题含唯一性证明（proofs.json）；四层验证+暴力穷举+双维泄漏检查；冻结时间待预注册时填写",
+  "skill_dist": {
+    "numeric_calculation": 9,
+    "number_series": 7,
+    "data_analysis": 8,
+    "logical_reasoning": 11,
+    "figure_reasoning": 7,
+    "verbal_understanding": 8,
+    "language_reasoning": 6,
+    "personality": 4
+  },
+  "verification_split": {
+    "mechanical": 47,
+    "manual_only": 13
+  }
+}

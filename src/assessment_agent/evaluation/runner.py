@@ -27,7 +27,8 @@ SPLITS = ("train", "dev", "test", "screens", "bench_dev", "bench_holdout",
           "verbal_dev", "verbal_blind", "verbal_epistemic_dev",
           "language_dev", "language_blind", "verbal_blind2",
           "figtrans_dev", "figtrans_test",
-          "figshots_dev", "figshots_test", "xingce_test", "xingce_dev", "xingce_blind", "xingce_blind_v11")
+          "figshots_dev", "figshots_test", "xingce_test", "xingce_dev", "xingce_blind", "xingce_blind_v11",
+     "xingce_blind_v2")
 
 # split → 数据集目录（benchmark_real 独立泛化基准：dev 可调参、holdout 冻结）
 _SPLIT_DIRS = {
@@ -50,6 +51,7 @@ _SPLIT_DIRS = {
     # R7 Stage E：方法卡 gold-first 生成盲集（生成先于评测，冻结于 sidecar）
     "xingce_blind": "benchmark_xingce_blind/test",
     "xingce_blind_v11": "benchmark_xingce_blind_v11/test",
+    "xingce_blind_v2": "benchmark_xingce_blind_v2/test",
 }
 
 EVAL_MODES = ("oracle_solver", "auto_router", "image_only")
