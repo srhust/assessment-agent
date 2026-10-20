@@ -14,6 +14,9 @@ from typing import Any, Dict, List, Optional, Sequence
 
 from .base import Tool, ToolError
 
+_PRIMES = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59,
+           61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113]
+
 
 @dataclass
 class SeriesCandidate:
@@ -173,9 +176,50 @@ def _interleaved(sequence: Sequence[Fraction]) -> Optional[SeriesCandidate]:
     )
 
 
+def _prime_run(sequence: Sequence[Fraction]) -> Optional[SeriesCandidate]:
+    """素数序列（行测常考）：连续整数恰为连续素数 → 下一素数。"""
+    if len(sequence) < 3 or any(v.denominator != 1 or v <= 1 for v in sequence):
+        return None
+    ints = [int(v) for v in sequence]
+    for start in range(max(1, len(_PRIMES) - len(ints))):
+        window = _PRIMES[start:start + len(ints)]
+        if window == ints and start + len(ints) < len(_PRIMES):
+            nxt = _PRIMES[start + len(ints)]
+            return SeriesCandidate("素数", 12, Fraction(nxt),
+                                   f"连续素数列 {_fmt(sequence[0])}… 下一素数 {nxt}",
+                                   {"start_index": start})
+    return None
+
+
+def _fraction_components(sequence: Sequence[Fraction]) -> Optional[SeriesCandidate]:
+    """分数数列：分子、分母各自成规律（如 1/2,3/4,5/8,7/16 → 9/32）。"""
+    if len(sequence) < 4 or all(v.denominator == 1 for v in sequence):
+        return None
+    num_c = _run_simple([Fraction(v.numerator) for v in sequence])
+    den_c = _run_simple([Fraction(v.denominator) for v in sequence])
+    if num_c is None or den_c is None:
+        return None
+    nxt = Fraction(num_c.next_value) / Fraction(den_c.next_value)
+    return SeriesCandidate(
+        "分子分母复合", 14, nxt,
+        f"分子按{num_c.name}→{_fmt(num_c.next_value)}，分母按{den_c.name}→{_fmt(den_c.next_value)}",
+        {"numerator_rule": num_c.name, "denominator_rule": den_c.name},
+    )
+
+
+def _run_simple(sequence: Sequence[Fraction]) -> Optional[SeriesCandidate]:
+    """给分子/分母序列找一条简单规律（素数/等差/等比/幂/平方偏移）。"""
+    for detector in (_arithmetic, _geometric, _prime_run, _power_offset):
+        candidate = detector(sequence)
+        if candidate is not None:
+            return candidate
+    return _polynomial(sequence, 2)
+
+
 def _detect(sequence: Sequence[Fraction]) -> List[SeriesCandidate]:
     candidates: List[SeriesCandidate] = []
-    for detector in (_constant_series, _arithmetic, _geometric, _fibonacci_like, _power_offset, _interleaved):
+    for detector in (_constant_series, _arithmetic, _geometric, _fibonacci_like,
+                     _power_offset, _prime_run, _interleaved, _fraction_components):
         candidate = detector(sequence)
         if candidate is not None:
             candidates.append(candidate)
