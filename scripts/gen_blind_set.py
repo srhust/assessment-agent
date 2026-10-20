@@ -20,10 +20,23 @@ import random
 import re
 import sys
 from fractions import Fraction
+
+from assessment_agent.validity import DeclaredConditions as DC
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+
+def _F(text):
+    import re as _re
+    m = _re.search(r"(-?\d+(?:\.\d+)?)(?:/(\d+))?", str(text).replace(",", ""))
+    if not m:
+        return None
+    v = Fraction(m.group(1))
+    if m.group(2):
+        v = v / Fraction(m.group(2))
+    return v / 100 if '%' in str(text) else v
+
 
 rng = random.Random(20261020)
 ITEMS = []
@@ -49,7 +62,10 @@ def money(value) -> str:
     return str(v.numerator) if v.denominator == 1 else f"{float(v):g}"
 
 
-def add(skill, method_id, stem, options, answer, note=""):
+def add(skill, method_id, stem, options, answer, note="",
+        declared=None, gold_expr="", approx_declared=False):
+    """R8-A5 闸门：自动命题必须通过 ProblemValidityVerifier 四层审查
+    才允许标 has_unique_answer；不过闸的题面进入 rejected 清单（不进数据集）。"""
     opts = list(dict.fromkeys(str(o) for o in options))
     answer = str(answer)
     assert answer in opts, (method_id, answer, opts)
@@ -61,6 +77,15 @@ def add(skill, method_id, stem, options, answer, note=""):
                 opts.append(extra)
     opts = opts[:4]
     assert answer in opts, (method_id, answer, opts)
+    if declared is not None:
+        from assessment_agent.validity import ProblemValidityVerifier
+        rep = ProblemValidityVerifier().verify_item(
+            gold_expr=gold_expr, gold=_F(answer), options=[(l, t) for l, t in zip("ABCD", opts)],
+            cond=declared, approx_declared=approx_declared)
+        if rep.verdict != "valid":
+            REJECTED.append({"stem": stem, "method_id": method_id,
+                             "validity": rep.to_dict()})
+            return
     order = list(opts)
     rng.shuffle(order)
     labels = "ABCD"
@@ -73,7 +98,11 @@ def add(skill, method_id, stem, options, answer, note=""):
         "answer": labels[order.index(answer)],
         "gold_value": answer,
         "note": note,
+        "validity": "passed",
     })
+
+
+REJECTED = []
 
 
 # ---------------------------------------------------------------- nc 模板
@@ -89,7 +118,9 @@ def gen_discount():
             f"n={money((1 - d2) * 100)}，一套定价 {base} 元的丛书两次下调后的最终售价是多少元？")
     opts = [money(final), money(wrong_add), money(Fraction(base) * d1), money(Fraction(base) * d2)]
     add("numeric_calculation", "nc.successive-discount", stem, opts, money(final),
-        "连续折扣=乘法复合；干扰=折率相加/漏一次")
+        "连续折扣=乘法复合；干扰=折率相加/漏一次",
+        declared=DC(kind="numeric", numbers=[str(base), str((1 - d1) * 100), str((1 - d2) * 100)]),
+        gold_expr=f"{base}*(1-{int(round(float((1 - d1) * 100)))}/100)*(1-{int(round(float((1 - d2) * 100)))}/100)")
 
 
 def gen_concentration():
@@ -101,7 +132,9 @@ def gen_concentration():
             f"（盐分未损失也未添加）。注入后盐溶液的含盐百分比是多少？")
     opts = [pct_text(new), pct_text(c), pct_text(salt / (m - w)), pct_text(salt / w)]
     add("numeric_calculation", "nc.concentration-conservation", stem, opts, pct_text(new),
-        "分母=新总量；干扰=旧分母/蒸发/只除加水量")
+        "分母=新总量；干扰=旧分母/蒸发/只除加水量",
+        declared=DC(kind="numeric", numbers=[str(m), pct_text(c), str(w)]),
+        gold_expr=f"{m}*{float(c):g}/({m}+{w})")
 
 
 def gen_restore_price():
@@ -109,10 +142,12 @@ def gen_restore_price():
     rate = x / (1 - x)
     p = variant("restore_price", [200, 400, 80])
     stem = (f"一件标价 {p} 元的商品降价{pct_text(x)}出售。若要恢复原价，"
-            f"需要在现价基础上提价百分之几？")
+            f"需要在现价基础上约提价百分之几？（结果保留一位小数）")
     opts = [pct_text(rate), pct_text(x), pct_text(x / 2), pct_text(Fraction(1, 3))]
     add("numeric_calculation", "nc.profit-margin-base", stem, opts, pct_text(rate),
-        "基准=现价；干扰=直接报降幅")
+        "基准=现价；干扰=直接报降幅；舍入需声明",
+        declared=DC(kind="numeric", numbers=[str(p), pct_text(x)]),
+        gold_expr=f"{float(x):g}/(1-{float(x):g})", approx_declared=True)
 
 
 def gen_travel():
@@ -132,25 +167,30 @@ def gen_work():
             f"两队共同施工需要多少天完成？")
     opts = [f"{float(together):g}", f"{(a + b) / 2:g}", str(min(a, b)), f"{float(Fraction(a) * b / (a + b) / 2):g}"]
     add("numeric_calculation", "nc.work-rate-lcm", stem, opts, f"{float(together):g}",
-        "效率相加再取倒数；干扰=平均天数")
+        "效率相加再取倒数；干扰=平均天数",
+        declared=DC(kind="numeric", numbers=[str(a), str(b)]),
+        gold_expr=f"1/(1/{a}+1/{b})")
 
 
 # ---------------------------------------------------------------- da 模板
 def gen_base_period():
-    base, g, year = variant("base_period", [(1100, Fraction(1, 5), 2024),
-                                             (672, Fraction(1, 4), 2023),
-                                             (1000, Fraction(1, 10), 2024)])
-    cur = Fraction(base) * (1 + g)
-    assert cur.denominator == 1, cur
-    other = base * 3 // 5
-    stem = (f"某开发区统计局公报：{year - 1} 年该区数字经济营业收入 {base} 亿元，"
+    cur, g, year = variant("base_period", [(1320, Fraction(1, 5), 2024),
+                                           (840, Fraction(1, 4), 2023),
+                                           (1100, Fraction(1, 10), 2024)])
+    base = Fraction(cur) / (1 + g)
+    assert base.denominator == 1, base
+    other = cur * 3 // 5
+    stem = (f"某开发区统计局公报：{year} 年该区数字经济营业收入 {cur} 亿元，"
             f"同比增长{pct_text(g)}；同年全区软件服务收入 {other} 亿元，"
-            f"同比增长{pct_text(Fraction(1, 8))}。\n问：{year} 年该区数字经济营业收入约为多少亿元？")
-    opts = [f"{float(cur):g}", f"{float(Fraction(base) / (1 + g)):g}",
-            f"{float(Fraction(base) + Fraction(cur - base) / 2):g}",
-            f"{float(Fraction(base) * (1 + g + Fraction(1, 10))):g}"]
-    add("data_analysis", "da.base-period", stem, opts, f"{float(cur):g}",
-        "材料给基期+增速问现期：现期=基期×(1+r)")
+            f"同比增长{pct_text(Fraction(1, 8))}。\n问：{year - 1} 年该区数字经济营业收入为多少亿元？")
+    opts = [f"{float(base):g}", str(cur - int(cur * g)), f"{float(Fraction(cur) * (1 + g)):g}",
+            f"{float(Fraction(cur) / (1 - g)):g}"]
+    add("data_analysis", "da.base-period", stem, opts, f"{float(base):g}",
+        "合法形：现期值+该年率 → 基期=现期/(1+r)；rb-09 型（问后一期缺率）已按 errata 移除",
+        declared=DC(kind="data_analysis",
+                    facts={str(year): Fraction(cur)}, rates={str(year): g},
+                    ask_year=str(year - 1), gold_value=base),
+        gold_expr=f"{cur}/(1+{float(g):g})")
 
 
 def gen_growth_amount():
@@ -166,7 +206,11 @@ def gen_growth_amount():
     opts = [f"{float(inc):g}", f"{float(cur * r):g}", f"{float(base):g}",
             f"{float(inc / 2):g}"]
     add("data_analysis", "da.growth-amount", stem, opts, f"{float(inc):g}",
-        "增长量=现期×r/(1+r)；干扰=直接×r")
+        "增长量=现期×r/(1+r)；干扰=直接×r",
+        declared=DC(kind="data_analysis",
+                    facts={str(year): Fraction(int(cur))}, rates={str(year): r},
+                    ask_year=str(year), ask_delta=True, gold_value=int(inc)),
+        gold_expr=f"{float(cur):g}-{float(cur):g}/(1+{float(r):g})", approx_declared=True)
 
 
 # ---------------------------------------------------------------- lg 模板
@@ -187,7 +231,9 @@ def gen_series():
     nxt = primes[start + 6]
     stem = "，".join(str(x) for x in seq) + "，（ ）"
     opts = [str(nxt), str(nxt + 2), str(seq[-1] + 2), str(nxt - 4)]
-    add("number_series", "ns.primes", stem, opts, str(nxt), "连续素数")
+    add("number_series", "ns.primes", stem, opts, str(nxt), "连续素数",
+        declared=DC(kind="series", stem=stem, declared_next=str(nxt)),
+        gold_expr=str(nxt))
     n0, d0, qq = variant("frac", [(3, 4, 2), (3, 2, 2), (5, 8, 2), (1, 4, 2)])
     nums = [n0 + i * 2 for i in range(4)]
     dens = [d0 * qq ** i for i in range(4)]
@@ -197,7 +243,9 @@ def gen_series():
     opts2 = [f"{nxt_num}/{nxt_den}", f"{nxt_num}/{nxt_den * 2}",
              f"{nxt_num - 1}/{nxt_den}", f"{nxt_num + 2}/{nxt_den}"]
     add("number_series", "ns.numer-denom", stem2, opts2, f"{nxt_num}/{nxt_den}",
-        "分子等差+分母等比")
+        "分子等差+分母等比",
+        declared=DC(kind="series", stem=stem2, declared_next=f"{nxt_num}/{nxt_den}"),
+        gold_expr=f"{nxt_num}/{nxt_den}")
 
 
 # ---------------------------------------------------------------- 泄漏检查
@@ -250,7 +298,10 @@ def main():
                 row = json.loads(line)
                 existing.append((row.get("id"), row.get("stem", "")))
     flagged = leak_check(existing)
-    out_dir = ROOT / "data/benchmark_xingce_blind/test"
+    # R8：v1 冻结目录（"test"）不再写入；默认输出 v11（诊断/回归用，非盲集成绩）
+    out_name = sys.argv[1] if len(sys.argv) > 1 else "test_v11"
+    assert out_name != "test", "v1 已冻结，生成器不得覆写"
+    out_dir = ROOT / "data/benchmark_xingce_blind" / out_name
     out_dir.mkdir(parents=True, exist_ok=True)
     lines = []
     for item in ITEMS:
@@ -270,7 +321,10 @@ def main():
                     "泄漏检查两级：sim≥0.7 自动丢弃（action=dropped），0.55–0.7 软标记留档复核；全部列出不隐藏"}
     (out_dir / "frozen_meta.json").write_text(
         json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"[blind] {len(ITEMS)} 题 sha={sha} leak_flags={len(flagged)}")
+    (out_dir / "rejected_items.json").write_text(
+        json.dumps(REJECTED, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"[blind] {len(ITEMS)} 题 sha={sha} leak_flags={len(flagged)} "
+          f"validity_rejected={len(REJECTED)}")
     for f in flagged[:8]:
         print("  FLAG", f)
 

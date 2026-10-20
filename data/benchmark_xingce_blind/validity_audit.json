@@ -1,0 +1,253 @@
+{
+  "total": 14,
+  "by_verdict": {
+    "valid": 11,
+    "flawed": 1,
+    "invalid": 2
+  },
+  "invalid": [
+    "rb-09",
+    "rb-10"
+  ],
+  "flawed": [
+    "rb-05"
+  ],
+  "items": [
+    {
+      "id": "rb-01",
+      "skill": "numeric_calculation",
+      "gold": "A",
+      "recomputed": "576",
+      "option_hits": [
+        "A"
+      ],
+      "layers": {
+        "arithmetic": true,
+        "dependency": true,
+        "sufficiency": true,
+        "option_unique": true
+      },
+      "verdict": "valid",
+      "note": "800 连降 20%、10%（第二次明确基于第一次后价格）→ 576 唯一"
+    },
+    {
+      "id": "rb-02",
+      "skill": "numeric_calculation",
+      "gold": "B",
+      "recomputed": "145.6",
+      "option_hits": [
+        "B"
+      ],
+      "layers": {
+        "arithmetic": true,
+        "dependency": true,
+        "sufficiency": true,
+        "option_unique": true
+      },
+      "verdict": "valid",
+      "note": "260×0.7×0.8=145.6 唯一"
+    },
+    {
+      "id": "rb-03",
+      "skill": "numeric_calculation",
+      "gold": "C",
+      "recomputed": "0.08",
+      "option_hits": [
+        "C"
+      ],
+      "layers": {
+        "arithmetic": true,
+        "dependency": true,
+        "sufficiency": true,
+        "option_unique": true
+      },
+      "verdict": "valid",
+      "note": "盐 20g/新总量 250g=8% 唯一"
+    },
+    {
+      "id": "rb-04",
+      "skill": "numeric_calculation",
+      "gold": "D",
+      "recomputed": "0.06",
+      "option_hits": [
+        "D"
+      ],
+      "layers": {
+        "arithmetic": true,
+        "dependency": true,
+        "sufficiency": true,
+        "option_unique": true
+      },
+      "verdict": "valid",
+      "note": "盐 24g/400g=6% 唯一"
+    },
+    {
+      "id": "rb-05",
+      "skill": "numeric_calculation",
+      "gold": "D",
+      "recomputed": "0.333333",
+      "option_hits": [],
+      "layers": {
+        "arithmetic": false,
+        "dependency": true,
+        "sufficiency": true,
+        "option_unique": false
+      },
+      "verdict": "flawed",
+      "note": "降 25% 恢复需提价 1/3=33.3…%；选项 33.3% 为舍入值而题面未写'约'——严格口径无选项命中（1/3∉选项），舍入口径唯一；判 flawed(近似未声明)"
+    },
+    {
+      "id": "rb-06",
+      "skill": "numeric_calculation",
+      "gold": "D",
+      "recomputed": "0.25",
+      "option_hits": [
+        "D"
+      ],
+      "layers": {
+        "arithmetic": true,
+        "dependency": true,
+        "sufficiency": true,
+        "option_unique": true
+      },
+      "verdict": "valid",
+      "note": "降 20% 恢复需提价 25% 精确值命中，唯一"
+    },
+    {
+      "id": "rb-07",
+      "skill": "numeric_calculation",
+      "gold": "C",
+      "recomputed": "250",
+      "option_hits": [
+        "C"
+      ],
+      "layers": {
+        "arithmetic": true,
+        "dependency": true,
+        "sufficiency": true,
+        "option_unique": true
+      },
+      "verdict": "valid",
+      "note": "(60+40)×2.5=250 唯一"
+    },
+    {
+      "id": "rb-08",
+      "skill": "numeric_calculation",
+      "gold": "D",
+      "recomputed": "6",
+      "option_hits": [
+        "D"
+      ],
+      "layers": {
+        "arithmetic": true,
+        "dependency": true,
+        "sufficiency": true,
+        "option_unique": true
+      },
+      "verdict": "valid",
+      "note": "1/(1/10+1/15)=6 天唯一"
+    },
+    {
+      "id": "rb-09",
+      "skill": "data_analysis",
+      "gold": "A",
+      "recomputed": "1320",
+      "option_hits": [
+        "A"
+      ],
+      "layers": {
+        "arithmetic": true,
+        "dependency": false,
+        "sufficiency": false,
+        "option_unique": true
+      },
+      "verdict": "invalid",
+      "note": "材料只有 2023 值与其(对2022)增长率；问 2024。2023→2024 的率缺失，gold=1320 依赖未声明的'增速延续'隐含假设 → 条件不足，不可唯一求解"
+    },
+    {
+      "id": "rb-10",
+      "skill": "data_analysis",
+      "gold": "C",
+      "recomputed": "840",
+      "option_hits": [
+        "C"
+      ],
+      "layers": {
+        "arithmetic": true,
+        "dependency": false,
+        "sufficiency": false,
+        "option_unique": true
+      },
+      "verdict": "invalid",
+      "note": "同型：2022 值+2022 率，问 2023 → 缺 2022→2023 率，不可唯一求解"
+    },
+    {
+      "id": "rb-11",
+      "skill": "data_analysis",
+      "gold": "D",
+      "recomputed": "160",
+      "option_hits": [
+        "D"
+      ],
+      "layers": {
+        "arithmetic": true,
+        "dependency": true,
+        "sufficiency": true,
+        "option_unique": true
+      },
+      "verdict": "valid",
+      "note": "2024 现期 800+其率 25% → 上年 640、增量 160 唯一（率与值同年，合法）"
+    },
+    {
+      "id": "rb-12",
+      "skill": "data_analysis",
+      "gold": "D",
+      "recomputed": "180",
+      "option_hits": [
+        "D"
+      ],
+      "layers": {
+        "arithmetic": true,
+        "dependency": true,
+        "sufficiency": true,
+        "option_unique": true
+      },
+      "verdict": "valid",
+      "note": "630 与 40% 同属 2023 → 基期 450、增量 180 唯一"
+    },
+    {
+      "id": "rb-13",
+      "skill": "logical_reasoning",
+      "gold": "B",
+      "recomputed": "P∈{True}",
+      "option_hits": [
+        "B"
+      ],
+      "layers": {
+        "arithmetic": true,
+        "dependency": true,
+        "sufficiency": true,
+        "option_unique": true
+      },
+      "verdict": "valid",
+      "note": "前提集合唯一模型 (P,Q)=(T,T)；逆命题(选项A/C形态)与否定命题均可假 → 唯一"
+    },
+    {
+      "id": "rb-14",
+      "skill": "logical_reasoning",
+      "gold": "B",
+      "recomputed": "P∈{True}",
+      "option_hits": [
+        "B"
+      ],
+      "layers": {
+        "arithmetic": true,
+        "dependency": true,
+        "sufficiency": true,
+        "option_unique": true
+      },
+      "verdict": "valid",
+      "note": "前提集合唯一模型 (P,Q)=(T,T)；逆命题(选项A/C形态)与否定命题均可假 → 唯一"
+    }
+  ]
+}

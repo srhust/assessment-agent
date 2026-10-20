@@ -1,0 +1,111 @@
+{
+  "count": 14,
+  "sha256_16": "6ecaf72479e395a7",
+  "seed": 20261020,
+  "frozen_at": "2026-10-20",
+  "leak_flags": [
+    {
+      "item": "rb-03",
+      "near": "xn-nc-03",
+      "similarity": 0.583,
+      "action": "soft_flag"
+    },
+    {
+      "item": "rb-04",
+      "near": "xn-nc-03",
+      "similarity": 0.583,
+      "action": "soft_flag"
+    },
+    {
+      "item": "rb-06",
+      "near": "xd-nc-09",
+      "similarity": 0.556,
+      "action": "soft_flag"
+    },
+    {
+      "item": "rb-07",
+      "near": "xd-nc-05",
+      "similarity": 0.595,
+      "action": "soft_flag"
+    },
+    {
+      "item": "rb-08",
+      "near": "xn-nc-06",
+      "similarity": 0.622,
+      "action": "soft_flag"
+    },
+    {
+      "item": "rb-09",
+      "near": "xd-nc-10",
+      "similarity": 0.565,
+      "action": "soft_flag"
+    },
+    {
+      "item": "rb-10",
+      "near": "xd-nc-10",
+      "similarity": 0.609,
+      "action": "soft_flag"
+    },
+    {
+      "item": "rb-15",
+      "near": "xd-ns-18",
+      "similarity": 0.8,
+      "action": "dropped"
+    },
+    {
+      "item": "rb-16",
+      "near": "xd-ns-17",
+      "similarity": 0.75,
+      "action": "dropped"
+    },
+    {
+      "item": "rb-16",
+      "near": "xd-ns-18",
+      "similarity": 0.6,
+      "action": "soft_flag"
+    },
+    {
+      "item": "rb-16",
+      "near": "xn-ns-05",
+      "similarity": 0.75,
+      "action": "dropped"
+    },
+    {
+      "item": "rb-16",
+      "near": "xn-ns-07",
+      "similarity": 0.75,
+      "action": "dropped"
+    },
+    {
+      "item": "rb-17",
+      "near": "xn-ns-12",
+      "similarity": 0.833,
+      "action": "dropped"
+    },
+    {
+      "item": "rb-18",
+      "near": "xd-ns-17",
+      "similarity": 0.875,
+      "action": "dropped"
+    },
+    {
+      "item": "rb-18",
+      "near": "xd-ns-18",
+      "similarity": 0.8,
+      "action": "dropped"
+    },
+    {
+      "item": "rb-18",
+      "near": "xn-ns-05",
+      "similarity": 0.75,
+      "action": "dropped"
+    },
+    {
+      "item": "rb-18",
+      "near": "xn-ns-07",
+      "similarity": 0.875,
+      "action": "dropped"
+    }
+  ],
+  "note": "gold-first 生成（方法卡公式+Fraction 计算金标），先于任何评测冻结；泄漏检查两级：sim≥0.7 自动丢弃（action=dropped），0.55–0.7 软标记留档复核；全部列出不隐藏"
+}
