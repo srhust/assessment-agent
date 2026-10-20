@@ -126,6 +126,9 @@ class NumericCalculationSkill(BaseSkill):
             if word_solution is not None:
                 word_solution.tool_calls = [invocation] + list(word_solution.tool_calls or [])
                 return word_solution
+            planner_solution = self._solve_planner(question, ctx, options)
+            if planner_solution is not None:
+                return planner_solution
             return Solution(
                 status="failed",
                 skill=self.id,
@@ -151,6 +154,9 @@ class NumericCalculationSkill(BaseSkill):
                 if word_solution is not None:
                     word_solution.tool_calls = [invocation] + list(word_solution.tool_calls or [])
                     return word_solution
+                planner_solution = self._solve_planner(question, ctx, options)
+                if planner_solution is not None:
+                    return planner_solution
                 return Solution(
                     status="failed",
                     skill=self.id,
@@ -185,6 +191,58 @@ class NumericCalculationSkill(BaseSkill):
             meta={"expression": expression, "value": value, "exact": exact},
         )
 
+    # ------------------------------------------------ R7 路径二：知识增强规划
+    def _solve_planner(self, question: Question, ctx: SkillContext, options) -> Optional[Solution]:
+        """规则通道无法建模时，用方法卡 + LLM 结构化规划 + Fraction 执行。
+        产出候选必须带完整依赖图（structured_plan），由 verify() 独立复核后才可释放。"""
+        if ctx.llm is None or not question.options:
+            return None
+        try:
+            from ..planner import ReasoningPlanner, execute_plan
+            from ..knowledge.methods import MethodKB
+        except ImportError:  # pragma: no cover
+            return None
+        planner = ReasoningPlanner(getattr(self, "method_kb", None) or MethodKB(), ctx.llm)
+        opts = [{"label": o.get("label") if isinstance(o, dict) else getattr(o, "label", ""),
+                 "text": o.get("text") if isinstance(o, dict) else getattr(o, "text", "")}
+                for o in (question.options or [])]
+        plan, _cards, why = planner.plan_llm(question.stem, opts, self.id)
+        if plan is None:
+            return Solution(
+                status="failed", skill=self.id, method="reasoning_planner",
+                error=f"结构化规划未成立: {why}",
+                meta={"planner_failure": str(why)[:200]})
+        ex = execute_plan(plan)
+        if ex.final is None:
+            return Solution(
+                status="failed", skill=self.id, method="reasoning_planner",
+                error=f"计划执行失败: {ex.error}",
+                meta={"structured_plan": plan.to_dict()})
+        value = float(ex.final)
+        exact = (f"{ex.final.numerator}/{ex.final.denominator}"
+                 if ex.final.denominator != 1 else str(ex.final.numerator))
+        label = None
+        for opt in (question.options or []):
+            otext = opt.get("text") if isinstance(opt, dict) else getattr(opt, "text", "")
+            ov = option_value(otext or "")
+            if ov is not None and _close(ov, value):
+                label = opt.get("label") if isinstance(opt, dict) else getattr(opt, "label", "")
+                break
+        meta = {"structured_plan": plan.to_dict(), "solver_source": "llm_planner",
+                "expression": ex.expression, "value": value, "exact": exact,
+                "planner_method": plan.method_id}
+        if label is None:
+            meta.update({"planner_failure": "plan_result_not_in_options"})
+            return Solution(status="failed", skill=self.id, method="reasoning_planner",
+                            error=f"计划结果 {exact} 与所有选项均不匹配", meta=meta)
+        steps = [f"方法卡 {plan.method_id}（{plan.family}）：{plan.rationale}"[:160]]
+        steps += [f"{s.var} = {s.expr}（依据：{s.source[:40]}）" for s in plan.steps]
+        steps.append(f"Fraction 精确求值 = {exact}（数值 {value:g}），匹配选项 {label}")
+        return Solution(
+            status="solved", skill=self.id, answer=label,
+            answer_text=question.option_text(label) or "", steps=steps,
+            confidence=0.8, method="reasoning_planner", meta=meta)
+
     # ------------------------------------------------ 应用题理解层（R2c）
     def _solve_word_problem(self, question: Question, ctx: SkillContext, options) -> Optional[Solution]:
         if not getattr(ctx.settings, "r2c_word_problem", True):
@@ -202,6 +260,17 @@ class NumericCalculationSkill(BaseSkill):
                 meta={"word_problem": plan},
             )
         final = env[plan["final_var"]]
+        # R7-C1：规则计划若未穷尽题干数量（如两段折扣只建模第一段），且规划层可用，
+        # 则让位给知识增强路径；无 LLM 时维持既有行为（候选交由 verify 拦截）。
+        if ctx.llm is not None:
+            _vals = _expr_values(plan, None)
+            _zhe = "折" in (question.stem or "")
+            _groups = _ratio_groups(question.stem)
+            _miss = [n for n in _stem_numbers(question.stem)
+                     if not _bound(n, _vals, _zhe,
+                                   next((g for g in _groups if any(_close(n, m) for m in g)), None))]
+            if _miss:
+                return None
         # 把中间变量代入最后一步表达式，得到可独立复核的单一算式
         expression = plan["steps"][-1][1]
         for name, value in env.items():
@@ -256,6 +325,36 @@ class NumericCalculationSkill(BaseSkill):
         # R6-B/R6.1 操作数覆盖（blocking）：题干数量必须全部被**表达式操作数**绑定
         stem_nums = _stem_numbers(question.stem)
         consumed = _expr_values(plan, solution.meta.get("expression"))
+        # R7-B1：planner 路径独立复核——Verifier 重放依赖图（来源绑定+拓扑+重算），
+        # 不信任 Solver 自报结果；任何缺陷即 unverified，禁止释放
+        if solution.meta.get("solver_source") == "llm_planner":
+            from ..planner import StructuredPlan as _SP
+            from ..planner import execute_plan as _ep
+            from ..planner import validate_plan as _vp
+            ok_graph, p_detail = False, "structured_plan 缺失"
+            try:
+                p2 = _SP.from_dict(solution.meta.get("structured_plan") or {})
+                problems = _vp(p2, question.stem)
+                ex2 = _ep(p2)
+                replay_ok = (not problems) and ex2.final is not None and _close(
+                    float(ex2.final), float(solution.meta.get("value") or float("nan")))
+                ok_graph = replay_ok
+                p_detail = ("依赖图独立重放通过：来源绑定全部为题干原文、拓扑完整、重算值与候选一致"
+                            if replay_ok else
+                            "重放失败: " + "; ".join((problems or [])[:3]) +
+                            ("" if not problems else f"; 执行={ex2.error}; 与候选一致="
+                             + str(_close(float(ex2.final),
+                                          float(solution.meta.get('value') or -1))
+                                   if ex2.final is not None else "无值")))
+            except Exception as exc:  # noqa: BLE001
+                p_detail = f"重放异常: {exc}"
+            checks.append(VerificationCheck(
+                name="planner.dependency_graph", passed=ok_graph,
+                severity="blocking", detail=p_detail[:300]))
+            if not ok_graph:
+                return Verification(
+                    passed=False, action="unverified", checks=checks, final_answer=None,
+                    notes="planner 依赖图独立复核未通过：禁止释放")
         has_zhe = "折" in (question.stem or "")
         groups = _ratio_groups(question.stem)
         uncovered = [n for n in stem_nums
