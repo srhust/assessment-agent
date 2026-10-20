@@ -1,0 +1,455 @@
+{
+  "split": "xingce_dev",
+  "sample_count": 26,
+  "duration_s": 763.51,
+  "settings": {
+    "offline": false,
+    "llm_enabled": true,
+    "base_url": "https://st8tp3ajl0df3n8b8l8qu.apigateway-cn-beijing.volceapi.com/v1",
+    "text_model": "gpt-4o-mini",
+    "vision_model": "glm-5.3-flash",
+    "api_key_present": true,
+    "runs_dir": "E:\\assessment-agent\\runs",
+    "results_dir": "E:\\assessment-agent\\results",
+    "data_dir": "E:\\assessment-agent\\data",
+    "vision_parser": true,
+    "r2c_flags": {
+      "word_problem": true,
+      "figure_verify": true,
+      "router_structure": true,
+      "data_analysis": true,
+      "verbal_understanding": true,
+      "r3c_epistemic": true,
+      "r3c_language": true,
+      "r4a_transform": true,
+      "r4a_indep_verifier": true,
+      "r4a_disable_six_rules": false
+    }
+  },
+  "total": 26,
+  "correct": 21,
+  "accuracy": 0.8077,
+  "route_mode": "oracle_solver",
+  "capability": {
+    "objective_total": 25,
+    "overall_answer_accuracy": {
+      "value": 0.8,
+      "hit": 20,
+      "denominator": 25
+    },
+    "supported_objective_total": 25,
+    "supported_answer_accuracy": {
+      "value": 0.8,
+      "hit": 20,
+      "denominator": 25
+    },
+    "capability_coverage": {
+      "value": 1.0,
+      "hit": 25,
+      "denominator": 25
+    },
+    "overall_answered_coverage": {
+      "value": 0.8,
+      "hit": 20,
+      "denominator": 25
+    },
+    "honest_abstention": {
+      "value": 1.0,
+      "hit": 1,
+      "denominator": 1
+    },
+    "undecidable_abstention": {
+      "value": 1.0,
+      "hit": 1,
+      "denominator": 1
+    },
+    "subjective_abstention": {
+      "value": null,
+      "hit": 0,
+      "denominator": 0
+    },
+    "objective_unlabeled": {
+      "total": 0,
+      "answered": 0
+    },
+    "unsupported_answerable_refusals": 0,
+    "verification_outcomes": {
+      "correct_accept": 20,
+      "no_answer": 5,
+      "correct_abstention": 1
+    },
+    "root_causes": {
+      "none": 21,
+      "solver_coverage": 5
+    },
+    "false_accept_total": 0,
+    "false_reject_total": 0,
+    "evidence_insufficient_correct_withheld_total": 0,
+    "unverified_answerable_total": 0,
+    "over_answer_total": 0,
+    "capability_source": "skill_registry",
+    "registered_supported_skills": [
+      "data_analysis",
+      "figure_reasoning",
+      "language_reasoning",
+      "logical_reasoning",
+      "number_series",
+      "numeric_calculation",
+      "verbal_understanding"
+    ]
+  },
+  "primary_answer_accuracy": {
+    "value": 0.8,
+    "hit": 20,
+    "denominator": 25
+  },
+  "primary_capability_coverage": {
+    "value": 1.0,
+    "hit": 25,
+    "denominator": 25
+  },
+  "primary_answered_coverage": {
+    "value": 0.8,
+    "hit": 20,
+    "denominator": 25
+  },
+  "primary_honest_abstention": {
+    "value": 1.0,
+    "hit": 1,
+    "denominator": 1
+  },
+  "overall_answer_accuracy": {
+    "value": 0.8,
+    "hit": 20,
+    "denominator": 25
+  },
+  "capability_coverage": {
+    "value": 1.0,
+    "hit": 25,
+    "denominator": 25
+  },
+  "answerable": 25,
+  "answer_accuracy": 0.8,
+  "covered_count": 20,
+  "coverage_ratio": 0.7692,
+  "answerable_coverage": 0.8,
+  "selective_accuracy": 1.0,
+  "abstention_total": 1,
+  "abstention_correct": 1,
+  "abstention_accuracy": 1.0,
+  "route_total": 26,
+  "route_correct": 26,
+  "route_accuracy": 1.0,
+  "e2e": {},
+  "unsupported": 0,
+  "failed": 6,
+  "mean_latency_ms": 29365.684,
+  "p50_latency_ms": 16519.009,
+  "p95_latency_ms": 100919.5,
+  "failure_reasons": {
+    "结构化规划未成立: plan_unbound": 1,
+    "结构化规划未成立: llm_error_retry: 模型返回为空，无法解析 JSON": 1,
+    "计划结果 53/2 与所有选项均不匹配": 1,
+    "规律族冲突（ambiguous）：六类规律 centroid 指向 A，变换规律指向 多个/无法唯一，不能共同支持同一选项": 1,
+    "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定": 1
+  },
+  "failure_classes": {
+    "solver_error": 5
+  },
+  "per_skill": {
+    "data_analysis": {
+      "skill": "data_analysis",
+      "total": 3,
+      "correct": 3,
+      "accuracy": 1.0,
+      "answerable": 3,
+      "answer_accuracy": 1.0,
+      "covered_count": 3,
+      "coverage_ratio": 1.0,
+      "answerable_coverage": 1.0,
+      "selective_accuracy": 1.0,
+      "abstention_total": 0,
+      "abstention_correct": 0,
+      "abstention_accuracy": 0.0,
+      "route_total": 3,
+      "route_correct": 3,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 3,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 1.0,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 3,
+      "unsupported": 0,
+      "failed": 0,
+      "repaired": 0,
+      "rejected": 0,
+      "mean_latency_ms": 3.398,
+      "p50_latency_ms": 1.368,
+      "p95_latency_ms": 7.069,
+      "failure_reasons": {}
+    },
+    "figure_reasoning": {
+      "skill": "figure_reasoning",
+      "total": 2,
+      "correct": 0,
+      "accuracy": 0.0,
+      "answerable": 2,
+      "answer_accuracy": 0.0,
+      "covered_count": 0,
+      "coverage_ratio": 0.0,
+      "answerable_coverage": 0.0,
+      "selective_accuracy": 0.0,
+      "abstention_total": 0,
+      "abstention_correct": 0,
+      "abstention_accuracy": 0.0,
+      "route_total": 2,
+      "route_correct": 2,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 2,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 0.0,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 0,
+      "unsupported": 0,
+      "failed": 2,
+      "repaired": 0,
+      "rejected": 2,
+      "mean_latency_ms": 156.841,
+      "p50_latency_ms": 156.841,
+      "p95_latency_ms": 157.745,
+      "failure_reasons": {
+        "规律族冲突（ambiguous）：六类规律 centroid 指向 A，变换规律指向 多个/无法唯一，不能共同支持同一选项": 1,
+        "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定": 1
+      }
+    },
+    "language_reasoning": {
+      "skill": "language_reasoning",
+      "total": 2,
+      "correct": 2,
+      "accuracy": 1.0,
+      "answerable": 1,
+      "answer_accuracy": 1.0,
+      "covered_count": 1,
+      "coverage_ratio": 0.5,
+      "answerable_coverage": 1.0,
+      "selective_accuracy": 1.0,
+      "abstention_total": 1,
+      "abstention_correct": 1,
+      "abstention_accuracy": 1.0,
+      "route_total": 2,
+      "route_correct": 2,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 1,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 1.0,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 1,
+      "unsupported": 0,
+      "failed": 1,
+      "repaired": 0,
+      "rejected": 1,
+      "mean_latency_ms": 92688.268,
+      "p50_latency_ms": 92688.268,
+      "p95_latency_ms": 176107.053,
+      "failure_reasons": {}
+    },
+    "logical_reasoning": {
+      "skill": "logical_reasoning",
+      "total": 2,
+      "correct": 2,
+      "accuracy": 1.0,
+      "answerable": 2,
+      "answer_accuracy": 1.0,
+      "covered_count": 2,
+      "coverage_ratio": 1.0,
+      "answerable_coverage": 1.0,
+      "selective_accuracy": 1.0,
+      "abstention_total": 0,
+      "abstention_correct": 0,
+      "abstention_accuracy": 0.0,
+      "route_total": 2,
+      "route_correct": 2,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 2,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 1.0,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 2,
+      "unsupported": 0,
+      "failed": 0,
+      "repaired": 0,
+      "rejected": 0,
+      "mean_latency_ms": 39.924,
+      "p50_latency_ms": 39.924,
+      "p95_latency_ms": 61.798,
+      "failure_reasons": {}
+    },
+    "number_series": {
+      "skill": "number_series",
+      "total": 2,
+      "correct": 2,
+      "accuracy": 1.0,
+      "answerable": 2,
+      "answer_accuracy": 1.0,
+      "covered_count": 2,
+      "coverage_ratio": 1.0,
+      "answerable_coverage": 1.0,
+      "selective_accuracy": 1.0,
+      "abstention_total": 0,
+      "abstention_correct": 0,
+      "abstention_accuracy": 0.0,
+      "route_total": 2,
+      "route_correct": 2,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 2,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 1.0,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 2,
+      "unsupported": 0,
+      "failed": 0,
+      "repaired": 0,
+      "rejected": 0,
+      "mean_latency_ms": 1.692,
+      "p50_latency_ms": 1.692,
+      "p95_latency_ms": 1.695,
+      "failure_reasons": {}
+    },
+    "numeric_calculation": {
+      "skill": "numeric_calculation",
+      "total": 13,
+      "correct": 10,
+      "accuracy": 0.7692,
+      "answerable": 13,
+      "answer_accuracy": 0.7692,
+      "covered_count": 10,
+      "coverage_ratio": 0.7692,
+      "answerable_coverage": 0.7692,
+      "selective_accuracy": 1.0,
+      "abstention_total": 0,
+      "abstention_correct": 0,
+      "abstention_accuracy": 0.0,
+      "route_total": 13,
+      "route_correct": 13,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 13,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 0.7692,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 10,
+      "unsupported": 0,
+      "failed": 3,
+      "repaired": 0,
+      "rejected": 3,
+      "mean_latency_ms": 38470.294,
+      "p50_latency_ms": 33473.243,
+      "p95_latency_ms": 90045.625,
+      "failure_reasons": {
+        "结构化规划未成立: plan_unbound": 1,
+        "结构化规划未成立: llm_error_retry: 模型返回为空，无法解析 JSON": 1,
+        "计划结果 53/2 与所有选项均不匹配": 1
+      }
+    },
+    "verbal_understanding": {
+      "skill": "verbal_understanding",
+      "total": 2,
+      "correct": 2,
+      "accuracy": 1.0,
+      "answerable": 2,
+      "answer_accuracy": 1.0,
+      "covered_count": 2,
+      "coverage_ratio": 1.0,
+      "answerable_coverage": 1.0,
+      "selective_accuracy": 1.0,
+      "abstention_total": 0,
+      "abstention_correct": 0,
+      "abstention_accuracy": 0.0,
+      "route_total": 2,
+      "route_correct": 2,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 2,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 1.0,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 2,
+      "unsupported": 0,
+      "failed": 0,
+      "repaired": 0,
+      "rejected": 0,
+      "mean_latency_ms": 38805.164,
+      "p50_latency_ms": 38805.164,
+      "p95_latency_ms": 50809.916,
+      "failure_reasons": {}
+    }
+  },
+  "eval_batch": "r7_dev_final",
+  "vision": {
+    "cases": 26,
+    "stem_exact_match": {
+      "value": 0.0,
+      "denominator": 26
+    },
+    "stem_cer": {
+      "value": 0.0,
+      "denominator": 26
+    },
+    "option_label_recall": {
+      "value": null,
+      "denominator": 0
+    },
+    "option_text_accuracy": {
+      "value": null,
+      "denominator": 0
+    },
+    "option_text_cer_mean": {
+      "value": null,
+      "denominator": 0
+    },
+    "option_region_iou_mean": {
+      "value": null,
+      "denominator": 0,
+      "note": "按题取均值；全部金标准选项框参与，漏框按 0 计入每题分母"
+    },
+    "option_region_iou_pooled": {
+      "value": null,
+      "denominator": 0,
+      "note": "逐题金标框数加权的框级均值 Σ(n_i·mean_i)/Σn_i（R4f 修正；旧口径 Σmean_i/Σn_i 已废弃）"
+    },
+    "diagram_region_recall": {
+      "value": null,
+      "denominator": 0
+    },
+    "diagram_region_iou_mean": {
+      "value": null,
+      "denominator": 0,
+      "note": "IoU≥0.5 记命中；漏检按 0 计入分母"
+    },
+    "diagram_region_iou_pooled": {
+      "value": null,
+      "denominator": 0,
+      "note": "同 option pooled 修正口径"
+    },
+    "table_cell_accuracy": {
+      "value": null,
+      "denominator": 0
+    },
+    "region_detection_failure_rate": {
+      "value": 0.0,
+      "denominator": 26
+    }
+  }
+}
