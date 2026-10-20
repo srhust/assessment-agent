@@ -161,3 +161,39 @@ gaps_recorded:
   - 常识判断（大纲六部分之一）：知识依赖型，登记缺口
   - "累计（同期累计）"权威定义：NO_PUBLIC_SOURCE，方法卡不引用
   - 数字推理：2026 大纲保留（含例题），第三方 2025 题量表未单列 → 按双分支建模
+
+# ---- R8 batch-2 新增 ----
+- id: ht_ns
+  title: 华图·数字推理之多级数列（吉林站公开页）
+  url: http://jl.huatu.com/2022/0221/2125422.html
+  accessed: "2026-10-20"
+  license: 机构免费公开页；仅取多级数列做差方法与易错要点，不整段搬运
+  usage: ns.multi-stage-diff 卡主体方法
+
+- id: ht_ns2
+  title: 华图在线·数字推理题的分析
+  url: https://wx.huatu.com/beikao/20110729/28649.html
+  accessed: "2026-10-20"
+  license: 机构免费公开页，要点级引用
+  usage: 数字推理五类型学（多级/多重机械分组/分数/幂次/递推）——ns 四卡的族划分
+
+- id: off_fig
+  title: 中公网校·图形推理解题规律
+  url: http://www.eoffcn.com/kszx/ksjq/66651.html
+  accessed: "2026-10-20"
+  license: 机构免费公开页，要点级引用
+  usage: 组成相异找数量（点线面角素）总纲与一笔画前提
+
+- id: ht_fig
+  title: 华图·行测图形推理模拟题（分类分组）
+  url: https://www.huatu.com/2021/0923/2292166.html
+  accessed: "2026-10-20"
+  license: 机构免费公开页，仅取属性分组方法名目（页面乱码，方法要点以大纲题型描述为准）
+  usage: fig.analogy-classification 属性向量法
+
+- id: sx_fig
+  title: 苏学教育·图形推理四面体折纸盒（资料目录页）
+  url: https://www.suxuejiaoyu.com/ctt/62/92.htm
+  accessed: "2026-10-20"
+  license: 机构免费公开页，仅登记方法名目，未下载内容
+  usage: fig.solid-view 折纸盒/三视图子题存在性佐证

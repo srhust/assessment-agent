@@ -1,0 +1,61 @@
+{
+  "method_id": "nc.tiered-pricing",
+  "skill": "numeric_calculation",
+  "problem_family": "分段计价（水电/taxi/阶梯）",
+  "concepts": [
+    "分段函数",
+    "区间拆分",
+    "累计计费"
+  ],
+  "applicability_conditions": [
+    "单价随区间阶梯变化；问总价或反推量",
+    "不适用: 单一比率折扣（用 successive-discount 卡）；连续复利（用 compound-growth）"
+  ],
+  "required_quantities": [
+    "各档阈值",
+    "各档单价",
+    "实际用量"
+  ],
+  "reasoning_operations": [
+    "区间拆分 sum",
+    "分段累加",
+    "反推时逐档试探"
+  ],
+  "solution_procedure": [
+    "画数轴分档→用量落入各档的量分别乘单价",
+    "反向题：总价逐档减去，直至落入某档",
+    "边界值归入哪档以题面'超过'/'含'为准"
+  ],
+  "verification_strategy": [
+    "正向计算结果代回分段验证落档一致",
+    "总价应在 [最低档满额, 最高档满额] 界内"
+  ],
+  "common_pitfalls": [
+    "用总量直接乘最高档单价",
+    "'超过部分'与'全部按'两种表述混用",
+    "反向题档位判断错误"
+  ],
+  "source_references": [
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    },
+    {
+      "title": "华图免费公开页·利润率与四法",
+      "url": "https://www.huatu.com/2023-0712/2667480.html",
+      "license": "机构免费公开页，要点级引用"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "出租车 3km 内 10 元，3-8km 每 km 1.8 元，超 8km 每 km 2.7 元（不足 1km 计 1km）。乘 11.5km 应付多少？（自撰练习）",
+    "answer": "29",
+    "note": "10+5×1.8+4×2.7=10+9+10.8≈分段累加（11.5→按 12 计，超 8 部分 4km）=29.8→实付口径看题面取整约定；练习演示分档与取整声明的必要性"
+  },
+  "executable": {
+    "missing_operators": [
+      "ceil 取整"
+    ]
+  }
+}

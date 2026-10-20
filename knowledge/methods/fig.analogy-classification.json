@@ -1,0 +1,66 @@
+{
+  "method_id": "fig.analogy-classification",
+  "skill": "figure_reasoning",
+  "problem_family": "类比/分组·属性规律",
+  "concepts": [
+    "对称性",
+    "开闭性",
+    "曲直性",
+    "结构位置"
+  ],
+  "applicability_conditions": [
+    "分组分类题：把 6 图分两组各 3，先找'每图二值属性'（轴对称/中心对称/封闭/全曲线）",
+    "类比推理：先语法关系（词性/动作主体）再语义关系（近反/程度/属种），最后常识对应",
+    "不适用: 数量明显（用 count-elements）"
+  ],
+  "required_quantities": [
+    "二值属性向量",
+    "词项语法结构"
+  ],
+  "reasoning_operations": [
+    "attribute_vector",
+    "group_by_pattern"
+  ],
+  "solution_procedure": [
+    "逐图打属性向量→找恰好切成 3+3 的属性",
+    "两属性并存时选更稳定者（全图可判）",
+    "类比先造句检验关系方向"
+  ],
+  "verification_strategy": [
+    "属性向量穷举所有 2^k 切法验证唯一 3-3",
+    "类比关系方向反（A对B如C对D≠A对C如B对D）"
+  ],
+  "common_pitfalls": [
+    "对称轴方向数量细节漏看",
+    "中心对称与轴对称混淆",
+    "类比常识层级（属种≠种属）方向颠倒"
+  ],
+  "source_references": [
+    {
+      "title": "华图·行测图形推理模拟题（分类分组）",
+      "url": "https://www.huatu.com/2021/0923/2292166.html",
+      "license": "机构免费公开页，要点级引用"
+    },
+    {
+      "title": "中公网校·图形推理解题规律（相异找数量：点线面角）",
+      "url": "http://www.eoffcn.com/kszx/ksjq/66651.html",
+      "license": "机构免费公开页，要点级引用"
+    },
+    {
+      "title": "公考备考手册（判断推理章节，GitHub Pages 公开页）",
+      "url": "https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html",
+      "license": "个人公开讲义，要点级引用"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "等腰梯形、正五边形、字母S、圆、平行四边形（非菱形）、线段：哪些是中心对称？（自撰练习）",
+    "answer": "圆、平行四边形、线段",
+    "note": "逐图 180° 旋转重合检验；S 视觉上近似但字形非严格中心对称——演示口径声明必要性"
+  },
+  "executable": {
+    "missing_operators": [
+      "图输入解析（截图必需）"
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "method_id": "ns.power-adjust",
+  "skill": "number_series",
+  "problem_family": "幂次数列·修正",
+  "concepts": [
+    "平方/立方/多次幂",
+    "修正项 ±1/±k"
+  ],
+  "applicability_conditions": [
+    "项跳跃大或出现 1/4/8/9/16/25/27/36… 邻域数→对齐最近幂再读修正列",
+    "不适用: 增幅恒定（先试多级差）；分数形式（分数数列另卡）"
+  ],
+  "required_quantities": [
+    "各项底数序列",
+    "指数（常 2 或 3）",
+    "修正数列"
+  ],
+  "reasoning_operations": [
+    "power_map",
+    "adjust_pattern"
+  ],
+  "solution_procedure": [
+    "逐项找最近完全平方/立方",
+    "修正差列单独找规律（常为质数/等差）",
+    "续推底数与修正"
+  ],
+  "verification_strategy": [
+    "把预测项减回最近幂，修正应落回同一规律",
+    "程序穷举幂底数范围复核"
+  ],
+  "common_pitfalls": [
+    "0/1 的幂多表示导致错位",
+    "底数列与修正列项数对不齐"
+  ],
+  "source_references": [
+    {
+      "title": "华图在线·数字推理题的分析（类型学：多级/多重/分数/幂次/递推）",
+      "url": "https://wx.huatu.com/beikao/20110729/28649.html",
+      "license": "机构免费公开页，要点级引用"
+    },
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "0, 3, 8, 15, 24, ( )",
+    "answer": "35",
+    "note": "n²−1 修正型：1²−1..6²−1=35；修正列固定 −1"
+  },
+  "executable": {
+    "missing_operators": [
+      "幂 a^b（执行器当前不支持，弃权将点名）"
+    ]
+  }
+}

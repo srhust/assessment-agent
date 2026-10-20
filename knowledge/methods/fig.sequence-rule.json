@@ -1,0 +1,63 @@
+{
+  "method_id": "fig.sequence-rule",
+  "skill": "figure_reasoning",
+  "problem_family": "序列图·位置/叠加规律",
+  "concepts": [
+    "平移/旋转/翻转",
+    "黑白叠加",
+    "遍历缺图"
+  ],
+  "applicability_conditions": [
+    "组成相同看位置（平移步数/旋转方向角度）",
+    "有黑白块叠加运算表（同色→白异色→黑等），由前两式归纳表再验第三式",
+    "九宫格：行规律与列规律须同时校验",
+    "不适用: 组成凌乱→数量/属性卡"
+  ],
+  "required_quantities": [
+    "元素逐格位置向量",
+    "叠加运算真值表",
+    "遍历集合"
+  ],
+  "reasoning_operations": [
+    "position_diff",
+    "xor_table_induce",
+    "traversal_check"
+  ],
+  "solution_procedure": [
+    "相邻图对齐编号求位移",
+    "叠加题从前两行归纳运算表并全表验证",
+    "遍历：每行含集合各元素一次，缺位即答案"
+  ],
+  "verification_strategy": [
+    "位移量在最后一组仍成立",
+    "运算表用第三行独立验证而非仅拟合"
+  ],
+  "common_pitfalls": [
+    "旋转方向（顺/逆）误判",
+    "叠加表只验部分格",
+    "遍历与叠加混题型硬套"
+  ],
+  "source_references": [
+    {
+      "title": "中公网校·图形推理解题规律（相异找数量：点线面角）",
+      "url": "http://www.eoffcn.com/kszx/ksjq/66651.html",
+      "license": "机构免费公开页，要点级引用"
+    },
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "黑圈在 4 格环上每步顺时针移 1 格，第 5 步位置？（自撰练习）",
+    "answer": "回到起点（周期 4）",
+    "note": "周期检验：位移 mod 格数"
+  },
+  "executable": {
+    "missing_operators": [
+      "图输入解析（截图必需）"
+    ]
+  }
+}

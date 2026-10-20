@@ -1140,6 +1140,14 @@ def main():
         if p.exists():
             for line in p.read_text(encoding="utf-8").splitlines():
                 existing.append(json.loads(line))
+    # R8-B3 纪律补全：方法卡 dev 练习例题也属排除语料
+    for mf in sorted((ROOT / "knowledge/methods").glob("*.json")):
+        data = json.loads(mf.read_text(encoding="utf-8"))
+        ex = data.get("dev_exercise") or {}
+        if ex.get("stem"):
+            existing.append({"id": f"card:{data['method_id']}",
+                             "stem": ex["stem"],
+                             "options": [{"text": str(ex.get("answer", ""))}]})
     kept, flags = leak_checks(existing)
     out_dir = ROOT / "data/benchmark_xingce_blind_v2/test"
     out_dir.mkdir(parents=True, exist_ok=True)

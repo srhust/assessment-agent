@@ -1,0 +1,58 @@
+{
+  "method_id": "lg.categorical-syllogism",
+  "skill": "logical_reasoning",
+  "problem_family": "直言命题·三段论",
+  "concepts": [
+    "所有/有些/没有",
+    "三段论规则",
+    "欧拉图"
+  ],
+  "applicability_conditions": [
+    "前提为量词命题，问可必然推出的结论",
+    "有效式：两个'所有'且中项周延一次→得'所有'；含'有些'前提→结论必'有些'；两个否定前提无结论",
+    "不适用: 复命题联结词结构（用 propositional-formula 卡）"
+  ],
+  "required_quantities": [
+    "各类外延集合",
+    "量词与肯定/否定极性"
+  ],
+  "reasoning_operations": [
+    "model_enumeration(域大小≤3)",
+    "countermodel_search"
+  ],
+  "solution_procedure": [
+    "写标准式 all/no/some(P,Q)",
+    "小域模型穷举（1..3 元素）找全部满足前提的模型",
+    "结论为真=每个模型中皆为真（必要性）；举反例即排除"
+  ],
+  "verification_strategy": [
+    "正解必须在所有模型成立；每个干扰项须给出反例模型",
+    "'无法推出'选项=存在两个模型使结论一真一假"
+  ],
+  "common_pitfalls": [
+    "把'有些A是B'当'有些A不是B'",
+    "中项不周延误推",
+    "some 结论反向升 all"
+  ],
+  "source_references": [
+    {
+      "title": "公考备考手册（判断推理章节，GitHub Pages 公开页）",
+      "url": "https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html",
+      "license": "个人公开讲义，要点级引用"
+    },
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "所有考研生都复习了高数；有些复习高数的是应届生。必然推出？（自撰练习）",
+    "answer": "无法确定（考研生与应届生交集不确定）",
+    "note": "中项'复习高数'两处均不周延→无必然结论；模型穷举可给两反例"
+  },
+  "executable": {
+    "tool": "模型穷举（validity._sufficiency_monadic 同款确定性通道）"
+  }
+}

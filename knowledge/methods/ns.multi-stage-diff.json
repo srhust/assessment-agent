@@ -1,0 +1,59 @@
+{
+  "method_id": "ns.multi-stage-diff",
+  "skill": "number_series",
+  "problem_family": "多级数列（做差/做和）",
+  "concepts": [
+    "一阶差",
+    "二阶差",
+    "和数列"
+  ],
+  "applicability_conditions": [
+    "单调且增幅平缓→做差；增幅波动→做和看两两和是否成规律",
+    "不适用: 明显幂次特征（跳跃大，用 power-adjust）；长短交错（用 interleaved-group）"
+  ],
+  "required_quantities": [
+    "原数列 a_i",
+    "差数列 d_i=a_{i+1}−a_i",
+    "次级差"
+  ],
+  "reasoning_operations": [
+    "diff",
+    "diff2",
+    "pattern_match"
+  ],
+  "solution_procedure": [
+    "做差一层→仍无规律再差一层",
+    "差数列匹配：常数/等比/质数/平方",
+    "由次级规律回推原数列下一项"
+  ],
+  "verification_strategy": [
+    "把回推的下一项再差一次，应与次级规律续项一致",
+    "solve_series 多规则候选唯一性（candidates==1 才可释）"
+  ],
+  "common_pitfalls": [
+    "只做一层差就放弃",
+    "差数列正负号看丢",
+    "把差数列为原数列续推"
+  ],
+  "source_references": [
+    {
+      "title": "华图·数字推理之多级数列（吉林站公开页）",
+      "url": "http://jl.huatu.com/2022/0221/2125422.html",
+      "license": "机构免费公开页，要点级引用"
+    },
+    {
+      "title": "华图在线·数字推理题的分析（类型学：多级/多重/分数/幂次/递推）",
+      "url": "https://wx.huatu.com/beikao/20110729/28649.html",
+      "license": "机构免费公开页，要点级引用"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "2, 6, 14, 26, 42, ( )",
+    "answer": "62",
+    "note": "一阶差 4,8,12,16 等差→下一差 20→42+20=62；二阶差恒 4"
+  },
+  "executable": {
+    "tool": "solve_series（差分候选已确定性实现）"
+  }
+}

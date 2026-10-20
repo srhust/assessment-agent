@@ -1,0 +1,62 @@
+{
+  "method_id": "da.annual-average-timing",
+  "skill": "data_analysis",
+  "problem_family": "年均增长率/年均增量·时点口径",
+  "concepts": [
+    "n 次方根",
+    "跨年间隔数",
+    "现期/基期年份锚定"
+  ],
+  "applicability_conditions": [
+    "问'2021—2025 年均增速'→间隔 4 年，(末/初)^(1/4)−1",
+    "间隔数=末年−初年（不是年份个数−0）",
+    "不适用: 材料缺任一时点值（不得外推）；问年均增量则做算术平均（无开方）"
+  ],
+  "required_quantities": [
+    "末期值",
+    "初期值",
+    "间隔年数 n"
+  ],
+  "reasoning_operations": [
+    "ratio",
+    "root(n)"
+  ],
+  "solution_procedure": [
+    "确认两端时点属于材料（年份闭包）",
+    "(末/初)^(1/n)−1",
+    "选项大时可用 (1+r)^n 反乘校验"
+  ],
+  "verification_strategy": [
+    "把 r 代回 (初)×(1+r)^n 应≈末值",
+    "n 取年份差而非项数"
+  ],
+  "common_pitfalls": [
+    "间隔数=项数错一位",
+    "开方与除以 n 混用（增量才除以 n）",
+    "初期年份口径（跨年数据给年末/年初混淆）"
+  ],
+  "source_references": [
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    },
+    {
+      "title": "华图·数字推理之多级数列（吉林站公开页）",
+      "url": "http://jl.huatu.com/2022/0221/2125422.html",
+      "license": "机构免费公开页，要点级引用"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "2020 年 100，2024 年 146.41，年均增速？（自撰练习）",
+    "answer": "11%",
+    "note": "(146.41/100)^(1/4)=1.11 → 间隔 4 年；1.11⁴=15.0? 1.1⁴=1.4641 ✓"
+  },
+  "executable": {
+    "missing_operators": [
+      "幂 a^b",
+      "n 次方根"
+    ]
+  }
+}

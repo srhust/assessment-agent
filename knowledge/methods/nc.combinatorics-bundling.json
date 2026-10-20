@@ -1,0 +1,69 @@
+{
+  "method_id": "nc.combinatorics-bundling",
+  "skill": "numeric_calculation",
+  "problem_family": "排列组合·特殊元素/相邻/相离",
+  "concepts": [
+    "排列组合",
+    "捆绑法",
+    "插空法",
+    "间接法"
+  ],
+  "applicability_conditions": [
+    "对象可枚举且互异，计数问法是'多少种'",
+    "相邻→捆绑后整体参与排列再乘内部排列",
+    "不相邻→先排其余再插空",
+    "至少/至多→考虑补集",
+    "不适用: 对象同种不可区分（改用隔板/组合数模型）；概率问法（先转古典概型卡）"
+  ],
+  "required_quantities": [
+    "元素数 n",
+    "受限位置/分组数 k",
+    "内部排列因子"
+  ],
+  "reasoning_operations": [
+    "perm(n,k)",
+    "fact(n)",
+    "乘法原理",
+    "加法原理分情形"
+  ],
+  "solution_procedure": [
+    "识别约束类型（相邻/相离/定序/特殊元素）→ 选捆绑/插空/优先排特殊",
+    "分步计数并用乘法",
+    "分类用加法并检查类间互斥",
+    "得到计数后核对问法（种数 vs 概率）"
+  ],
+  "verification_strategy": [
+    "小规模用穷举/模拟程序复核总数",
+    "换一种方法（直接 vs 补集）结果应一致",
+    "对称性检验：定序问题总数应整除 k!"
+  ],
+  "common_pitfalls": [
+    "相邻又要求内部顺序时重复乘内部排列",
+    "插空个数算错（m 个元素有 m+1 空，两端是否可插看题意）",
+    "把'至少一个'直接当'恰好一个'"
+  ],
+  "source_references": [
+    {
+      "title": "公考备考手册（判断推理章节，GitHub Pages 公开页）",
+      "url": "https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html",
+      "license": "个人公开讲义，要点级引用"
+    },
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "4 名男生 3 名女生排成一排，3 名女生必须相邻，共有多少种排法？（自撰练习）",
+    "answer": "720",
+    "note": "捆绑：把 3 女生看作 1 整体，与 4 男生共 5 单元全排列 5!=120，内部 3!=6，120×6=720"
+  },
+  "executable": {
+    "missing_operators": [
+      "排列数 P(n,k)",
+      "阶乘 n!"
+    ]
+  }
+}

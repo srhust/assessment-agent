@@ -1,0 +1,57 @@
+{
+  "method_id": "ns.interleaved-group",
+  "skill": "number_series",
+  "problem_family": "间隔/多重数列",
+  "concepts": [
+    "奇偶位分组",
+    "机械分组"
+  ],
+  "applicability_conditions": [
+    "数列长度 ≥6 且相邻无规律但隔位成规律→奇偶位拆两个子列",
+    "不适用: 隔位也无规律（试递推卡）；四项一组和差规律（分组组合卡）"
+  ],
+  "required_quantities": [
+    "奇位子列",
+    "偶位子列",
+    "各自规律参数"
+  ],
+  "reasoning_operations": [
+    "split_by_parity",
+    "pattern_match×2",
+    "merge_interleave"
+  ],
+  "solution_procedure": [
+    "拆奇偶位→各自找差/比/幂",
+    "两子列分别续推一项",
+    "按原交错方式合并取问位"
+  ],
+  "verification_strategy": [
+    "续推值放回原位置重验交错规律",
+    "候选唯一性：两子列规律组合须唯一"
+  ],
+  "common_pitfalls": [
+    "问第几项时取错子列（末项奇偶位混淆）",
+    "拆组后忽略长度奇偶差异"
+  ],
+  "source_references": [
+    {
+      "title": "华图在线·数字推理题的分析（类型学：多级/多重/分数/幂次/递推）",
+      "url": "https://wx.huatu.com/beikao/20110729/28649.html",
+      "license": "机构免费公开页，要点级引用"
+    },
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "1, 4, 3, 9, 5, 16, 7, 25, ( )",
+    "answer": "9",
+    "note": "奇位 1,3,5,7,? 等差→９；偶位 4,9,16,25 完全平方"
+  },
+  "executable": {
+    "tool": "solve_series（交错规则已实现）"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "method_id": "ns.recursive-relation",
+  "skill": "number_series",
+  "problem_family": "递推数列（和/差/倍/积递推）",
+  "concepts": [
+    "a(n)=f(a(n-1),a(n-2))",
+    "斐波那契型",
+    "倍数递推"
+  ],
+  "applicability_conditions": [
+    "相邻项可组合出后项→试 a+b / a-b / a*b / a±kb",
+    "不适用: 无递推式贯穿全部已知项时回退多级差；分数形式另卡"
+  ],
+  "required_quantities": [
+    "前两项",
+    "组合系数 k"
+  ],
+  "reasoning_operations": [
+    "recur_test",
+    "coeff_solve"
+  ],
+  "solution_procedure": [
+    "对每一对相邻项生成候选算式（和/差/积/倍加减）",
+    "要求同一算式贯穿全部已知项（≥3 项验证）",
+    "唯一贯穿式才可用于续推"
+  ],
+  "verification_strategy": [
+    "全部已知项逐一通过递推式（一项不符即弃该规则）；候选规则数必须为 1"
+  ],
+  "common_pitfalls": [
+    "前几项碰巧满足两规则不同预测",
+    "倍数递推修正系数漂移"
+  ],
+  "source_references": [
+    {
+      "title": "华图·数字推理之多级数列（吉林站公开页）",
+      "url": "http://jl.huatu.com/2022/0221/2125422.html",
+      "license": "机构免费公开页，要点级引用"
+    },
+    {
+      "title": "华图在线·数字推理题的分析（类型学：多级/多重/分数/幂次/递推）",
+      "url": "https://wx.huatu.com/beikao/20110729/28649.html",
+      "license": "机构免费公开页，要点级引用"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "2, 3, 7, 23, 71, ( )",
+    "answer": "以程序登录唯一贯穿规则为准",
+    "note": "演示纪律：候选规则多于 1 条且续项不同，必须弃权"
+  },
+  "executable": {
+    "tool": "solve_series（递推候选已确定性实现）"
+  }
+}

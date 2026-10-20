@@ -179,8 +179,34 @@ class _ExprParser:
         raise ValueError(f"未绑定变量: {t}")
 
 
+# R8-C：确定性执行器只支持 + - * / 与括号。方法卡/计划引用超此面的算子时，
+# 弃权必须**点名所缺算子**（工单：未实现能力如实报告，不得静默报格式错误）。
+MISSING_OPERATORS = {
+    "C(n,k)": (r"\bC\s*\(", "组合数 C(n,k)"),
+    "P(n,k)": (r"\bP\s*\(", "排列数 P(n,k)"),
+    "factorial": (r"\d\s*!|\)\s*!", "阶乘 n!"),
+    "power": (r"\^", "幂 a^b"),
+    "sqrt": (r"\bsqrt\s*\(|\u221a", "平方根"),
+}
+
+
+def scan_missing_operators(exprs) -> List[str]:
+    import re as _re
+    found = []
+    for pat, label in MISSING_OPERATORS.values():
+        if any(_re.search(pat, e or "") for e in exprs):
+            found.append(label)
+    return found
+
+
 def execute_plan(plan: StructuredPlan) -> PlanExecution:
     """按依赖顺序精确求值；每个变量只允许定义一次（无环依赖自然成立）。"""
+    missing = scan_missing_operators(
+        [st.expr for st in plan.steps] + [str(g.value) for g in plan.givens])
+    if missing:
+        return PlanExecution(final=None, values={}, expression="",
+                             error="执行器缺失算子: " + "、".join(missing) +
+                                   "（当前确定性执行仅支持 + - * / 与括号）")
     env: Dict[str, Fraction] = {}
     for g in plan.givens:
         try:

@@ -1,0 +1,61 @@
+{
+  "method_id": "vu.intent-attitude",
+  "skill": "verbal_understanding",
+  "problem_family": "意图/态度判断",
+  "concepts": [
+    "意图=言外目标",
+    "对策优先但防过度引申",
+    "情感极性"
+  ],
+  "applicability_conditions": [
+    "问'意在说明/言外之意'：主旨为基，意图=主旨+合理对策",
+    "过度引申一步（文中无据的宏大对策）即错",
+    "情感态度词极性须与文中评价词一致",
+    "不适用: 纯细节题（fact 核对，勿用意图通道）"
+  ],
+  "required_quantities": [
+    "转折/结论信号词",
+    "评价性词语极性",
+    "问题-对策结构"
+  ],
+  "reasoning_operations": [
+    "signal_locate",
+    "polarity_check",
+    "overreach_filter"
+  ],
+  "solution_procedure": [
+    "找信号词（但/因此/可见/更关键）定位重点句",
+    "意图题：重点句是问题→选对策项；重点句已是对策→选同义改写",
+    "对每个干扰项标注错因类型（绝对化/无中生有/过度引申/偏离重点）"
+  ],
+  "verification_strategy": [
+    "错因类型标注齐备且唯一项无错因",
+    "去掉对策步回读：对策必须针对文中明示问题"
+  ],
+  "common_pitfalls": [
+    "见'意在'逢对策就选（对策过度）",
+    "把背景句当主旨",
+    "情感词强度漂移（质疑vs否定）"
+  ],
+  "source_references": [
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    },
+    {
+      "title": "公考备考手册（判断推理章节，GitHub Pages 公开页）",
+      "url": "https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html",
+      "license": "个人公开讲义，要点级引用"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "文段指出社区团购补贴挤压菜贩但监管细则未落地。意在说明：（自撰练习）",
+    "answer": "社区团购监管细则需要加快落地",
+    "note": "问题明示+转折后重点=对策；'打压创新'等方向为错（无中生有）"
+  },
+  "executable": {
+    "channel": "manual_semantic（语义判断不机械闭合，验证策略=人工错因标注）"
+  }
+}

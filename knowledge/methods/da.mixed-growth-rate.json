@@ -1,0 +1,58 @@
+{
+  "method_id": "da.mixed-growth-rate",
+  "skill": "data_analysis",
+  "problem_family": "混合增长率",
+  "concepts": [
+    "部分→整体",
+    "居中原则",
+    "杠杆（偏向基期量大的一侧）"
+  ],
+  "applicability_conditions": [
+    "已知两部分（或整体与一部分）的增速求第三个",
+    "结果增速必落在两者之间，且偏向基数更大一方",
+    "不适用: 增速口径年份不一致（同比/环比混用先对齐，见 yoy-mom-period）"
+  ],
+  "required_quantities": [
+    "两部分的现期值与增速",
+    "各自基期量"
+  ],
+  "reasoning_operations": [
+    "weighted_average(Fraction)",
+    "interval_check"
+  ],
+  "solution_procedure": [
+    "各部分基期量=现期/(1+r)",
+    "整体增速=(Σ现期−Σ基期)/Σ基期",
+    "速判：r 介于两者之间且靠近基期量大者"
+  ],
+  "verification_strategy": [
+    "精确加权与'居中+偏向'定性判断必须一致",
+    "选项若不在两增速之间直接排除"
+  ],
+  "common_pitfalls": [
+    "用现期值当权重（应基期值）",
+    "忘记 r 可为负导致区间方向错",
+    "把增速平均当加权平均"
+  ],
+  "source_references": [
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    },
+    {
+      "title": "华图免费公开页·利润率与四法",
+      "url": "https://www.huatu.com/2023-0712/2667480.html",
+      "license": "机构免费公开页，要点级引用"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "甲设备产能增长 4%（基期 900 件），乙设备产能增长 10%（基期 2600 件），总产能增速？（自撰练习）",
+    "answer": "在 4%~10% 之间且靠近 10%（加权值约 8.5%）",
+    "note": "(900×4%+2600×10%)/3500=8.46%"
+  },
+  "executable": {
+    "tool": "Fraction 加权已可确定性执行"
+  }
+}

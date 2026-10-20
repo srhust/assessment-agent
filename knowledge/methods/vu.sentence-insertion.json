@@ -1,0 +1,58 @@
+{
+  "method_id": "vu.sentence-insertion",
+  "skill": "verbal_understanding",
+  "problem_family": "语句填充/衔接（功能句）",
+  "concepts": [
+    "话题一致",
+    "指代词锚点",
+    "关联词方向"
+  ],
+  "applicability_conditions": [
+    "文段留空选句填入",
+    "空处前后话题、指代（这/其/而/却）、关联结构三重一致才可入",
+    "不适用: 排序题（sentence-ordering 卡）；主旨题（main-idea 卡）"
+  ],
+  "required_quantities": [
+    "空位相邻句",
+    "候选句主语/指代对象",
+    "逻辑关系词"
+  ],
+  "reasoning_operations": [
+    "span_anchor_check",
+    "coherence_match"
+  ],
+  "solution_procedure": [
+    "读空前后各一句→判定空缺句的功能（承上/启下/转折/总结）",
+    "候选逐项核对：话题主语衔接词是否咬合",
+    "代入回读检验信息不重复不断裂"
+  ],
+  "verification_strategy": [
+    "代入后全段通读：指代必须着落、不引入新话题",
+    "两候选都能承接时比较与'总结/转折'功能的匹配"
+  ],
+  "common_pitfalls": [
+    "只看空前不看空后",
+    "选项词面与原文部分重合的强干扰（偷换指代对象）"
+  ],
+  "source_references": [
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    },
+    {
+      "title": "公考备考手册（判断推理章节，GitHub Pages 公开页）",
+      "url": "https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html",
+      "license": "个人公开讲义，要点级引用"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "在划横线处填入最恰当的一句：古人修城重在防御，______。今天的老城更新同样要回答'为谁更新'。（自撰练习）",
+    "answer": "今天的城市更新同样要回答'为谁而修'",
+    "note": "功能=承古启今的类比桥句；纯防御句/纯技术句均断链"
+  },
+  "executable": {
+    "channel": "evidence span 逐字定位 + audit（已实现）"
+  }
+}

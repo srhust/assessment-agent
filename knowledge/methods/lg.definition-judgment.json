@@ -1,0 +1,57 @@
+{
+  "method_id": "lg.definition-judgment",
+  "skill": "logical_reasoning",
+  "problem_family": "定义判断·要件匹配",
+  "concepts": [
+    "要件拆解",
+    "属加种差",
+    "正向/负向设问"
+  ],
+  "applicability_conditions": [
+    "题干给单一权威定义，选项逐个案例比对",
+    "拆解主客体/方式/目的/结果要件，全满足才选（问'属于'）；问'不属于'则找唯一违反者",
+    "不适用: 多定义辨析混用（先锁定被问定义）；日常语义替换定义（定义优先于常识）"
+  ],
+  "required_quantities": [
+    "定义要件集",
+    "各选项事实要素集"
+  ],
+  "reasoning_operations": [
+    "element_matrix_check"
+  ],
+  "solution_procedure": [
+    "定义拆成要件列表",
+    "每选项列满足的要件集合",
+    "问'属于'→全包含唯一者；问'不属于'→恰一缺失其余全满足"
+  ],
+  "verification_strategy": [
+    "要件矩阵唯一命中才释放",
+    "缺失要件必须点名是哪一条"
+  ],
+  "common_pitfalls": [
+    "用常识补要件（超出定义文本）",
+    "负向设问选成'全满足'",
+    "多定义题张冠李戴"
+  ],
+  "source_references": [
+    {
+      "title": "公考备考手册（判断推理章节，GitHub Pages 公开页）",
+      "url": "https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html",
+      "license": "个人公开讲义，要点级引用"
+    },
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "定义：行政许可指行政机关依申请，经依法审查，准予其从事特定活动的行为。下列属于行政许可的是？（自撰练习，四选项略）",
+    "answer": "市场监管局依申请向企业颁发营业执照",
+    "note": "要件：行政机关+依申请+依法审查+准予从事特定活动，四项全满足唯一"
+  },
+  "executable": {
+    "tool": "elements 矩阵（validity._sufficiency_definition 通道同款）"
+  }
+}

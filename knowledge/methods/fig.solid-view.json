@@ -1,0 +1,61 @@
+{
+  "method_id": "fig.solid-view",
+  "skill": "figure_reasoning",
+  "problem_family": "立体图形·三视图/折纸盒",
+  "concepts": [
+    "三视图投影",
+    "展开图折叠",
+    "相邻面/相对面"
+  ],
+  "applicability_conditions": [
+    "六面体展开图：相对面不相邻（隔一面对/‘Z’两端面）",
+    "三视图：主/俯/左轮廓逐列高（俯视图给行列布局，主视给列最大高）",
+    "不适用: 截面题（切面方向独立方法）；表面染色涂色公式另卡"
+  ],
+  "required_quantities": [
+    "展开图面布局",
+    "折叠后对面/邻面关系",
+    "视图逐列高度矩阵"
+  ],
+  "reasoning_operations": [
+    "opposite_face_rule",
+    "view_projection"
+  ],
+  "solution_procedure": [
+    "展开图先标三组相对面",
+    "邻面公共边图案方向核对",
+    "三视图反推：俯视图打底格，主视定列高、左视定行高，逐格取 min"
+  ],
+  "verification_strategy": [
+    "反推后正投影回三视图应与给定一致",
+    "对面组数=3（六面体）"
+  ],
+  "common_pitfalls": [
+    "旋转后把对面当邻面",
+    "公共边两侧图案朝向错判",
+    "三视图逐格取 max 还是 min 口径混"
+  ],
+  "source_references": [
+    {
+      "title": "苏学教育·图形推理四面体折纸盒（下载页目录）",
+      "url": "https://www.suxuejiaoyu.com/ctt/62/92.htm",
+      "license": "机构免费公开页，仅取方法名目"
+    },
+    {
+      "title": "中公网校·图形推理解题规律（相异找数量：点线面角）",
+      "url": "http://www.eoffcn.com/kszx/ksjq/66651.html",
+      "license": "机构免费公开页，要点级引用"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "标准十字展开图（1-4-1 型），顶面与底面是哪组？（自撰练习）",
+    "answer": "中间四连方隔一位置的两组 + 两侧翼一组，共三组对面",
+    "note": "折叠模型程序可穷举"
+  },
+  "executable": {
+    "missing_operators": [
+      "图输入解析（截图必需）"
+    ]
+  }
+}

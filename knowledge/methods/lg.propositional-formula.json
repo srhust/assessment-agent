@@ -1,0 +1,60 @@
+{
+  "method_id": "lg.propositional-formula",
+  "skill": "logical_reasoning",
+  "problem_family": "复命题·形式推理",
+  "concepts": [
+    "充分必要方向",
+    "逆否等价",
+    "联结词运算"
+  ],
+  "applicability_conditions": [
+    "题干由 if/only-if/除非/或者 组成推理链，问必然结论",
+    "'只有P才Q'形式化为 Q→P；'除非P否则不Q'=Q→P；与'P→Q'方向相反",
+    "不适用: 内容性加强/削弱（strengthen-weaken 卡）；开放语义猜测"
+  ],
+  "required_quantities": [
+    "原子命题集",
+    "联结词式",
+    "推理链方向"
+  ],
+  "reasoning_operations": [
+    "imp/iff 链",
+    "contrapositive",
+    "model_enumeration"
+  ],
+  "solution_procedure": [
+    "全部条件翻译为原子公式（保持方向！）",
+    "逆否化归一方向建链",
+    "穷举真值/模型：结论在所有使前提真的赋值下为真才'必然'"
+  ],
+  "verification_strategy": [
+    "规则层（全局方向对）+ 实例层（赋值闭合）双层枚举防 rb-13 形假通过",
+    "对每个干扰结论给出前提真而它假的赋值"
+  ],
+  "common_pitfalls": [
+    "'只有才'方向写反",
+    "肯后/否前非法推理",
+    "把可能当必然"
+  ],
+  "source_references": [
+    {
+      "title": "公考备考手册（判断推理章节，GitHub Pages 公开页）",
+      "url": "https://juoyo.github.io/gkbook/chapter1-xc/%E5%88%A4%E6%96%AD%E6%8E%A8%E7%90%86.html",
+      "license": "个人公开讲义，要点级引用"
+    },
+    {
+      "title": "2026 年度公务员公共科目笔试考试大纲",
+      "url": "https://www.forestry.gov.cn/c/www/gsgg/645383.jhtml",
+      "license": "官方公文（政府公开信息）"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "只有通过体测才能参评奖学金；李没通过体测。必然推出？（自撰练习）",
+    "answer": "李不能参评奖学金",
+    "note": "参评→体测过；¬体测→¬参评（逆否）✓；'李参评'与前提矛盾"
+  },
+  "executable": {
+    "tool": "prop_logic 模型枚举（已确定性实现）"
+  }
+}

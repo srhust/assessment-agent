@@ -6,6 +6,12 @@
   "leak": {
     "flags": [
       {
+        "item": "v2-01",
+        "near": "card:nc.combinatorics-bundling",
+        "similarity": 0.568,
+        "action": "soft_flag"
+      },
+      {
         "item": "v2-08",
         "near": "xn-nc-03",
         "similarity": 0.583,
@@ -16,6 +22,12 @@
         "near": "xd-nc-05",
         "similarity": 0.738,
         "action": "dropped"
+      },
+      {
+        "item": "v2-11",
+        "near": "card:nc.tiered-pricing",
+        "similarity": 0.6,
+        "action": "soft_flag"
       },
       {
         "item": "v2-14",
@@ -62,6 +74,18 @@
         "action": "soft_flag"
       },
       {
+        "item": "v2-17",
+        "near": "card:nc.tiered-pricing",
+        "similarity": 0.8,
+        "action": "dropped"
+      },
+      {
+        "item": "v2-17",
+        "near": "card:ns.interleaved-group",
+        "similarity": 0.6,
+        "action": "soft_flag"
+      },
+      {
         "item": "v2-18",
         "near": "xd-ns-17",
         "similarity": 0.625,
@@ -76,6 +100,12 @@
       {
         "item": "v2-18",
         "near": "xn-ns-07",
+        "similarity": 0.625,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-18",
+        "near": "card:ns.interleaved-group",
         "similarity": 0.625,
         "action": "soft_flag"
       },
@@ -100,6 +130,18 @@
       {
         "item": "v2-19",
         "near": "xn-ns-07",
+        "similarity": 0.6,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-19",
+        "near": "card:nc.tiered-pricing",
+        "similarity": 0.6,
+        "action": "soft_flag"
+      },
+      {
+        "item": "v2-19",
+        "near": "card:ns.interleaved-group",
         "similarity": 0.6,
         "action": "soft_flag"
       },
@@ -202,7 +244,7 @@
         ]
       }
     ],
-    "dropped": 6
+    "dropped": 7
   },
   "validity_rejected": 0,
   "note": "独立命题：全部新数值/新结构；每题含唯一性证明（proofs.json）；四层验证+暴力穷举+双维泄漏检查；冻结时间待预注册时填写",
@@ -215,9 +257,5 @@
     "verbal_understanding": 8,
     "language_reasoning": 6,
     "personality": 4
-  },
-  "verification_split": {
-    "mechanical": 47,
-    "manual_only": 13
   }
 }

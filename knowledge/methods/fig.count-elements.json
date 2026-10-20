@@ -1,0 +1,62 @@
+{
+  "method_id": "fig.count-elements",
+  "skill": "figure_reasoning",
+  "problem_family": "数量类·点线面角素",
+  "concepts": [
+    "元素计数",
+    "乱中找数",
+    "数列规律承接"
+  ],
+  "applicability_conditions": [
+    "图形组成凌乱、无位置规律→数元素：交点数/笔画数/封闭面数/直角数/部分数",
+    "一笔画判定：奇点数为 0 或 2",
+    "不适用: 组成相似（先位置/样式规律）；对称/封闭等非数量特征优先用属性卡"
+  ],
+  "required_quantities": [
+    "各图同类元素计数列",
+    "奇点数（笔画）"
+  ],
+  "reasoning_operations": [
+    "count_nodes",
+    "count_regions",
+    "parity_of_odd_vertices"
+  ],
+  "solution_procedure": [
+    "按候选数量列逐图计数→成数列（等差/周期/和）",
+    "笔画数=Σmax(奇点/2,…)规则校验",
+    "下一图延续数列"
+  ],
+  "verification_strategy": [
+    "程序穷举重数一遍（图结构以文字/矩阵给出时逐元素枚举）",
+    "两种计数口径（交点 vs 顶点）不得中途切换"
+  ],
+  "common_pitfalls": [
+    "外框与内部线条交点漏数",
+    "曲线切点不算交点口径混用",
+    "部分数与封闭面数混淆"
+  ],
+  "source_references": [
+    {
+      "title": "中公网校·图形推理解题规律（相异找数量：点线面角）",
+      "url": "http://www.eoffcn.com/kszx/ksjq/66651.html",
+      "license": "机构免费公开页，要点级引用"
+    },
+    {
+      "title": "华图·行测图形推理模拟题（分类分组）",
+      "url": "https://www.huatu.com/2021/0923/2292166.html",
+      "license": "机构免费公开页，要点级引用"
+    }
+  ],
+  "version": "2.0",
+  "dev_exercise": {
+    "stem": "三棱柱（两个正三角形底面+三个矢形侧面）有几个顶点、多少条棱、多少个面？（自撰练习）",
+    "answer": "6 顶点 9 棱 5 面",
+    "note": "欧拉公式 6−9+5=2 交叉验证"
+  },
+  "executable": {
+    "missing_operators": [
+      "图输入解析（截图必需，纯文本不释）"
+    ],
+    "tool": "count 算子对文字化图描述可用（如邻接矩阵）"
+  }
+}
