@@ -137,9 +137,10 @@ class ProblemValidityVerifier:
                 or n == 1 / a)  # 倒数：效率↔时间
 
     # ---------------- 层3 充分性 ----------------
-    def check_sufficiency(self, cond: DeclaredConditions) -> Tuple[bool, str]:
+    def check_sufficiency(self, cond: DeclaredConditions,
+                          expr: str = "") -> Tuple[bool, str]:
         if cond.kind == "data_analysis":
-            return self._sufficiency_da(cond)
+            return self._sufficiency_da(cond, expr)
         if cond.kind in ("propositional", "truth_teller"):
             return self._sufficiency_logic(cond)
         if cond.kind == "fact_match":
@@ -261,7 +262,8 @@ class ProblemValidityVerifier:
         return True, f"≤3 元模型 {len(models)} 个，恰一选项必然成立：{musts[0]}"
 
     @staticmethod
-    def _sufficiency_da(cond: DeclaredConditions) -> Tuple[bool, str]:
+    def _sufficiency_da(cond: DeclaredConditions,
+                        expr: str = "") -> Tuple[bool, str]:
         """年份可达性不动点：facts{年:值}, rates{年: 该年对上一年的率}。
         已知 y 值 + 率(y) → y−1 可导；已知 y 值 + 率(y+1) → y+1 可导。"""
         known = {y for y, v in cond.facts.items() if v is not None}
@@ -287,6 +289,18 @@ class ProblemValidityVerifier:
         direct = cond.facts.get(cond.ask_year) if not cond.ask_delta else None
         if direct is not None and cond.gold_value is not None and direct != cond.gold_value:
             return False, f"目标年直接给值 {float(direct):g} 与金标 {float(cond.gold_value):g} 矛盾"
+        # 篡改步数防线：(1±r) 连乘次数不得超过目标年与锚年跨度
+        if expr:
+            steps = len(re.findall(r"\(1[+-]", expr))
+            if steps > 1 and cond.ask_year and cond.ask_year.isdigit():
+                span_best = None
+                for y in known:
+                    if y.isdigit():
+                        sp = abs(int(cond.ask_year) - int(y))
+                        span_best = sp if span_best is None else min(span_best, sp)
+                if span_best is not None and steps > max(span_best, 1):
+                    return False, (f"表达式 (1±r) 连乘 {steps} 次，超过目标年 {cond.ask_year} "
+                                   f"与已知锚年跨度 {span_best}（疑似率重复使用的篡改步）")
         return True, "目标年（及上年）均在可达闭包内"
 
     def _sufficiency_logic(self, cond: DeclaredConditions) -> Tuple[bool, str]:
@@ -432,7 +446,7 @@ class ProblemValidityVerifier:
             layers["dependency"] = (True, "该题型数值依赖由充分性层通道判定")
         else:
             layers["dependency"] = self.check_dependency(gold_expr, cond)
-        layers["sufficiency"] = self.check_sufficiency(cond)
+        layers["sufficiency"] = self.check_sufficiency(cond, gold_expr)
         if cond.kind == "propositional" or semantic or gold is None:
             layers["option_unique"] = (True, "选项唯一性由模型/要件层判定")
         else:

@@ -1151,8 +1151,12 @@ def main():
     (out_dir / "rejected_items.json").write_text(
         json.dumps(REJECTED, ensure_ascii=False, indent=2), encoding="utf-8")
     flags_dropped = [f for f in flags if f.get("action", "").startswith("dropped")]
+    prior_frozen = None
+    mf = out_dir / "frozen_meta.json"
+    if mf.exists():
+        prior_frozen = (json.loads(mf.read_text(encoding="utf-8")) or {}).get("frozen_at")
     meta = {"count": len(kept), "sha256_16": sha, "seed": 20261021,
-             "frozen_at": None,
+             "frozen_at": prior_frozen,
              "leak": {"flags": flags, "dropped": len(flags_dropped)},
              "validity_rejected": len(REJECTED),
              "note": "独立命题：全部新数值/新结构；每题含唯一性证明（proofs.json）；"
