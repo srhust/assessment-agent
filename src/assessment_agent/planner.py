@@ -101,7 +101,9 @@ class PlanExecution:
 # ------------------------------------------------------------------ 执行器（Fraction 精确）
 
 _NUM = r"\d+(?:\.\d+)?(?:/\d+)?"
-_TOKEN_RE = re.compile(rf"[A-Za-z_][A-Za-z0-9_]*|{_NUM}|[+\-*/() ]")
+# 标识符允许中文（模型常以"现价/提价额"命名步骤变量；词表绑定按完整名匹配）
+_ID = r"[A-Za-z_\u4e00-\u9fff][A-Za-z0-9_\u4e00-\u9fff]*"
+_TOKEN_RE = re.compile(rf"{_ID}|{_NUM}|[+\-*/() ]")
 
 
 def _tokenize_expr(expr: str) -> List[str]:

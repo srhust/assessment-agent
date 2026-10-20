@@ -23,13 +23,13 @@ OPERATION_PATTERNS: List[Tuple[str, str]] = [
     ("avg_annual_growth", r"年均增长率|平均每年增长|复合增长率|年平均增速"),
     ("pct_point_diff", r"百分点"),
     # 基期/现期题也可能含"同比"字样：先按"上年…是多少/预计达到"识别，避免误当纯增长率题
-    ("base_value", r"(?:上年|去年|前一年|基期)[^0-9%]{0,10}(?:是多少|多少|为|约多少)"),
+    ("base_value", r"(?:上年|去年|前一年|基期)[^0-9%增降]{0,10}(?:是多少|多少|为|约多少)"),
     ("current_value", r"(?:明年|下一年(?:度)?)[^。？]{0,14}(?:将达到|约为|达到|是多少|多少)|如果[^。？]{0,12}(?:保持|增速)[^。？]{0,16}(?:将达到|约为|达到|多少)"),
     ("growth_yoy", r"同比"),
     ("growth_mom", r"环比"),
     ("share", r"占.{0,14}(?:比重|比例|份额)|比重|占比|占[^。]{0,12}的[：:？?]"),
     ("multiple", r"倍"),
-    ("growth_amount", r"增长(?:了)?(?:约)?(?:多少|几)"),
+    ("growth_amount", r"(?:增长|增加)(?:了)?(?:约)?(?:多少|几)"),
     ("mean", r"平均"),
     ("difference", r"(?:最多|最高)[^。？]{0,10}(?:最少|最低)|(?:比)[^。？]{0,8}(?:多|少)(?:多少|几)|相差"),
     ("rank_extreme", r"最多|最少|最高|最低|最大|最小|排名|哪个|哪一"),
@@ -395,8 +395,12 @@ def _build(question: str, tables: Sequence[Dict[str, Any]], chart: Optional[Dict
         col_times = {c.get("time") for c in (tables[0].get("columns") or []) if c.get("time")}
         if qt and col_times and all(t not in col_times for t in qt):
             earliest = min((t for t in col_times if re.fullmatch(r"20\d\d", t)), default=None)
+            latest = max((t for t in col_times if re.fullmatch(r"20\d\d", t)), default=None)
             if earliest and all(int(earliest) - int(t) == 1 for t in qt):
                 op = ("base_value", qt[0] + " 年")
+            elif latest and all(int(t) - int(latest) == 1 for t in qt):
+                # 镜像：材料给最早/最新期值+增速，问其后一期 → 现期正向=基期×(1+r)
+                op = ("current_value", qt[0] + " 年")
     if not op:
         raise PlanError("operation_unsupported", {"question": question})
     operation, focus = op
@@ -631,10 +635,13 @@ def _build(question: str, tables: Sequence[Dict[str, Any]], chart: Optional[Dict
         if cur is None and ctx.times and row is not None:
             # R7-C2：基期题所问年份不在表列 → 现期证据取紧邻后一期列（如问2022、
             # 表有2023）。仅当"表列年 − 所问年 == 1"时成立，保持来源绑定诚实。
+            # 镜像（问后一期）：所问 2024、表有 2023 → 基期值取紧邻前一期列。
             want = ctx.times[0]
             colmap = ctx.cols_by_time()
             if want.isdigit():
-                adj = next((t for t in colmap if t.isdigit() and int(t) - int(want) == 1), None)
+                delta = 1 if operation == "base_value" else -1
+                adj = next((t for t in colmap if t.isdigit()
+                            and int(t) - int(want) == delta), None)
                 if adj is not None:
                     try:
                         cur = ctx.single("O1", row, colmap[adj])
@@ -1125,6 +1132,12 @@ def _recompute_base(plan: DataCalculationPlan) -> Optional[Fraction]:
                 return chosen if chosen == min(vals) and [v for v in vals if v == chosen].__len__() == 1 else None
             return chosen if chosen == max(vals) and [v for v in vals if v == chosen].__len__() == 1 else None
         if op in {"growth_amount"} and len(vals) == 2:
+            if "O1 * O2" in plan.expression:
+                # 现期+率形态的独立路径：cur − cur/(1+r)（先回基期再作差，
+                # 与 solve 侧 cur×r/(1+r) 代数等价、结构不同）
+                if vals[1] == -1:
+                    return None
+                return vals[0] - vals[0] / (1 + vals[1])
             return vals[1] - vals[0]
         if op in {"growth_yoy", "growth_mom"} and len(vals) == 2:
             if vals[0] == 0:

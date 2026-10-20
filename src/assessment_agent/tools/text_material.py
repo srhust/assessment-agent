@@ -98,8 +98,13 @@ def build_fact_table(stem: str) -> Optional[Tuple[List[List[str]], str]]:
     by_ind: Dict[str, Dict[str, Fact]] = {}
     for f in facts:
         by_ind.setdefault(f.indicator, {})[f.year or "现期"] = f
+    # 行名剥离材料主语前缀（"某市新能源汽车产量"→"新能源汽车产量"）：
+    # 问句通常只引用指标本身，前缀会阻断 pick_indicator_row 的包含匹配。
+    def _row_name(name: str) -> str:
+        stripped = re.sub(r"^某(?:市|省|区|县|集团|企业|公司|单位)?(?=[\u4e00-\u9fff])", "", name)
+        return stripped if len(stripped) >= 2 else name
     for indicator, ymap in by_ind.items():
-        row = [indicator]
+        row = [_row_name(indicator)]
         for y in years:
             row.append(ymap[y].value if y in ymap else "")
         if has_rate:
