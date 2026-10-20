@@ -81,7 +81,8 @@ class LLMSettings(BaseModel):
     text_model: str = "gpt-4o-mini"
     vision_model: Optional[str] = None
     temperature: float = 0.0
-    max_tokens: int = 2048
+    max_tokens: int = 4096  # R7：glm-5.3-flash 等推理模型思考可占 ~2000 token，
+                           # 2048 会被 reasoning 吃光致 JSON 空/截断（finish_reason=length）
     timeout_s: float = 60.0
     max_retries: int = 2
     json_mode: bool = True
@@ -168,7 +169,7 @@ class Settings(BaseModel):
             or "gpt-4o-mini",
             vision_model=_as_optional(merged.get("LLM_VISION_MODEL")),
             temperature=_as_float(merged.get("LLM_TEMPERATURE"), 0.0),
-            max_tokens=_as_int(merged.get("LLM_MAX_TOKENS"), 2048),
+            max_tokens=_as_int(merged.get("LLM_MAX_TOKENS"), 4096),
             timeout_s=_as_float(merged.get("LLM_TIMEOUT_S"), 60.0),
             max_retries=_as_int(merged.get("LLM_MAX_RETRIES"), 2),
             json_mode=_as_bool(merged.get("LLM_JSON_MODE"), True),

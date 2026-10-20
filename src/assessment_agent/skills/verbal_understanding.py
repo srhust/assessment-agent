@@ -112,17 +112,17 @@ class VerbalUnderstandingSkill(BaseSkill):
         try:
             payload = ctx.llm.complete_json(  # type: ignore[union-attr]
                 system="你是言语理解分析器。只输出 JSON：{task_type, question_target, premises, conclusion, "
-                       "option_analyses:[{label, relation, evidence:[{start,end,text}], notes}], "
+                       "option_analyses:[{label, relation, evidence:[{text, role}], notes}], "
                        "unsupported_claims, proposed_answer, confidence, uncertainty_reasons}。"
-                       "必须逐选项分析；evidence 的 text 必须是题干原文逐字片段并给出其字符区间（start,end）；"
+                       "必须逐选项分析；evidence 的 text 必须是题干原文的**逐字片段**（系统自动定位，不要给索引）；"
                        "不得引用训练记忆或外部事实；不得只给字母答案。",
                 user=json.dumps({"stem": question.stem,
                                   "options": [{"label": l, "text": t} for l, t in options],
                                   "relations_allowed": sorted(_ALLOWED_RELATIONS - {"unanalyzable"}),
                                   "tasks_allowed": sorted(_ALLOWED_TASKS)}, ensure_ascii=False)[:6000],
             )
-        except Exception:
-            return None, {"code": "llm_call_failed"}
+        except Exception as exc:
+            return None, {"code": "llm_call_failed", "detail": {"error": str(exc)[:180]}}
         return self._bind_llm_plan(question, payload, options)
 
     def _bind_llm_plan(self, question: Question, payload: Any,
@@ -165,7 +165,13 @@ class VerbalUnderstandingSkill(BaseSkill):
                     continue
                 text = str(ev.get("text") or "")
                 role = str(ev.get("role") or "support")
-                # 证据必须逐字对应原文区间；截断改义在验证层另有奇偶复核
+                # 证据必须逐字对应原文区间；截断改义在验证层另有奇偶复核。
+                # R7：索引由模型给出极易出错——文本逐字匹配优先，索引仅校验用；
+                # 绑定纪律不变（题干找不到的 text 依旧是无效证据）。
+                if text and not (0 <= start < end <= len(stem) and stem[start:end] == text):
+                    idx = stem.find(text)
+                    if idx >= 0:
+                        start, end = idx, idx + len(text)
                 if 0 <= start < end <= len(stem) and stem[start:end] == text:
                     evs.append(VerbalEvidence(option=label, start=start, end=end, text=text, role=role))
             analyses.append(VerbalOptionAnalysis(label=label, option_text=by_label[label],
@@ -257,23 +263,41 @@ class VerbalUnderstandingSkill(BaseSkill):
                           [e.text for e in answer_ana.evidence if e.role != "against"],
                           epistemic=bool(solution.meta.get("epistemic_enabled", True)))
         status = audit_res.get("status")
+        # R7 §4.5/6：言语任务允许 LLM 规划，条件是其证据**逐字定位到题干原文**；
+        # 证据全部可定位 + 竞争项排除检查仍生效时，自洽/不可判定不再一律扣留
+        # （保守拒答不替代能力建设），但"反驳"仍旧阻断。
+        norm_stem = re.sub(r"\s+", "", stem or "")
+        verbatim_ok = bool(answer_ana.evidence) and all(
+            re.sub(r"\s+", "", e.text) in norm_stem
+            for e in answer_ana.evidence if e.role != "against" and e.text)
         if status == "refuted":
             checks.append(VerificationCheck(name="verbal.cues_preserved", passed=False,
                                              detail=f"独立重算反驳计划结论: {audit_res}", severity="blocking"))
             contradicted = True
-        elif status in {"insufficient"}:
+        elif llm_channel and status in {"insufficient", "self_consistent"}:
+            if verbatim_ok:
+                # R7 §4.5/6：LLM 通道证据全部逐字定位 + 竞争项全部有排除记录（⑤在下方），
+                # 规则审计"不可判定/自洽"不再一律扣留——证据绑定本身就是独立验证层。
+                checks.append(VerificationCheck(
+                    name="verbal.cues_preserved", passed=True,
+                    detail=("审计" + ("不可判定" if status == "insufficient" else "自洽")
+                            + "，答案证据全部逐字定位题干（独立层=证据绑定+竞争排除）")))
+            else:
+                reason = ("独立重算不可判定" if status == "insufficient"
+                          else "审计与求解共享实现（自洽复核，非独立证明）")
+                checks.append(VerificationCheck(name="verbal.cues_preserved", passed=False,
+                                                 detail=reason + "；LLM 通道证据未全部逐字定位题干",
+                                                 severity="blocking"))
+                unverifiable = True
+        elif status == "insufficient":
             checks.append(VerificationCheck(name="verbal.cues_preserved", passed=False,
                                              detail=f"独立重算不可判定: {audit_res.get('reason', '')}",
                                              severity="blocking"))
             unverifiable = True
         elif status == "self_consistent":
-            note = "审计与求解共享实现（自洽复核，非独立证明）"
-            if llm_channel:
-                checks.append(VerificationCheck(name="verbal.cues_preserved", passed=False,
-                                                 detail=note + "；LLM 通道不允许仅凭自洽接受", severity="blocking"))
-                unverifiable = True
-            else:
-                checks.append(VerificationCheck(name="verbal.cues_preserved", passed=True, detail=note))
+            checks.append(VerificationCheck(
+                name="verbal.cues_preserved", passed=True,
+                detail="审计与求解共享实现（自洽复核，非独立证明）"))
         else:
             checks.append(VerificationCheck(name="verbal.cues_preserved", passed=True,
                                              detail=f"独立重算确认: {audit_res.get('reason', '')}"))

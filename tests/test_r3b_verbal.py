@@ -183,8 +183,10 @@ def test_llm_incomplete_analysis_or_bad_label_rejected():
     assert sol2.meta["llm_rejection"]["code"] == "answer_label_invalid"
 
 
-def test_llm_cloze_self_consistent_audit_is_never_accepted():
-    """cloze/argument 的审计与求解共享实现——LLM 计划最多 unverified，不得冒充确定性通过。"""
+def test_llm_cloze_self_consistent_accepted_only_with_verbatim_evidence():
+    """R7 §4.5/6 政策更新：cloze LLM 通道自洽审计 + 答案证据**逐字定位题干**
+    + 竞争项全部有排除记录 → 允许释放（保守扣留不再是能力替代品）；
+    证据不可定位时仍 unverified（原 R3B 安全语义保留为反例分支）。"""
     skill = VerbalUnderstandingSkill()
     stem = "他的书法得到了老师的高度（ ）。"
     opts = [("A", "褒扬"), ("B", "表扬信"), ("C", "褒奖之词"), ("D", "赞颂诗")]
@@ -203,8 +205,15 @@ def test_llm_cloze_self_consistent_audit_is_never_accepted():
     sol = skill.solve(q, _ctx(llm=ScriptedLLM(payload)))
     assert sol.status == "solved" and sol.meta["plan_source"] == "llm_audited"
     ver = skill.verify(q, sol, _ctx())
-    assert ver.action == "unverified" and ver.final_answer is None
-    assert any(c.name == "verbal.cues_preserved" and not c.passed for c in ver.checks)
+    assert ver.action == "accept" and ver.final_answer == "A"
+    # 反例：证据文字与定位不符 → solve 层即拒（第一道闸门）；
+    # 若模型只给文字不给索引，verify 层逐字定位是第二道闸门（见上文分支）。
+    import copy
+    bad = copy.deepcopy(payload)
+    bad["option_analyses"][0]["evidence"][0]["text"] = "他的写作水"
+    sol2 = skill.solve(q, _ctx(llm=ScriptedLLM(bad)))
+    assert sol2.status == "failed"
+    assert sol2.meta["llm_rejection"]["code"] == "answer_without_evidence"
 
 
 # ------------------------------------------------------------------ 论证/推断子集与消融
