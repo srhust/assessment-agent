@@ -74,6 +74,10 @@ class LLMError(RuntimeError):
     """模型调用失败。"""
 
 
+class LLMBudgetExhausted(LLMError):
+    """R8-E：预设调用预算触顶——评测必须停止而非继续消耗。"""
+
+
 class LLMNotConfigured(LLMError):
     """未配置密钥 / 离线模式，禁止发起请求。"""
 
@@ -291,6 +295,10 @@ class OpenAICompatibleClient:
         temperature: Optional[float] = None,
     ) -> ChatResponse:
         phase = self._classify_phase(messages)
+        if self.settings.call_budget and self._call_count >= self.settings.call_budget:
+            raise LLMBudgetExhausted(
+                f"call_budget_exhausted: 预算 {self.settings.call_budget} 次调用已触顶"
+                f"（含重试 requests_sent={self._requests_sent}），评测停止")
         payload: Dict[str, Any] = {
             "model": model or self.settings.text_model,
             "messages": list(messages),

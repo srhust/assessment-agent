@@ -86,6 +86,7 @@ class LLMSettings(BaseModel):
     timeout_s: float = 60.0
     max_retries: int = 2
     json_mode: bool = True
+    call_budget: int = 0        # R8-E：>0 时预算封顶强制停止（0=不限）
     organization: Optional[str] = None
 
     @property
@@ -173,6 +174,7 @@ class Settings(BaseModel):
             timeout_s=_as_float(merged.get("LLM_TIMEOUT_S"), 60.0),
             max_retries=_as_int(merged.get("LLM_MAX_RETRIES"), 2),
             json_mode=_as_bool(merged.get("LLM_JSON_MODE"), True),
+            call_budget=_as_int(merged.get("LLM_CALL_BUDGET"), 0),
             organization=_as_optional(merged.get("LLM_ORGANIZATION")),
         )
         offline = _as_bool(merged.get("ASSESSMENT_OFFLINE"), default=not bool(api_key))
