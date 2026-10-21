@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """R9-C 阶段 C：47 卡逐卡六态能力矩阵（每态由真实代码探测得出，禁止期望值冒充实装）。
 
 六态定义与探测方式（探测手段本身写死为真实 API 调用）：
@@ -19,7 +19,7 @@ import inspect
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -158,14 +158,18 @@ def probe_verified(card: MethodCard) -> Dict[str, Any]:
 
 
 def _load_dev_runs() -> Dict[str, Dict[str, Any]]:
-    """读最新 dev 评估产物：case_id → {status, answer}。取 results/dev 下最新目录。"""
-    base = ROOT / "results" / "dev"
-    runs = []
-    if base.is_dir():
-        runs = sorted((p for p in base.iterdir()
-                       if (p / "predictions.jsonl").is_file()), key=lambda p: p.name)
+    """读 dev 评估产物：case_id → {status, answer, correct, run}。
+
+    覆盖 results/dev 与 results/xingce_dev；跨目录按 mtime 新→旧取每个 case
+    最新一条（xd-* 题族在 xingce_dev 目录）。"""
+    runs: List[Path] = []
+    for sub in ("dev", "xingce_dev"):
+        base = ROOT / "results" / sub
+        if base.is_dir():
+            runs += [p for p in base.iterdir() if (p / "predictions.jsonl").is_file()]
+    runs.sort(key=lambda p: p.stat().st_mtime, reverse=True)   # 新→旧
     out: Dict[str, Dict[str, Any]] = {}
-    for p in reversed(runs):  # 最新优先
+    for p in runs:
         for line in (p / "predictions.jsonl").read_text(encoding="utf-8").splitlines():
             if not line.strip():
                 continue

@@ -6,9 +6,9 @@
   "plannable": 26,
   "executable": 42,
   "verified": 23,
-  "dev_passed": 0
+  "dev_passed": 1
  },
- "dev_results_run": "r6b_dev_numeric",
+ "dev_results_run": "r9c_xingce_dev_oracle",
  "cards": {
   "da.annual-average-timing": {
    "skill": "data_analysis",
@@ -180,8 +180,8 @@
     "note": "solve(xd-da-11)→verify 实调：7 检查项, passed=True"
    },
    "dev_passed": {
-    "ok": false,
-    "note": "dev 题 1 个，最新运行 r6b_dev_numeric 中命中记录 0 个但无 correct+solved"
+    "ok": true,
+    "note": "通过 dev 题 ['xd-da-13']"
    }
   },
   "da.mixed-growth-rate": {
@@ -790,7 +790,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "dev 题 1 个，最新运行 r6b_dev_numeric 中命中记录 0 个但无 correct+solved"
+    "note": "dev 题 1 个，最新运行 r9c_xingce_dev_oracle 中命中记录 1 个但无 correct+solved"
    }
   },
   "nc.concentration-conservation": {
