@@ -9,7 +9,7 @@
       "M5_abstain_rate": 0.5769,
       "M6_correct_abstain_rate": "n/a(无条件不足类)",
       "M7_verify_coverage": 0.7273,
-      "M8_latency_p95_ms": 64.6,
+      "M8_latency_p95_ms": 59.2,
       "detail": {
         "abstain_noninsufficient": [
           "xd-nc-01",
@@ -29,7 +29,7 @@
           "xd-fig-20"
         ]
       },
-      "pred_dir": "results\\xingce_dev\\r9d_xingce_dev_rules_only_135200\\predictions.jsonl"
+      "pred_dir": "results\\xingce_dev\\r9d_xingce_dev_rules_only_140220\\predictions.jsonl"
     },
     "rules+templates": {
       "n": 26,
@@ -40,7 +40,7 @@
       "M5_abstain_rate": 0.1923,
       "M6_correct_abstain_rate": "n/a(无条件不足类)",
       "M7_verify_coverage": 1.0,
-      "M8_latency_p95_ms": 64.0,
+      "M8_latency_p95_ms": 57.4,
       "detail": {
         "abstain_noninsufficient": [
           "xd-ana-16",
@@ -50,7 +50,7 @@
           "xd-fig-20"
         ]
       },
-      "pred_dir": "results\\xingce_dev\\r9d_xingce_dev_rules_templates_135202\\predictions.jsonl"
+      "pred_dir": "results\\xingce_dev\\r9d_xingce_dev_rules_templates_140221\\predictions.jsonl"
     },
     "full_pipeline": "pending-budget(Stage E 真实 LLM 臂，预算需人工确认)"
   },
@@ -64,7 +64,7 @@
       "M5_abstain_rate": 0.7955,
       "M6_correct_abstain_rate": 1.0,
       "M7_verify_coverage": 0.1111,
-      "M8_latency_p95_ms": 0.7,
+      "M8_latency_p95_ms": 0.6,
       "detail": {
         "abstain_noninsufficient": [
           "dv-compound-pct-01",
@@ -94,18 +94,18 @@
           "dv-expr-operators-05"
         ]
       },
-      "pred_dir": "results\\xingce_dev_variants\\r9d_dev_variants_rules_only_135203\\predictions.jsonl"
+      "pred_dir": "results\\xingce_dev_variants\\r9d_dev_variants_rules_only_140222\\predictions.jsonl"
     },
     "rules+templates": {
       "n": 44,
       "M1_solved_rate": 0.7045,
-      "M2_accuracy_all": 0.6364,
-      "M3_precision_answered": 0.9032,
-      "M4_false_answer_rate": 0.0968,
+      "M2_accuracy_all": 0.6818,
+      "M3_precision_answered": 0.9677,
+      "M4_false_answer_rate": 0.0323,
       "M5_abstain_rate": 0.2955,
       "M6_correct_abstain_rate": 1.0,
-      "M7_verify_coverage": 0.9355,
-      "M8_latency_p95_ms": 1.5,
+      "M7_verify_coverage": 1.0,
+      "M8_latency_p95_ms": 1.2,
       "detail": {
         "abstain_noninsufficient": [
           "dv-expr-operators-01",
@@ -113,7 +113,7 @@
           "dv-expr-operators-05"
         ]
       },
-      "pred_dir": "results\\xingce_dev_variants\\r9d_dev_variants_rules_templates_135204\\predictions.jsonl"
+      "pred_dir": "results\\xingce_dev_variants\\r9d_dev_variants_rules_templates_140223\\predictions.jsonl"
     },
     "full_pipeline": "pending-budget(Stage E 真实 LLM 臂，预算需人工确认)"
   }
