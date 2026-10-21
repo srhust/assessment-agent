@@ -2,6 +2,7 @@
 
 支持的规律（序列模式）：
 - ``count``      : 每格图形个数（常数 / 等差，整数）
+- ``regions``    : 每格封闭区域（面）数 holes（常数 / 等差，整数；R9-C 新增）
 - ``sides``      : 单图形多边形的边数（3..12，常数 / 等差）
 - ``fill``       : 图形墨迹面积占比（等差）
 - ``centroid``   : 图形质心的平移（等步长向量）
@@ -31,7 +32,8 @@ from .figure_tools import (
 )
 from .base import Tool, ToolUnavailable
 
-PRIORITY = {"overlay": 10, "sides": 20, "count": 25, "centroid": 30, "symmetry": 35, "fill": 40}
+PRIORITY = {"overlay": 10, "sides": 20, "count": 25, "regions": 27, "centroid": 30,
+            "symmetry": 35, "fill": 40}
 EPS = 1e-6
 
 
@@ -95,6 +97,36 @@ def _unique_label(
 
 
 # -------------------------------------------------------------------- 规则
+def rule_regions(features: Sequence[Dict[str, Any]], options: Sequence[Tuple[str, Dict[str, Any]]]) -> Optional[RuleHit]:
+    """面/封闭区域数（holes，欧拉孔计数）常数或等差外推——数量类「面」算子。"""
+    if any("holes" not in item for item in features):
+        return None
+    values = [float(item["holes"]) for item in features]
+    predicted = _arith_next(values, integer=True)
+    if predicted is None:
+        return None
+    # 与 figure_verify 口径一致：恒定面数不作为规律主张（面数在叠加/平移规律
+    # 下本非不变量，恒定外推易把正解引到弱一致性上——工单红线：不借弱约束自证）
+    if len(values) >= 2 and all(abs(v - values[0]) < 1e-9 for v in values):
+        return None
+    target = int(predicted)
+    matches = [label for label, option in options
+               if "holes" in option and option["holes"] == target]
+    if len(matches) != 1:
+        return RuleHit(
+            rule="regions",
+            label=None,
+            detail=f"封闭区域数外推为 {target}，但有 {len(matches)} 个选项匹配（无法唯一确定）",
+            predicted={"holes": target},
+        )
+    return RuleHit(
+        rule="regions",
+        label=matches[0],
+        detail=f"每格封闭区域数为 {[int(v) for v in values]}，按规律下一格应为 {target} 个",
+        predicted={"holes": target},
+    )
+
+
 def rule_count(features: Sequence[Dict[str, Any]], options: Sequence[Tuple[str, Dict[str, Any]]]) -> Optional[RuleHit]:
     values = [float(item["shape_count"]) for item in features]
     predicted = _arith_next(values, integer=True)
@@ -336,6 +368,7 @@ def rule_overlay(
 # ------------------------------------------------------------------ 求解入口
 _SEQUENCE_RULES: Sequence[Callable[..., Optional[RuleHit]]] = (
     rule_count,
+    rule_regions,
     rule_sides,
     rule_centroid,
     rule_symmetry,

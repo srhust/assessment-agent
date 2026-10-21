@@ -34,7 +34,8 @@ CENTROID_MIN_STEP = 0.012
 
 # Solver 规律名 → 可独立重建的约束族（要求"声称的规律本身"必须可复现，
 # 不接受由别的弱约束凑出来的答案）
-_RULE_CONSTRAINT = {"count": "count", "sides": "sides", "fill": "ink", "centroid": "centroid", "symmetry": "symmetry"}
+_RULE_CONSTRAINT = {"count": "count", "sides": "sides", "fill": "ink", "centroid": "centroid",
+                    "symmetry": "symmetry", "regions": "regions"}
 
 
 def _iou64(left: Optional[np.ndarray], right: Optional[np.ndarray]) -> float:
@@ -121,6 +122,22 @@ def _sequence_constraints(stem_features: List[Dict[str, Any]]) -> List[Dict[str,
                     "detail": f"单图形边数 {sides} → 下一格应为 {target} 边形",
                     "test": lambda f, t=target: int(f["shape_count"]) == 1 and int(f["sides"]) == t,
                 })
+    # 面数（holes）登记为**仅确证**（advisory）约束：solver 若主张 regions 可被
+    # 独立重建确认；但因某序列面数常只是"碰巧"等差而非声称规律，advisory 约束
+    # 被排除出 violated 证伪扫描（见下），避免误杀 count/位移类正解（回归实测教训）。
+    if all("holes" in f for f in stem_features):
+        holes = [int(f["holes"]) for f in stem_features]
+        h_diffs = [b - a for a, b in zip(holes, holes[1:])]
+        if len(set(h_diffs)) == 1 and h_diffs[0] != 0 and holes[-1] + h_diffs[0] >= 0:
+            target = holes[-1] + h_diffs[0]
+            constraints.append({
+                "kind": "regions",
+                "target": target,
+                "discriminative": True,
+                "advisory": True,
+                "detail": f"题干封闭区域数 {holes}（等差 d={h_diffs[0]}）→ 下一格应为 {target}",
+                "test": lambda f, t=target: int(f.get("holes", -1)) == t,
+            })
     flags = [(bool(f["vertical_symmetric"]), bool(f["horizontal_symmetric"])) for f in stem_features]
     if len(set(flags)) == 1:
         want_v, want_h = flags[0]
@@ -271,14 +288,19 @@ def substitution_check(
     layout = analyze_layout(Path(stem_crop))
     stem_cells = [cell for band in layout["bands"] for cell in band["cells"]]
     constraints = _sequence_constraints([cell["features"] for cell in stem_cells])
-    chosen_summary = {k: chosen["features"][k] for k in ("shape_count", "sides", "ink_pixels", "centroid")}
+    chosen_summary = {k: chosen["features"][k] for k in ("shape_count", "sides", "ink_pixels", "centroid")
+                      if k in chosen["features"]}
+    if "holes" in chosen["features"]:
+        chosen_summary["holes"] = chosen["features"]["holes"]
     if not constraints:
         return {
             "verdict": "unverified",
             "reasons": ["无法从题干独立重建任何可检验约束（个数/边数/对称/面积/质心均无稳定规律），不默认通过"],
             "measurements": {"chosen": chosen_summary},
         }
-    violated = [c for c in constraints if not c["test"](chosen["features"])]
+    # 证伪扫描只看非 advisory 约束；advisory（如面数）仅用于确证声称该规律的 solver
+    violated = [c for c in constraints
+                if not c.get("advisory") and not c["test"](chosen["features"])]
     if violated:
         return {
             "verdict": "contradicted",
