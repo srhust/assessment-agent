@@ -141,8 +141,13 @@ def assemble_stem_layout(
     *,
     trust_vlm_grid: bool = True,
     profile: str = "merge_pixel",
+    expects_blank_target: bool = False,
 ) -> Dict[str, Any]:
     """重建题干形式布局。
+
+    ``expects_blank_target``（R9-B）：调用方从**题干文字自身**判定的补全线索
+    （"补全/填/?/？/选择最符合规律的一项"等）。仅当其为真才尝试尾随空格
+    外推；完整序列的题干不会带该线索，因此不会被多造一格。
 
     ``profile``：
       - ``merge_pixel``（臂 C）：多区域合并 + 确定性像素校验（默认）；
@@ -221,9 +226,9 @@ def assemble_stem_layout(
     by0 = max(0, min(_bbox_rect(r["bbox"])[1] for r in valid) - 6)
     by1 = min(height, max(_bbox_rect(r["bbox"])[3] for r in valid) + 7)
     if profile == "merge":
-        # 臂 B：VLM 区域即单元（接口修复本身，不引入像素门槛）
-        units = [(_bbox_rect(r["bbox"])[0], _bbox_rect(r["bbox"])[2])
-                 for r in sorted(valid, key=lambda r: _bbox_rect(r["bbox"])[0])]
+        # 臂 B（R9-B 修订）：VLM 区域按其**声明网格**展开为单元（单区域 1×2
+        # 亦重组为 2 格——多区域重新组合），仍不引入像素门槛。
+        units = _expand_region_cells(valid)
     else:
         units = _content_units(mask, by0, by1)
     centers = [(u[0] + u[1]) / 2.0 for u in units]
@@ -236,10 +241,15 @@ def assemble_stem_layout(
     region_rects = [_bbox_rect(r["bbox"]) for r in
                     sorted(valid, key=lambda r: _bbox_rect(r["bbox"])[0])]
     if profile == "merge":
-        mapping = [{"unit": i, "region_index": i, "score": 1.0,
-                    "bbox": [u[0], by0, u[1] - u[0], by1 - by0],
-                    "basis": "region_rect_as_cell"}
-                   for i, u in enumerate(units)]
+        # 展开后单元数可多于区域数：单元按中心包含映射回所属区域
+        mapping = []
+        for i, (ux0, ux1) in enumerate(units):
+            uc = (ux0 + ux1) / 2.0
+            best = next((j for j, (rx0, _ry0, rx1, _ry1) in enumerate(region_rects)
+                         if rx0 - 2 <= uc <= rx1 + 2), None)
+            mapping.append({"unit": i, "region_index": best, "score": 1.0,
+                            "bbox": [ux0, by0, ux1 - ux0, by1 - by0],
+                            "basis": "declared_grid_split"})
     else:
         mapping = []
         for i, (ux0, ux1) in enumerate(units):
@@ -308,9 +318,24 @@ def assemble_stem_layout(
                                "evidence": {"frames": frames, "uniformity": frame_uniform},
                                "accepted": True})
 
+    # ---- R9-B：目标空白格定向二次观察（题干补全线索 + 三重门控；无线索不外推）----
+    option_fig_count = sum(1 for o in option_regions if o.get("has_figure"))
+    blank_evidence: Optional[Dict[str, Any]] = None
+    if (expects_blank_target and blank_confirmed_cols is None
+            and accepted_content_pre(pitch, profile, units, mapping_ok)):
+        blank_evidence = _infer_trailing_blank(mask, units, by0, by1, option_fig_count, width)
+        if blank_evidence and blank_evidence.get("accepted"):
+            blank_confirmed_cols = len(units) + 1
+            hypotheses.append({
+                "kind": "trailing_blank_inferred", "cols": blank_confirmed_cols,
+                "accepted": True, "evidence": blank_evidence})
+        else:
+            hypotheses.append({
+                "kind": "trailing_blank_inferred", "cols": len(units) + 1,
+                "accepted": False, "evidence": blank_evidence})
+
     cols = blank_confirmed_cols if blank_confirmed_cols else len(units)
-    accepted_content = bool(len(units) >= 2 and mapping_ok and (
-        pitch.get("uniform") or profile == "merge"))
+    accepted_content = accepted_content_pre(pitch, profile, units, mapping_ok)
 
     if not trust_vlm_grid and accepted_content:
         return _resolution(source="pixel_only", mode="sequence", rows=1, cols=cols,
@@ -361,6 +386,76 @@ def assemble_stem_layout(
                        verified=False, reason="layout_unverified", checks=checks,
                        hypotheses=hypotheses, rejected=rejected, units=mapping,
                        declared_cols=declared, canvas=None)
+
+
+def _expand_region_cells(regions: List[Dict[str, Any]]) -> List[tuple]:
+    """VLM 区域 → 单元列表：按区域自身声明的 grid.cols 等宽切分（多区域重组）。
+
+    仅使用区域自带的 bbox 与声明网格，不引用页面尺寸或固定坐标。"""
+    units: List[tuple] = []
+    for r in regions:
+        x0, _y0, x1, _y1 = _bbox_rect(r.get("bbox") or [0, 0, 0, 0])
+        g = r.get("grid") or {}
+        try:
+            cols = max(1, int(g.get("cols") or 1))
+        except (TypeError, ValueError):
+            cols = 1
+        w = (x1 - x0) / cols
+        for i in range(cols):
+            units.append((int(round(x0 + i * w)), int(round(x0 + (i + 1) * w))))
+    return sorted(units)
+
+
+def accepted_content_pre(pitch: Dict[str, Any], profile: str,
+                         units: List[tuple], mapping_ok: bool) -> bool:
+    """内容单元是否构成可接受共识（与原 accepted_content 同判据，提前定义供空格外推复用）。"""
+    return bool(len(units) >= 2 and mapping_ok and (
+        pitch.get("uniform") or profile == "merge"))
+
+
+def _infer_trailing_blank(mask: np.ndarray, units: List[tuple], by0: int, by1: int,
+                          option_fig_count: int, width: int) -> Optional[Dict[str, Any]]:
+    """R9-B 目标空白格定向二次观察：均匀 pitch 外推一格，三重门控确认其为待填空位。
+
+    仅用页面自身几何/像素，不引用任何 case_id、固定尺寸或坐标：
+      1. **结构门控**：带图形的答案选项数 ≥ 有墨迹题干格数
+         （补全型题：可选答案不少于已画图形 ⇒ 存在待填位）；
+      2. **外推落位**：按单元中心中位 pitch 向右外推一格，须落在图宽内；
+      3. **像素复核**：外推格与其右侧同带区域墨迹占比均 < MIN_INK_RATIO
+         （定向二次观察确认"这一格确实是空的"，非未检出的图形）。
+    调用方须已判定为题干含补全线索（``expects_blank_target``），
+    本函数不再据选项数单独臆断空格存在——避免完整序列被多造一格。
+    三条全真才确认目标空格；任一不满足返回 None（不冒充确认）。
+    """
+    if len(units) < 1:
+        return None
+    centers = [(u[0] + u[1]) / 2.0 for u in units]
+    widths = [u[1] - u[0] for u in units]
+    cellw = float(np.median(widths))
+    if len(units) >= 2:
+        gaps = [centers[i + 1] - centers[i] for i in range(len(centers) - 1)]
+        pitch = float(np.median(gaps))
+    else:
+        pitch = cellw
+    if option_fig_count < len(units):
+        return {"rejected": "structural", "options": option_fig_count, "inked_cells": len(units)}
+    # 末单元本身无墨 ⇒ 布局已含空位，无需（也禁止）再外推一格
+    last = mask[by0:by1, units[-1][0]:units[-1][1]]
+    if last.size and float(last.mean()) <= MIN_INK_RATIO:
+        return {"rejected": "last_unit_already_blank"}
+    cx = centers[-1] + pitch
+    x0 = int(round(cx - cellw / 2))
+    x1 = int(round(cx + cellw / 2))
+    if x0 < 0 or x1 > width or x1 - x0 < MIN_CELL_PX:
+        return {"rejected": "out_of_bounds", "x0": x0, "x1": x1, "width": width}
+    sub = mask[by0:by1, x0:min(x1, width)]
+    if sub.size == 0 or float(sub.mean()) > MIN_INK_RATIO:
+        return {"rejected": "cell_has_ink", "ink": round(float(sub.mean()) if sub.size else -1, 5)}
+    tail = mask[by0:by1, min(x1, width):width]
+    if tail.size and float(tail.mean()) > MIN_INK_RATIO:
+        return {"rejected": "ink_after_target", "tail_ink": round(float(tail.mean()), 5)}
+    return {"accepted": True, "x0": x0, "x1": x1, "pitch": round(pitch, 1),
+            "cellw": round(cellw, 1), "ink": round(float(sub.mean()), 5)}
 
 
 def _compose_canvas(mask: np.ndarray, units: Sequence[tuple], by0: int, by1: int,

@@ -44,7 +44,9 @@ def gold_extraction(it) -> ExtractionResult:
         grid = reg.get("stem_matrix_grid")
         grid_d = ({"rows": int(grid[0]), "cols": int(grid[1])}
                   if isinstance(grid, (list, tuple)) and len(grid) == 2 else grid)
-        d = DiagramRegion(region_id="gold-stem", role="stem_figure",
+        d = DiagramRegion(region_id="gold-stem",
+                          role=("stem_matrix" if grid_d and int(grid_d.get("rows", 1)) > 1
+                                else "stem_figure"),
                           bbox=reg["stem_matrix_bbox"], grid=grid_d)
         sc = reg.get("stem_matrix_crop")
         if sc:

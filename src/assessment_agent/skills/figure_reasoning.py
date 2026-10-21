@@ -107,14 +107,28 @@ class FigureReasoningSkill(BaseSkill):
             from ..tools.figure_tools import load_mask
 
             mask = load_mask(str(question.image_path))
+            # R9-B：补全线索取自题干文字自身（部署链路由解析通道判定，非坐标/案例硬编码）
+            stem_text = str(question.stem or "") + str(vision.get("stem") or "")
+            cue_markers = ("补全", "填入", "填上", "？", "?", "符合规律的一项",
+                           "下一", "未知", "问号")
+            expects_blank = any(m in stem_text for m in cue_markers)
             res = assemble_stem_layout(
                 mask, stem_regions, vision.get("option_regions") or [],
-                profile=profile, trust_vlm_grid=(profile != "pixel_only"))
+                profile=profile, trust_vlm_grid=(profile != "pixel_only"),
+                expects_blank_target=expects_blank)
             canvas = res.pop("_canvas", None)
             res["profile"] = profile
             res["algorithm"] = "r4g-diagram-layout-v1"
             res["image"] = str(question.image_path)
-            if res.get("verified") and canvas is not None:
+            # R9-B 替换判据：重建**严格更完整**（列数多于原声明）或原无可用
+            # 裁剪时才替换，避免扰动金标正确几何（A 的 1×3 原样保留），
+            # 同时恢复 VLM 欠分割（C 的 1×1/1×2 → 1×3）。
+            orig = (inputs or {}).get("grid")
+            orig_cols = int(orig[1]) if orig else 0
+            new_cols = int(res.get("cols") or 0)
+            do_replace = (res.get("verified") and canvas is not None
+                          and new_cols > orig_cols)
+            if do_replace:
                 if ctx is not None and ctx.artifacts is not None:
                     target = ctx.artifacts.dir / "regions" / "stem_reconstructed.png"
                 else:
