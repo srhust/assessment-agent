@@ -59,8 +59,9 @@ def _payload(**over) -> dict:
     return base
 
 
-def _ctx(llm) -> SkillContext:
+def _ctx(llm, word_problem: bool = True) -> SkillContext:
     settings = Settings.from_env() if hasattr(Settings, "from_env") else Settings()
+    settings.r2c_word_problem = word_problem  # R9-C：确定性模板上线后，规划链路测试显式关闭模板
     return SkillContext(settings=settings, llm=llm)  # type: ignore[arg-type]
 
 
@@ -68,7 +69,7 @@ def test_planner_path_solves_two_stage_discount():
     skill = NumericCalculationSkill()
     skill.method_kb = FakeKB()  # type: ignore[attr-defined]
     q = Question(stem=STEM, options=OPTIONS)
-    sol = skill.solve(q, _ctx(FakeLLM(_payload())))
+    sol = skill.solve(q, _ctx(FakeLLM(_payload()), word_problem=False))
     assert sol is not None and sol.status == "solved", sol.error if sol else None
     assert sol.answer == "B"
     assert sol.meta.get("solver_source") == "llm_planner"
