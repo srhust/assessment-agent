@@ -186,9 +186,10 @@ def _load_dev_runs() -> Dict[str, Dict[str, Any]]:
 
 def probe_dev_passed(card: MethodCard, dev_items, dev_results) -> Dict[str, Any]:
     fam = card.method_id.split(".", 1)[1]
-    items = [r for r in dev_items if fam in (r.get("tags") or [])]
+    items = [r for r in dev_items if fam in (r.get("tags") or [])
+             or card.method_id in (r.get("method_refs") or [])]
     if not items:
-        return {"ok": False, "note": f"无 tag 为 {fam} 的 dev 题（样本缺口）"}
+        return {"ok": False, "note": f"无 tag/运行证据映射到 {fam} 的 dev 题（样本缺口）"}
     passing = []
     for it in items:
         res = dev_results.get(it["id"])
@@ -197,9 +198,7 @@ def probe_dev_passed(card: MethodCard, dev_items, dev_results) -> Dict[str, Any]
     if not passing:
         seen = [it["id"] for it in items if it["id"] in dev_results]
         if dev_results:
-            latest = sorted({v["run"] for v in dev_results.values()})[-1]
-            note = (f"dev 题 {len(items)} 个，最新运行 {latest} 中命中记录 "
-                    f"{len(seen)} 个但无 correct+solved")
+            note = f"dev 题 {len(items)} 个（tag 或运行证据映射），最新运行命中 {len(seen)} 个但无 correct+solved"
         else:
             note = f"dev 题 {len(items)} 个但无评估运行产物"
         return {"ok": False, "note": note}

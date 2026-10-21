@@ -6,7 +6,7 @@
   "plannable": 26,
   "executable": 42,
   "verified": 35,
-  "dev_passed": 2
+  "dev_passed": 7
  },
  "dev_results_run": "r9c_word_templates",
  "cards": {
@@ -36,7 +36,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 annual-average-timing 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 annual-average-timing 的 dev 题（样本缺口）"
    }
   },
   "da.annualized": {
@@ -65,7 +65,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 annualized 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 annualized 的 dev 题（样本缺口）"
    }
   },
   "da.average-growth": {
@@ -94,7 +94,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 average-growth 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 average-growth 的 dev 题（样本缺口）"
    }
   },
   "da.base-period": {
@@ -123,7 +123,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 base-period 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 base-period 的 dev 题（样本缺口）"
    }
   },
   "da.cross-period-comparison": {
@@ -152,7 +152,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 cross-period-comparison 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 cross-period-comparison 的 dev 题（样本缺口）"
    }
   },
   "da.growth-amount": {
@@ -210,7 +210,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 mixed-growth-rate 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 mixed-growth-rate 的 dev 题（样本缺口）"
    }
   },
   "da.pct-vs-points": {
@@ -239,7 +239,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 pct-vs-points 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 pct-vs-points 的 dev 题（样本缺口）"
    }
   },
   "da.two-period-share": {
@@ -268,7 +268,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 two-period-share 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 two-period-share 的 dev 题（样本缺口）"
    }
   },
   "da.yoy-mom-period": {
@@ -297,7 +297,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 yoy-mom-period 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 yoy-mom-period 的 dev 题（样本缺口）"
    }
   },
   "fig.analogy-classification": {
@@ -326,7 +326,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 analogy-classification 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 analogy-classification 的 dev 题（样本缺口）"
    }
   },
   "fig.count-elements": {
@@ -355,7 +355,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 count-elements 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 count-elements 的 dev 题（样本缺口）"
    }
   },
   "fig.sequence-rule": {
@@ -384,7 +384,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 sequence-rule 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 sequence-rule 的 dev 题（样本缺口）"
    }
   },
   "fig.solid-view": {
@@ -413,7 +413,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 solid-view 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 solid-view 的 dev 题（样本缺口）"
    }
   },
   "lg.analogy-relations": {
@@ -442,7 +442,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 analogy-relations 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 analogy-relations 的 dev 题（样本缺口）"
    }
   },
   "lg.arrangement-constraints": {
@@ -471,7 +471,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 arrangement-constraints 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 arrangement-constraints 的 dev 题（样本缺口）"
    }
   },
   "lg.categorical-syllogism": {
@@ -500,7 +500,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 categorical-syllogism 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 categorical-syllogism 的 dev 题（样本缺口）"
    }
   },
   "lg.contradiction-transform": {
@@ -529,7 +529,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 contradiction-transform 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 contradiction-transform 的 dev 题（样本缺口）"
    }
   },
   "lg.definition-judgment": {
@@ -558,7 +558,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 definition-judgment 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 definition-judgment 的 dev 题（样本缺口）"
    }
   },
   "lg.implication-direction": {
@@ -587,7 +587,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 implication-direction 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 implication-direction 的 dev 题（样本缺口）"
    }
   },
   "lg.propositional-formula": {
@@ -616,7 +616,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 propositional-formula 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 propositional-formula 的 dev 题（样本缺口）"
    }
   },
   "lg.strengthen-weaken": {
@@ -645,7 +645,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 strengthen-weaken 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 strengthen-weaken 的 dev 题（样本缺口）"
    }
   },
   "lg.truth-lie": {
@@ -674,7 +674,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 truth-lie 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 truth-lie 的 dev 题（样本缺口）"
    }
   },
   "nc.alligation-cross": {
@@ -703,7 +703,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 alligation-cross 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 alligation-cross 的 dev 题（样本缺口）"
    }
   },
   "nc.classical-probability": {
@@ -732,7 +732,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 classical-probability 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 classical-probability 的 dev 题（样本缺口）"
    }
   },
   "nc.combinatorics-bundling": {
@@ -761,7 +761,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 combinatorics-bundling 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 combinatorics-bundling 的 dev 题（样本缺口）"
    }
   },
   "nc.compound-growth": {
@@ -818,8 +818,8 @@
     "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
-    "ok": false,
-    "note": "无 tag 为 concentration-conservation 的 dev 题（样本缺口）"
+    "ok": true,
+    "note": "通过 dev 题 ['xd-nc-03', 'xd-nc-04']"
    }
   },
   "nc.inclusion-exclusion": {
@@ -848,7 +848,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 inclusion-exclusion 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 inclusion-exclusion 的 dev 题（样本缺口）"
    }
   },
   "nc.profit-margin-base": {
@@ -877,7 +877,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 profit-margin-base 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 profit-margin-base 的 dev 题（样本缺口）"
    }
   },
   "nc.ratio-share-parts": {
@@ -905,8 +905,8 @@
     "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
-    "ok": false,
-    "note": "无 tag 为 ratio-share-parts 的 dev 题（样本缺口）"
+    "ok": true,
+    "note": "通过 dev 题 ['xd-nc-07']"
    }
   },
   "nc.successive-discount": {
@@ -934,8 +934,8 @@
     "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
-    "ok": false,
-    "note": "无 tag 为 successive-discount 的 dev 题（样本缺口）"
+    "ok": true,
+    "note": "通过 dev 题 ['xd-nc-01', 'xd-nc-02', 'xd-nc-19']"
    }
   },
   "nc.tiered-pricing": {
@@ -964,7 +964,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 tiered-pricing 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 tiered-pricing 的 dev 题（样本缺口）"
    }
   },
   "nc.travel-meeting-pursuit": {
@@ -992,8 +992,8 @@
     "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
-    "ok": false,
-    "note": "无 tag 为 travel-meeting-pursuit 的 dev 题（样本缺口）"
+    "ok": true,
+    "note": "通过 dev 题 ['xd-nc-05', 'xd-nc-06']"
    }
   },
   "nc.work-rate-lcm": {
@@ -1021,8 +1021,8 @@
     "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
-    "ok": false,
-    "note": "无 tag 为 work-rate-lcm 的 dev 题（样本缺口）"
+    "ok": true,
+    "note": "通过 dev 题 ['xd-nc-21']"
    }
   },
   "ns.fraction-sequence": {
@@ -1051,7 +1051,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 fraction-sequence 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 fraction-sequence 的 dev 题（样本缺口）"
    }
   },
   "ns.interleaved-group": {
@@ -1080,7 +1080,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 interleaved-group 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 interleaved-group 的 dev 题（样本缺口）"
    }
   },
   "ns.multi-stage-diff": {
@@ -1109,7 +1109,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 multi-stage-diff 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 multi-stage-diff 的 dev 题（样本缺口）"
    }
   },
   "ns.power-adjust": {
@@ -1138,7 +1138,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 power-adjust 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 power-adjust 的 dev 题（样本缺口）"
    }
   },
   "ns.recursive-relation": {
@@ -1167,7 +1167,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 recursive-relation 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 recursive-relation 的 dev 题（样本缺口）"
    }
   },
   "vu.cloze-context-eight": {
@@ -1196,7 +1196,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 cloze-context-eight 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 cloze-context-eight 的 dev 题（样本缺口）"
    }
   },
   "vu.detail-shift": {
@@ -1225,7 +1225,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 detail-shift 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 detail-shift 的 dev 题（样本缺口）"
    }
   },
   "vu.intent-attitude": {
@@ -1254,7 +1254,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 intent-attitude 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 intent-attitude 的 dev 题（样本缺口）"
    }
   },
   "vu.main-idea-countermeasure": {
@@ -1283,7 +1283,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 main-idea-countermeasure 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 main-idea-countermeasure 的 dev 题（样本缺口）"
    }
   },
   "vu.passage-reading": {
@@ -1312,7 +1312,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 passage-reading 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 passage-reading 的 dev 题（样本缺口）"
    }
   },
   "vu.sentence-insertion": {
@@ -1341,7 +1341,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 sentence-insertion 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 sentence-insertion 的 dev 题（样本缺口）"
    }
   },
   "vu.sentence-ordering": {
@@ -1370,7 +1370,7 @@
    },
    "dev_passed": {
     "ok": false,
-    "note": "无 tag 为 sentence-ordering 的 dev 题（样本缺口）"
+    "note": "无 tag/运行证据映射到 sentence-ordering 的 dev 题（样本缺口）"
    }
   }
  }
