@@ -1,0 +1,38 @@
+{
+ "corpus": "data/benchmark_xingce_dev/r10gen/xingce_dev_r10gen.jsonl",
+ "n_items": 8,
+ "answerable": 7,
+ "classes": [
+  "same-meaning-paraphrase",
+  "typed-slot-travel",
+  "multi-operator",
+  "table-as-text",
+  "rate-fraction",
+  "insufficient",
+  "self-proof-trap",
+  "categorical-desc-slot"
+ ],
+ "distinctness": "区别于方法卡示例数字/句式、R9 44 变体、planvar 6 题；金标全部手工复算并附 provenance",
+ "frozen_before_runs": true,
+ "model": "glm-5.3-flash (gateway default, temperature 0)",
+ "plan_prompt_sha256": "4b7802197bedd29c27ce8a62da4287bb06a9e067a88a50b36b45888eddc089c0",
+ "arms": {
+  "rules_only": "eval-mode oracle_solver, no LLM env (zero API), ASSESSMENT_R2C_DISABLE=word_problem",
+  "rules_planner": "oracle_solver via scripts/r61_dsh_env.py, LLM_CALL_BUDGET=10",
+  "image_only": "not applicable (no figure inputs in this corpus)"
+ },
+ "main_metric": "可答题正确释放率（gold answerability 口径）；正确弃权不计为作答；insufficient 题单列",
+ "budget": {
+  "planner_llm_calls": 10
+ },
+ "item_ids": [
+  "r10g-01",
+  "r10g-02",
+  "r10g-03",
+  "r10g-04",
+  "r10g-05",
+  "r10g-06",
+  "r10g-07",
+  "r10g-08"
+ ]
+}
