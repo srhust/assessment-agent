@@ -1,0 +1,2436 @@
+{
+ "name": "R10D_PERTURB",
+ "items": [
+  {
+   "id": "ft-rot90-01--small",
+   "group": "rotate90",
+   "image": "benchmark_figshots_perturb\\images\\ft-rot90-01--small.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     520,
+     300
+    ],
+    "stem_matrix_bbox": [
+     60,
+     40,
+     144,
+     36
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       134,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       228,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       322,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-rot90-01",
+   "transform": "small",
+   "scale": 0.75,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-rot90-01--large",
+   "group": "rotate90",
+   "image": "benchmark_figshots_perturb\\images\\ft-rot90-01--large.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     520,
+     300
+    ],
+    "stem_matrix_bbox": [
+     60,
+     40,
+     240,
+     60
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       166,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       292,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       418,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-rot90-01",
+   "transform": "large",
+   "scale": 1.25,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-rot90-01--vertical",
+   "group": "rotate90",
+   "image": "benchmark_figshots_perturb\\images\\ft-rot90-01--vertical.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     420,
+     340
+    ],
+    "stem_matrix_bbox": [
+     30,
+     30,
+     192,
+     48
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       190,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       40,
+       230,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       190,
+       230,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-rot90-01",
+   "transform": "vertical",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-rot90-01--distractor",
+   "group": "rotate90",
+   "image": "benchmark_figshots_perturb\\images\\ft-rot90-01--distractor.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     480,
+     260
+    ],
+    "stem_matrix_bbox": [
+     50,
+     60,
+     192,
+     48
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       46,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       150,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       254,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       358,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-rot90-01",
+   "transform": "distractor",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-rot90-01--tight",
+   "group": "rotate90",
+   "image": "benchmark_figshots_perturb\\images\\ft-rot90-01--tight.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     334,
+     240
+    ],
+    "stem_matrix_bbox": [
+     30,
+     40,
+     192,
+     48
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       30,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       100,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       170,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       240,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-rot90-01",
+   "transform": "tight",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-mirror-04--small",
+   "group": "mirror",
+   "image": "benchmark_figshots_perturb\\images\\ft-mirror-04--small.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     520,
+     300
+    ],
+    "stem_matrix_bbox": [
+     60,
+     40,
+     108,
+     36
+    ],
+    "stem_matrix_grid": [
+     1,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       134,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       228,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-mirror-04",
+   "transform": "small",
+   "scale": 0.75,
+   "stem_matrix_grid": [
+    1,
+    3
+   ]
+  },
+  {
+   "id": "ft-mirror-04--large",
+   "group": "mirror",
+   "image": "benchmark_figshots_perturb\\images\\ft-mirror-04--large.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     520,
+     300
+    ],
+    "stem_matrix_bbox": [
+     60,
+     40,
+     180,
+     60
+    ],
+    "stem_matrix_grid": [
+     1,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       166,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       292,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-mirror-04",
+   "transform": "large",
+   "scale": 1.25,
+   "stem_matrix_grid": [
+    1,
+    3
+   ]
+  },
+  {
+   "id": "ft-mirror-04--vertical",
+   "group": "mirror",
+   "image": "benchmark_figshots_perturb\\images\\ft-mirror-04--vertical.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     420,
+     340
+    ],
+    "stem_matrix_bbox": [
+     30,
+     30,
+     144,
+     48
+    ],
+    "stem_matrix_grid": [
+     1,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       190,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       40,
+       230,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-mirror-04",
+   "transform": "vertical",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    1,
+    3
+   ]
+  },
+  {
+   "id": "ft-mirror-04--distractor",
+   "group": "mirror",
+   "image": "benchmark_figshots_perturb\\images\\ft-mirror-04--distractor.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     480,
+     260
+    ],
+    "stem_matrix_bbox": [
+     50,
+     60,
+     144,
+     48
+    ],
+    "stem_matrix_grid": [
+     1,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       46,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       150,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       254,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-mirror-04",
+   "transform": "distractor",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    1,
+    3
+   ]
+  },
+  {
+   "id": "ft-mirror-04--tight",
+   "group": "mirror",
+   "image": "benchmark_figshots_perturb\\images\\ft-mirror-04--tight.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     264,
+     240
+    ],
+    "stem_matrix_bbox": [
+     30,
+     40,
+     144,
+     48
+    ],
+    "stem_matrix_grid": [
+     1,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       30,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       100,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       170,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-mirror-04",
+   "transform": "tight",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    1,
+    3
+   ]
+  },
+  {
+   "id": "ft-trans-07--small",
+   "group": "translate",
+   "image": "benchmark_figshots_perturb\\images\\ft-trans-07--small.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     520,
+     300
+    ],
+    "stem_matrix_bbox": [
+     60,
+     40,
+     144,
+     36
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       134,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       228,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-trans-07",
+   "transform": "small",
+   "scale": 0.75,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-trans-07--large",
+   "group": "translate",
+   "image": "benchmark_figshots_perturb\\images\\ft-trans-07--large.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     520,
+     300
+    ],
+    "stem_matrix_bbox": [
+     60,
+     40,
+     240,
+     60
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       166,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       292,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-trans-07",
+   "transform": "large",
+   "scale": 1.25,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-trans-07--vertical",
+   "group": "translate",
+   "image": "benchmark_figshots_perturb\\images\\ft-trans-07--vertical.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     420,
+     340
+    ],
+    "stem_matrix_bbox": [
+     30,
+     30,
+     192,
+     48
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       190,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       40,
+       230,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-trans-07",
+   "transform": "vertical",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-trans-07--distractor",
+   "group": "translate",
+   "image": "benchmark_figshots_perturb\\images\\ft-trans-07--distractor.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     480,
+     260
+    ],
+    "stem_matrix_bbox": [
+     50,
+     60,
+     192,
+     48
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       46,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       150,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       254,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-trans-07",
+   "transform": "distractor",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-trans-07--tight",
+   "group": "translate",
+   "image": "benchmark_figshots_perturb\\images\\ft-trans-07--tight.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     264,
+     240
+    ],
+    "stem_matrix_bbox": [
+     30,
+     40,
+     192,
+     48
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       30,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       100,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       170,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-trans-07",
+   "transform": "tight",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-scale-09--small",
+   "group": "scale",
+   "image": "benchmark_figshots_perturb\\images\\ft-scale-09--small.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     520,
+     300
+    ],
+    "stem_matrix_bbox": [
+     60,
+     40,
+     144,
+     36
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       134,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       228,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-scale-09",
+   "transform": "small",
+   "scale": 0.75,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-scale-09--large",
+   "group": "scale",
+   "image": "benchmark_figshots_perturb\\images\\ft-scale-09--large.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     520,
+     300
+    ],
+    "stem_matrix_bbox": [
+     60,
+     40,
+     240,
+     60
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       166,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       292,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-scale-09",
+   "transform": "large",
+   "scale": 1.25,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-scale-09--vertical",
+   "group": "scale",
+   "image": "benchmark_figshots_perturb\\images\\ft-scale-09--vertical.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     420,
+     340
+    ],
+    "stem_matrix_bbox": [
+     30,
+     30,
+     192,
+     48
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       190,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       40,
+       230,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-scale-09",
+   "transform": "vertical",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-scale-09--distractor",
+   "group": "scale",
+   "image": "benchmark_figshots_perturb\\images\\ft-scale-09--distractor.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     480,
+     260
+    ],
+    "stem_matrix_bbox": [
+     50,
+     60,
+     192,
+     48
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       46,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       150,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       254,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-scale-09",
+   "transform": "distractor",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-scale-09--tight",
+   "group": "scale",
+   "image": "benchmark_figshots_perturb\\images\\ft-scale-09--tight.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     264,
+     240
+    ],
+    "stem_matrix_bbox": [
+     30,
+     40,
+     192,
+     48
+    ],
+    "stem_matrix_grid": [
+     1,
+     4
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       30,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       100,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       170,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-scale-09",
+   "transform": "tight",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "ft-grid-10--small",
+   "group": "grid3",
+   "image": "benchmark_figshots_perturb\\images\\ft-grid-10--small.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     520,
+     300
+    ],
+    "stem_matrix_bbox": [
+     60,
+     40,
+     108,
+     108
+    ],
+    "stem_matrix_grid": [
+     3,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       134,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       228,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       322,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-grid-10",
+   "transform": "small",
+   "scale": 0.75,
+   "stem_matrix_grid": [
+    3,
+    3
+   ]
+  },
+  {
+   "id": "ft-grid-10--large",
+   "group": "grid3",
+   "image": "benchmark_figshots_perturb\\images\\ft-grid-10--large.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     520,
+     300
+    ],
+    "stem_matrix_bbox": [
+     60,
+     40,
+     180,
+     180
+    ],
+    "stem_matrix_grid": [
+     3,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       166,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       292,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       418,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-grid-10",
+   "transform": "large",
+   "scale": 1.25,
+   "stem_matrix_grid": [
+    3,
+    3
+   ]
+  },
+  {
+   "id": "ft-grid-10--vertical",
+   "group": "grid3",
+   "image": "benchmark_figshots_perturb\\images\\ft-grid-10--vertical.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     420,
+     340
+    ],
+    "stem_matrix_bbox": [
+     30,
+     30,
+     144,
+     144
+    ],
+    "stem_matrix_grid": [
+     3,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       190,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       40,
+       230,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       190,
+       230,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-grid-10",
+   "transform": "vertical",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    3,
+    3
+   ]
+  },
+  {
+   "id": "ft-grid-10--distractor",
+   "group": "grid3",
+   "image": "benchmark_figshots_perturb\\images\\ft-grid-10--distractor.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     480,
+     260
+    ],
+    "stem_matrix_bbox": [
+     50,
+     60,
+     144,
+     144
+    ],
+    "stem_matrix_grid": [
+     3,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       46,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       150,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       254,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       358,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-grid-10",
+   "transform": "distractor",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    3,
+    3
+   ]
+  },
+  {
+   "id": "ft-grid-10--tight",
+   "group": "grid3",
+   "image": "benchmark_figshots_perturb\\images\\ft-grid-10--tight.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     334,
+     240
+    ],
+    "stem_matrix_bbox": [
+     30,
+     40,
+     144,
+     144
+    ],
+    "stem_matrix_grid": [
+     3,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       30,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       100,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       170,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       240,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-grid-10",
+   "transform": "tight",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    3,
+    3
+   ]
+  },
+  {
+   "id": "ft-overlay-13--small",
+   "group": "overlay",
+   "image": "benchmark_figshots_perturb\\images\\ft-overlay-13--small.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     520,
+     300
+    ],
+    "stem_matrix_bbox": [
+     60,
+     40,
+     108,
+     108
+    ],
+    "stem_matrix_grid": [
+     3,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       134,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       228,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       322,
+       180,
+       36,
+       36
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-overlay-13",
+   "transform": "small",
+   "scale": 0.75,
+   "stem_matrix_grid": [
+    3,
+    3
+   ]
+  },
+  {
+   "id": "ft-overlay-13--large",
+   "group": "overlay",
+   "image": "benchmark_figshots_perturb\\images\\ft-overlay-13--large.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     520,
+     300
+    ],
+    "stem_matrix_bbox": [
+     60,
+     40,
+     180,
+     180
+    ],
+    "stem_matrix_grid": [
+     3,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       166,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       292,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       418,
+       180,
+       60,
+       60
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-overlay-13",
+   "transform": "large",
+   "scale": 1.25,
+   "stem_matrix_grid": [
+    3,
+    3
+   ]
+  },
+  {
+   "id": "ft-overlay-13--vertical",
+   "group": "overlay",
+   "image": "benchmark_figshots_perturb\\images\\ft-overlay-13--vertical.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     420,
+     340
+    ],
+    "stem_matrix_bbox": [
+     30,
+     30,
+     144,
+     144
+    ],
+    "stem_matrix_grid": [
+     3,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       40,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       190,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       40,
+       230,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       190,
+       230,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-overlay-13",
+   "transform": "vertical",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    3,
+    3
+   ]
+  },
+  {
+   "id": "ft-overlay-13--distractor",
+   "group": "overlay",
+   "image": "benchmark_figshots_perturb\\images\\ft-overlay-13--distractor.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     480,
+     260
+    ],
+    "stem_matrix_bbox": [
+     50,
+     60,
+     144,
+     144
+    ],
+    "stem_matrix_grid": [
+     3,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       46,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       150,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       254,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       358,
+       170,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-overlay-13",
+   "transform": "distractor",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    3,
+    3
+   ]
+  },
+  {
+   "id": "ft-overlay-13--tight",
+   "group": "overlay",
+   "image": "benchmark_figshots_perturb\\images\\ft-overlay-13--tight.png",
+   "options": [
+    {
+     "label": "A",
+     "text": "图"
+    },
+    {
+     "label": "B",
+     "text": "图"
+    },
+    {
+     "label": "C",
+     "text": "图"
+    },
+    {
+     "label": "D",
+     "text": "图"
+    }
+   ],
+   "regions": {
+    "image_size": [
+     334,
+     240
+    ],
+    "stem_matrix_bbox": [
+     30,
+     40,
+     144,
+     144
+    ],
+    "stem_matrix_grid": [
+     3,
+     3
+    ],
+    "option_regions": [
+     {
+      "label": "A",
+      "bbox": [
+       30,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "B",
+      "bbox": [
+       100,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "C",
+      "bbox": [
+       170,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     },
+     {
+      "label": "D",
+      "bbox": [
+       240,
+       150,
+       48,
+       48
+      ],
+      "has_figure": true
+     }
+    ]
+   },
+   "source_item": "ft-overlay-13",
+   "transform": "tight",
+   "scale": 1.0,
+   "stem_matrix_grid": [
+    3,
+    3
+   ]
+  }
+ ],
+ "note": "金标坐标由组装时程序化记录；页面为全新排布，不复用历史渲染"
+}
