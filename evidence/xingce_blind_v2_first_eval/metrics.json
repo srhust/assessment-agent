@@ -1,0 +1,528 @@
+{
+  "split": "xingce_blind_v2",
+  "sample_count": 60,
+  "duration_s": 2575.113,
+  "settings": {
+    "offline": false,
+    "llm_enabled": true,
+    "base_url": "https://st8tp3ajl0df3n8b8l8qu.apigateway-cn-beijing.volceapi.com/v1",
+    "text_model": "gpt-4o-mini",
+    "vision_model": "glm-5.3-flash",
+    "api_key_present": true,
+    "runs_dir": "E:\\assessment-agent\\runs",
+    "results_dir": "E:\\assessment-agent\\results",
+    "data_dir": "E:\\assessment-agent\\data",
+    "vision_parser": true,
+    "r2c_flags": {
+      "word_problem": true,
+      "figure_verify": true,
+      "router_structure": true,
+      "data_analysis": true,
+      "verbal_understanding": true,
+      "r3c_epistemic": true,
+      "r3c_language": true,
+      "r4a_transform": true,
+      "r4a_indep_verifier": true,
+      "r4a_disable_six_rules": false
+    }
+  },
+  "total": 60,
+  "correct": 15,
+  "accuracy": 0.25,
+  "route_mode": "oracle_solver",
+  "capability": {
+    "objective_total": 60,
+    "overall_answer_accuracy": {
+      "value": 0.25,
+      "hit": 15,
+      "denominator": 60
+    },
+    "supported_objective_total": 56,
+    "supported_answer_accuracy": {
+      "value": 0.2679,
+      "hit": 15,
+      "denominator": 56
+    },
+    "capability_coverage": {
+      "value": 0.9333,
+      "hit": 56,
+      "denominator": 60
+    },
+    "overall_answered_coverage": {
+      "value": 0.25,
+      "hit": 15,
+      "denominator": 60
+    },
+    "honest_abstention": {
+      "value": null,
+      "hit": 0,
+      "denominator": 0
+    },
+    "undecidable_abstention": {
+      "value": null,
+      "hit": 0,
+      "denominator": 0
+    },
+    "subjective_abstention": {
+      "value": null,
+      "hit": 0,
+      "denominator": 0
+    },
+    "objective_unlabeled": {
+      "total": 0,
+      "answered": 0
+    },
+    "unsupported_answerable_refusals": 4,
+    "verification_outcomes": {
+      "no_answer": 45,
+      "correct_accept": 15
+    },
+    "root_causes": {
+      "solver_coverage": 25,
+      "none": 15,
+      "router": 8,
+      "solver_data_reference": 6,
+      "capability_gap": 4,
+      "data_extraction": 1,
+      "word_problem_parse": 1
+    },
+    "false_accept_total": 0,
+    "false_reject_total": 0,
+    "evidence_insufficient_correct_withheld_total": 0,
+    "unverified_answerable_total": 0,
+    "over_answer_total": 0,
+    "capability_source": "skill_registry",
+    "registered_supported_skills": [
+      "data_analysis",
+      "figure_reasoning",
+      "language_reasoning",
+      "logical_reasoning",
+      "number_series",
+      "numeric_calculation",
+      "verbal_understanding"
+    ]
+  },
+  "primary_answer_accuracy": {
+    "value": 0.25,
+    "hit": 15,
+    "denominator": 60
+  },
+  "primary_capability_coverage": {
+    "value": 0.9333,
+    "hit": 56,
+    "denominator": 60
+  },
+  "primary_answered_coverage": {
+    "value": 0.25,
+    "hit": 15,
+    "denominator": 60
+  },
+  "primary_honest_abstention": {
+    "value": null,
+    "hit": 0,
+    "denominator": 0
+  },
+  "overall_answer_accuracy": {
+    "value": 0.25,
+    "hit": 15,
+    "denominator": 60
+  },
+  "capability_coverage": {
+    "value": 0.9333,
+    "hit": 56,
+    "denominator": 60
+  },
+  "answerable": 60,
+  "answer_accuracy": 0.25,
+  "covered_count": 15,
+  "coverage_ratio": 0.25,
+  "answerable_coverage": 0.25,
+  "selective_accuracy": 1.0,
+  "abstention_total": 0,
+  "abstention_correct": 0,
+  "abstention_accuracy": 0.0,
+  "route_total": 60,
+  "route_correct": 60,
+  "route_accuracy": 1.0,
+  "e2e": {},
+  "unsupported": 12,
+  "failed": 33,
+  "mean_latency_ms": 42918.489,
+  "p50_latency_ms": 5775.111,
+  "p95_latency_ms": 185899.771,
+  "failure_reasons": {
+    "unsupported_skill": 12,
+    "图形推理需要题目截图：请用 --image 传入题图（纯文本无法还原图形）": 7,
+    "结构化规划未成立: plan_unbound": 5,
+    "命题判定不唯一（0 命中）: [{'label': 'A', 'verdict': 'False'}, {'label': 'B', 'verdict': 'False'}, {'label': 'C', 'verdict': 'False'}, {'label': 'D', 'verdict': 'False'}]": 5,
+    "结构化规划未成立: llm_error_retry: 模型调用重试后仍失败: The read operation timed out": 2,
+    "资料分析计划构建失败: operation_unsupported {\"question\": \"问：2021 年该市 GDP 约为多少亿元？\"}": 1,
+    "资料分析计划构建失败: target_not_found {\"why\": \"增长量计算需要现期值与增长率证据，或两个可定位时点\"}": 1,
+    "资料分析计划构建失败: ambiguous_reference {\"cols\": [\"GDP(亿元)\", \"财政收入(亿元)\", \"社会零售(亿元)\"]}": 1,
+    "资料分析计划构建失败: operation_unsupported {\"question\": \"问：2021—2023 年社会零售总额的年均值是多少亿元？\"}": 1,
+    "资料分析计划构建失败: time_pair_incomplete {\"pair\": [\"2022\", \"2023\"]}": 1,
+    "资料分析计划构建失败: target_not_found {\"why\": \"基期/现期计算需要现期(基期)值与增长率证据\"}": 1,
+    "资料分析输入缺少表格/统计图数据区域（不做无证据作答）": 1,
+    "命题判定不唯一（0 命中）: [{'label': 'A', 'verdict': 'None'}, {'label': 'B', 'verdict': 'None'}, {'label': 'C', 'verdict': 'None'}, {'label': 'D', 'verdict': 'None'}]": 1,
+    "未能从题干解析出任何比较约束": 1,
+    "命题判定不唯一（0 命中）: [{'label': 'A', 'verdict': 'False'}, {'label': 'B', 'verdict': 'None'}, {'label': 'C', 'verdict': 'False'}, {'label': 'D', 'verdict': 'False'}]": 1,
+    "言语理解规则核无法可靠判定: no_blank {}": 1,
+    "言语理解规则核无法可靠判定: argument_unresolved {\"outcomes\": {\"A\": \"neutral\", \"B\": \"neutral\", \"C\": \"neutral\", \"D\": \"neutral\"}, \"entailed\": false}": 1,
+    "言语理解规则核无法可靠判定: multi_blank {\"n\": 2}": 1,
+    "未能识别出至少两个比较对象（可用 meta.logic_entities 显式指定）": 1
+  },
+  "failure_classes": {
+    "solver_error": 33,
+    "unsupported_skill": 12
+  },
+  "per_skill": {
+    "data_analysis": {
+      "skill": "data_analysis",
+      "total": 8,
+      "correct": 1,
+      "accuracy": 0.125,
+      "answerable": 8,
+      "answer_accuracy": 0.125,
+      "covered_count": 1,
+      "coverage_ratio": 0.125,
+      "answerable_coverage": 0.125,
+      "selective_accuracy": 1.0,
+      "abstention_total": 0,
+      "abstention_correct": 0,
+      "abstention_accuracy": 0.0,
+      "route_total": 8,
+      "route_correct": 8,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 8,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 0.125,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 1,
+      "unsupported": 0,
+      "failed": 7,
+      "repaired": 0,
+      "rejected": 7,
+      "mean_latency_ms": 5736.894,
+      "p50_latency_ms": 5775.111,
+      "p95_latency_ms": 12992.916,
+      "failure_reasons": {
+        "资料分析计划构建失败: operation_unsupported {\"question\": \"问：2021 年该市 GDP 约为多少亿元？\"}": 1,
+        "资料分析计划构建失败: target_not_found {\"why\": \"增长量计算需要现期值与增长率证据，或两个可定位时点\"}": 1,
+        "资料分析计划构建失败: ambiguous_reference {\"cols\": [\"GDP(亿元)\", \"财政收入(亿元)\", \"社会零售(亿元)\"]}": 1,
+        "资料分析计划构建失败: operation_unsupported {\"question\": \"问：2021—2023 年社会零售总额的年均值是多少亿元？\"}": 1,
+        "资料分析计划构建失败: time_pair_incomplete {\"pair\": [\"2022\", \"2023\"]}": 1,
+        "资料分析计划构建失败: target_not_found {\"why\": \"基期/现期计算需要现期(基期)值与增长率证据\"}": 1,
+        "资料分析输入缺少表格/统计图数据区域（不做无证据作答）": 1
+      }
+    },
+    "figure_reasoning": {
+      "skill": "figure_reasoning",
+      "total": 7,
+      "correct": 0,
+      "accuracy": 0.0,
+      "answerable": 7,
+      "answer_accuracy": 0.0,
+      "covered_count": 0,
+      "coverage_ratio": 0.0,
+      "answerable_coverage": 0.0,
+      "selective_accuracy": 0.0,
+      "abstention_total": 0,
+      "abstention_correct": 0,
+      "abstention_accuracy": 0.0,
+      "route_total": 7,
+      "route_correct": 7,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 7,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 0.0,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 0,
+      "unsupported": 0,
+      "failed": 7,
+      "repaired": 0,
+      "rejected": 7,
+      "mean_latency_ms": 0.202,
+      "p50_latency_ms": 0.182,
+      "p95_latency_ms": 0.284,
+      "failure_reasons": {
+        "图形推理需要题目截图：请用 --image 传入题图（纯文本无法还原图形）": 7
+      }
+    },
+    "language_reasoning": {
+      "skill": "language_reasoning",
+      "total": 6,
+      "correct": 0,
+      "accuracy": 0.0,
+      "answerable": 6,
+      "answer_accuracy": 0.0,
+      "covered_count": 0,
+      "coverage_ratio": 0.0,
+      "answerable_coverage": 0.0,
+      "selective_accuracy": 0.0,
+      "abstention_total": 0,
+      "abstention_correct": 0,
+      "abstention_accuracy": 0.0,
+      "route_total": 6,
+      "route_correct": 6,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 6,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 0.0,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 0,
+      "unsupported": 6,
+      "failed": 0,
+      "repaired": 0,
+      "rejected": 6,
+      "mean_latency_ms": 0.761,
+      "p50_latency_ms": 0.16,
+      "p95_latency_ms": 2.77,
+      "failure_reasons": {
+        "unsupported_skill": 6
+      }
+    },
+    "logical_reasoning": {
+      "skill": "logical_reasoning",
+      "total": 11,
+      "correct": 2,
+      "accuracy": 0.1818,
+      "answerable": 11,
+      "answer_accuracy": 0.1818,
+      "covered_count": 2,
+      "coverage_ratio": 0.1818,
+      "answerable_coverage": 0.1818,
+      "selective_accuracy": 1.0,
+      "abstention_total": 0,
+      "abstention_correct": 0,
+      "abstention_accuracy": 0.0,
+      "route_total": 11,
+      "route_correct": 11,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 11,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 0.1818,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 2,
+      "unsupported": 0,
+      "failed": 9,
+      "repaired": 0,
+      "rejected": 9,
+      "mean_latency_ms": 83257.63,
+      "p50_latency_ms": 50702.034,
+      "p95_latency_ms": 185814.775,
+      "failure_reasons": {
+        "命题判定不唯一（0 命中）: [{'label': 'A', 'verdict': 'False'}, {'label': 'B', 'verdict': 'False'}, {'label': 'C', 'verdict': 'False'}, {'label': 'D', 'verdict': 'False'}]": 5,
+        "命题判定不唯一（0 命中）: [{'label': 'A', 'verdict': 'None'}, {'label': 'B', 'verdict': 'None'}, {'label': 'C', 'verdict': 'None'}, {'label': 'D', 'verdict': 'None'}]": 1,
+        "未能从题干解析出任何比较约束": 1,
+        "命题判定不唯一（0 命中）: [{'label': 'A', 'verdict': 'False'}, {'label': 'B', 'verdict': 'None'}, {'label': 'C', 'verdict': 'False'}, {'label': 'D', 'verdict': 'False'}]": 1,
+        "未能识别出至少两个比较对象（可用 meta.logic_entities 显式指定）": 1
+      }
+    },
+    "number_series": {
+      "skill": "number_series",
+      "total": 7,
+      "correct": 7,
+      "accuracy": 1.0,
+      "answerable": 7,
+      "answer_accuracy": 1.0,
+      "covered_count": 7,
+      "coverage_ratio": 1.0,
+      "answerable_coverage": 1.0,
+      "selective_accuracy": 1.0,
+      "abstention_total": 0,
+      "abstention_correct": 0,
+      "abstention_accuracy": 0.0,
+      "route_total": 7,
+      "route_correct": 7,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 7,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 1.0,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 7,
+      "unsupported": 0,
+      "failed": 0,
+      "repaired": 0,
+      "rejected": 0,
+      "mean_latency_ms": 2.175,
+      "p50_latency_ms": 2.088,
+      "p95_latency_ms": 3.533,
+      "failure_reasons": {}
+    },
+    "numeric_calculation": {
+      "skill": "numeric_calculation",
+      "total": 9,
+      "correct": 2,
+      "accuracy": 0.2222,
+      "answerable": 9,
+      "answer_accuracy": 0.2222,
+      "covered_count": 2,
+      "coverage_ratio": 0.2222,
+      "answerable_coverage": 0.2222,
+      "selective_accuracy": 1.0,
+      "abstention_total": 0,
+      "abstention_correct": 0,
+      "abstention_accuracy": 0.0,
+      "route_total": 9,
+      "route_correct": 9,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 9,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 0.2222,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 2,
+      "unsupported": 0,
+      "failed": 7,
+      "repaired": 0,
+      "rejected": 7,
+      "mean_latency_ms": 104471.51,
+      "p50_latency_ms": 101250.554,
+      "p95_latency_ms": 224768.237,
+      "failure_reasons": {
+        "结构化规划未成立: plan_unbound": 5,
+        "结构化规划未成立: llm_error_retry: 模型调用重试后仍失败: The read operation timed out": 2
+      }
+    },
+    "personality": {
+      "skill": "personality",
+      "total": 4,
+      "correct": 0,
+      "accuracy": 0.0,
+      "answerable": 4,
+      "answer_accuracy": 0.0,
+      "covered_count": 0,
+      "coverage_ratio": 0.0,
+      "answerable_coverage": 0.0,
+      "selective_accuracy": 0.0,
+      "abstention_total": 0,
+      "abstention_correct": 0,
+      "abstention_accuracy": 0.0,
+      "route_total": 4,
+      "route_correct": 4,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 4,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 0.0,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 0,
+      "unsupported": 4,
+      "failed": 0,
+      "repaired": 0,
+      "rejected": 4,
+      "mean_latency_ms": 2.176,
+      "p50_latency_ms": 1.71,
+      "p95_latency_ms": 3.328,
+      "failure_reasons": {
+        "unsupported_skill": 4
+      }
+    },
+    "verbal_understanding": {
+      "skill": "verbal_understanding",
+      "total": 8,
+      "correct": 3,
+      "accuracy": 0.375,
+      "answerable": 8,
+      "answer_accuracy": 0.375,
+      "covered_count": 3,
+      "coverage_ratio": 0.375,
+      "answerable_coverage": 0.375,
+      "selective_accuracy": 1.0,
+      "abstention_total": 0,
+      "abstention_correct": 0,
+      "abstention_accuracy": 0.0,
+      "route_total": 8,
+      "route_correct": 8,
+      "route_accuracy": 1.0,
+      "route_mode": "oracle_solver",
+      "objective_total": 8,
+      "objective_answered_correct": 0,
+      "overall_answer_accuracy": 0.375,
+      "false_accept_total": 0,
+      "false_reject_total": 0,
+      "solved": 3,
+      "unsupported": 2,
+      "failed": 3,
+      "repaired": 0,
+      "rejected": 5,
+      "mean_latency_ms": 84138.346,
+      "p50_latency_ms": 44046.574,
+      "p95_latency_ms": 186013.638,
+      "failure_reasons": {
+        "unsupported_skill": 2,
+        "言语理解规则核无法可靠判定: no_blank {}": 1,
+        "言语理解规则核无法可靠判定: argument_unresolved {\"outcomes\": {\"A\": \"neutral\", \"B\": \"neutral\", \"C\": \"neutral\", \"D\": \"neutral\"}, \"entailed\": false}": 1,
+        "言语理解规则核无法可靠判定: multi_blank {\"n\": 2}": 1
+      }
+    }
+  },
+  "eval_batch": "r8_v2_first_eval",
+  "vision": {
+    "cases": 60,
+    "stem_exact_match": {
+      "value": 0.0,
+      "denominator": 60
+    },
+    "stem_cer": {
+      "value": 0.0,
+      "denominator": 60
+    },
+    "option_label_recall": {
+      "value": null,
+      "denominator": 0
+    },
+    "option_text_accuracy": {
+      "value": null,
+      "denominator": 0
+    },
+    "option_text_cer_mean": {
+      "value": null,
+      "denominator": 0
+    },
+    "option_region_iou_mean": {
+      "value": null,
+      "denominator": 0,
+      "note": "按题取均值；全部金标准选项框参与，漏框按 0 计入每题分母"
+    },
+    "option_region_iou_pooled": {
+      "value": null,
+      "denominator": 0,
+      "note": "逐题金标框数加权的框级均值 Σ(n_i·mean_i)/Σn_i（R4f 修正；旧口径 Σmean_i/Σn_i 已废弃）"
+    },
+    "diagram_region_recall": {
+      "value": null,
+      "denominator": 0
+    },
+    "diagram_region_iou_mean": {
+      "value": null,
+      "denominator": 0,
+      "note": "IoU≥0.5 记命中；漏检按 0 计入分母"
+    },
+    "diagram_region_iou_pooled": {
+      "value": null,
+      "denominator": 0,
+      "note": "同 option pooled 修正口径"
+    },
+    "table_cell_accuracy": {
+      "value": null,
+      "denominator": 0
+    },
+    "region_detection_failure_rate": {
+      "value": 0.0,
+      "denominator": 60
+    }
+  }
+}

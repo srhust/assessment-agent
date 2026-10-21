@@ -75,7 +75,9 @@ out = {
                "oracle_calls": oev["usage"]["calls"],
                "tokens_img": ev["usage"].get("prompt_tokens", 0) + ev["usage"].get("completion_tokens", 0),
                "models": sorted(ev["audit"]["echoed_models"]),
-               "exhausted": ev["usage"]["calls"] < 60},
+               # 触顶=调用数达到预算（R9-A 修正此前写反的方向）
+               "exhausted": ev["usage"]["calls"] >= 60,
+               "within_budget": ev["usage"]["calls"] <= 60},
     "aggregate": {"img_acc": m_img["accuracy"], "oracle_acc": m_ora["accuracy"],
                   "net_vision_loss": sum(1 for x in rows if x["gap_class"] == "vision_net_loss"),
                   "solver_gap": sum(1 for x in rows if x["gap_class"] == "solver_gap"),

@@ -1,0 +1,46 @@
+{
+  "audit": {
+    "requests_sent": 57,
+    "requests_succeeded": 29,
+    "http_status_counts": {
+      "200": 29
+    },
+    "error_types": {
+      "ReadTimeout": 28
+    },
+    "echoed_models": [
+      "glm-5.3-flash"
+    ],
+    "request_ids_sample": [
+      "202610202031538d8a6d9c59c8412e",
+      "20261020203322feedc4fe9ba4444a",
+      "20261020203422e2f357b2de6b4b48",
+      "2026102020390362643538efef4913",
+      "2026102020394533e2eebe91a94ac0"
+    ],
+    "base_url_host": "st8tp3ajl0df3n8b8l8qu.apigateway-cn-beijing.volceapi.com",
+    "vision_model_configured": "glm-5.3-flash",
+    "mock_or_injected_transport": false,
+    "offline_mode": false,
+    "by_phase": {
+      "solver_or_skill": {
+        "http_succeeded": 29,
+        "http_failed": 7,
+        "malformed_envelope": 0,
+        "json_output_valid": 29,
+        "json_output_invalid": 0,
+        "latency_ms_sum": 1273986.9
+      }
+    }
+  },
+  "usage": {
+    "calls": 29,
+    "model": "glm-5.3-flash",
+    "prompt_tokens": 15167,
+    "completion_tokens": 47998,
+    "total_tokens": 63165
+  },
+  "eval_mode": null,
+  "split": "xingce_blind_v2",
+  "sample_count": 60
+}

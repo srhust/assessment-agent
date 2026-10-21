@@ -1,0 +1,482 @@
+[
+ {
+  "id": "v2-01",
+  "skill": "numeric_calculation",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "结构化规划未成立: plan_unbound"
+ },
+ {
+  "id": "v2-02",
+  "skill": "numeric_calculation",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "结构化规划未成立: plan_unbound"
+ },
+ {
+  "id": "v2-03",
+  "skill": "numeric_calculation",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "结构化规划未成立: llm_error_retry: 模型调用重试后仍失败: The read operation timed out"
+ },
+ {
+  "id": "v2-04",
+  "skill": "numeric_calculation",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "结构化规划未成立: plan_unbound"
+ },
+ {
+  "id": "v2-05",
+  "skill": "numeric_calculation",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "mechanical",
+  "failure": ""
+ },
+ {
+  "id": "v2-06",
+  "skill": "numeric_calculation",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "结构化规划未成立: plan_unbound"
+ },
+ {
+  "id": "v2-07",
+  "skill": "numeric_calculation",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "结构化规划未成立: plan_unbound"
+ },
+ {
+  "id": "v2-08",
+  "skill": "numeric_calculation",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "mechanical",
+  "failure": ""
+ },
+ {
+  "id": "v2-09",
+  "skill": "numeric_calculation",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "结构化规划未成立: llm_error_retry: 模型调用重试后仍失败: The read operation timed out"
+ },
+ {
+  "id": "v2-10",
+  "skill": "number_series",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "mechanical",
+  "failure": ""
+ },
+ {
+  "id": "v2-11",
+  "skill": "number_series",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "mechanical",
+  "failure": ""
+ },
+ {
+  "id": "v2-12",
+  "skill": "number_series",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "mechanical",
+  "failure": ""
+ },
+ {
+  "id": "v2-13",
+  "skill": "number_series",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "mechanical",
+  "failure": ""
+ },
+ {
+  "id": "v2-14",
+  "skill": "number_series",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "mechanical",
+  "failure": ""
+ },
+ {
+  "id": "v2-15",
+  "skill": "number_series",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "mechanical",
+  "failure": ""
+ },
+ {
+  "id": "v2-16",
+  "skill": "number_series",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "mechanical",
+  "failure": ""
+ },
+ {
+  "id": "v2-17",
+  "skill": "data_analysis",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "资料分析计划构建失败: operation_unsupported {\"question\": \"问：2021 年该市 GDP 约为多少亿元？\"}"
+ },
+ {
+  "id": "v2-18",
+  "skill": "data_analysis",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "资料分析计划构建失败: target_not_found {\"why\": \"增长量计算需要现期值与增长率证据，或两个可定位时点\"}"
+ },
+ {
+  "id": "v2-19",
+  "skill": "data_analysis",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "资料分析计划构建失败: ambiguous_reference {\"cols\": [\"GDP(亿元)\", \"财政收入(亿元)\", \"社会零售(亿元)\"]}"
+ },
+ {
+  "id": "v2-20",
+  "skill": "data_analysis",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "资料分析计划构建失败: operation_unsupported {\"question\": \"问：2021—2023 年社会零售总额的年均值是多少亿元？\"}"
+ },
+ {
+  "id": "v2-21",
+  "skill": "data_analysis",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "资料分析计划构建失败: time_pair_incomplete {\"pair\": [\"2022\", \"2023\"]}"
+ },
+ {
+  "id": "v2-22",
+  "skill": "data_analysis",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "资料分析计划构建失败: target_not_found {\"why\": \"基期/现期计算需要现期(基期)值与增长率证据\"}"
+ },
+ {
+  "id": "v2-23",
+  "skill": "data_analysis",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "mechanical",
+  "failure": ""
+ },
+ {
+  "id": "v2-24",
+  "skill": "data_analysis",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "资料分析输入缺少表格/统计图数据区域（不做无证据作答）"
+ },
+ {
+  "id": "v2-25",
+  "skill": "logical_reasoning",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "mechanical",
+  "failure": ""
+ },
+ {
+  "id": "v2-26",
+  "skill": "logical_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "命题判定不唯一（0 命中）: [{'label': 'A', 'verdict': 'None'}, {'label': 'B', 'verdict': 'No"
+ },
+ {
+  "id": "v2-27",
+  "skill": "logical_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "未能从题干解析出任何比较约束"
+ },
+ {
+  "id": "v2-28",
+  "skill": "logical_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "命题判定不唯一（0 命中）: [{'label': 'A', 'verdict': 'False'}, {'label': 'B', 'verdict': 'F"
+ },
+ {
+  "id": "v2-29",
+  "skill": "logical_reasoning",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "mechanical",
+  "failure": ""
+ },
+ {
+  "id": "v2-30",
+  "skill": "logical_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "命题判定不唯一（0 命中）: [{'label': 'A', 'verdict': 'False'}, {'label': 'B', 'verdict': 'N"
+ },
+ {
+  "id": "v2-31",
+  "skill": "logical_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "manual_only",
+  "failure": "命题判定不唯一（0 命中）: [{'label': 'A', 'verdict': 'False'}, {'label': 'B', 'verdict': 'F"
+ },
+ {
+  "id": "v2-32",
+  "skill": "figure_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "图形推理需要题目截图：请用 --image 传入题图（纯文本无法还原图形）"
+ },
+ {
+  "id": "v2-33",
+  "skill": "figure_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "图形推理需要题目截图：请用 --image 传入题图（纯文本无法还原图形）"
+ },
+ {
+  "id": "v2-34",
+  "skill": "figure_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "图形推理需要题目截图：请用 --image 传入题图（纯文本无法还原图形）"
+ },
+ {
+  "id": "v2-35",
+  "skill": "figure_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "图形推理需要题目截图：请用 --image 传入题图（纯文本无法还原图形）"
+ },
+ {
+  "id": "v2-36",
+  "skill": "figure_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "图形推理需要题目截图：请用 --image 传入题图（纯文本无法还原图形）"
+ },
+ {
+  "id": "v2-37",
+  "skill": "figure_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "图形推理需要题目截图：请用 --image 传入题图（纯文本无法还原图形）"
+ },
+ {
+  "id": "v2-38",
+  "skill": "figure_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "图形推理需要题目截图：请用 --image 传入题图（纯文本无法还原图形）"
+ },
+ {
+  "id": "v2-39",
+  "skill": "verbal_understanding",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "unsupported_skill"
+ },
+ {
+  "id": "v2-40",
+  "skill": "verbal_understanding",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "unsupported_skill"
+ },
+ {
+  "id": "v2-41",
+  "skill": "verbal_understanding",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "manual_only",
+  "failure": ""
+ },
+ {
+  "id": "v2-42",
+  "skill": "verbal_understanding",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "manual_only",
+  "failure": ""
+ },
+ {
+  "id": "v2-43",
+  "skill": "verbal_understanding",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "manual_only",
+  "failure": "言语理解规则核无法可靠判定: no_blank {}"
+ },
+ {
+  "id": "v2-44",
+  "skill": "verbal_understanding",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "manual_only",
+  "failure": "言语理解规则核无法可靠判定: argument_unresolved {\"outcomes\": {\"A\": \"neutral\", \"B\": \"neutral\","
+ },
+ {
+  "id": "v2-45",
+  "skill": "verbal_understanding",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "manual_only",
+  "failure": "言语理解规则核无法可靠判定: multi_blank {\"n\": 2}"
+ },
+ {
+  "id": "v2-46",
+  "skill": "verbal_understanding",
+  "outcome": "correct_accept",
+  "correct": true,
+  "verification": "manual_only",
+  "failure": ""
+ },
+ {
+  "id": "v2-47",
+  "skill": "language_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "unsupported_skill"
+ },
+ {
+  "id": "v2-48",
+  "skill": "language_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "unsupported_skill"
+ },
+ {
+  "id": "v2-49",
+  "skill": "language_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "unsupported_skill"
+ },
+ {
+  "id": "v2-50",
+  "skill": "language_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "unsupported_skill"
+ },
+ {
+  "id": "v2-51",
+  "skill": "language_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "manual_only",
+  "failure": "unsupported_skill"
+ },
+ {
+  "id": "v2-52",
+  "skill": "language_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "manual_only",
+  "failure": "unsupported_skill"
+ },
+ {
+  "id": "v2-53",
+  "skill": "logical_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "命题判定不唯一（0 命中）: [{'label': 'A', 'verdict': 'False'}, {'label': 'B', 'verdict': 'F"
+ },
+ {
+  "id": "v2-54",
+  "skill": "logical_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "未能识别出至少两个比较对象（可用 meta.logic_entities 显式指定）"
+ },
+ {
+  "id": "v2-55",
+  "skill": "logical_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "命题判定不唯一（0 命中）: [{'label': 'A', 'verdict': 'False'}, {'label': 'B', 'verdict': 'F"
+ },
+ {
+  "id": "v2-56",
+  "skill": "logical_reasoning",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "mechanical",
+  "failure": "命题判定不唯一（0 命中）: [{'label': 'A', 'verdict': 'False'}, {'label': 'B', 'verdict': 'F"
+ },
+ {
+  "id": "v2-57",
+  "skill": "personality",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "manual_only",
+  "failure": "unsupported_skill"
+ },
+ {
+  "id": "v2-58",
+  "skill": "personality",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "manual_only",
+  "failure": "unsupported_skill"
+ },
+ {
+  "id": "v2-59",
+  "skill": "personality",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "manual_only",
+  "failure": "unsupported_skill"
+ },
+ {
+  "id": "v2-60",
+  "skill": "personality",
+  "outcome": "no_answer",
+  "correct": false,
+  "verification": "manual_only",
+  "failure": "unsupported_skill"
+ }
+]

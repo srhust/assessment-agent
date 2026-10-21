@@ -41,6 +41,38 @@ def _F(text: Any) -> Optional[Fraction]:
     return v / 100 if "%" in str(text) else v
 
 
+def check_proof_option_alignment(proof_text: str, options: Sequence[Tuple[str, str]],
+                                 answer: str) -> Tuple[bool, str]:
+    """R9-A 独立检查②：证明文本的字母↔数值绑定必须与冻结选项一致。
+
+    提取 proof 中"字母 + 数值簇"声明（如 "D 答 1584"、"A 1875 为基期"），
+    与冻结选项文本数值簇比对：某字母绑定的 ≥3 位数出现在**另一字母**选项而
+    不在自身选项 → 错位（常见成因：证明写于打乱之前）。金标字母行与 <3 位
+    数字（年份尾段/序号）不作证据；未做字母数值声明 → 不适用即通过。"""
+    opt_nums = {lb: set(re.findall(r"\d+(?:\.\d+)?", txt)) for lb, txt in options}
+    claims = []
+    for seg in re.split(r"[；;。\n]", proof_text):
+        labs = re.findall(r"\b([ABCD])\b", seg)
+        nums = set(re.findall(r"\d+(?:\.\d+)?", seg))
+        if len(labs) == 1 and nums:
+            claims.append((labs[0], nums, seg.strip()[:40]))
+    problems = []
+    for lab, nums, _seg in claims:
+        own = opt_nums.get(lab, set())
+        for n in nums:
+            if n == answer or len(n.split(".")[0]) < 3:
+                continue
+            if n in own:
+                continue
+            for lb2, nums2 in opt_nums.items():
+                if lb2 != lab and n in nums2:
+                    problems.append(f"证明把 {n} 绑到 {lab}，但 {n} 实为选项 {lb2}")
+                    break
+    if problems:
+        return False, "proof 字母错位：" + "；".join(sorted(set(problems))[:4])
+    return True, f"{len(claims)} 条字母数值声明与冻结选项一致"
+
+
 @dataclass
 class DeclaredConditions:
     """命题方显式声明的条件（评测数据不含此结构，由生成器/人工命题提供）。"""
@@ -62,6 +94,7 @@ class DeclaredConditions:
     exclusive_groups: Sequence[Sequence[str]] = ()           # 恰一为真的原子组（作案者唯一）
     elements: Sequence[str] = ()                # definition：定义要件清单
     options_elements: Sequence[Tuple[str, Sequence[str]]] = ()  # definition：选项满足要件
+    material_formulas: Sequence[tuple] = ()     # 材料数量声明（R9-A 检查①，见 _material_consistency）
 
 
 @dataclass
@@ -139,6 +172,11 @@ class ProblemValidityVerifier:
     # ---------------- 层3 充分性 ----------------
     def check_sufficiency(self, cond: DeclaredConditions,
                           expr: str = "") -> Tuple[bool, str]:
+        # R9-A 独立检查①：材料内部数量声明必须互相闭合，矛盾材料不唯一确定任何结果
+        if cond.material_formulas:
+            ok, why = self._material_consistency(cond)
+            if not ok:
+                return False, why
         if cond.kind == "data_analysis":
             return self._sufficiency_da(cond, expr)
         if cond.kind in ("propositional", "truth_teller"):
@@ -167,6 +205,40 @@ class ProblemValidityVerifier:
             return self._sufficiency_monadic(cond)
         # numeric：依赖层已保证操作数全部声明过；确定性算式即充分
         return True, "确定性算式，操作数均已声明"
+
+    @staticmethod
+    def _material_consistency(cond: DeclaredConditions) -> Tuple[bool, str]:
+        """R9-A 检查①：材料数量声明闭合。
+        formula 元组：
+          ("total", name, value)                       总量基准值
+          ("pct_of", part, total, value, pct, tol)     分项现期值 ≈ total×pct%
+          ("growth", part, prev_name, pct, cur, tol)   现期 ≈ 基期×(1+pct%)
+        tol 为绝对容差（金标声明"约为"时放宽）；矛盾即条件互斥→题目无效。"""
+        vals: Dict[str, Fraction] = {}
+        conflicts: list = []
+        for f in cond.material_formulas:
+            kind = str(f[0])
+            if kind == "total":
+                vals[str(f[1])] = _F(str(f[2]))
+            elif kind == "pct_of":
+                part, total, value, pct, tol = f[1], f[2], _F(str(f[3])), _F(str(f[4])), _F(str(f[5]))
+                tv = vals.get(str(total))
+                if tv is not None:
+                    implied = tv * pct / 100
+                    if abs(implied - value) > tol:
+                        conflicts.append(f"{part}={float(value):g} 与 {total}×{float(pct):g}%"
+                                         f"={float(implied):g} 矛盾（差 {float(abs(implied - value)):g}）")
+            elif kind == "growth":
+                part, prev, pct, cur, tol = f[1], f[2], _F(str(f[3])), _F(str(f[4])), _F(str(f[5]))
+                pv = vals.get(str(prev))
+                if pv is not None:
+                    implied = pv * (1 + pct / 100)
+                    if abs(implied - cur) > tol:
+                        conflicts.append(f"{part}={float(cur):g} 与 {prev}×(1+{float(pct):g}%)"
+                                         f"={float(implied):g} 矛盾")
+        if conflicts:
+            return False, "材料内部矛盾：" + "；".join(conflicts) + "（条件互斥，不唯一确定）"
+        return True, f"材料 {len(cond.material_formulas)} 条数量声明闭合"
 
     def _sufficiency_fact_match(self, cond: DeclaredConditions) -> Tuple[bool, str]:
         """细节判断题的机械通道：材料事实字典 facts{key: value}，

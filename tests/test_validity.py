@@ -100,3 +100,43 @@ def test_arithmetic_mismatch():
     cond = DeclaredConditions(kind="numeric", numbers=["2"])
     rep = V.verify_item(gold_expr="2+2", gold=F(5), options=[("A", "5")], cond=cond)
     assert rep.layers["arithmetic"][0] is False and rep.marker == "gold_mismatch"
+
+
+# ---------------- R9-A 独立检查①② ----------------
+
+def test_material_share_conflict_rejected():
+    # v2-39 原型：总额 8000×占比25%=2000 与显式分项 1500 矛盾 → 材料互斥不唯一
+    cond = DeclaredConditions(
+        kind="fact_match", semantic_gold=True,
+        facts={"贸易额": F(8000), "服务额": F(1500)},
+        material_formulas=[("total", "贸易额", 8000),
+                           ("pct_of", "服务额", "贸易额", 1500, 25, 75)])
+    ok, why = V.check_sufficiency(cond)
+    assert ok is False and "矛盾" in why and "2000" in why
+
+
+def test_material_consistent_passes():
+    cond = DeclaredConditions(
+        kind="numeric", numbers=["8000"],
+        facts={"a": F(8000), "b": F(2000)},
+        material_formulas=[("total", "a", 8000), ("pct_of", "b", "a", 2000, 25, 75),
+                           ("growth", "b", "a", 20, 9600, 1)])
+    ok, _ = V.check_sufficiency(cond)
+    assert ok is True
+
+
+def test_proof_option_alignment_catches_letter_drift():
+    from assessment_agent.validity import check_proof_option_alignment
+    opts = [("A", "增长 1584 亿元"), ("B", "增长 1100 亿元"), ("C", "1320"), ("D", "1100")]
+    ok, why = check_proof_option_alignment("A：1100 为基期值", opts, "A")
+    assert ok is False and "1100" in why and "B" in why
+    ok2, _ = check_proof_option_alignment("A：1584 正确", opts, "A")
+    assert ok2 is True
+
+
+def test_proof_alignment_combinatorial_notation_not_flagged():
+    # "C(5,2)=10" 类记号中的字母 C 不得被当作选项引用
+    from assessment_agent.validity import check_proof_option_alignment
+    opts = [("A", "10"), ("B", "20"), ("C", "30"), ("D", "40")]
+    ok, _ = check_proof_option_alignment("C(5,2)=10 种，答案 B 20 错", opts, "A")
+    assert ok is True

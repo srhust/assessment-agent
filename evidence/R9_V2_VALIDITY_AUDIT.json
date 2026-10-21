@@ -1,0 +1,1451 @@
+{
+  "summary": {
+    "valid": 41,
+    "flawed": 4,
+    "uncertain": 13,
+    "invalid": 2
+  },
+  "n": 60,
+  "rows": [
+    {
+      "id": "v2-01",
+      "skill": "numeric_calculation",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-02",
+      "skill": "numeric_calculation",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-03",
+      "skill": "numeric_calculation",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-04",
+      "skill": "numeric_calculation",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-05",
+      "skill": "numeric_calculation",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-06",
+      "skill": "numeric_calculation",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-07",
+      "skill": "numeric_calculation",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-08",
+      "skill": "numeric_calculation",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-09",
+      "skill": "numeric_calculation",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-10",
+      "skill": "number_series",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-11",
+      "skill": "number_series",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-12",
+      "skill": "number_series",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-13",
+      "skill": "number_series",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-14",
+      "skill": "number_series",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-15",
+      "skill": "number_series",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-16",
+      "skill": "number_series",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-17",
+      "skill": "data_analysis",
+      "verdict": "flawed",
+      "evidence": "proof 引用题面不存在且不可再生的数值 2760（旧版数据残留，证明与题面不对齐）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          false,
+          "proof 引用题面不存在且不可再生的数值 2760（旧版数据残留，证明与题面不对齐）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-18",
+      "skill": "data_analysis",
+      "verdict": "flawed",
+      "evidence": "proof 引用题面不存在且不可再生的数值 3144（旧版数据残留，证明与题面不对齐）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          false,
+          "proof 引用题面不存在且不可再生的数值 3144（旧版数据残留，证明与题面不对齐）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-19",
+      "skill": "data_analysis",
+      "verdict": "flawed",
+      "evidence": "proof 引用题面不存在且不可再生的数值 2760,345（旧版数据残留，证明与题面不对齐）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          false,
+          "proof 引用题面不存在且不可再生的数值 2760,345（旧版数据残留，证明与题面不对齐）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-20",
+      "skill": "data_analysis",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-21",
+      "skill": "data_analysis",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-22",
+      "skill": "data_analysis",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-23",
+      "skill": "data_analysis",
+      "verdict": "flawed",
+      "evidence": "proof 引用题面不存在且不可再生的数值 3144（旧版数据残留，证明与题面不对齐）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          false,
+          "proof 引用题面不存在且不可再生的数值 3144（旧版数据残留，证明与题面不对齐）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-24",
+      "skill": "data_analysis",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-25",
+      "skill": "logical_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-26",
+      "skill": "logical_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-27",
+      "skill": "logical_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-28",
+      "skill": "logical_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-29",
+      "skill": "logical_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-30",
+      "skill": "logical_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "1 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-31",
+      "skill": "logical_reasoning",
+      "verdict": "uncertain",
+      "evidence": "语义金标依赖人工审查（proof 已声明 manual_only）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-32",
+      "skill": "figure_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "1 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-33",
+      "skill": "figure_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-34",
+      "skill": "figure_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "1 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-35",
+      "skill": "figure_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-36",
+      "skill": "figure_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "1 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-37",
+      "skill": "figure_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "1 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-38",
+      "skill": "figure_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "1 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-39",
+      "skill": "verbal_understanding",
+      "verdict": "invalid",
+      "evidence": "材料内部矛盾：总额8000×占比25%=2000 ≠ 分项1500（差500，超 5% 容差）",
+      "checks": {
+        "material_fact_consistency": [
+          false,
+          "材料内部矛盾：总额8000×占比25%=2000 ≠ 分项1500（差500，超 5% 容差）"
+        ],
+        "proof_option_alignment": [
+          false,
+          "proof 字母错位：证明把 8000 绑到 A，但 8000 实为选项 B"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-40",
+      "skill": "verbal_understanding",
+      "verdict": "invalid",
+      "evidence": "材料内部矛盾：总额8000×占比25%=2000 ≠ 分项1500（差500，超 5% 容差）",
+      "checks": {
+        "material_fact_consistency": [
+          false,
+          "材料内部矛盾：总额8000×占比25%=2000 ≠ 分项1500（差500，超 5% 容差）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-41",
+      "skill": "verbal_understanding",
+      "verdict": "uncertain",
+      "evidence": "语义金标依赖人工审查（proof 已声明 manual_only）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-42",
+      "skill": "verbal_understanding",
+      "verdict": "uncertain",
+      "evidence": "语义金标依赖人工审查（proof 已声明 manual_only）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-43",
+      "skill": "verbal_understanding",
+      "verdict": "uncertain",
+      "evidence": "语义金标依赖人工审查（proof 已声明 manual_only）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-44",
+      "skill": "verbal_understanding",
+      "verdict": "uncertain",
+      "evidence": "语义金标依赖人工审查（proof 已声明 manual_only）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-45",
+      "skill": "verbal_understanding",
+      "verdict": "uncertain",
+      "evidence": "语义金标依赖人工审查（proof 已声明 manual_only）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-46",
+      "skill": "verbal_understanding",
+      "verdict": "uncertain",
+      "evidence": "语义金标依赖人工审查（proof 已声明 manual_only）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-47",
+      "skill": "language_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "1 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-48",
+      "skill": "language_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-49",
+      "skill": "language_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-50",
+      "skill": "language_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-51",
+      "skill": "language_reasoning",
+      "verdict": "uncertain",
+      "evidence": "语义金标依赖人工审查（proof 已声明 manual_only）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-52",
+      "skill": "language_reasoning",
+      "verdict": "uncertain",
+      "evidence": "语义金标依赖人工审查（proof 已声明 manual_only）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-53",
+      "skill": "logical_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-54",
+      "skill": "logical_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-55",
+      "skill": "logical_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-56",
+      "skill": "logical_reasoning",
+      "verdict": "valid",
+      "evidence": "题面无占比类声明（不适用）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-57",
+      "skill": "personality",
+      "verdict": "uncertain",
+      "evidence": "语义金标依赖人工审查（proof 已声明 manual_only）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "1 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-58",
+      "skill": "personality",
+      "verdict": "uncertain",
+      "evidence": "语义金标依赖人工审查（proof 已声明 manual_only）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-59",
+      "skill": "personality",
+      "verdict": "uncertain",
+      "evidence": "语义金标依赖人工审查（proof 已声明 manual_only）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    },
+    {
+      "id": "v2-60",
+      "skill": "personality",
+      "verdict": "uncertain",
+      "evidence": "语义金标依赖人工审查（proof 已声明 manual_only）",
+      "checks": {
+        "material_fact_consistency": [
+          true,
+          "题面无占比类声明（不适用）"
+        ],
+        "proof_option_alignment": [
+          true,
+          "0 条字母数值声明与冻结选项一致"
+        ],
+        "proof_face_consistency": [
+          true,
+          "proof 数值与题面/材料一致（含可再生推导项）"
+        ],
+        "gold_replay": [
+          true,
+          "命题期闸门重放记录复用（REJECTED=0）"
+        ]
+      }
+    }
+  ]
+}
