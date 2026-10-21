@@ -37,9 +37,67 @@ from .knowledge.methods import MethodCard, MethodKB
 @dataclass
 class Given:
     label: str                 # 变量名，如 "price0"
-    value: str                 # 数值字符串（分数或小数）
+    value: str                 # 数值字符串（分数或小数）；非数值槽位可为空或词
     stem_span: str             # 原题中的文字片段（来源绑定，必须为题干子串）
     unit: str = ""
+    kind: str = ""             # R10-B 类型化槽位：见下方两个集合；空=数值（向后兼容）
+    mode: str = ""             # categorical_relation 方向词：相向/背向/相遇/反向/同向/追及
+
+
+# R10-B（工单）：givens 不再强迫一切信息为数值。
+GIVEN_NUMERIC_KINDS = {"", "quantity", "rate", "time"}
+GIVEN_DESC_KINDS = {"unit", "categorical_relation", "logical_constraint", "text_evidence"}
+REL_SUM_MODES = {"相向", "背向", "相遇", "反向"}     # 相对速度=和
+REL_DIFF_MODES = {"同向", "追及", "同行"}            # 相对速度=差（abs 处理先后顺序）
+
+
+def rewrite_rel_expr(expr: str, mode_of: Dict[str, str]) -> str:
+    """把 REL(a, b, mode) 重写为纯算术：和式 ((a)+(b)) / 差式 abs((a)-(b))。
+
+    mode 取 categorical 槽 label 引用或字面方向词；重写后的表达式无新算子，
+    执行器/展开/fraction_eval 复核全部沿用既有通道（不引入不可复核语法）。
+    """
+    out = expr
+    guard = 0
+    while True:
+        m = re.search(r"REL\s*\(", out)
+        if not m:
+            return out
+        guard += 1
+        if guard > 16:
+            raise ValueError("REL 嵌套超限")
+        i, depth, start = m.end(), 1, m.end()
+        while i < len(out) and depth:
+            if out[i] == "(":
+                depth += 1
+            elif out[i] == ")":
+                depth -= 1
+            i += 1
+        if depth:
+            raise ValueError("REL 括号未闭合")
+        args, buf, d = [], "", 0
+        for ch in out[start:i - 1]:
+            if ch == "," and d == 0:
+                args.append(buf)
+                buf = ""
+            else:
+                if ch == "(":
+                    d += 1
+                elif ch == ")":
+                    d -= 1
+                buf += ch
+        args.append(buf)
+        if len(args) != 3:
+            raise ValueError("REL 需要三个参数 (v1, v2, mode)")
+        a, b, mtok = (t.strip() for t in args)
+        mode = mode_of.get(mtok, mtok)
+        if mode in REL_SUM_MODES:
+            repl = f"(({a}) + ({b}))"
+        elif mode in REL_DIFF_MODES:
+            repl = f"abs(({a}) - ({b}))"
+        else:
+            raise ValueError(f"REL mode 不在词表: {mtok!r}")
+        out = out[:m.start()] + repl + out[i:]
 
 
 @dataclass
@@ -76,9 +134,10 @@ class StructuredPlan:
     def from_dict(cls, data: Dict[str, Any]) -> "StructuredPlan":
         return cls(
             family=str(data.get("family") or ""), method_id=str(data.get("method_id") or ""),
-            givens=[Given(label=str(g["label"]), value=str(g["value"]),
+            givens=[Given(label=str(g["label"]), value=str(g.get("value") or ""),
                           stem_span=str(g.get("stem_span") or ""),
-                          unit=str(g.get("unit") or ""))
+                          unit=str(g.get("unit") or ""),
+                          kind=str(g.get("kind") or ""), mode=str(g.get("mode") or ""))
                     for g in data.get("givens", [])],
             steps=[PlanStep(var=str(s["var"]), expr=str(s["expr"]),
                             source=str(s.get("source") or ""),
@@ -105,7 +164,8 @@ _NUM = r"\d+(?:\.\d+)?(?:/\d+)?"
 # 标识符允许中文（模型常以"现价/提价额"命名步骤变量；词表绑定按完整名匹配）
 _ID = r"[A-Za-z_\u4e00-\u9fff][A-Za-z0-9_\u4e00-\u9fff]*"
 # R9-C：确定性执行器算子扩充——C/P/sqrt/ceil/floor/pow/abs 函数、^ 幂、! 阶乘
-_FNAMES = {"C", "P", "sqrt", "ceil", "floor", "pow", "abs"}
+# R10-B：REL 为相对速度重写器（执行前已化为纯算术），列入函数名使扫描不误报未绑定标识符
+_FNAMES = {"C", "P", "sqrt", "ceil", "floor", "pow", "abs", "REL"}
 _TOKEN_RE = re.compile(rf"{_ID}|{_NUM}|[+\-*/()^!, ]")
 
 
@@ -303,7 +363,13 @@ def execute_plan(plan: StructuredPlan) -> PlanExecution:
                              error="执行器缺失算子: " + "、".join(missing) +
                                    "（当前确定性执行支持 + - * / 括号与 C/P/!/^(整数幂)/sqrt(完全平方)/ceil/floor/pow/abs）")
     env: Dict[str, Fraction] = {}
+    mode_of: Dict[str, str] = {}
     for g in plan.givens:
+        if (g.kind or "") in GIVEN_DESC_KINDS:
+            # R10-B：描述性槽位不进数值 env；categorical 提供 REL 的方向词
+            if g.kind == "categorical_relation":
+                mode_of[g.label] = (g.mode or g.value or "").strip()
+            continue
         try:
             env[g.label] = Fraction(g.value)
         except (ValueError, ZeroDivisionError):
@@ -313,10 +379,11 @@ def execute_plan(plan: StructuredPlan) -> PlanExecution:
         if step.var in env:
             return PlanExecution(env, None, None, error=f"变量重复定义: {step.var}")
         try:
-            env[step.var] = _ExprParser(_tokenize_expr(step.expr), env).parse()
+            rewritten = rewrite_rel_expr(step.expr, mode_of)
+            env[step.var] = _ExprParser(_tokenize_expr(rewritten), env).parse()
         except Exception as exc:  # noqa: BLE001
             return PlanExecution(env, None, None, error=f"步骤 {step.var} 执行失败: {exc}")
-        expr_of[step.var] = step.expr
+        expr_of[step.var] = rewritten
     if plan.target not in env:
         return PlanExecution(env, None, None, error=f"目标量未产生: {plan.target}")
     # 展开为纯数值表达式（供独立复核与 operand_coverage 检查）
@@ -342,24 +409,47 @@ def validate_plan(plan: StructuredPlan, stem: str) -> List[str]:
     labels = {g.label for g in plan.givens}
     if len(labels) != len(plan.givens):
         problems.append("givens 标签重复")
+    seen = set(labels)
+    mode_of: Dict[str, str] = {}
     for g in plan.givens:
+        kind = (g.kind or "").strip()
+        if kind not in GIVEN_NUMERIC_KINDS | GIVEN_DESC_KINDS:
+            problems.append(f"given {g.label} kind 非法: {kind!r}"
+                            "（允许 quantity/rate/time/unit/categorical_relation/logical_constraint/text_evidence）")
+            continue
         span = re.sub(r"\s+", "", g.stem_span or "")
         if not span or span not in norm_stem:
             problems.append(f"given {g.label} 的 stem_span 不是题干原文")
-        else:
-            # 绑定值必须出现在其来源片段（数值或其百分/折扣/增减换算形态）
-            nums = {float(x) for x in re.findall(r"\d+(?:\.\d+)?", span)}
-            try:
-                v: Optional[float] = float(Fraction(g.value))
-            except (ValueError, ZeroDivisionError):
-                problems.append(f"given {g.label} 值非法: {g.value}")
-                v = None
-            if v is not None and nums and not any(
-                    _close(n, v) or _close(n / 100.0, v) or _close(n / 10.0, v)
-                    or _close(1.0 - n / 100.0, v) or _close(1.0 + n / 100.0, v)
-                    or _close(1.0 - n / 10.0, v) or _close(1.0 + n / 10.0, v)
-                    for n in nums):
-                problems.append(f"given {g.label} 的值 {g.value} 与其来源片段数值不符: {g.stem_span[:30]}")
+        if kind in GIVEN_DESC_KINDS:
+            # R10-B：描述性槽位免数值绑定，但来源必须逐字；categorical 需词表内方向词
+            if kind == "categorical_relation":
+                mode = (g.mode or g.value or "").strip()
+                if mode not in REL_SUM_MODES | REL_DIFF_MODES:
+                    problems.append(f"given {g.label} 方向词不在词表: {mode!r}")
+                elif mode not in (g.stem_span or ""):
+                    problems.append(f"given {g.label} 方向词 {mode} 未出现在其来源片段")
+                else:
+                    mode_of[g.label] = mode
+            continue
+        # 数值槽：绑定值必须出现在其来源片段（数值或其百分/折扣/增减换算形态）
+        nums = {float(x) for x in re.findall(r"\d+(?:\.\d+)?", span)}
+        try:
+            v: Optional[float] = float(Fraction(g.value))
+        except (ValueError, ZeroDivisionError):
+            problems.append(f"given {g.label} 值非法: {g.value}（数值类槽位必须可解析为分数；"
+                            "方向/单位/条件类请声明对应 kind）")
+            v = None
+        if v is not None and nums and not any(
+                _close(n, v) or _close(n / 100.0, v) or _close(n / 10.0, v)
+                or _close(1.0 - n / 100.0, v) or _close(1.0 + n / 100.0, v)
+                or _close(1.0 - n / 10.0, v) or _close(1.0 + n / 10.0, v)
+                for n in nums):
+            problems.append(f"given {g.label} 的值 {g.value} 与其来源片段数值不符: {g.stem_span[:30]}")
+    for step in plan.steps:
+        try:
+            rewrite_rel_expr(step.expr, mode_of)
+        except ValueError as exc:
+            problems.append(f"步骤 {step.var} 的 REL 不合法: {exc}")
     seen = set(labels)
     vars_defined: set = set()
     for step in plan.steps:
@@ -394,12 +484,14 @@ def _close(a: float, b: float, tol: float = 1e-6) -> bool:
 PLAN_SYSTEM = """你是行测解题规划器（只做规划，不给选项答案）。
 输出 JSON：
 {"family":"子题型假设","method_id":"所用方法卡id","rationale":"为什么用这个方法",
- "givens":[{"label":"变量名","value":"数值(分数或小数)","stem_span":"原题文字片段","unit":""}],
- "steps":[{"var":"中间或最终变量","expr":"含数字、+ - * / 括号、^(整数幂)、sqrt(完全平方)、C(n,k)、P(n,k)、阶乘!、ceil/floor/pow/abs、givens与更早step的var","source":"该关系的原题文字片段","deps":["引用的标识符"]}],
+ "givens":[{"label":"变量名","value":"数值(分数或小数)，非数值槽位可空","stem_span":"原题文字片段","unit":"","kind":"quantity|rate|time|unit|categorical_relation|logical_constraint|text_evidence","mode":"仅categorical_relation填：相向|背向|相遇|反向|同向|追及"}],
+ "steps":[{"var":"中间或最终变量","expr":"含数字、+ - * / 括号、^(整数幂)、sqrt(完全平方)、C(n,k)、P(n,k)、阶乘!、ceil/floor/pow/abs、REL(a,b,方向)、givens与更早step的var","source":"该关系的原题文字片段","deps":["引用的标识符"]}],
  "target":"最终变量","unknowns":["无法从题面确定的信息，可为空"],
  "question_hypotheses":["题型假设"]}
 硬规则：
-1. 每个 givens.value 必须来自其 stem_span 原文（原文数字或其百分/折扣换算）；
+1. 每个**数值** givens.value 必须来自其 stem_span 原文（原文数字或其百分/折扣换算）；
+   非数值关系（方向如相向/追及、单位、条件、文本证据）必须用带 kind 的类型化槽位表达，
+   禁止把中文词塞进 value——categorical_relation 的 mode 词须出现在其 stem_span 原文；
 2. 题目叙述出现的每个**参与计算的量**都必须进入 givens 并被步骤使用；
    不参与计算的干扰量要写进 unknowns/或说明；
 3. 多次变化（连续折扣/复合增长/分步操作）必须逐步建模，每步基准量可能不同，
@@ -409,6 +501,9 @@ PLAN_SYSTEM = """你是行测解题规划器（只做规划，不给选项答案
  6. target 必须是**题目所问的那个量**，分母/基准随情境更新：
     加水或加溶质后的浓度=新溶质/新溶液总量（分母不是原总量）；
     降价 x% 后恢复原价所需的提价率以现价为基准（=x/(1-x)），不是原价的 x。
+ 7. 行程相遇/追及用 REL：REL(a,b,相向|背向|相遇|反向)=速度和，REL(a,b,同向|追及)=速度差。
+    相遇时间=总路程/REL(速A,速B,相向)；追及：先行距离=慢者速度×先行时间（分钟先 /60
+    化小时再乘），追及时间=先行距离/REL(快,慢,追及)。单位换算本身要写成显式步骤。
 """
 
 
@@ -471,9 +566,10 @@ class ReasoningPlanner:
         if not isinstance(payload, dict):
             return None
         try:
-            givens = [Given(label=str(g["label"]), value=str(g["value"]),
+            givens = [Given(label=str(g["label"]), value=str(g.get("value") or ""),
                             stem_span=str(g.get("stem_span") or ""),
-                            unit=str(g.get("unit") or ""))
+                            unit=str(g.get("unit") or ""),
+                            kind=str(g.get("kind") or ""), mode=str(g.get("mode") or ""))
                       for g in payload.get("givens", [])]
             steps = [PlanStep(var=str(s["var"]), expr=str(s["expr"]),
                               source=str(s.get("source") or ""),
