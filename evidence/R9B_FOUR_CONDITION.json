@@ -1,0 +1,624 @@
+{
+  "conditions": {
+    "A": {
+      "answerable_correct": "13/13",
+      "abstain_ok": "2/2"
+    },
+    "B": {
+      "answerable_correct": "12/13",
+      "abstain_ok": "2/2"
+    },
+    "C": {
+      "answerable_correct": "0/13",
+      "abstain_ok": "2/2"
+    },
+    "D": {
+      "answerable_correct": "0/13",
+      "abstain_ok": "2/2"
+    }
+  },
+  "per_case": {
+    "A": [
+      {
+        "id": "ft-rot90-01",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-rot180-02",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-rot270-03",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-mirror-04",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-mirror-05",
+        "expected": "B",
+        "expected_status": "solved",
+        "answer": "B",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-comp-06",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-trans-07",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-trans-08",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-scale-09",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-grid-10",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-grid-11",
+        "expected": "B",
+        "expected_status": "solved",
+        "answer": "B",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-overlay-12",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-overlay-13",
+        "expected": "B",
+        "expected_status": "solved",
+        "answer": "B",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-sym-14",
+        "expected": null,
+        "expected_status": "failed",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 2 个选项匹配（无法唯一确定）; 边数外推为 4，但有 2 个选项匹配; 质心按等步长平移到 (0.49, 0.49)，多个选项接近; 对称性应为 垂直=True 水平=True，但有 2 个选项匹配; 墨迹面积外推到 352px，多个选项接近，无法唯一确定；变换通道"
+      },
+      {
+        "id": "ft-conflict-15",
+        "expected": null,
+        "expected_status": "failed",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：叠加规则不唯一：or 与 ['and'] 都能解释全部已知行；变换通道：{'rotate_flip_grid_row': {'A': 0.080808, 'B': 0.080808, 'C': 1.0}, 'rotate_flip_grid_col': {'A': 0.080808, 'B':"
+      }
+    ],
+    "B": [
+      {
+        "id": "ft-rot90-01",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-rot180-02",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-rot270-03",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-mirror-04",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "extraction_unavailable"
+      },
+      {
+        "id": "ft-mirror-05",
+        "expected": "B",
+        "expected_status": "solved",
+        "answer": "B",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-comp-06",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-trans-07",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-trans-08",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-scale-09",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-grid-10",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-grid-11",
+        "expected": "B",
+        "expected_status": "solved",
+        "answer": "B",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-overlay-12",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "A",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-overlay-13",
+        "expected": "B",
+        "expected_status": "solved",
+        "answer": "B",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-sym-14",
+        "expected": null,
+        "expected_status": "failed",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 2 个选项匹配（无法唯一确定）; 边数外推为 4，但有 2 个选项匹配; 质心按等步长平移到 (0.49, 0.49)，多个选项接近; 对称性应为 垂直=True 水平=True，但有 2 个选项匹配; 墨迹面积外推到 352px，多个选项接近，无法唯一确定；变换通道"
+      },
+      {
+        "id": "ft-conflict-15",
+        "expected": null,
+        "expected_status": "failed",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：叠加规则不唯一：or 与 ['and'] 都能解释全部已知行；变换通道：{'rotate_flip_grid_row': {'A': 0.080808, 'B': 0.080808, 'C': 1.0}, 'rotate_flip_grid_col': {'A': 0.080808, 'B':"
+      }
+    ],
+    "C": [
+      {
+        "id": "ft-rot90-01",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 4 个选项匹配（无法唯一确定）; 边数外推为 6，但有 0 个选项匹配; 对称性应为 垂直=False 水平=False，但有 0 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-rot180-02",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "题干可见图形只有 1 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-rot270-03",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "题干可见图形只有 1 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-mirror-04",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "extraction_unavailable"
+      },
+      {
+        "id": "ft-mirror-05",
+        "expected": "B",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-comp-06",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-trans-07",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "C",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-trans-08",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：对称性应为 垂直=False 水平=False，但有 3 个选项匹配；变换通道：变换规律不可唯一判定"
+      },
+      {
+        "id": "ft-scale-09",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-grid-10",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 1.0, '"
+      },
+      {
+        "id": "ft-grid-11",
+        "expected": "B",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：对称性应为 垂直=False 水平=False，但有 3 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-overlay-12",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定"
+      },
+      {
+        "id": "ft-overlay-13",
+        "expected": "B",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "九宫格检测到 0 行存在空缺，当前只支持目标格唯一且位于行末的情形；变换通道：九宫格需恰好第9格为空格，实际空格位置 []"
+      },
+      {
+        "id": "ft-sym-14",
+        "expected": null,
+        "expected_status": "failed",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 2 个选项匹配（无法唯一确定）; 边数外推为 4，但有 2 个选项匹配; 对称性应为 垂直=True 水平=True，但有 2 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-conflict-15",
+        "expected": null,
+        "expected_status": "failed",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 0.674217}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 0.674217}, "
+      }
+    ],
+    "D": [
+      {
+        "id": "ft-rot90-01",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 4 个选项匹配（无法唯一确定）; 边数外推为 6，但有 0 个选项匹配; 对称性应为 垂直=False 水平=False，但有 0 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-rot180-02",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "题干可见图形只有 1 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-rot270-03",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "题干可见图形只有 1 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-mirror-04",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "extraction_unavailable"
+      },
+      {
+        "id": "ft-mirror-05",
+        "expected": "B",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-comp-06",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "题干可见图形只有 2 个，至少需要 3 个才能判断规律；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-trans-07",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": "C",
+        "status": "solved",
+        "reason": ""
+      },
+      {
+        "id": "ft-trans-08",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：对称性应为 垂直=False 水平=False，但有 3 个选项匹配；变换通道：变换规律不可唯一判定"
+      },
+      {
+        "id": "ft-scale-09",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-grid-10",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 1.0, 'D': 1.0}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 1.0, '"
+      },
+      {
+        "id": "ft-grid-11",
+        "expected": "B",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：对称性应为 垂直=False 水平=False，但有 3 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-overlay-12",
+        "expected": "A",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：变换规律不可唯一判定"
+      },
+      {
+        "id": "ft-overlay-13",
+        "expected": "B",
+        "expected_status": "solved",
+        "answer": null,
+        "status": "failed",
+        "reason": "九宫格检测到 0 行存在空缺，当前只支持目标格唯一且位于行末的情形；变换通道：九宫格需恰好第9格为空格，实际空格位置 []"
+      },
+      {
+        "id": "ft-sym-14",
+        "expected": null,
+        "expected_status": "failed",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 2 个选项匹配（无法唯一确定）; 边数外推为 4，但有 2 个选项匹配; 对称性应为 垂直=True 水平=True，但有 2 个选项匹配；变换通道：空格不在行末或已知格不足，变换通道不适用（序列）"
+      },
+      {
+        "id": "ft-conflict-15",
+        "expected": null,
+        "expected_status": "failed",
+        "answer": null,
+        "status": "failed",
+        "reason": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'rotate_flip_grid_row': {'A': 1.0, 'B': 1.0, 'C': 0.674217}, 'rotate_flip_grid_col': {'A': 1.0, 'B': 1.0, 'C': 0.674217}, "
+      }
+    ]
+  },
+  "flips": {
+    "A_vs_C": [
+      [
+        "ft-rot90-01",
+        "lost"
+      ],
+      [
+        "ft-rot180-02",
+        "lost"
+      ],
+      [
+        "ft-rot270-03",
+        "lost"
+      ],
+      [
+        "ft-mirror-04",
+        "lost"
+      ],
+      [
+        "ft-mirror-05",
+        "lost"
+      ],
+      [
+        "ft-comp-06",
+        "lost"
+      ],
+      [
+        "ft-trans-07",
+        "lost"
+      ],
+      [
+        "ft-trans-08",
+        "lost"
+      ],
+      [
+        "ft-scale-09",
+        "lost"
+      ],
+      [
+        "ft-grid-10",
+        "lost"
+      ],
+      [
+        "ft-grid-11",
+        "lost"
+      ],
+      [
+        "ft-overlay-12",
+        "lost"
+      ],
+      [
+        "ft-overlay-13",
+        "lost"
+      ]
+    ],
+    "A_vs_B": [
+      [
+        "ft-mirror-04",
+        "lost"
+      ]
+    ],
+    "B_vs_D": [],
+    "C_vs_D": [
+      [
+        "ft-rot90-01",
+        "lost"
+      ],
+      [
+        "ft-rot180-02",
+        "lost"
+      ],
+      [
+        "ft-rot270-03",
+        "lost"
+      ],
+      [
+        "ft-mirror-04",
+        "lost"
+      ],
+      [
+        "ft-mirror-05",
+        "lost"
+      ],
+      [
+        "ft-comp-06",
+        "lost"
+      ],
+      [
+        "ft-trans-07",
+        "lost"
+      ],
+      [
+        "ft-trans-08",
+        "lost"
+      ],
+      [
+        "ft-scale-09",
+        "lost"
+      ],
+      [
+        "ft-grid-10",
+        "lost"
+      ],
+      [
+        "ft-grid-11",
+        "lost"
+      ],
+      [
+        "ft-overlay-12",
+        "lost"
+      ],
+      [
+        "ft-overlay-13",
+        "lost"
+      ]
+    ]
+  }
+}
