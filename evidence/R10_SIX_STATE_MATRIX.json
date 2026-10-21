@@ -11,7 +11,7 @@
   "plannable_per_card_evidence": 7
  },
  "probe_scope_note": "plannable 已分列 interface/per_card；verified 仍为技能级 live solve→verify 实调（该 skill 首个 dev 题），逐卡真实性以 dev_passed 为准",
- "dev_results_run": "r9d2_dev_fix",
+ "dev_results_run": "r10c_variants",
  "cards": {
   "da.annual-average-timing": {
    "skill": "data_analysis",
@@ -828,7 +828,7 @@
    },
    "retrievable": {
     "ok": true,
-    "note": "查询='compound change 连续增长复合 (1+r1)(1+r2) 隔年增长率=' top3=['nc.compound-growth', 'nc.successive-discount', 'nc.tiered-pricing']",
+    "note": "查询='compound change 连续增长复合 (1+r1)(1+r2) 隔年增长率=' top3=['nc.compound-growth', 'nc.tiered-pricing', 'nc.successive-discount']",
     "query": "compound change 连续增长复合 (1+r1)(1+r2) 隔年增长率=r1+r2+r1r2"
    },
    "plannable": {

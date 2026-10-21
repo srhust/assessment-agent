@@ -1,0 +1,190 @@
+{
+ "corpus": "xingce_dev_r10gen (8 items, frozen BEFORE runs, see R10E_FREEZE.json)",
+ "main_metric_answerable_correct_release": {
+  "rules_only": "1/7",
+  "rules_plus_planner": "6/7",
+  "note": "正确作答率优先；insufficient 题不计入分母"
+ },
+ "release_precision_planner": "6/6（所有释放均命中金标，0 误放）",
+ "insufficient_handling": {
+  "r10g-06": "planner 臂因 ReadTimeout 未评估（非能力结论）；rules 臂安全失败不释放"
+ },
+ "retrieval_first_time_persisted": {
+  "selected_method_hit_refs": "1/4",
+  "misfires": [
+   "r10g-01 selected nc.compound-growth（refs=da.growth-amount，答案仍正确——选卡偏差记录）",
+   "r10g-04 selected nc.successive-discount（多步增长题，卡族错但式子正确）"
+  ]
+ },
+ "coverage_fix_from_this_dev": "U+2212 数学负号加入 _EQUIV（g3 根因：语料用 −，AST/符号链路此前无映射）；单测锁定 test_unicode_minus_sign_u2212",
+ "arms": {
+  "rules_only": "r10e_rules_only_v2（0 API）",
+  "rules_plus_planner": "r10e_planner（9 calls/6 timeouts/20674 tokens，预算内）",
+  "templates_arm": "与 rules_only 等价路径（oracle_solver 无模板注入差异），本轮不重复跑",
+  "image_only": "不适用（无图形输入）"
+ },
+ "per_item": [
+  {
+   "id": "r10g-01",
+   "answerability": "可作答",
+   "gold": "A",
+   "rules_only": {
+    "status": "failed",
+    "correct": false
+   },
+   "planner": {
+    "status": "solved",
+    "answer": null,
+    "correct": true,
+    "expr": "(250*0.12)",
+    "selected": "nc.compound-growth",
+    "retrieved": [
+     "nc.compound-growth",
+     "nc.combinatorics-bundling"
+    ],
+    "fail": ""
+   }
+  },
+  {
+   "id": "r10g-02",
+   "answerability": "可作答",
+   "gold": "B",
+   "rules_only": {
+    "status": "failed",
+    "correct": false
+   },
+   "planner": {
+    "status": "solved",
+    "answer": null,
+    "correct": true,
+    "expr": "(60 / (((4) + (6))))",
+    "selected": "nc.travel-meeting-pursuit",
+    "retrieved": [
+     "nc.travel-meeting-pursuit",
+     "nc.inclusion-exclusion"
+    ],
+    "fail": ""
+   }
+  },
+  {
+   "id": "r10g-03",
+   "answerability": "可作答",
+   "gold": "C",
+   "rules_only": {
+    "status": "failed",
+    "correct": false
+   },
+   "planner": {
+    "status": "failed",
+    "answer": null,
+    "correct": false,
+    "expr": null,
+    "selected": null,
+    "retrieved": [
+     "nc.inclusion-exclusion",
+     "nc.travel-meeting-pursuit"
+    ],
+    "fail": "结构化规划未成立: plan_unbound"
+   }
+  },
+  {
+   "id": "r10g-04",
+   "answerability": "可作答",
+   "gold": "B",
+   "rules_only": {
+    "status": "failed",
+    "correct": false
+   },
+   "planner": {
+    "status": "solved",
+    "answer": null,
+    "correct": true,
+    "expr": "((45 * (1 + 1/5)) - 9)",
+    "selected": "nc.successive-discount",
+    "retrieved": [
+     "nc.successive-discount",
+     "nc.compound-growth"
+    ],
+    "fail": ""
+   }
+  },
+  {
+   "id": "r10g-05",
+   "answerability": "可作答",
+   "gold": "B",
+   "rules_only": {
+    "status": "failed",
+    "correct": false
+   },
+   "planner": {
+    "status": "solved",
+    "answer": null,
+    "correct": true,
+    "expr": "(1/((1/12) + (1/18)))",
+    "selected": "nc.work-rate-lcm",
+    "retrieved": [
+     "nc.work-rate-lcm",
+     "nc.travel-meeting-pursuit"
+    ],
+    "fail": ""
+   }
+  },
+  {
+   "id": "r10g-06",
+   "answerability": "条件不足",
+   "gold": "C",
+   "rules_only": {
+    "status": "failed",
+    "correct": false
+   },
+   "planner": {
+    "status": "failed",
+    "answer": null,
+    "correct": false,
+    "expr": null,
+    "selected": null,
+    "retrieved": [
+     "nc.work-rate-lcm",
+     "nc.combinatorics-bundling"
+    ],
+    "fail": "结构化规划未成立: llm_error_retry: 模型调用重试后仍失败: The read operation ti"
+   }
+  },
+  {
+   "id": "r10g-07",
+   "answerability": "可作答",
+   "gold": "A",
+   "rules_only": {
+    "status": "solved",
+    "correct": true
+   },
+   "planner": {
+    "status": "solved",
+    "answer": null,
+    "correct": true,
+    "expr": "(1+2)*3**2-4/2",
+    "selected": null,
+    "retrieved": [],
+    "fail": ""
+   }
+  },
+  {
+   "id": "r10g-08",
+   "answerability": "可作答",
+   "gold": "D",
+   "rules_only": {
+    "status": "failed",
+    "correct": false
+   },
+   "planner": {
+    "status": "solved",
+    "answer": null,
+    "correct": true,
+    "expr": null,
+    "selected": null,
+    "retrieved": [],
+    "fail": ""
+   }
+  }
+ ]
+}

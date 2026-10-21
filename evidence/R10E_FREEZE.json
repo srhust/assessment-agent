@@ -34,5 +34,9 @@
   "r10g-06",
   "r10g-07",
   "r10g-08"
+ ],
+ "amendments_before_first_valid_run": [
+  "r10g-08 skill 字段 judgment_reasoning 非法题型名 → 改 logical_reasoning（发生于 rules_only v1 无效跑后、有效对比跑前；无效跑不入臂对比）",
+  "字段 case_id→id 对齐 runner 命名（planner 臂启动前完成）"
  ]
 }

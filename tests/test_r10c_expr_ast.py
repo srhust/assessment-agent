@@ -128,3 +128,10 @@ def test_ast_forgery_blocked():
                       meta={**sol.meta, "value": 45.0, "matched_label": "B"})
     ver = sk.verify(q, forged, ctx)
     assert ver.action in ("unverified", "reject") and ver.final_answer is None
+
+
+def test_unicode_minus_sign_u2212():
+    """E 阶段泛化缺口修复：U+2212 数学负号（非全角横线）必须映射为 '-'。"""
+    n = parse_stem_expression("计算：C(5,2) + 2^3 − 3! = ?")
+    assert n is not None
+    assert n.eval() == 12

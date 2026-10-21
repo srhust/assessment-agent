@@ -1,0 +1,30 @@
+{
+ "status": "design only — NOT launched this round (work order F)",
+ "admission_gate": {
+  "verdict": "NOT ADMITTED",
+  "blocking_gaps": [
+   "figure C/D answerable-release = 0/13 (solver capability boundary; rules frozen this round by order)",
+   "planner method selection 1/4 refs-hit on fresh dev (wrong-card-but-right-formula cases unmitigated)",
+   "vision gateway stability: 21+ ReadTimeouts across three planner runs; blind budget would be dominated by retries",
+   "insufficient-class targeted abstention not yet via unknowns channel (currently via plan_invalid)"
+  ],
+  "criteria_already_met": [
+   "release precision 100% on r10gen + variants (0 false accepts, 10/10 insufficient holds)",
+   "independent verification no-self-proof (AST triple-check, pixel-hash re-derive, forged provenance blocked)",
+   "Dev-not-blind discipline + frozen artifacts untouched"
+  ]
+ },
+ "proposed_protocol": {
+  "corpus": "new 60-item blind set, gold produced & hash-frozen BEFORE any system code sees items; stratified: 20 numeric (incl typed-slot/multi-op), 10 data, 10 verbal, 10 figure (real screenshots incl perturbed layouts), 5 insufficient, 5 adversarial self-proof traps",
+  "arms": [
+   "rules_only",
+   "rules+templates",
+   "rules+planner",
+   "full_pipeline(image_only)"
+  ],
+  "primary_metric": "answerable-correct release rate (gold answerability denominators); abstains excluded from release denominator; false accepts reported separately with per-item forensic trail",
+  "gates": "pre-registered: model+prompt SHAs, sample ids, budget, network-failure quarantine (timeouts re-run once, labeled infra not capability); any mid-round change voids the run",
+  "budget_estimate": "≈240 LLM calls (60×4 arms, retries included); requires human approval for vision gateway quota",
+  "sequencing": "requires: (1) selection-quality fix for planner retrieval, (2) figure stem-completeness path within existing rules, (3) stable network window — each auditable with the machinery this round built"
+ }
+}
