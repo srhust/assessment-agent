@@ -55,7 +55,8 @@
   },
   "executable": {
     "missing_operators": [
-      "图输入解析（截图必需）"
+      "图输入解析（截图必需，纯文本不释）",
+      "空间折叠/相对面邻接约束求解引擎未实现（figure_rules 仅 overlay/sides/count/regions/centroid/symmetry/fill 七算子）——即使给出文字化展开图，六面体折叠判定无确定性引擎，不做概率猜测"
     ]
   }
 }
