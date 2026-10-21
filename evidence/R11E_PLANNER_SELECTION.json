@@ -1,0 +1,364 @@
+{
+ "runs": {
+  "r10e_planner": {
+   "items": 7,
+   "retrieval_recorded": 5,
+   "recall_at_3": 1,
+   "selected_total": 4,
+   "selected_in_gold": 1,
+   "exec_after_correct_card": [
+    1,
+    1
+   ],
+   "wrong_card_but_right": [
+    {
+     "id": "r10g-01",
+     "selected": "nc.compound-growth",
+     "gold": [
+      "da.growth-amount"
+     ],
+     "correct": true,
+     "why": ""
+    },
+    {
+     "id": "r10g-04",
+     "selected": "nc.successive-discount",
+     "gold": [
+      "da.growth-amount"
+     ],
+     "correct": true,
+     "why": ""
+    },
+    {
+     "id": "r10g-05",
+     "selected": "nc.work-rate-lcm",
+     "gold": [
+      "nc.work-rate"
+     ],
+     "correct": true,
+     "why": ""
+    }
+   ],
+   "selected_functionally_valid": 4,
+   "dep_ok": 3,
+   "dep_bad": 1,
+   "per_item": [
+    {
+     "id": "r10g-01",
+     "retr": [
+      "nc.compound-growth",
+      "nc.combinatorics-bundling"
+     ],
+     "sel": "nc.compound-growth",
+     "status": "solved",
+     "correct": true
+    },
+    {
+     "id": "r10g-02",
+     "retr": [
+      "nc.travel-meeting-pursuit",
+      "nc.inclusion-exclusion"
+     ],
+     "sel": "nc.travel-meeting-pursuit",
+     "status": "solved",
+     "correct": true
+    },
+    {
+     "id": "r10g-03",
+     "retr": [
+      "nc.inclusion-exclusion",
+      "nc.travel-meeting-pursuit"
+     ],
+     "sel": null,
+     "status": "failed",
+     "correct": false
+    },
+    {
+     "id": "r10g-04",
+     "retr": [
+      "nc.successive-discount",
+      "nc.compound-growth"
+     ],
+     "sel": "nc.successive-discount",
+     "status": "solved",
+     "correct": true
+    },
+    {
+     "id": "r10g-05",
+     "retr": [
+      "nc.work-rate-lcm",
+      "nc.travel-meeting-pursuit"
+     ],
+     "sel": "nc.work-rate-lcm",
+     "status": "solved",
+     "correct": true
+    },
+    {
+     "id": "r10g-07",
+     "retr": [],
+     "sel": null,
+     "status": "solved",
+     "correct": true
+    },
+    {
+     "id": "r10g-08",
+     "retr": [],
+     "sel": null,
+     "status": "solved",
+     "correct": true
+    }
+   ]
+  },
+  "r10b_planner": {
+   "items": 6,
+   "retrieval_recorded": 0,
+   "recall_at_3": 0,
+   "selected_total": 0,
+   "selected_in_gold": 0,
+   "exec_after_correct_card": [
+    0,
+    0
+   ],
+   "wrong_card_but_right": [],
+   "selected_functionally_valid": 0,
+   "dep_ok": 0,
+   "dep_bad": 1,
+   "per_item": [
+    {
+     "id": "pv-travel-01",
+     "retr": [],
+     "sel": null,
+     "status": "solved",
+     "correct": true
+    },
+    {
+     "id": "pv-travel-02",
+     "retr": [],
+     "sel": null,
+     "status": "failed",
+     "correct": false
+    },
+    {
+     "id": "pv-travel-03",
+     "retr": [],
+     "sel": null,
+     "status": "failed",
+     "correct": false
+    },
+    {
+     "id": "pv-travel-04",
+     "retr": [],
+     "sel": null,
+     "status": "failed",
+     "correct": false
+    },
+    {
+     "id": "pv-travel-05",
+     "retr": [],
+     "sel": null,
+     "status": "failed",
+     "correct": false
+    },
+    {
+     "id": "pv-travel-06",
+     "retr": [],
+     "sel": null,
+     "status": "failed",
+     "correct": false
+    }
+   ]
+  },
+  "r10b2_planner": {
+   "items": 6,
+   "retrieval_recorded": 6,
+   "recall_at_3": 6,
+   "selected_total": 3,
+   "selected_in_gold": 3,
+   "exec_after_correct_card": [
+    3,
+    3
+   ],
+   "wrong_card_but_right": [],
+   "selected_functionally_valid": 3,
+   "dep_ok": 0,
+   "dep_bad": 3,
+   "per_item": [
+    {
+     "id": "pv-travel-01",
+     "retr": [
+      "nc.travel-meeting-pursuit",
+      "nc.ratio-share-parts"
+     ],
+     "sel": "nc.travel-meeting-pursuit",
+     "status": "solved",
+     "correct": true
+    },
+    {
+     "id": "pv-travel-02",
+     "retr": [
+      "nc.travel-meeting-pursuit",
+      "nc.alligation-cross"
+     ],
+     "sel": null,
+     "status": "failed",
+     "correct": false
+    },
+    {
+     "id": "pv-travel-03",
+     "retr": [
+      "nc.travel-meeting-pursuit",
+      "nc.successive-discount"
+     ],
+     "sel": "nc.travel-meeting-pursuit",
+     "status": "solved",
+     "correct": true
+    },
+    {
+     "id": "pv-travel-04",
+     "retr": [
+      "nc.travel-meeting-pursuit",
+      "nc.combinatorics-bundling"
+     ],
+     "sel": null,
+     "status": "failed",
+     "correct": false
+    },
+    {
+     "id": "pv-travel-05",
+     "retr": [
+      "nc.travel-meeting-pursuit",
+      "nc.successive-discount"
+     ],
+     "sel": "nc.travel-meeting-pursuit",
+     "status": "solved",
+     "correct": true
+    },
+    {
+     "id": "pv-travel-06",
+     "retr": [
+      "nc.travel-meeting-pursuit",
+      "nc.inclusion-exclusion"
+     ],
+     "sel": null,
+     "status": "failed",
+     "correct": false
+    }
+   ]
+  },
+  "r10b3_planner": {
+   "items": 6,
+   "retrieval_recorded": 6,
+   "recall_at_3": 6,
+   "selected_total": 3,
+   "selected_in_gold": 3,
+   "exec_after_correct_card": [
+    3,
+    3
+   ],
+   "wrong_card_but_right": [],
+   "selected_functionally_valid": 3,
+   "dep_ok": 0,
+   "dep_bad": 3,
+   "per_item": [
+    {
+     "id": "pv-travel-01",
+     "retr": [
+      "nc.travel-meeting-pursuit",
+      "nc.ratio-share-parts"
+     ],
+     "sel": "nc.travel-meeting-pursuit",
+     "status": "solved",
+     "correct": true
+    },
+    {
+     "id": "pv-travel-02",
+     "retr": [
+      "nc.travel-meeting-pursuit",
+      "nc.alligation-cross"
+     ],
+     "sel": null,
+     "status": "failed",
+     "correct": false
+    },
+    {
+     "id": "pv-travel-03",
+     "retr": [
+      "nc.travel-meeting-pursuit",
+      "nc.successive-discount"
+     ],
+     "sel": null,
+     "status": "failed",
+     "correct": false
+    },
+    {
+     "id": "pv-travel-04",
+     "retr": [
+      "nc.travel-meeting-pursuit",
+      "nc.combinatorics-bundling"
+     ],
+     "sel": "nc.travel-meeting-pursuit",
+     "status": "solved",
+     "correct": true
+    },
+    {
+     "id": "pv-travel-05",
+     "retr": [
+      "nc.travel-meeting-pursuit",
+      "nc.successive-discount"
+     ],
+     "sel": "nc.travel-meeting-pursuit",
+     "status": "solved",
+     "correct": true
+    },
+    {
+     "id": "pv-travel-06",
+     "retr": [
+      "nc.travel-meeting-pursuit",
+      "nc.inclusion-exclusion"
+     ],
+     "sel": null,
+     "status": "failed",
+     "correct": false
+    }
+   ]
+  }
+ },
+ "negative_dev": {
+  "cross_injection_rows": 12,
+  "family_swaps": [
+   {
+    "plan": "r10g-01",
+    "onto_gold_item": "r10g-04",
+    "gold_answer": "B",
+    "plan_value": "None",
+    "exec_ok": false,
+    "err": "None"
+   },
+   {
+    "plan": "r10g-04",
+    "onto_gold_item": "r10g-01",
+    "gold_answer": "A",
+    "plan_value": "None",
+    "exec_ok": false,
+    "err": "None"
+   },
+   {
+    "plan": "r10g-02",
+    "onto_gold_item": "r10g-05",
+    "gold_answer": "B",
+    "plan_value": "None",
+    "exec_ok": false,
+    "err": "None"
+   },
+   {
+    "plan": "r10g-05",
+    "onto_gold_item": "r10g-02",
+    "gold_answer": "B",
+    "plan_value": "None",
+    "exec_ok": false,
+    "err": "None"
+   }
+  ],
+  "interpretation": "负例结论（如实）：跨题计划移植全部 exec 失败/未绑定，未出现选错卡导致静默错值——错误卡在确定性执行面表现为安全弃权，真正风险面在 wrong-card-but-right（3 例同族卡功能等价，金标 id 口径过严）"
+ }
+}
