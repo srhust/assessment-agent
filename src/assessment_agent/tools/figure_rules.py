@@ -476,9 +476,19 @@ def _solve_sequence(
     if blanks and blanks != [len(row) - 1]:
         return _failed("空白格不在行末，当前只支持“求下一格”的序列题", mode="sequence", layout=layout)
     known_cells = [cell for cell in row if not _is_blank(cell)]
-    if len(known_cells) < 3:
+    # R11-C（人工裁决授权）：2 个已知格不再一票否决——但必须有**显式末位空格**
+    # 与均匀格律证据才进入仲裁；且要求全部命中规则指向同一选项（比 3+ 已知
+    # 更严，不是放松阈值）。无空格证据/规则不唯一 → 照常弃权。
+    explicit_blank = bool(blanks) and blanks == [len(row) - 1] and len(row) >= 3
+    if len(known_cells) < 2:
         return _failed(
-            f"题干可见图形只有 {len(known_cells)} 个，至少需要 3 个才能判断规律",
+            f"题干可见图形只有 {len(known_cells)} 个，不足以判断规律（弃权）",
+            mode="sequence",
+            layout=layout,
+        )
+    if len(known_cells) < 3 and not (explicit_blank and layout.get("grid_regular")):
+        return _failed(
+            f"题干可见图形只有 {len(known_cells)} 个且缺少显式末位空格/均匀格律证据（弃权）",
             mode="sequence",
             layout=layout,
         )
@@ -501,6 +511,14 @@ def _solve_sequence(
             mode="sequence",
             layout=layout,
         )
+    if len(known_cells) == 2:
+        labels = {h.label for h in hits if h.usable and h.label}
+        if len(labels) != 1:
+            return _failed(
+                "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权",
+                mode="sequence",
+                layout=layout,
+            )
     return _decide(hits, options, mode="sequence", layout=layout)
 
 

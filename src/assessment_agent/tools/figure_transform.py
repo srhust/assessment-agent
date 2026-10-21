@@ -474,12 +474,14 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
                       score_tol: Optional[float] = None,
                       margin_min: float = 0.05,
                       cell_geometry: Optional[Sequence[Optional[Sequence[int]]]] = None,
-                      stem_canvas: Optional[Sequence[int]] = None) -> Dict[str, Any]:
+                      stem_canvas: Optional[Sequence[int]] = None,
+                      target_cell: Optional[Sequence[int]] = None) -> Dict[str, Any]:
     """题面已知格 mask 序列（空格截断/置末）+ 选项格 mask → 候选+仲裁+对称声明。
 
     mode="sequence"：一行 N 已知 + 预测下一格。
-    mode="grid3"：8 已知 + 空格在第 9 位（行优先，末位为空格）——行内一致变换
-    与列内一致变换分别枚举，进入候选池；由仲裁决定共同支持。
+    mode="grid3"：8 已知 + 空格位置由 **target_cell=(r,c)** 显式给出（默认
+    历史 (2,2)）——行内/列内一致变换分别枚举进入候选池，由仲裁决定共同支持。
+    R11-C：空格位置属输入表示契约，不是规律唯一性阈值。
     frame：归一化帧尺寸**显式传入**（R4b P0-2：验证器用它做参数扫描，绝不改全局）。
     score_tol：选项打分容差；默认 None=沿用历史 0.15（保持既有验收），扫描组传入
     真实 tol——R4a 曾把仲裁容差写死 0.15，导致"容差扫描"实际不影响打分，一并修复。
@@ -516,12 +518,28 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
                     "candidates": [], "verdict": {"verdict": "no_rule", "answer": None,
                                                   "support": {}},
                     "symmetry_unresolvable": [], "per_cell_stabilizer": {}}
-        rows = [shapes[0:3], shapes[3:6], [shapes[6], shapes[7], None]]
-        cols = [[shapes[0], shapes[3], shapes[6]],
-                [shapes[1], shapes[4], shapes[7]],
-                [shapes[2], shapes[5], None]]
-        for kind, lines in (("row", rows), ("col", cols)):
-            # 每行/列已知相邻对的一致变换集合，跨行取共同元素 → 全程规律
+        # R11-C：空格位置由显式 target_cell=(r,c) 给出（默认历史 (2,2)），
+        # 行/列一致变换与外推基格按几何泛化；不降低任何规律唯一性判据。
+        tr, tc = (int(target_cell[0]), int(target_cell[1])) if target_cell else (2, 2)
+        if not (0 <= tr <= 2 and 0 <= tc <= 2):
+            return {"status": "insufficient", "reason": "target_cell_out_of_grid",
+                    "candidates": [], "verdict": {"verdict": "no_rule", "answer": None,
+                                                  "support": {}},
+                    "symmetry_unresolvable": [], "per_cell_stabilizer": {}}
+        # 重建行优先映射：已知序列 vals 按行优先跳过 target 槽位
+        vals = list(shapes)
+        gcells = [[None] * 3 for _ in range(3)]
+        k = 0
+        for r in range(3):
+            for c in range(3):
+                if (r, c) == (tr, tc):
+                    continue
+                gcells[r][c] = vals[k]
+                k += 1
+        rows = [[gcells[r][c] for c in range(3)] for r in range(3)]
+        cols = [[gcells[r][c] for r in range(3)] for c in range(3)]
+        for kind, lines, base_cell in (("row", rows, (tr, tc - 1) if tc > 0 else None),
+                                       ("col", cols, (tr - 1, tc) if tr > 0 else None)):
             step_sets: List[set] = []
             for line in lines:
                 known = [s for s in line if s is not None]
@@ -534,12 +552,13 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
                 else:
                     continue
                 break
-            if step_sets:
+            if step_sets and base_cell is not None:
                 for g in sorted(set.intersection(*step_sets)):
-                    base = shapes[7] if kind == "row" else shapes[5]
-                    # 行律对第 8 格外推、列律对第 6 格外推（空格恒在 (2,2)）
                     c = Candidate(rule_type=f"rotate_flip_grid_{kind}", transformation=g,
                                   source_cells=list(range(8)))
+                    base = gcells[base_cell[0]][base_cell[1]]
+                    # 外推方向与演示对一致：行律沿 c-1→c，列律沿 r-1→r；
+                    # target 不在第 1 列/第 1 行才有"左侧/上方已知基格"
                     c._pred_frame = G[g](base.frame)            # type: ignore
                     cands.append(c)
         # 整网格行优先序列也试一次（平移/缩放类）
@@ -567,13 +586,37 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
                 return None
             return opf(aa, bb)
 
-        lines = {"overlay_grid_row": [((0, 1, 2), (3, 4, 5), (6, 7, None)),
-                                      ],
-                 "overlay_grid_col": [((0, 3, 6), (1, 4, 7), (2, 5, None))]}
+        tgt_lin = tr * 3 + tc
+        def _lin(r, c):
+            l = r * 3 + c
+            if l == tgt_lin:
+                return None
+            return l - 1 if l > tgt_lin else l
+        def _make(kind):
+            out = []
+            for i in range(3):
+                if kind == 'row':
+                    trip = tuple(_lin(i, j) for j in range(3))
+                else:
+                    trip = tuple(_lin(j, i) for j in range(3))
+                out.append(trip)
+            demos = [t for t in out if None not in t]
+            tgt = [t for t in out if None in t][0]
+            known = [x for x in tgt if x is not None]
+            tgt_pos = tgt.index(None)
+            return [(demos[0], demos[1], (known[0], known[1], tgt_pos))]
+        lines = {"overlay_grid_row": _make('row'),
+                 "overlay_grid_col": _make('col')}
+        # 空格不在每行/列第 3 位时：or/and 规则方向不可逆，仅 xor（自反）
+        # 允许外推；如实记录，不为其伪造候选。
+        _row_reversible = (tc == 2)
+        _col_reversible = (tr == 2)
         overlay_eval: Dict[str, Dict[str, Any]] = {}
         for kind, groups in lines.items():
-            for (a, b, c_), (d, e, f_), (g, h, _) in groups:
-                for opname, opf in ((n, mkop(n)) for n in ("xor", "or", "and")):
+            for (a, b, c_), (d, e, f_), (g, h, _tp) in groups:
+                rev = _row_reversible if kind == "overlay_grid_row" else _col_reversible
+                op_names = ("xor", "or", "and") if rev else ("xor",)
+                for opname, opf in ((n, mkop(n)) for n in op_names):
                     # 语义与 R4a 基线一致：规律在演示行/列对上验证，空格行 (g,h) 外推
                     failed = False
                     worst = 0.0

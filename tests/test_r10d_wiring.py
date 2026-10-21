@@ -30,6 +30,8 @@ def _src(item_id):
 
 
 def _question(pid):
+    if "--" not in pid:
+        return _question_native(pid)
     it = _perturb(pid)
     s = _src(it["source_item"])
     q = Question(
@@ -39,6 +41,21 @@ def _question(pid):
         meta={"vision": {"bbox_format": "pixel_xywh",
                           "image_size": it["regions"]["image_size"],
                           "stem_matrix_crop": str(FIG / s["regions"]["stem_matrix_crop"]),
+                          "stem_matrix_grid": s["regions"].get("stem_matrix_grid"),
+                          "option_regions": []}},
+    )
+    return q, s
+
+
+def _question_native(pid):
+    s = _src(pid)
+    q = Question(
+        stem=s["stem"],
+        options=[QuestionOption(label=o["label"], text="图") for o in s["options"]],
+        image_path=str(FIG / "images" / "dev" / f"{pid}.png"), source="image",
+        meta={"vision": {"bbox_format": "pixel_xywh",
+                          "image_size": s["regions"]["image_size"],
+                          "stem_matrix_crop": "does_not_exist.png",
                           "stem_matrix_grid": s["regions"].get("stem_matrix_grid"),
                           "option_regions": []}},
     )
@@ -75,12 +92,24 @@ def test_forged_region_hash_blocked(tmp_path: Path):
     assert any(c.name == "figure.region_provenance" for c in v.checks)
 
 
-def test_no_stem_crop_still_abstains(tmp_path: Path):
-    """红线：定位器不得替代题干矩阵——无 stem crop 时保持结构化弃权。"""
-    q, s = _question("ft-mirror-04--tight")
+def test_no_stem_crop_rebuilds_via_pixel_evidence(tmp_path: Path):
+    """R11-C 契约（人工裁决授权）：解析通道缺 stem 矩阵时由像素格证据重建题干。
+
+    锁定机制不变量：证据必建、来源必标、不释放错误答案；释放数量在 D 六条件
+    实验逐题报告（不在单测里硬凑准确率）。"""
+    q, s = _question("ft-rot90-01")
     q.meta["vision"]["stem_matrix_crop"] = "does_not_exist.png"
+    q.meta["vision"]["option_regions"] = []
+    settings = make_settings(tmp_path)
     reg = SkillRegistry()
-    sol = reg.require("figure_reasoning").solve(q, SkillContext(settings=make_settings(tmp_path)))
-    assert sol.status == "failed"
-    assert (sol.meta or {}).get("reason") == "region_incomplete"
-    assert any("no_stem_crop" in str(p) for p in (sol.meta or {}).get("problems", []))
+    sol = reg.require("figure_reasoning").solve(q, SkillContext(settings=settings))
+    prov = sol.meta["region_provenance"]
+    assert prov["stem_crop_source"] == "pixel_grid_evidence"
+    assert prov["stem_evidence"]["canvas_sha"]
+    assert prov["stem_evidence"]["target_cell"] == [0, 3]
+    if sol.status == "solved":
+        assert sol.answer == s["answer"]
+        v = Verifier(settings, registry=SkillRegistry()).verify(q, sol)
+        assert v.action == "accept", [(c.name, c.passed) for c in v.checks if not c.passed]
+    else:
+        assert sol.answer is None, "未释放是唯一允许的失败形态"

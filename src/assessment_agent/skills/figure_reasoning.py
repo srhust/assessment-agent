@@ -31,6 +31,11 @@ TRANSFORM_META_KEYS = ("status", "answer", "reason", "verdict", "candidates",
                        "blockers", "overlay_eval", "coord_contract")
 
 
+def _xywh_to_xyxy(b):
+    x, y, w, h = [int(v) for v in b]
+    return [x, y, x + w, y + h]
+
+
 class FigureReasoningSkill(BaseSkill):
     id = "figure_reasoning"
     name_zh = "图形推理"
@@ -202,9 +207,10 @@ class FigureReasoningSkill(BaseSkill):
         notes: List[str] = []
         vision = (question.meta or {}).get("vision") or {}
         stem_crop = vision.get("stem_matrix_crop")
+        stem_crop_ok = bool(stem_crop) and Path(str(stem_crop)).is_file() if stem_crop else False
         n_opts = len(question.options or [])
-        if not stem_crop or not Path(str(stem_crop)).is_file():
-            return None, ["no_stem_crop（定位器不替代题干矩阵）"]
+        if not stem_crop_ok and not question.image_path:
+            return None, ["no_stem_crop_and_no_page"]
         if n_opts < 2:
             return None, ["选项少于 2 个"]
         try:
@@ -250,7 +256,7 @@ class FigureReasoningSkill(BaseSkill):
         for i, c in enumerate(cells):
             ink_x0, ink_y0, iw, ih = c["bbox_page"]
             ink_x1 = ink_x0 + iw
-            pad = max(int(iw * 0.5), 4)
+            pad = 12  # R11：向金标 padding-cell 几何对齐（ink+24px 盒）
             left_cap = (ends[i - 1] + starts[i]) // 2 if i > 0 else 0
             right_cap = (ends[i] + starts[i + 1]) // 2 if i < n - 1 else mask.shape[1]
             x0 = max(0, ink_x0 - pad) if i == 0 else max(left_cap, ink_x0 - pad)
@@ -270,12 +276,52 @@ class FigureReasoningSkill(BaseSkill):
             if not cv2.imwrite(str(p), img):
                 return None, notes + [f"裁剪写出失败: {lab}"]
             options.append((lab, str(p)))
+        stem_evidence: Dict[str, Any] = {}
+        if not stem_crop_ok:
+            # R11-C：格数不再由 VLM 自报决定——像素证据重建题干矩阵。
+            # 仅在布局假设唯一、目标空格可判时成立；否则如实弃权。
+            sregions = res.get("stem_regions") or []
+            if not sregions:
+                return None, notes + ["stem_band_missing（像素证据无题干带）"]
+            try:
+                from ..tools.diagram_grid_evidence import (
+                    build_grid_evidence, known_sequence)
+            except ImportError:
+                return None, notes + ["grid_evidence_unavailable"]
+            import hashlib
+            img_sha = hashlib.sha256(np.ascontiguousarray(mask).tobytes()).hexdigest()[:16]
+            text = getattr(question, "text", None) or getattr(question, "stem", "") or ""
+            sb = _xywh_to_xyxy(sregions[0]["bbox_page"])
+            ev = build_grid_evidence(mask, img_sha, sb,
+                                      0, 0, expects_blank=True,
+                                      cells_hint=sregions[0].get("cells"))
+            seq = known_sequence(ev)
+            if ev["verification_status"] == "ambiguous" or seq.get("mode") == "unsupported":
+                return None, notes + [
+                    f"stem_evidence_{seq.get('reason') or ev['verification_status']}"
+                    f"（布局假设不唯一/空格不可判，弃权不猜）"]
+            rows, cols = ev["grid_rows"], ev["grid_cols"]
+            from ..tools.diagram_grid_evidence import render_canvas
+            canvas = render_canvas(mask, ev)
+            out_dir.mkdir(parents=True, exist_ok=True)
+            sp = out_dir / "stem_evidence.png"
+            if not cv2.imwrite(str(sp), np.where(canvas, 0, 255).astype(np.uint8)):
+                return None, notes + ["stem_evidence_write_failed"]
+            stem_crop = str(sp)
+            stem_evidence = {
+                "grid": [rows, cols], "target_cell": ev.get("target_cell"),
+                "target_basis": ev.get("target_basis"),
+                "status": ev["verification_status"], "confidence": ev["confidence"],
+                "visible_cells": ev["visible_cells"], "blank_cells": ev["blank_cells"],
+                "cell_pixel_shas": [c["cell_pixel_sha"] for c in ev["cells"]],
+                "canvas_sha": hashlib.sha256(np.ascontiguousarray(canvas).tobytes()).hexdigest()[:16],
+            }
         inputs = {
             "stem_crop": str(stem_crop),
             "options": options,
             "grid": (tuple(vision["stem_matrix_grid"])
-                     if vision.get("stem_matrix_grid") else None),
-            "region_provenance": {
+                     if vision.get("stem_matrix_grid") else
+                     ([rows, cols] if stem_evidence else None)),            "region_provenance": {
                 "algorithm": "r10d-page-localizer-v1",
                 "image": str(question.image_path),
                 "n_options": n_opts,
@@ -284,7 +330,9 @@ class FigureReasoningSkill(BaseSkill):
                                    "completeness", "source", "confidence")},
                                   "cell_bbox": bx}
                                  for c, bx in zip(cells, boxes)],
-                "stem_crop_source": "vision_parser",
+                "stem_crop_source": ("vision_parser" if stem_crop_ok
+                                     else "pixel_grid_evidence"),
+                "stem_evidence": stem_evidence,
                 "label_assignment": "row_major",
                 "second_observation": bool(extra),
                 "notes": res.get("notes") or [],
@@ -343,6 +391,29 @@ class FigureReasoningSkill(BaseSkill):
             if any(not (c.get("completeness") or {}).get("passed")
                    for c in cells_old if isinstance(c, dict)):
                 return False, "存在完整性未过的选项裁剪"
+            sev = prov.get("stem_evidence") or {}
+            if prov.get("stem_crop_source") == "pixel_grid_evidence" and sev:
+                # R11：像素证据题干独立复推——重跑格契约并比对画布哈希与目标位
+                from ..tools.diagram_grid_evidence import (
+                    build_grid_evidence, render_canvas)
+                import hashlib
+                import numpy as np
+                sregions = res.get("stem_regions") or []
+                if not sregions:
+                    return False, "复核无题干带，无法重建格证据"
+                ev2 = build_grid_evidence(mask, "", _xywh_to_xyxy(sregions[0]["bbox_page"]),
+                                          int(sev["grid"][0]), int(sev["grid"][1]),
+                                          expects_blank=True,
+                                          cells_hint=sregions[0].get("cells"))
+                canvas2 = render_canvas(mask, ev2)
+                sha2 = hashlib.sha256(
+                    np.ascontiguousarray(canvas2).tobytes()).hexdigest()[:16]
+                if sha2 != sev.get("canvas_sha"):
+                    return False, "题干证据画布复推哈希不一致（格内容漂移）"
+                if list(ev2.get("target_cell") or []) != list(sev.get("target_cell") or []):
+                    return False, f"目标空格复推 {ev2.get('target_cell')} ≠ 求解时 {sev.get('target_cell')}"
+                return True, (f"{len(fresh)} 选项区哈希复推一致且完整；"
+                               f"题干 {sev['grid'][0]}×{sev['grid'][1]} 证据复推一致")
             return True, f"{len(fresh)} 选项区哈希复推一致且完整"
         except Exception as exc:  # noqa: BLE001
             return False, f"复推异常：{type(exc).__name__}: {exc}"
