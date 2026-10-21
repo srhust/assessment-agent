@@ -1,0 +1,63 @@
+{
+ "stage": "R10-D region localization & content completeness (NO new solver rules)",
+ "components": {
+  "localizer": "figure_page_localizer: band split / pitch-cluster / label prune / oversize split / text-band veto / blank cells / bbox_page+bbox_local+pixel_sha / VLM slot reconciliation",
+  "fallback_wiring": "figure_reasoning._localizer_fallback_inputs: VLM option regions missing -> deterministic pixel option cells + padded cell-box crops; stem crop still REQUIRED from parsing channel (red line: no whole-page silent fallback)",
+  "completeness_gate": "check_option_crop per cell; verifier _recheck_region_provenance independent re-derive: hash mismatch or incomplete crop -> unverified; transform-channel independent rebuild now goes through the SAME pixel fallback entry",
+  "second_observation": "_targeted_second_observation: single targeted bbox query, opt-in ASSESSMENT_R10_SECOND_OBS=on (vision gateway ReadTimeout-heavy this week; default off, code path exercised only when enabled)"
+ },
+ "zero_api_localization": {
+  "native_figshots_dev": {
+   "options_slot": "42/48",
+   "stem_slots": "60/66",
+   "blank_cells": "4/4",
+   "self_consistent": "15/15"
+  },
+  "perturbed_new_layouts": {
+   "pages": 30,
+   "gold": "recorded at assembly, layouts never rendered before",
+   "options_slot": "81/105",
+   "stem_slots": "103/141",
+   "per_transform": {
+    "small": "16/21 opt, 14/27 stem",
+    "large": "20/21 opt, 24/29 stem",
+    "vertical": "13/21 opt, 23/27 stem",
+    "distractor": "16/21 opt, 21/29 stem",
+    "tight": "16/21 opt, 21/29 stem"
+   },
+   "failure_modes": [
+    "tight 6px inter-cell merging oscillation",
+    "0.75x ink below min_ink",
+    "distractor bars joined into bands"
+   ]
+  },
+  "self_consistency_note": "RED LINE honored: self-consistency reported separately, never counted as true localization"
+ },
+ "four_condition_live": {
+  "profile_off": {
+   "A": "13/13",
+   "B": "12/13",
+   "C": "0/13",
+   "D": "0/13",
+   "abstain_ok": "2/2 all",
+   "false_accepts": 0
+  },
+  "profile_merge": {
+   "A": "13/13",
+   "B": "12/13",
+   "C": "0/13",
+   "D": "0/13",
+   "abstain_ok": "2/2 all",
+   "false_accepts": 0
+  },
+  "root_cause_C_D": "insufficient stem sequence cells (solver capability boundary), NOT option localization; work order forbids adding figure solver rules, so C/D stays unreleased this round",
+  "completeness_evidence_live": "scale-09: '选项 C 的裁剪区域几乎空白，无法参与匹配（不猜测）' fired from real pixel crops under C-condition",
+  "frozen_files": "R9B_FOUR_CONDITION.json restored via git checkout after both reruns; new artifacts R10D_FOUR_CONDITION.json / _MERGE.json"
+ },
+ "end_to_end_release": {
+  "ft-mirror-04--tight": "solve=solved A == gold A, provenance recheck passed, full Verifier accept (test_pixel_fallback_end_to_end_new_layout)",
+  "forgery": "edited pixel_sha -> unverified figure.region_provenance (test_forged_region_hash_blocked)",
+  "red_line_abstain": "missing stem crop -> structured region_incomplete, no whole-page guess (test_no_stem_crop_still_abstains)"
+ },
+ "suite": "600 passed, 2 skipped"
+}

@@ -158,7 +158,8 @@ class FigureReasoningSkill(BaseSkill):
                     "profile": profile}
             return inputs
 
-    def _region_incomplete(self, question: Question) -> Solution:
+    def _region_incomplete(self, question: Question,
+                           extra: Optional[List[str]] = None) -> Solution:
         """v2 区域证据不完整：说明缺什么，返回结构化失败（不猜测、不回退整图）。"""
         vision = (question.meta or {}).get("vision") or {}
         problems: List[str] = []
@@ -178,6 +179,8 @@ class FigureReasoningSkill(BaseSkill):
             problems.append("选项图形裁剪不足 2 份")
         if lost:
             problems.append(f"选项裁剪文件丢失: {[region.get('label') for region in lost]}")
+        if extra:
+            problems.append("像素定位器：" + "；".join(str(e) for e in extra))
         detail = "；".join(problems) or "区域信息不足以定位图形"
         return Solution(
             status="failed",
@@ -189,6 +192,160 @@ class FigureReasoningSkill(BaseSkill):
             steps=[f"[区域检查] {detail}"],
             meta={"stage": self.stage, "reason": "region_incomplete", "problems": problems},
         )
+
+    def _localizer_fallback_inputs(self, question: Question,
+                                   ctx: SkillContext) -> Tuple[Optional[Dict[str, Any]], List[str]]:
+        """R10-D 确定性回退：像素定位选项区（行序标签指派）+ 完整性校验 + 定向二次观察。
+
+        题干裁剪仍要求解析通道产物（定位器不盲拼矩阵——避免整图假证据红线）。
+        """
+        notes: List[str] = []
+        vision = (question.meta or {}).get("vision") or {}
+        stem_crop = vision.get("stem_matrix_crop")
+        n_opts = len(question.options or [])
+        if not stem_crop or not Path(str(stem_crop)).is_file():
+            return None, ["no_stem_crop（定位器不替代题干矩阵）"]
+        if n_opts < 2:
+            return None, ["选项少于 2 个"]
+        try:
+            import cv2
+            import numpy as np
+        except ImportError:
+            return None, ["opencv_unavailable"]
+        try:
+            from ..tools.figure_page_localizer import localize_page
+            from ..tools.figure_tools import load_mask
+            mask = load_mask(str(question.image_path))
+        except Exception as exc:  # noqa: BLE001
+            return None, [f"mask_error:{type(exc).__name__}"]
+        vlm_opts = [r for r in (vision.get("option_regions") or []) if isinstance(r, dict)]
+        extra: List[Dict[str, Any]] = []
+        res = localize_page(mask, n_options=n_opts, vlm_options=vlm_opts)
+        cells = res.get("option_regions") or []
+        if len(cells) != n_opts:
+            extra = self._targeted_second_observation(question, ctx, res, n_opts)
+            if extra:
+                res2 = localize_page(mask, n_options=n_opts,
+                                     vlm_options=vlm_opts + extra)
+                cells = res2.get("option_regions") or cells
+                notes.append("second_observation_applied")
+        if len(cells) != n_opts:
+            return None, notes + [f"定位到 {len(cells)} 个选项区，题面 {n_opts} 个选项"]
+        bad = [c["index"] for c in cells if not c["completeness"]["passed"]]
+        if bad:
+            return None, notes + [f"选项裁剪完整性未过: idx{bad}"]
+        if ctx is not None and ctx.artifacts is not None:
+            out_dir = ctx.artifacts.dir / "regions_pixel"
+        else:
+            import tempfile
+            out_dir = Path(tempfile.gettempdir()) / "assessment_r10d"
+        labels = [str(o.label) for o in question.options]
+        # 墨迹框扩为格盒：以相邻单元间隙中点切分，端头按中位节距外扩
+        boxes: List[List[int]] = []
+        n = len(cells)
+        starts = [c["bbox_page"][0] for c in cells]
+        ends = [c["bbox_page"][0] + c["bbox_page"][2] for c in cells]
+        pitch = max(4, (starts[-1] - starts[0]) // max(1, n - 1)) if n > 1 else \
+            max(c["bbox_page"][2] for c in cells)
+        for i, c in enumerate(cells):
+            ink_x0, ink_y0, iw, ih = c["bbox_page"]
+            ink_x1 = ink_x0 + iw
+            pad = max(int(iw * 0.5), 4)
+            left_cap = (ends[i - 1] + starts[i]) // 2 if i > 0 else 0
+            right_cap = (ends[i] + starts[i + 1]) // 2 if i < n - 1 else mask.shape[1]
+            x0 = max(0, ink_x0 - pad) if i == 0 else max(left_cap, ink_x0 - pad)
+            x1 = min(mask.shape[1], ink_x1 + pad) if i == n - 1 else min(right_cap, ink_x1 + pad)
+            y0 = max(0, ink_y0 - int(ih * 0.5))
+            y1 = min(mask.shape[0], ink_y0 + ih + int(ih * 0.5))
+            # 保底：格盒必须完整包含墨迹（tight 间隙帽不得切进墨迹框）
+            x0 = min(x0, ink_x0); x1 = max(x1, ink_x1)
+            y1 = max(y1, ink_y0 + ih)
+            boxes.append([x0, y0, x1, y1])
+        options: List[Tuple[str, str]] = []
+        for lab, c, (x0, y0, x1, y1) in zip(labels, cells, boxes):
+            crop = mask[y0:y1, x0:x1]
+            img = np.where(crop, 0, 255).astype(np.uint8)
+            out_dir.mkdir(parents=True, exist_ok=True)
+            p = out_dir / f"option_{lab}.png"
+            if not cv2.imwrite(str(p), img):
+                return None, notes + [f"裁剪写出失败: {lab}"]
+            options.append((lab, str(p)))
+        inputs = {
+            "stem_crop": str(stem_crop),
+            "options": options,
+            "grid": (tuple(vision["stem_matrix_grid"])
+                     if vision.get("stem_matrix_grid") else None),
+            "region_provenance": {
+                "algorithm": "r10d-page-localizer-v1",
+                "image": str(question.image_path),
+                "n_options": n_opts,
+                "option_cells": [{**{k: c[k] for k in
+                                  ("bbox_page", "bbox_local", "pixel_sha",
+                                   "completeness", "source", "confidence")},
+                                  "cell_bbox": bx}
+                                 for c, bx in zip(cells, boxes)],
+                "stem_crop_source": "vision_parser",
+                "label_assignment": "row_major",
+                "second_observation": bool(extra),
+                "notes": res.get("notes") or [],
+            },
+        }
+        return inputs, notes
+
+    def _targeted_second_observation(self, question: Question, ctx: SkillContext,
+                                     res: Dict[str, Any], n_opts: int) -> List[Dict[str, Any]]:
+        """置信不足/区域缺失时的**一次**定向二次观察（只问缺的框，不做整页重解析）。
+
+        默认关闭，`ASSESSMENT_R10_SECOND_OBS=on` 启用；失败返回 []（不重试、不追问）。
+        """
+        import os
+        if os.environ.get("ASSESSMENT_R10_SECOND_OBS", "").lower() != "on":
+            return []
+        if ctx is None or ctx.llm is None:
+            return []
+        have = [c["bbox_page"] for c in (res.get("option_regions") or [])]
+        system = ("你是行测图形题定位助手。只输出 JSON：{\"boxes\": [[x,y,w,h], ...]}，"
+                  "顺序对应缺失选项（从左到右、从上到下），坐标为原图像素。不要输出其他内容。")
+        user = (f"页面图 {res.get('image_size')}，共 {n_opts} 个选项，已定位 {len(have)} 个："
+                f"{have}。请给出其余 {n_opts - len(have)} 个选项图形区域的 bbox。")
+        try:
+            payload = ctx.llm.complete_json(system, user, image_path=str(question.image_path))
+        except Exception:  # noqa: BLE001 - 网络不稳：一次即止
+            return []
+        boxes = payload.get("boxes") if isinstance(payload, dict) else None
+        out = []
+        labels = [str(o.label) for o in question.options]
+        start = len(have)
+        for i, b in enumerate(boxes or []):
+            if isinstance(b, (list, tuple)) and len(b) == 4:
+                lab = labels[start + i] if start + i < len(labels) else str(i)
+                out.append({"label": lab, "bbox": [int(v) for v in b],
+                            "has_figure": True})
+        return out
+
+    def _recheck_region_provenance(self, question: Question,
+                                   prov: Dict[str, Any]) -> Tuple[bool, str]:
+        """验证器独立复推：重跑定位，比对 pixel_sha 集与完整性（不复用求解结论）。"""
+        try:
+            import cv2  # noqa: F401
+            from ..tools.figure_page_localizer import localize_page
+            from ..tools.figure_tools import load_mask
+            mask = load_mask(str(prov.get("image") or question.image_path))
+            n_opts = int(prov.get("n_options") or len(question.options or []))
+            res = localize_page(mask, n_options=n_opts)
+            fresh = [c["pixel_sha"] for c in (res.get("option_regions") or [])]
+            cells_old = prov.get("option_cells") or []
+            old = [c.get("pixel_sha") if isinstance(c, dict) else c for c in cells_old]
+            if len(fresh) != len(old):
+                return False, f"独立复推选项数 {len(fresh)} ≠ 求解时 {len(old)}"
+            if fresh != old:
+                return False, "独立复推像素哈希与求解时不一致（区域漂移？）"
+            if any(not (c.get("completeness") or {}).get("passed")
+                   for c in cells_old if isinstance(c, dict)):
+                return False, "存在完整性未过的选项裁剪"
+            return True, f"{len(fresh)} 选项区哈希复推一致且完整"
+        except Exception as exc:  # noqa: BLE001
+            return False, f"复推异常：{type(exc).__name__}: {exc}"
 
     def _run_adapter(self, inputs: Dict[str, Any], *, threshold: Optional[float] = None, canvas_path: Optional[str] = None) -> Dict[str, Any]:
         from ..tools.figure_adapter import solve_figure_regions
@@ -205,9 +362,15 @@ class FigureReasoningSkill(BaseSkill):
                        inputs: Dict[str, Any]) -> Solution:
         """R4g：布局重建证据随行——resolution 记入 meta.diagram_layout。"""
         res = inputs.pop("layout_resolution", None)
+        prov = inputs.get("region_provenance")
+        if prov is not None:
+            inputs = dict(inputs)
+            inputs.pop("region_provenance", None)
         sol = self._solve_regions_core(question, ctx, inputs)
         if res is not None:
             sol.meta["diagram_layout"] = res
+        if prov is not None:
+            sol.meta["region_provenance"] = prov
         return sol
 
     def _solve_regions_core(self, question: Question, ctx: SkillContext,
@@ -409,9 +572,12 @@ class FigureReasoningSkill(BaseSkill):
         if region_inputs is not None:
             return self._solve_regions(question, ctx, region_inputs)
         if vision_present:
-            # 区域输入存在但不完整（缺题干矩阵裁剪 / 可用选项裁剪 < 2 / 裁剪文件丢失）：
-            # 返回结构化失败，禁止把整张网页截图当作旧式标准题图静默回退（R2b P1）
-            return self._region_incomplete(question)
+            # R10-D：VLM 区域不足时，确定性像素定位器补齐选项区（题干裁剪仍需解析
+            # 通道提供，不回退整图）；来源与完整性全程可审计
+            fb, fb_notes = self._localizer_fallback_inputs(question, ctx)
+            if fb is not None:
+                return self._solve_regions(question, ctx, fb)
+            return self._region_incomplete(question, extra=fb_notes)
 
         grid = self._grid(question)
         invocation = ctx.toolbox.run(TOOL_ID, path=question.image_path, grid=grid)
@@ -512,6 +678,10 @@ class FigureReasoningSkill(BaseSkill):
                 from ..tools.figure_adapter import solve_figure_transform_regions
                 inputs = self._region_inputs(question, ctx)
                 if not inputs:
+                    # R10-D：验证独立重建与求解走**同一像素回退入口**（重新定位，
+                    # 不复用求解时的裁剪文件声明）
+                    inputs, _ = self._localizer_fallback_inputs(question, ctx)
+                if not inputs:
                     raise RuntimeError("区域裁剪不可用")
                 fresh = solve_figure_transform_regions(
                     inputs["stem_crop"], inputs["options"], grid=inputs.get("grid"))
@@ -539,6 +709,16 @@ class FigureReasoningSkill(BaseSkill):
         if solution.status != "solved":
             return None
         meta = solution.meta or {}
+        prov = meta.get("region_provenance")
+        if prov:
+            # R10-D 内容完整性红线：像素定位来源必须能被独立复推（哈希一致+完整），
+            # 否则不释放——定位器的产物不能靠自身声明过检
+            ok, detail = self._recheck_region_provenance(question, prov)
+            chk = VerificationCheck(name="figure.region_provenance", passed=ok,
+                                    detail=detail)
+            if not ok:
+                return Verification(passed=False, action="unverified", checks=[chk],
+                                    notes=f"区域来源复核失败：{detail}")
         if (meta.get("channel") or "") == "transform" or meta.get("transform_cross_support"):
             # R4a：变换通道解 + 双通道互证解 → 由变换独立 verifier 接管复核
             # （R2c substitution 复核不认识旋转/镜像/叠加等几何约束，互证题若再走
