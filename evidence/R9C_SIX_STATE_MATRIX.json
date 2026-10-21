@@ -5,10 +5,10 @@
   "retrievable": 47,
   "plannable": 26,
   "executable": 42,
-  "verified": 23,
-  "dev_passed": 1
+  "verified": 35,
+  "dev_passed": 2
  },
- "dev_results_run": "r9c_xingce_dev_oracle",
+ "dev_results_run": "r9c_word_templates",
  "cards": {
   "da.annual-average-timing": {
    "skill": "data_analysis",
@@ -698,8 +698,8 @@
     "note": "+-*/ 表达式面可确定性执行；tool 卡走各自工具通道"
    },
    "verified": {
-    "ok": false,
-    "note": "solve 确定性未通（status=failed: 计算结果与所有选项均不匹配），verify 无从核验"
+    "ok": true,
+    "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
     "ok": false,
@@ -727,8 +727,8 @@
     "note": "+-*/ 表达式面可确定性执行；tool 卡走各自工具通道"
    },
    "verified": {
-    "ok": false,
-    "note": "solve 确定性未通（status=failed: 计算结果与所有选项均不匹配），verify 无从核验"
+    "ok": true,
+    "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
     "ok": false,
@@ -756,8 +756,8 @@
     "note": "+-*/ 表达式面可确定性执行；tool 卡走各自工具通道"
    },
    "verified": {
-    "ok": false,
-    "note": "solve 确定性未通（status=failed: 计算结果与所有选项均不匹配），verify 无从核验"
+    "ok": true,
+    "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
     "ok": false,
@@ -785,12 +785,12 @@
     "note": "+-*/ 表达式面可确定性执行；tool 卡走各自工具通道"
    },
    "verified": {
-    "ok": false,
-    "note": "solve 确定性未通（status=failed: 计算结果与所有选项均不匹配），verify 无从核验"
+    "ok": true,
+    "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
-    "ok": false,
-    "note": "dev 题 1 个，最新运行 r9c_xingce_dev_oracle 中命中记录 1 个但无 correct+solved"
+    "ok": true,
+    "note": "通过 dev 题 ['xd-nc-10']"
    }
   },
   "nc.concentration-conservation": {
@@ -814,8 +814,8 @@
     "note": "+-*/ 表达式面可确定性执行；tool 卡走各自工具通道"
    },
    "verified": {
-    "ok": false,
-    "note": "solve 确定性未通（status=failed: 计算结果与所有选项均不匹配），verify 无从核验"
+    "ok": true,
+    "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
     "ok": false,
@@ -843,8 +843,8 @@
     "note": "+-*/ 表达式面可确定性执行；tool 卡走各自工具通道"
    },
    "verified": {
-    "ok": false,
-    "note": "solve 确定性未通（status=failed: 计算结果与所有选项均不匹配），verify 无从核验"
+    "ok": true,
+    "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
     "ok": false,
@@ -872,8 +872,8 @@
     "note": "+-*/ 表达式面可确定性执行；tool 卡走各自工具通道"
    },
    "verified": {
-    "ok": false,
-    "note": "solve 确定性未通（status=failed: 计算结果与所有选项均不匹配），verify 无从核验"
+    "ok": true,
+    "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
     "ok": false,
@@ -901,8 +901,8 @@
     "note": "+-*/ 表达式面可确定性执行；tool 卡走各自工具通道"
    },
    "verified": {
-    "ok": false,
-    "note": "solve 确定性未通（status=failed: 计算结果与所有选项均不匹配），verify 无从核验"
+    "ok": true,
+    "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
     "ok": false,
@@ -930,8 +930,8 @@
     "note": "+-*/ 表达式面可确定性执行；tool 卡走各自工具通道"
    },
    "verified": {
-    "ok": false,
-    "note": "solve 确定性未通（status=failed: 计算结果与所有选项均不匹配），verify 无从核验"
+    "ok": true,
+    "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
     "ok": false,
@@ -959,8 +959,8 @@
     "note": "+-*/ 表达式面可确定性执行；tool 卡走各自工具通道"
    },
    "verified": {
-    "ok": false,
-    "note": "solve 确定性未通（status=failed: 计算结果与所有选项均不匹配），verify 无从核验"
+    "ok": true,
+    "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
     "ok": false,
@@ -988,8 +988,8 @@
     "note": "+-*/ 表达式面可确定性执行；tool 卡走各自工具通道"
    },
    "verified": {
-    "ok": false,
-    "note": "solve 确定性未通（status=failed: 计算结果与所有选项均不匹配），verify 无从核验"
+    "ok": true,
+    "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
     "ok": false,
@@ -1017,8 +1017,8 @@
     "note": "+-*/ 表达式面可确定性执行；tool 卡走各自工具通道"
    },
    "verified": {
-    "ok": false,
-    "note": "solve 确定性未通（status=failed: 计算结果与所有选项均不匹配），verify 无从核验"
+    "ok": true,
+    "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
     "ok": false,
