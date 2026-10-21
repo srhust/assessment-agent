@@ -332,10 +332,10 @@ def parse_expr(text: str, offset: int = 0, stem: Optional[str] = None) -> Node:
                 return n
             if ch in "*/%":
                 lx.i += 1
-                if ch == "%":  # 百分号后缀：x% = x/100
+                if ch == "%":  # 百分号后缀：x% = x/100（100 为语法合成常数，span=-1 不参与题干锚定）
                     n = Node("bin", "/", span=(n.span[0], n.span[1] + 1),
                              children=[n, Node("num", value=Fraction(100),
-                                               span=(lx.i - 1, lx.i))])
+                                               span=(-1, -1))])
                     continue
                 r = unary()
                 n = Node("bin", ch, span=(n.span[0], r.span[1]), children=[n, r])
@@ -479,3 +479,25 @@ def computation_evidence(root: Node) -> Dict[str, Any]:
             distinct = False
     return {"has_strong_operator": has_strong, "combines_distinct_values": distinct,
             "ok": bool(has_strong or distinct)}
+
+
+def spans_anchor_stem(stem: str, spans: List[List[Any]]) -> bool:
+    """复核通道：每个数值节点 span 必须在（等宽归一化）题干上锚定同值数字。
+
+    span 来自 Solver 的 AST；Verifier 独立按偏移重取子串并比对，防止
+    "表达式对但数字来源假"的构造。
+    """
+    norm = stem.translate(_EQUIV)
+    for s, e, v in spans:
+        if int(s) < 0:
+            continue  # 语法合成常数（%/100）
+        seg = norm[int(s):int(e)]
+        m = _NUM_RE.match(seg)
+        if not m or m.group(0) != seg:
+            return False
+        try:
+            if Fraction(seg) != Fraction(str(v)):
+                return False
+        except (ValueError, ZeroDivisionError):
+            return False
+    return True

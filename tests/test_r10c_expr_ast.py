@@ -87,3 +87,44 @@ def test_degenerate_copy_no_evidence():
     assert ev["combines_distinct_values"] is False  # 左右同值：退化
     node2 = parse_expr("9")
     assert computation_evidence(node2)["ok"] is False
+
+
+def _skill_env():
+    from assessment_agent.config import Settings
+    from assessment_agent.schemas import Question, QuestionOption, Solution
+    from assessment_agent.skills.base import SkillContext
+    from assessment_agent.skills.numeric_calculation import NumericCalculationSkill
+    from assessment_agent.tools import default_toolbox
+    return (NumericCalculationSkill(),
+            SkillContext(settings=Settings.from_env(), llm=None,
+                         toolbox=default_toolbox()), Question, QuestionOption, Solution)
+
+
+def test_equal_value_legit_release_via_ast():
+    """工单 C5：目标=题干已知数值的合法题（3^4÷9=9）凭完整依赖链接受。"""
+    sk, ctx, Question, QuestionOption, _ = _skill_env()
+    q = Question(id="t", skill="numeric_calculation", stem="计算：3^4÷9 = ?",
+                 options=[QuestionOption(label=l, text=t) for l, t in
+                          [("A", "3"), ("B", "9"), ("C", "27"), ("D", "81")]])
+    sol = sk.solve(q, ctx)
+    assert sol.status == "solved" and sol.method == "expr_ast" and sol.answer == "B"
+    ver = sk.verify(q, sol, ctx)
+    assert ver.action == "accept"
+    names = {c.name for c in ver.checks}
+    assert "numeric.expr_ast_replay" in names
+    dg = next(c for c in ver.checks if c.name == "numeric.degenerate_copy")
+    assert dg.passed and "受控放行" in dg.detail
+
+
+def test_ast_forgery_blocked():
+    """meta 里改写 value/postfix 任一 → 复核通道必抓（不信任 Solver 自报）。"""
+    sk, ctx, Question, QuestionOption, Solution = _skill_env()
+    q = Question(id="t", skill="numeric_calculation", stem="计算：7^2 - 4^2 = ?",
+                 options=[QuestionOption(label=l, text=t) for l, t in
+                          [("A", "33"), ("B", "49"), ("C", "16"), ("D", "65")]])
+    sol = sk.solve(q, ctx)
+    forged = Solution(status="solved", skill="numeric_calculation", answer="B",
+                      method="expr_ast",
+                      meta={**sol.meta, "value": 45.0, "matched_label": "B"})
+    ver = sk.verify(q, forged, ctx)
+    assert ver.action in ("unverified", "reject") and ver.final_answer is None

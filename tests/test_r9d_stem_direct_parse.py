@@ -28,31 +28,36 @@ def _q(stem, opts):
 
 
 def test_sign_loss_is_caught_not_released():
-    """-2^4+2^4=0；若 Solver 抽取丢负号得 32，必须被阻断而非 accept。"""
+    """-2^4+2^4=0。R10-C 后 AST-first：抽取失真在源头消除（AST 一元负号语义）；
+    同时手工构造旧 sympy_exact 失真解，验证直读护栏仍在位。"""
     sk = NumericCalculationSkill()
     q = _q("计算：-2^4 + 2^4 = ?", [("A", "0"), ("B", "32"), ("C", "-32"), ("D", "16")])
     sol = sk.solve(q, _ctx())
+    assert sol.method == "expr_ast" and sol.answer == "A"
     ver = sk.verify(q, sol, _ctx())
+    assert ver.action == "accept"
     names = {c.name for c in (ver.checks or [])}
-    if sol.meta.get("expression") == "2**4 + 2**4":
-        # 抽取失真确实存在的路径：必须 unverified
-        assert "numeric.stem_direct_parse" in names
-        assert ver.action != "accept"
-        assert ver.final_answer is None
-    else:
-        # 抽取正确（=-16+16=0）：直读通道应给出通过的独立证据
-        assert "numeric.stem_direct_parse" in names
-        assert ver.final_answer == "A"
+    assert "numeric.expr_ast_replay" in names
+    # 护栏：旧失真抽取（丢前导负号得 32）走 sympy_exact 必须被 unverified
+    from assessment_agent.schemas import Solution
+    bad = Solution(status="solved", skill="numeric_calculation", answer="B",
+                   method="sympy_exact",
+                   meta={"expression": "2**4 + 2**4", "value": 32.0, "exact": "32",
+                         "matched_label": "B"})
+    ver2 = sk.verify(q, bad, _ctx())
+    chk = next(c for c in (ver2.checks or []) if c.name == "numeric.stem_direct_parse")
+    assert chk.passed is False and chk.severity == "blocking"
+    assert ver2.action == "unverified" and ver2.final_answer is None
 
 
 def test_faithful_arithmetic_stem_still_released():
-    """题面直读与 Solver 一致时正常 accept，且新检查在列。"""
+    """题面 AST 三渠道互证一致时正常 accept（R10-C 起的证据形态）。"""
     sk = NumericCalculationSkill()
     q = _q("计算：7^2 - 4^2 = ?", [("A", "33"), ("B", "49"), ("C", "16"), ("D", "65")])
     sol = sk.solve(q, _ctx())
     ver = sk.verify(q, sol, _ctx())
     assert sol.status == "solved" and sol.answer == "A"
-    chk = next(c for c in (ver.checks or []) if c.name == "numeric.stem_direct_parse")
+    chk = next(c for c in (ver.checks or []) if c.name == "numeric.expr_ast_replay")
     assert chk.passed is True
     assert ver.action == "accept"
 

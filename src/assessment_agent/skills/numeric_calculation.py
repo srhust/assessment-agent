@@ -15,6 +15,8 @@ from typing import List, Optional, Tuple
 
 from ..schemas import Question, Solution, Verification, VerificationCheck
 from ..tools.math_tool import fraction_eval, match_option, option_value
+from ..tools.expr_ast import (computation_evidence, parse_stem_expression,
+                              replay_postfix, spans_anchor_stem)
 from ..tools.word_problem import evaluate_plan, extract_word_problem
 from .base import BaseSkill, SkillContext
 
@@ -155,6 +157,12 @@ def _degenerate_percent(expression: str, stem: str) -> bool:
     return True
 
 
+def _claim_value(solution) -> float:
+    """meta.value 可为 0.0——禁止 `or nan` 短路把合法零值误判缺失（R10-C 修复）。"""
+    v = solution.meta.get("value") if solution.meta else None
+    return float("nan") if v is None else float(v)
+
+
 class NumericCalculationSkill(BaseSkill):
     id = "numeric_calculation"
     name_zh = "数字计算"
@@ -164,6 +172,12 @@ class NumericCalculationSkill(BaseSkill):
 
     def solve(self, question: Question, ctx: SkillContext) -> Solution:
         options = self.option_pairs(question)
+        # R10-C（工单）：纯算术题面走结构化 AST（运算节点+题干跨度+计算依赖），
+        # 弃"抽取最长数字运算片段"；含 C/P/阶乘/幂/根式时 python_math 的字符串
+        # 抽取本会碎裂，AST 是正主通道。自然语言题面 parse 返回 None，走原链。
+        ast_sol = self._solve_ast(question, ctx, options)
+        if ast_sol is not None:
+            return ast_sol
         invocation = ctx.toolbox.run("python_math", text=question.stem, options=options)
         if not invocation.ok:
             # 直接表达式抽取失败 → 自然语言数量关系理解层（R2c），计算仍走 Fraction
@@ -357,6 +371,46 @@ class NumericCalculationSkill(BaseSkill):
             confidence=0.8, method="reasoning_planner", meta=meta)
 
     # ------------------------------------------------ 应用题理解层（R2c）
+    def _solve_ast(self, question: Question, ctx: SkillContext,
+                   options) -> Optional[Solution]:
+        """题面结构化 AST 通道：解析不出合法 AST 即 None（宁缺毋滥）。"""
+        try:
+            node = parse_stem_expression(question.stem)
+        except Exception:  # noqa: BLE001 —— 解析器的任何意外都退化为不适用
+            return None
+        if node is None:
+            return None
+        try:
+            v = node.eval()
+        except (ValueError, ZeroDivisionError):
+            return None
+        infix = node.to_infix()
+        invocation = ctx.toolbox.run("python_math", text=question.stem, options=options)
+        if not question.options:
+            label = None
+        else:
+            label = match_option(float(v), options, rel_tol=_rel_tol(question.stem))
+        if label is None and question.options:
+            # AST 有值但匹配不上选项：可能题面还有后续条件（如"=?"前的应用文），
+            # 交回原通道，不硬答。
+            return None
+        ev = computation_evidence(node)
+        meta = {"expression": infix, "value": float(v), "exact": str(v),
+                "matched_label": label,
+                "expr_ast": {"infix": infix, "ops": node.ops(),
+                             "spans": node.number_spans(), "postfix": node.postfix(),
+                             "evidence": ev}}
+        steps = [f"结构化 AST：{infix}",
+                 f"运算节点：{ev['has_strong_operator'] and '含强算子' or '常规算子'}"
+                 f"{'，合并两个不同数值' if ev['combines_distinct_values'] else ''}",
+                 f"题干跨度：{node.number_spans()}",
+                 f"Fraction 精确值：{v}"]
+        if label is not None:
+            steps.append(f"匹配选项：{label}")
+        return Solution(status="solved", skill=self.id, method="expr_ast",
+                        answer=label if label is not None else str(v),
+                        steps=steps, tool_calls=[invocation], meta=meta)
+
     def _solve_word_problem(self, question: Question, ctx: SkillContext, options) -> Optional[Solution]:
         if not getattr(ctx.settings, "r2c_word_problem", True):
             return None
@@ -441,7 +495,7 @@ class NumericCalculationSkill(BaseSkill):
             if _sa is not None:
                 try:
                     _sv = float(fraction_eval(_sa))
-                    _ok = _close(float(solution.meta.get("value") or float("nan")), _sv)
+                    _ok = _close(_claim_value(solution), _sv)
                     checks.append(VerificationCheck(
                         name="numeric.stem_direct_parse",
                         passed=_ok,
@@ -463,6 +517,38 @@ class NumericCalculationSkill(BaseSkill):
                     return Verification(passed=False, action="unverified", checks=checks,
                                         final_answer=None,
                                         notes="题面直读独立复核执行异常：受控 unverified")
+        # R10-C：AST 通道的独立复核——三渠道互证：①postfix 栈重放（第二实现路径，
+        # 不复用递归 eval）②数值 span 锚定题干原文 ③Verifier 自行从题干重解析。
+        ast = solution.meta.get("expr_ast")
+        if ast and question.options:
+            reasons = []
+            try:
+                rv = float(replay_postfix([tuple(t) for t in ast.get("postfix") or []]))
+                if not _close(_claim_value(solution), rv):
+                    reasons.append(f"postfix 重放 {rv:g} ≠ Solver {solution.meta.get('value')}")
+            except (ValueError, ZeroDivisionError, TypeError) as exc:
+                reasons.append(f"postfix 重放失败: {exc}")
+            if not spans_anchor_stem(question.stem, ast.get("spans") or []):
+                reasons.append("数值跨度与题干原文不符")
+            try:
+                node2 = parse_stem_expression(question.stem)
+                if node2 is None:
+                    reasons.append("题面已非可解析纯算术式")
+                else:
+                    v2 = float(node2.eval())
+                    if not _close(_claim_value(solution), v2):
+                        reasons.append(f"题干重解析求值 {v2:g} 与 Solver 不符")
+            except (ValueError, ZeroDivisionError) as exc:
+                reasons.append(f"题干重解析求值异常: {exc}")
+            _ok = not reasons
+            checks.append(VerificationCheck(
+                name="numeric.expr_ast_replay", passed=_ok, severity="blocking",
+                detail=("三渠道互证通过（重放/跨度锚定/题干重解析）" if _ok
+                        else "；".join(reasons))))
+            if not _ok:
+                return Verification(passed=False, action="unverified", checks=checks,
+                                    final_answer=None,
+                                    notes="AST 复核通道不一致：禁止释放")
         repaired: Optional[str] = None
         plan = solution.meta.get("word_problem")
         # R6-B/R6.1 操作数覆盖（blocking）：题干数量必须全部被**表达式操作数**绑定
@@ -480,7 +566,7 @@ class NumericCalculationSkill(BaseSkill):
                 problems = _vp(p2, question.stem)
                 ex2 = _ep(p2)
                 replay_ok = (not problems) and ex2.final is not None and _close(
-                    float(ex2.final), float(solution.meta.get("value") or float("nan")))
+                    float(ex2.final), _claim_value(solution))
                 ok_graph = replay_ok
                 p_detail = ("依赖图独立重放通过：来源绑定全部为题干原文、拓扑完整、重算值与候选一致"
                             if replay_ok else
@@ -546,7 +632,10 @@ class NumericCalculationSkill(BaseSkill):
         # 无 % 的裸数（如比例尺 1∶2000000 的 1）不构成"百分搬运"证据，
         # 否则 5×2000000/100000=100 会被 1×100 误扣（收紧语义范围，非放松核验）。
         _pct_nums = {float(m) for m in _re.findall(r"(\d+(?:\.\d+)?)\s*[%％]", question.stem or "")}
-        if value is not None and single_step and not real_computation:
+        # R10-C（工单）：有完整 AST 依赖链的结构化计算证据时放行——目标等于
+        # 已知数值的合法题（如 3^4÷9=9）不得被退化类误扣；无证据仍阻断。
+        ast_ev = (solution.meta.get("expr_ast") or {}).get("evidence") or {}
+        if value is not None and single_step and not real_computation and not ast_ev.get("ok"):
             degenerate = next(
                 (s for s in stem_nums
                  if _close(float(value), s)
@@ -575,6 +664,15 @@ class NumericCalculationSkill(BaseSkill):
                     name="numeric.degenerate_copy",
                     passed=True,
                     detail="结果超出题干数量等值类（存在真实计算证据）",
+                )
+            )
+        elif (value is not None and single_step and not real_computation
+              and ast_ev.get("ok")):
+            checks.append(
+                VerificationCheck(
+                    name="numeric.degenerate_copy",
+                    passed=True,
+                    detail="目标值等于题干已知数值，但 AST 依赖链给出结构化计算证据——受控放行",
                 )
             )
         if plan:
@@ -607,12 +705,19 @@ class NumericCalculationSkill(BaseSkill):
                     notes="应用题计划链复核未通过，拒绝输出（不猜测）",
                 )
         try:
-            recomputed = float(fraction_eval(str(expression)))
+            if ast and ast.get("postfix"):
+                # R10-C：含 C/P/阶乘/根式时 fraction_eval 语法子集不适用，
+                # 独立重算改用 postfix 栈重放（同样是 Fraction 级第二实现路径）
+                recomputed = float(replay_postfix([tuple(t) for t in ast["postfix"]]))
+                _src = "AST postfix 栈重放"
+            else:
+                recomputed = float(fraction_eval(str(expression)))
+                _src = "Fraction 独立求值"
             checks.append(
                 VerificationCheck(
                     name="math.independent_recompute",
                     passed=True,
-                    detail=f"Fraction 独立求值 = {recomputed:g}（不依赖 SymPy 路径）",
+                    detail=f"{_src} = {recomputed:g}（不依赖 SymPy 路径）",
                 )
             )
         except Exception as exc:  # noqa: BLE001 - 交叉验证失败即视为未通过
