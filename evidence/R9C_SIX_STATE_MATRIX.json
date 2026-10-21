@@ -3,12 +3,12 @@
  "summary": {
   "documented": 47,
   "retrievable": 47,
-  "plannable": 26,
+  "plannable": 39,
   "executable": 42,
   "verified": 35,
   "dev_passed": 8
  },
- "dev_results_run": "r9d_dev_fix",
+ "dev_results_run": "r9d_xingce_dev_rules_planner_140856",
  "cards": {
   "da.annual-average-timing": {
    "skill": "data_analysis",
@@ -458,8 +458,8 @@
     "query": "ordering 确定信息优先、重复元素切入 排除法优于代入法"
    },
    "plannable": {
-    "ok": false,
-    "note": "计划 API 缺失: AssertionError: "
+    "ok": true,
+    "note": "tools.prop_logic(parse_formula/entail) 确定性枚举通道在"
    },
    "executable": {
     "ok": true,
@@ -487,8 +487,8 @@
     "query": "直言命题·三段论 所有/有些/没有 三段论规则"
    },
    "plannable": {
-    "ok": false,
-    "note": "计划 API 缺失: AssertionError: "
+    "ok": true,
+    "note": "tools.prop_logic(parse_formula/entail) 确定性枚举通道在"
    },
    "executable": {
     "ok": true,
@@ -516,8 +516,8 @@
     "query": "proposition equiv A→B 的矛盾是 A∧¬B A或B ⇔ ¬A→B（或蕴含互转）"
    },
    "plannable": {
-    "ok": false,
-    "note": "计划 API 缺失: AssertionError: "
+    "ok": true,
+    "note": "tools.prop_logic(parse_formula/entail) 确定性枚举通道在"
    },
    "executable": {
     "ok": true,
@@ -545,8 +545,8 @@
     "query": "定义判断·要件匹配 要件拆解 属加种差"
    },
    "plannable": {
-    "ok": false,
-    "note": "计划 API 缺失: AssertionError: "
+    "ok": true,
+    "note": "tools.prop_logic(parse_formula/entail) 确定性枚举通道在"
    },
    "executable": {
     "ok": true,
@@ -574,8 +574,8 @@
     "query": "hypothetical 充分条件前推后（如果A就B：A→B） 必要条件后推前（只有A才B：B→A）"
    },
    "plannable": {
-    "ok": false,
-    "note": "计划 API 缺失: AssertionError: "
+    "ok": true,
+    "note": "tools.prop_logic(parse_formula/entail) 确定性枚举通道在"
    },
    "executable": {
     "ok": true,
@@ -603,8 +603,8 @@
     "query": "复命题·形式推理 充分必要方向 逆否等价"
    },
    "plannable": {
-    "ok": false,
-    "note": "计划 API 缺失: AssertionError: "
+    "ok": true,
+    "note": "tools.prop_logic(parse_formula/entail) 确定性枚举通道在"
    },
    "executable": {
     "ok": true,
@@ -632,8 +632,8 @@
     "query": "argumentation 论点—论据—论证三段拆解 削弱力度：否论点>拆桥>他因>否论据"
    },
    "plannable": {
-    "ok": false,
-    "note": "计划 API 缺失: AssertionError: "
+    "ok": true,
+    "note": "tools.prop_logic(parse_formula/entail) 确定性枚举通道在"
    },
    "executable": {
     "ok": true,
@@ -661,8 +661,8 @@
     "query": "knights knaves 矛盾对必一真一假 三步法：找矛盾→看其余→回代"
    },
    "plannable": {
-    "ok": false,
-    "note": "计划 API 缺失: AssertionError: "
+    "ok": true,
+    "note": "tools.prop_logic(parse_formula/entail) 确定性枚举通道在"
    },
    "executable": {
     "ok": true,
@@ -1038,8 +1038,8 @@
     "query": "分数数列 分子分母独立成列 机械分组改写"
    },
    "plannable": {
-    "ok": false,
-    "note": "计划 API 缺失: ModuleNotFoundError: No module named 'assessment_agent.tools.number_series'"
+    "ok": true,
+    "note": "tools.series.NumberSeriesTool 确定性求解通道在"
    },
    "executable": {
     "ok": true,
@@ -1067,8 +1067,8 @@
     "query": "间隔/多重数列 奇偶位分组 机械分组"
    },
    "plannable": {
-    "ok": false,
-    "note": "计划 API 缺失: ModuleNotFoundError: No module named 'assessment_agent.tools.number_series'"
+    "ok": true,
+    "note": "tools.series.NumberSeriesTool 确定性求解通道在"
    },
    "executable": {
     "ok": true,
@@ -1096,8 +1096,8 @@
     "query": "多级数列（做差/做和） 一阶差 二阶差"
    },
    "plannable": {
-    "ok": false,
-    "note": "计划 API 缺失: ModuleNotFoundError: No module named 'assessment_agent.tools.number_series'"
+    "ok": true,
+    "note": "tools.series.NumberSeriesTool 确定性求解通道在"
    },
    "executable": {
     "ok": true,
@@ -1125,8 +1125,8 @@
     "query": "幂次数列·修正 平方/立方/多次幂 修正项 ±1/±k"
    },
    "plannable": {
-    "ok": false,
-    "note": "计划 API 缺失: ModuleNotFoundError: No module named 'assessment_agent.tools.number_series'"
+    "ok": true,
+    "note": "tools.series.NumberSeriesTool 确定性求解通道在"
    },
    "executable": {
     "ok": true,
@@ -1154,8 +1154,8 @@
     "query": "递推数列（和/差/倍/积递推） a(n)=f(a(n-1),a(n-2)) 斐波那契型"
    },
    "plannable": {
-    "ok": false,
-    "note": "计划 API 缺失: ModuleNotFoundError: No module named 'assessment_agent.tools.number_series'"
+    "ok": true,
+    "note": "tools.series.NumberSeriesTool 确定性求解通道在"
    },
    "executable": {
     "ok": true,

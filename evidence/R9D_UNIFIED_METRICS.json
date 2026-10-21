@@ -1,0 +1,267 @@
+{
+  "corpora": {
+    "xingce_dev": {
+      "rules_only": {
+        "n": 26,
+        "n_answerable": 26,
+        "可答正确释放率": 0.3077,
+        "候选覆盖率": 0.4231,
+        "候选正确率": 0.7273,
+        "错误接受数": 0,
+        "错误接受_ids": [],
+        "正确弃权数": 0,
+        "正确弃权分母(条件不足类)": 0,
+        "LLM调用": 0,
+        "LLM_tokens": 0,
+        "LLM重试": 0,
+        "各题首失败阶段": {
+          "plan/execute": 9,
+          "verify:no_evidence": 3,
+          "extract": 6,
+          "none": 8
+        },
+        "逐题阶段表": {
+          "xd-nc-01": "plan/execute",
+          "xd-nc-02": "plan/execute",
+          "xd-nc-03": "verify:no_evidence",
+          "xd-nc-04": "verify:no_evidence",
+          "xd-nc-05": "extract",
+          "xd-nc-06": "extract",
+          "xd-nc-07": "extract",
+          "xd-nc-08": "plan/execute",
+          "xd-nc-09": "verify:no_evidence",
+          "xd-nc-10": "plan/execute",
+          "xd-nc-19": "extract",
+          "xd-nc-20": "extract",
+          "xd-nc-21": "extract",
+          "xd-da-11": "none",
+          "xd-da-12": "none",
+          "xd-da-13": "none",
+          "xd-lg-14": "none",
+          "xd-lg-15": "none",
+          "xd-ana-16": "plan/execute",
+          "xd-vu-22": "plan/execute",
+          "xd-vu-23": "plan/execute",
+          "xd-lang-24": "none",
+          "xd-ns-17": "none",
+          "xd-ns-18": "none",
+          "xd-fig-19": "plan/execute",
+          "xd-fig-20": "plan/execute"
+        }
+      },
+      "rules+templates(deterministic)": {
+        "n": 26,
+        "n_answerable": 26,
+        "可答正确释放率": 0.8077,
+        "候选覆盖率": 0.8077,
+        "候选正确率": 1.0,
+        "错误接受数": 0,
+        "错误接受_ids": [],
+        "正确弃权数": 0,
+        "正确弃权分母(条件不足类)": 0,
+        "LLM调用": 0,
+        "LLM_tokens": 0,
+        "LLM重试": 0,
+        "各题首失败阶段": {
+          "none": 21,
+          "plan/execute": 5
+        },
+        "逐题阶段表": {
+          "xd-nc-01": "none",
+          "xd-nc-02": "none",
+          "xd-nc-03": "none",
+          "xd-nc-04": "none",
+          "xd-nc-05": "none",
+          "xd-nc-06": "none",
+          "xd-nc-07": "none",
+          "xd-nc-08": "none",
+          "xd-nc-09": "none",
+          "xd-nc-10": "none",
+          "xd-nc-19": "none",
+          "xd-nc-20": "none",
+          "xd-nc-21": "none",
+          "xd-da-11": "none",
+          "xd-da-12": "none",
+          "xd-da-13": "none",
+          "xd-lg-14": "none",
+          "xd-lg-15": "none",
+          "xd-ana-16": "plan/execute",
+          "xd-vu-22": "plan/execute",
+          "xd-vu-23": "plan/execute",
+          "xd-lang-24": "none",
+          "xd-ns-17": "none",
+          "xd-ns-18": "none",
+          "xd-fig-19": "plan/execute",
+          "xd-fig-20": "plan/execute"
+        }
+      }
+    },
+    "variants": {
+      "rules_only": {
+        "n": 44,
+        "n_answerable": 34,
+        "可答正确释放率": 0.0,
+        "候选覆盖率": 0.2647,
+        "候选正确率": 0.0,
+        "错误接受数": 1,
+        "错误接受_ids": [
+          "dv-expr-operators-03"
+        ],
+        "正确弃权数": 10,
+        "正确弃权分母(条件不足类)": 10,
+        "LLM调用": 0,
+        "LLM_tokens": 0,
+        "LLM重试": 0,
+        "各题首失败阶段": {
+          "plan/execute": 10,
+          "none(correct_abstain)": 10,
+          "verify:no_evidence": 8,
+          "extract": 15,
+          "release:false_accept": 1
+        },
+        "逐题阶段表": {
+          "dv-compound-pct-01": "plan/execute",
+          "dv-compound-pct-02": "plan/execute",
+          "dv-compound-pct-03": "plan/execute",
+          "dv-compound-pct-04": "none(correct_abstain)",
+          "dv-compound-pct-05": "plan/execute",
+          "dv-concentration-01": "verify:no_evidence",
+          "dv-concentration-02": "verify:no_evidence",
+          "dv-concentration-03": "verify:no_evidence",
+          "dv-concentration-04": "none(correct_abstain)",
+          "dv-concentration-05": "plan/execute",
+          "dv-travel-01": "extract",
+          "dv-travel-02": "extract",
+          "dv-travel-03": "extract",
+          "dv-travel-04": "none(correct_abstain)",
+          "dv-travel-05": "extract",
+          "dv-net-growth-01": "plan/execute",
+          "dv-net-growth-02": "verify:no_evidence",
+          "dv-net-growth-03": "plan/execute",
+          "dv-net-growth-04": "none(correct_abstain)",
+          "dv-net-growth-05": "plan/execute",
+          "dv-pct-restore-01": "verify:no_evidence",
+          "dv-pct-restore-02": "verify:no_evidence",
+          "dv-pct-restore-03": "verify:no_evidence",
+          "dv-pct-restore-04": "none(correct_abstain)",
+          "dv-pct-restore-05": "verify:no_evidence",
+          "dv-work-rate-01": "extract",
+          "dv-work-rate-02": "extract",
+          "dv-work-rate-03": "extract",
+          "dv-work-rate-04": "none(correct_abstain)",
+          "dv-work-rate-05": "extract",
+          "dv-map-scale-01": "plan/execute",
+          "dv-map-scale-02": "none(correct_abstain)",
+          "dv-unit-count-01": "extract",
+          "dv-unit-count-02": "none(correct_abstain)",
+          "dv-ratio-share-01": "extract",
+          "dv-ratio-share-02": "extract",
+          "dv-ratio-share-03": "none(correct_abstain)",
+          "dv-ratio-share-04": "extract",
+          "dv-ratio-share-05": "extract",
+          "dv-expr-operators-01": "extract",
+          "dv-expr-operators-02": "plan/execute",
+          "dv-expr-operators-03": "release:false_accept",
+          "dv-expr-operators-04": "none(correct_abstain)",
+          "dv-expr-operators-05": "extract"
+        }
+      },
+      "rules+templates(deterministic)": {
+        "n": 44,
+        "n_answerable": 34,
+        "可答正确释放率": 0.8824,
+        "候选覆盖率": 0.9118,
+        "候选正确率": 0.9677,
+        "错误接受数": 1,
+        "错误接受_ids": [
+          "dv-expr-operators-03"
+        ],
+        "正确弃权数": 10,
+        "正确弃权分母(条件不足类)": 10,
+        "LLM调用": 0,
+        "LLM_tokens": 0,
+        "LLM重试": 0,
+        "各题首失败阶段": {
+          "none": 30,
+          "none(correct_abstain)": 10,
+          "extract": 2,
+          "plan/execute": 1,
+          "release:false_accept": 1
+        },
+        "逐题阶段表": {
+          "dv-compound-pct-01": "none",
+          "dv-compound-pct-02": "none",
+          "dv-compound-pct-03": "none",
+          "dv-compound-pct-04": "none(correct_abstain)",
+          "dv-compound-pct-05": "none",
+          "dv-concentration-01": "none",
+          "dv-concentration-02": "none",
+          "dv-concentration-03": "none",
+          "dv-concentration-04": "none(correct_abstain)",
+          "dv-concentration-05": "none",
+          "dv-travel-01": "none",
+          "dv-travel-02": "none",
+          "dv-travel-03": "none",
+          "dv-travel-04": "none(correct_abstain)",
+          "dv-travel-05": "none",
+          "dv-net-growth-01": "none",
+          "dv-net-growth-02": "none",
+          "dv-net-growth-03": "none",
+          "dv-net-growth-04": "none(correct_abstain)",
+          "dv-net-growth-05": "none",
+          "dv-pct-restore-01": "none",
+          "dv-pct-restore-02": "none",
+          "dv-pct-restore-03": "none",
+          "dv-pct-restore-04": "none(correct_abstain)",
+          "dv-pct-restore-05": "none",
+          "dv-work-rate-01": "none",
+          "dv-work-rate-02": "none",
+          "dv-work-rate-03": "none",
+          "dv-work-rate-04": "none(correct_abstain)",
+          "dv-work-rate-05": "none",
+          "dv-map-scale-01": "none",
+          "dv-map-scale-02": "none(correct_abstain)",
+          "dv-unit-count-01": "none",
+          "dv-unit-count-02": "none(correct_abstain)",
+          "dv-ratio-share-01": "none",
+          "dv-ratio-share-02": "none",
+          "dv-ratio-share-03": "none(correct_abstain)",
+          "dv-ratio-share-04": "none",
+          "dv-ratio-share-05": "none",
+          "dv-expr-operators-01": "extract",
+          "dv-expr-operators-02": "plan/execute",
+          "dv-expr-operators-03": "release:false_accept",
+          "dv-expr-operators-04": "none(correct_abstain)",
+          "dv-expr-operators-05": "extract"
+        }
+      }
+    }
+  },
+  "unimplemented_operators": {
+    "executor_registry": [
+      "log",
+      "nth_root",
+      "trig"
+    ],
+    "card_declared": {
+      "da.annual-average-timing": [
+        "n 次方根（仅支持平方根 sqrt；开 n 次方需数值迭代未实现）"
+      ],
+      "fig.analogy-classification": [
+        "图输入解析（截图必需）"
+      ],
+      "fig.count-elements": [
+        "图输入解析（截图必需，纯文本不释）",
+        "交点/笔画/直角依赖图形拓扑提取，当前抽取器不产出（仅邻接矩阵等文字化描述可走 count 算子）"
+      ],
+      "fig.sequence-rule": [
+        "图输入解析（截图必需）"
+      ],
+      "fig.solid-view": [
+        "图输入解析（截图必需，纯文本不释）",
+        "空间折叠/相对面邻接约束求解引擎未实现（figure_rules 仅 overlay/sides/count/regions/centroid/symmetry/fill 七算子）——即使给出文字化展开图，六面体折叠判定无确定性引擎，不做概率猜测"
+      ]
+    }
+  },
+  "full_pipeline": "Stage E 截图端到端臂（本轮不执行）"
+}

@@ -63,12 +63,11 @@ def probe_plannable(card: MethodCard) -> Dict[str, Any]:
             return {"ok": True, "note": "tools.data_plan.evaluate_plan 确定性执行可用"
                                        "（plan 构造仍需 LLM payload）"}
         if card.skill == "logical_reasoning":
-            from assessment_agent.tools import prop_logic
-            assert hasattr(prop_logic, "solve_models") or hasattr(prop_logic, "enumerate_models")
-            return {"ok": True, "note": "tools.prop_logic 模型枚举确定性通道在"}
+            from assessment_agent.tools.prop_logic import entail, parse_formula  # noqa
+            return {"ok": True, "note": "tools.prop_logic(parse_formula/entail) 确定性枚举通道在"}
         if card.skill == "number_series":
-            from assessment_agent.tools.number_series import solve_series  # noqa
-            return {"ok": True, "note": "tools.number_series.solve_series 在"}
+            from assessment_agent.tools.series import NumberSeriesTool  # noqa
+            return {"ok": True, "note": "tools.series.NumberSeriesTool 确定性求解通道在"}
         if card.skill == "figure_reasoning":
             from assessment_agent.tools.figure_adapter import solve_figure_regions  # noqa
             return {"ok": True, "note": "tools.figure_adapter.solve_figure_regions 在"}
