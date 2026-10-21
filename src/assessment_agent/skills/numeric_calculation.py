@@ -302,6 +302,32 @@ class NumericCalculationSkill(BaseSkill):
                 for o in (question.options or [])]
         plan, _cards, why = planner.plan_llm(question.stem, opts, self.id)
 
+        def _bucket(w: Optional[str]) -> str:
+            # R11-F 失败原因分类（网络/解析/计划/声明性弃权，互斥稳定前缀）
+            if w is None:
+                return "ok"
+            s = str(w)
+            if s.startswith(("llm_unavailable", "no_method_card")):
+                return "not_sent"
+            if "timeout" in s.lower() or "read operation" in s.lower() or "connection" in s.lower():
+                return "sent_no_response"
+            if s.startswith("llm_error"):
+                return "parse_or_protocol_fail"
+            if s.startswith(("plan_unbound", "plan_invalid")):
+                return "planned_but_exec_fail"
+            return "other"
+
+        def _declared_insufficient(p) -> Optional[str]:
+            # unknowns 指向目标/缺失信息才是条件不足；干扰量入 unknowns 是卡面约定
+            import re as _re2
+            for k in (k for k in (p.to_dict().get("unknowns") or []) if k):
+                ks = str(k)
+                if p.target and (p.target in ks or ks in (p.target, "")):
+                    return ks
+                if _re2.search(r"缺|未给出|没有给|无法确定|无法计算|不确定|条件不足", ks):
+                    return ks
+            return None
+
         def _retrieval_meta(cards, chosen_plan, reject: Optional[str]) -> dict:
             # R10-A4：检索证据持久化——候选卡与版本、最终选中卡、拒绝原因
             return {
@@ -314,7 +340,18 @@ class NumericCalculationSkill(BaseSkill):
             return Solution(
                 status="failed", skill=self.id, method="reasoning_planner",
                 error=f"结构化规划未成立: {why}",
-                meta={"planner_failure": str(why)[:200], **_retrieval_meta(_cards, None, why)})
+                meta={"planner_failure": str(why)[:200],
+                      "failure_bucket": _bucket(why),
+                      **_retrieval_meta(_cards, None, why)})
+        decl = _declared_insufficient(plan)
+        if decl is not None:
+            return Solution(
+                status="failed", skill=self.id, method="reasoning_planner",
+                error=f"模型声明条件不足（unknowns），按契约弃权不猜: {decl}",
+                meta={"failure_bucket": "declared_insufficient",
+                      "declared_unknown": decl[:120],
+                      "structured_plan": plan.to_dict(),
+                      **_retrieval_meta(_cards, plan, None)})
         ex = execute_plan(plan)
         used_cards = _cards
         if ex.final is not None:
@@ -332,6 +369,7 @@ class NumericCalculationSkill(BaseSkill):
                 status="failed", skill=self.id, method="reasoning_planner",
                 error=f"计划执行失败: {ex.error}",
                 meta={"structured_plan": plan.to_dict(),
+                      "failure_bucket": "planned_but_exec_fail",
                       **_retrieval_meta(used_cards, plan, None)})
         value = float(ex.final)
         exact = (f"{ex.final.numerator}/{ex.final.denominator}"
