@@ -1,0 +1,32 @@
+{
+ "kind": "OBSERVATIONS_POST_R4G",
+ "ts": "2026-10-21T15:20+08:00",
+ "source": "侦察子代理终版地图(8edc7d0后未动过的既有事实)",
+ "items": [
+  {
+   "id": "OBS-1",
+   "severity": "low",
+   "what": "prompts.py VISION_PARSE_SYSTEM 只列 3 个 role(stem_matrix/stem_figure/other), vision_parser._VALID_ROLES 含 4 个(多 option_figure)=协议/提示不对齐; VLM 永远不会被提示产出 option_figure。",
+   "why_not_fix_now": "改 prompt=改在线 VLM 行为, 超出 R4g'零API不改闸门'纪律范围; 且需真实复测验证新 role 召回, 应列入下轮工单。"
+  },
+  {
+   "id": "OBS-2",
+   "severity": "med",
+   "what": "入库 crop 绝对路径(E:\\assessment-agent\\runs\\...)换机断链; r4e_replay._relocate 已在处理但属回放侧补丁。",
+   "why_not_fix_now": "改落盘路径方案触及 run.json/question.json 合同与既有 evidence 字节(冻结纪律); 若要治本=新 schema 版本轮。"
+  },
+  {
+   "id": "OBS-3",
+   "severity": "low",
+   "what": "坐标合同双轨: region bbox=pixel_xywh vs figure_tools.analyze_layout 输出 xyxy; 像素验证需显式转换(现仅 figure_adapter.py:79 一处交集)。",
+   "why_not_fix_now": "r4g-diagram-layout-v1 内部已处理; 建议下一轮在 analyze_layout 出口统一注明或加 bbox_format 字段。"
+  },
+  {
+   "id": "OBS-4",
+   "severity": "info",
+   "what": "根 runs/ 有测试残留(e2e-t-*/e2e-probe-v2-*/e2e-stages-*), pytest 写仓库根属既有行为(gitignore锚定)。",
+   "why_not_fix_now": "非我创建的文件不删除(他人会话可能在回放); 留待主会话清。"
+  }
+ ],
+ "r4g_status": "ACCEPTED (0ae6456); 无新增实现; 原始证据未动"
+}
