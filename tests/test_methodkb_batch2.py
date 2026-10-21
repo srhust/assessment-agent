@@ -59,6 +59,7 @@ def test_batch2_retrieval_hits_per_domain():
 
 
 def test_missing_operator_abstention_names_operator():
+    # R9-C 后 C/P/!/^(整数幂)/sqrt 已实装：真缺算子（n次根/对数）才弃权点名
     plan = StructuredPlan(
         family="prob", method_id="nc.classical-probability",
         givens=[Given(label="n", value="7", stem_span=""),
@@ -66,9 +67,15 @@ def test_missing_operator_abstention_names_operator():
         steps=[PlanStep(var="ways", expr="C(7,2)", source="", deps=[])],
         target="ways", rationale="")
     ex = execute_plan(plan)
-    assert ex.final is None
-    assert "缺失算子" in ex.error and "组合数 C(n,k)" in ex.error
-    assert scan_missing_operators(["2^10"]) == ["幂 a^b"]
+    assert ex.final == 21 and ex.error is None
+    bad = StructuredPlan(
+        family="root", method_id="nc.compound-growth",
+        givens=[Given(label="n", value="8", stem_span="")],
+        steps=[PlanStep(var="r", expr="root(3,n)", source="", deps=[])],
+        target="r", rationale="")
+    ex2 = execute_plan(bad)
+    assert ex2.final is None and "缺失算子" in ex2.error and "n 次方根" in ex2.error
+    assert scan_missing_operators(["2^10", "C(5,2)", "3!", "sqrt(16)"]) == []
     assert scan_missing_operators(["a/(1+r/100)", "x+y*z"]) == []
 
 

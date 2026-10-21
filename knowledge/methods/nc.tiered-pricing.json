@@ -54,8 +54,7 @@
     "note": "10+5×1.8+4×2.7=10+9+10.8≈分段累加（11.5→按 12 计，超 8 部分 4km）=29.8→实付口径看题面取整约定；练习演示分档与取整声明的必要性"
   },
   "executable": {
-    "missing_operators": [
-      "ceil 取整"
-    ]
+    "missing_operators": [],
+    "tool": "planner.execute_plan（ceil/floor 取整已确定性执行）"
   }
 }

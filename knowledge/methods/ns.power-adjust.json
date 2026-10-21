@@ -51,8 +51,7 @@
     "note": "n²−1 修正型：1²−1..6²−1=35；修正列固定 −1"
   },
   "executable": {
-    "missing_operators": [
-      "幂 a^b（执行器当前不支持，弃权将点名）"
-    ]
+    "missing_operators": [],
+    "tool": "planner.execute_plan（整数幂 ^ / pow 已确定性执行）"
   }
 }

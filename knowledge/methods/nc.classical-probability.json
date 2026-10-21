@@ -57,8 +57,8 @@
     "note": "1−P(两白)=1−C(4,2)/C(7,2)=1−6/21=15/21=5/7；纪律：补集与直接枚举双算必须一致"
   },
   "executable": {
-    "missing_operators": [
-      "组合数 C(n,k)"
-    ]
+    "missing_operators": [],
+    "formula_pattern": "p = 1 - C(nbad,k)/C(n,k)  或  C(good,k)/C(n,k)",
+    "tool": "planner.execute_plan（C(n,k)/P(n,k)/n! 已确定性执行）"
   }
 }

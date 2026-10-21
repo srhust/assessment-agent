@@ -61,9 +61,7 @@
     "note": "捆绑：把 3 女生看作 1 整体，与 4 男生共 5 单元全排列 5!=120，内部 3!=6，120×6=720"
   },
   "executable": {
-    "missing_operators": [
-      "排列数 P(n,k)",
-      "阶乘 n!"
-    ]
+    "missing_operators": [],
+    "tool": "planner.execute_plan（P(n,k)/C(n,k)/n! 已确定性执行）"
   }
 }

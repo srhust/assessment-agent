@@ -22,6 +22,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 from dataclasses import dataclass, field
 from fractions import Fraction
@@ -103,10 +104,69 @@ class PlanExecution:
 _NUM = r"\d+(?:\.\d+)?(?:/\d+)?"
 # 标识符允许中文（模型常以"现价/提价额"命名步骤变量；词表绑定按完整名匹配）
 _ID = r"[A-Za-z_\u4e00-\u9fff][A-Za-z0-9_\u4e00-\u9fff]*"
-_TOKEN_RE = re.compile(rf"{_ID}|{_NUM}|[+\-*/() ]")
+# R9-C：确定性执行器算子扩充——C/P/sqrt/ceil/floor/pow/abs 函数、^ 幂、! 阶乘
+_FNAMES = {"C", "P", "sqrt", "ceil", "floor", "pow", "abs"}
+_TOKEN_RE = re.compile(rf"{_ID}|{_NUM}|[+\-*/()^!, ]")
+
+
+def _int_exact(v: Fraction) -> int:
+    if v.denominator != 1:
+        raise ValueError(f"该算子需要整数参数，得到 {v}")
+    return int(v)
+
+
+def _frac_pow(b: Fraction, e: Fraction) -> Fraction:
+    if e.denominator != 1:
+        raise ValueError("幂运算仅支持整数指数（非整数指数需符号/浮点代数，执行器未含）")
+    ei = int(e)
+    if ei < 0:
+        if b == 0:
+            raise ValueError("0 的负幂未定义")
+        return 1 / _frac_pow(b, Fraction(-ei))
+    return Fraction(b ** ei)
+
+
+def _frac_fact(v: Fraction) -> Fraction:
+    n = _int_exact(v)
+    if n < 0 or n > 1000:
+        raise ValueError("阶乘仅支持 0..1000 的整数")
+    return Fraction(math.factorial(n))
+
+
+def _apply_fn(name: str, args: List[Fraction]) -> Fraction:
+    if name in ("C", "P"):
+        if len(args) != 2:
+            raise ValueError(f"{name}(n,k) 需要 2 个参数")
+        n, k = _int_exact(args[0]), _int_exact(args[1])
+        if n < 0 or k < 0 or k > n:
+            raise ValueError(f"{name}({n},{k}) 参数非法（需 0<=k<=n）")
+        return Fraction(math.comb(n, k) if name == "C" else math.perm(n, k))
+    if name == "sqrt":
+        if len(args) != 1:
+            raise ValueError("sqrt 需要 1 个参数")
+        a = args[0]
+        if a < 0:
+            raise ValueError("sqrt 负数未定义")
+        nd = a.numerator * a.denominator
+        r = math.isqrt(nd)
+        if r * r != nd:
+            raise ValueError("sqrt 仅支持完全平方数（无理数精确表示需符号代数，执行器未含）")
+        return Fraction(r, a.denominator)
+    if name == "ceil":
+        return Fraction(math.ceil(args[0]))
+    if name == "floor":
+        return Fraction(math.floor(args[0]))
+    if name == "pow":
+        return _frac_pow(args[0], args[1])
+    if name == "abs":
+        return Fraction(abs(args[0]))
+    raise ValueError(f"未知函数 {name}")
 
 
 def _tokenize_expr(expr: str) -> List[str]:
+    # R9-C 归一化：√x→sqrt(x)（含后续左括号或缺失括号时包一项）、全角括号/逗号→半角
+    expr = expr.replace("√", "sqrt ").replace("（", "(").replace("）", ")").replace("，", ",")
+    expr = re.sub(r"sqrt\s+([A-Za-z0-9_./\u4e00-\u9fff]+(?:\.\d+)?)", r"sqrt(\1)", expr)
     pos, toks = 0, []
     while pos < len(expr):
         m = _TOKEN_RE.match(expr, pos)
@@ -151,12 +211,32 @@ class _ExprParser:
         return v
 
     def multiplicative(self) -> Fraction:
-        v = self.atom()
+        v = self.power()
         while self.peek() in ("*", "/"):
             op = self.peek()
             self.i += 1
-            rhs = self.atom()
+            rhs = self.power()
             v = v * rhs if op == "*" else v / rhs
+        return v
+
+    def power(self) -> Fraction:
+        t = self.peek()
+        if t in ("+", "-"):           # 一元符号：幂优先级更高（-2^2 = -(2^2)）
+            self.i += 1
+            v = self.power()
+            return v if t == "+" else -v
+        base = self.postfix()
+        if self.peek() == "^":
+            self.i += 1
+            exp = self.power()          # 右结合：2^3^2 = 2^(3^2)
+            return _frac_pow(base, exp)
+        return base
+
+    def postfix(self) -> Fraction:
+        v = self.atom()
+        while self.peek() == "!":
+            self.i += 1
+            v = _frac_fact(v)
         return v
 
     def atom(self) -> Fraction:
@@ -166,9 +246,19 @@ class _ExprParser:
             v = self.additive()
             self.eat(")")
             return v
-        self.i += 1
         if t is None:
             raise ValueError("表达式意外结束")
+        # 命名函数调用（仅当该标识符后紧跟 "(" 才视为函数；否则按变量/数字解析）
+        if t in _FNAMES and self._next_is_call(self.i):
+            self.i += 1  # 吃掉函数名
+            self.eat("(")
+            args = [self.additive()]
+            while self.peek() == ",":
+                self.i += 1
+                args.append(self.additive())
+            self.eat(")")
+            return _apply_fn(t, args)
+        self.i += 1
         if re.fullmatch(rf"{_NUM}", t):
             if "/" in t:
                 a, b = t.split("/")
@@ -178,15 +268,20 @@ class _ExprParser:
             return self.env[t]
         raise ValueError(f"未绑定变量: {t}")
 
+    def _next_is_call(self, k: int) -> bool:
+        j = k + 1
+        while j < len(self.toks) and self.toks[j].strip() == "":
+            j += 1
+        return j < len(self.toks) and self.toks[j].strip() == "("
 
-# R8-C：确定性执行器只支持 + - * / 与括号。方法卡/计划引用超此面的算子时，
-# 弃权必须**点名所缺算子**（工单：未实现能力如实报告，不得静默报格式错误）。
+
+# R8-C/R9-C：确定性执行器现支持 + - * / 括号、C(n,k) P(n,k) n! ^（整数指数）、
+# sqrt（完全平方）、ceil/floor/pow/abs。仍不支持的算子引用时弃权必须**点名**
+# （工单：未实现能力如实报告，不得静默报格式错误）。
 MISSING_OPERATORS = {
-    "C(n,k)": (r"\bC\s*\(", "组合数 C(n,k)"),
-    "P(n,k)": (r"\bP\s*\(", "排列数 P(n,k)"),
-    "factorial": (r"\d\s*!|\)\s*!", "阶乘 n!"),
-    "power": (r"\^", "幂 a^b"),
-    "sqrt": (r"\bsqrt\s*\(|\u221a", "平方根"),
+    "nth_root": (r"\broot\s*\(|\d*次方根|\b立方根", "n 次方根（仅支持平方根 sqrt）"),
+    "log": (r"\b(?:log|ln|lg)\s*\(", "对数 log/ln"),
+    "trig": (r"\b(?:sin|cos|tan)\s*\(", "三角函数"),
 }
 
 
@@ -206,7 +301,7 @@ def execute_plan(plan: StructuredPlan) -> PlanExecution:
     if missing:
         return PlanExecution(final=None, values={}, expression="",
                              error="执行器缺失算子: " + "、".join(missing) +
-                                   "（当前确定性执行仅支持 + - * / 与括号）")
+                                   "（当前确定性执行支持 + - * / 括号与 C/P/!/^(整数幂)/sqrt(完全平方)/ceil/floor/pow/abs）")
     env: Dict[str, Fraction] = {}
     for g in plan.givens:
         try:
@@ -271,6 +366,8 @@ def validate_plan(plan: StructuredPlan, stem: str) -> List[str]:
         if step.var in vars_defined:
             problems.append(f"步骤变量重复: {step.var}")
         for tok in re.findall(r"[A-Za-z_][A-Za-z0-9_]*", step.expr):
+            if tok in _FNAMES:          # R9-C：函数名不是未绑定标识符
+                continue
             if tok not in seen:
                 problems.append(f"步骤 {step.var} 引用未绑定标识符 {tok}")
         for d in step.deps:
@@ -298,7 +395,7 @@ PLAN_SYSTEM = """你是行测解题规划器（只做规划，不给选项答案
 输出 JSON：
 {"family":"子题型假设","method_id":"所用方法卡id","rationale":"为什么用这个方法",
  "givens":[{"label":"变量名","value":"数值(分数或小数)","stem_span":"原题文字片段","unit":""}],
- "steps":[{"var":"中间或最终变量","expr":"仅含数字、+ - * / 括号、givens与更早step的var","source":"该关系的原题文字片段","deps":["引用的标识符"]}],
+ "steps":[{"var":"中间或最终变量","expr":"含数字、+ - * / 括号、^(整数幂)、sqrt(完全平方)、C(n,k)、P(n,k)、阶乘!、ceil/floor/pow/abs、givens与更早step的var","source":"该关系的原题文字片段","deps":["引用的标识符"]}],
  "target":"最终变量","unknowns":["无法从题面确定的信息，可为空"],
  "question_hypotheses":["题型假设"]}
 硬规则：

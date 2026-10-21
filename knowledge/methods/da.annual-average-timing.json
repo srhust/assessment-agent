@@ -55,8 +55,7 @@
   },
   "executable": {
     "missing_operators": [
-      "幂 a^b",
-      "n 次方根"
+      "n 次方根（仅支持平方根 sqrt；开 n 次方需数值迭代未实现）"
     ]
   }
 }
