@@ -6,9 +6,9 @@
   "plannable": 26,
   "executable": 42,
   "verified": 35,
-  "dev_passed": 7
+  "dev_passed": 8
  },
- "dev_results_run": "r9c_word_templates",
+ "dev_results_run": "r9d_dev_fix",
  "cards": {
   "da.annual-average-timing": {
    "skill": "data_analysis",
@@ -790,7 +790,7 @@
    },
    "dev_passed": {
     "ok": true,
-    "note": "通过 dev 题 ['xd-nc-10']"
+    "note": "通过 dev 题 ['xd-nc-10', 'dv-net-growth-01', 'dv-net-growth-02', 'dv-net-growth-03', 'dv-net-growth-05']"
    }
   },
   "nc.concentration-conservation": {
@@ -819,7 +819,7 @@
    },
    "dev_passed": {
     "ok": true,
-    "note": "通过 dev 题 ['xd-nc-03', 'xd-nc-04']"
+    "note": "通过 dev 题 ['xd-nc-03', 'xd-nc-04', 'dv-concentration-01', 'dv-concentration-02', 'dv-concentration-03', 'dv-concentration-05']"
    }
   },
   "nc.inclusion-exclusion": {
@@ -876,8 +876,8 @@
     "note": "solve(xd-nc-01)→verify 实调：6 检查项, passed=True"
    },
    "dev_passed": {
-    "ok": false,
-    "note": "无 tag/运行证据映射到 profit-margin-base 的 dev 题（样本缺口）"
+    "ok": true,
+    "note": "通过 dev 题 ['dv-pct-restore-01', 'dv-pct-restore-02', 'dv-pct-restore-03', 'dv-pct-restore-05']"
    }
   },
   "nc.ratio-share-parts": {
@@ -906,7 +906,7 @@
    },
    "dev_passed": {
     "ok": true,
-    "note": "通过 dev 题 ['xd-nc-07']"
+    "note": "通过 dev 题 ['xd-nc-07', 'dv-ratio-share-01', 'dv-ratio-share-02', 'dv-ratio-share-04', 'dv-ratio-share-05']"
    }
   },
   "nc.successive-discount": {
@@ -935,7 +935,7 @@
    },
    "dev_passed": {
     "ok": true,
-    "note": "通过 dev 题 ['xd-nc-01', 'xd-nc-02', 'xd-nc-19']"
+    "note": "通过 dev 题 ['xd-nc-01', 'xd-nc-02', 'xd-nc-19', 'dv-compound-pct-01', 'dv-compound-pct-02', 'dv-compound-pct-03', 'dv-compound-pct-05']"
    }
   },
   "nc.tiered-pricing": {
@@ -993,7 +993,7 @@
    },
    "dev_passed": {
     "ok": true,
-    "note": "通过 dev 题 ['xd-nc-05', 'xd-nc-06']"
+    "note": "通过 dev 题 ['xd-nc-05', 'xd-nc-06', 'dv-travel-01', 'dv-travel-02', 'dv-travel-03', 'dv-travel-05']"
    }
   },
   "nc.work-rate-lcm": {
@@ -1022,7 +1022,7 @@
    },
    "dev_passed": {
     "ok": true,
-    "note": "通过 dev 题 ['xd-nc-21']"
+    "note": "通过 dev 题 ['xd-nc-21', 'dv-work-rate-01', 'dv-work-rate-02', 'dv-work-rate-03', 'dv-work-rate-05']"
    }
   },
   "ns.fraction-sequence": {

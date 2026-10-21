@@ -1,0 +1,120 @@
+{
+  "xingce_dev": {
+    "rules_only": {
+      "n": 26,
+      "M1_solved_rate": 0.4231,
+      "M2_accuracy_all": 0.3077,
+      "M3_precision_answered": 0.7273,
+      "M4_false_answer_rate": 0.2727,
+      "M5_abstain_rate": 0.5769,
+      "M6_correct_abstain_rate": "n/a(无条件不足类)",
+      "M7_verify_coverage": 0.7273,
+      "M8_latency_p95_ms": 64.6,
+      "detail": {
+        "abstain_noninsufficient": [
+          "xd-nc-01",
+          "xd-nc-02",
+          "xd-nc-05",
+          "xd-nc-06",
+          "xd-nc-07",
+          "xd-nc-08",
+          "xd-nc-10",
+          "xd-nc-19",
+          "xd-nc-20",
+          "xd-nc-21",
+          "xd-ana-16",
+          "xd-vu-22",
+          "xd-vu-23",
+          "xd-fig-19",
+          "xd-fig-20"
+        ]
+      },
+      "pred_dir": "results\\xingce_dev\\r9d_xingce_dev_rules_only_135200\\predictions.jsonl"
+    },
+    "rules+templates": {
+      "n": 26,
+      "M1_solved_rate": 0.8077,
+      "M2_accuracy_all": 0.8077,
+      "M3_precision_answered": 1.0,
+      "M4_false_answer_rate": 0.0,
+      "M5_abstain_rate": 0.1923,
+      "M6_correct_abstain_rate": "n/a(无条件不足类)",
+      "M7_verify_coverage": 1.0,
+      "M8_latency_p95_ms": 64.0,
+      "detail": {
+        "abstain_noninsufficient": [
+          "xd-ana-16",
+          "xd-vu-22",
+          "xd-vu-23",
+          "xd-fig-19",
+          "xd-fig-20"
+        ]
+      },
+      "pred_dir": "results\\xingce_dev\\r9d_xingce_dev_rules_templates_135202\\predictions.jsonl"
+    },
+    "full_pipeline": "pending-budget(Stage E 真实 LLM 臂，预算需人工确认)"
+  },
+  "dev_variants": {
+    "rules_only": {
+      "n": 44,
+      "M1_solved_rate": 0.2045,
+      "M2_accuracy_all": 0.0,
+      "M3_precision_answered": 0.0,
+      "M4_false_answer_rate": 1.0,
+      "M5_abstain_rate": 0.7955,
+      "M6_correct_abstain_rate": 1.0,
+      "M7_verify_coverage": 0.1111,
+      "M8_latency_p95_ms": 0.7,
+      "detail": {
+        "abstain_noninsufficient": [
+          "dv-compound-pct-01",
+          "dv-compound-pct-02",
+          "dv-compound-pct-03",
+          "dv-compound-pct-05",
+          "dv-concentration-05",
+          "dv-travel-01",
+          "dv-travel-02",
+          "dv-travel-03",
+          "dv-travel-05",
+          "dv-net-growth-01",
+          "dv-net-growth-03",
+          "dv-net-growth-05",
+          "dv-work-rate-01",
+          "dv-work-rate-02",
+          "dv-work-rate-03",
+          "dv-work-rate-05",
+          "dv-map-scale-01",
+          "dv-unit-count-01",
+          "dv-ratio-share-01",
+          "dv-ratio-share-02",
+          "dv-ratio-share-04",
+          "dv-ratio-share-05",
+          "dv-expr-operators-01",
+          "dv-expr-operators-02",
+          "dv-expr-operators-05"
+        ]
+      },
+      "pred_dir": "results\\xingce_dev_variants\\r9d_dev_variants_rules_only_135203\\predictions.jsonl"
+    },
+    "rules+templates": {
+      "n": 44,
+      "M1_solved_rate": 0.7045,
+      "M2_accuracy_all": 0.6364,
+      "M3_precision_answered": 0.9032,
+      "M4_false_answer_rate": 0.0968,
+      "M5_abstain_rate": 0.2955,
+      "M6_correct_abstain_rate": 1.0,
+      "M7_verify_coverage": 0.9355,
+      "M8_latency_p95_ms": 1.5,
+      "detail": {
+        "abstain_noninsufficient": [
+          "dv-expr-operators-01",
+          "dv-expr-operators-02",
+          "dv-expr-operators-05"
+        ]
+      },
+      "pred_dir": "results\\xingce_dev_variants\\r9d_dev_variants_rules_templates_135204\\predictions.jsonl"
+    },
+    "full_pipeline": "pending-budget(Stage E 真实 LLM 臂，预算需人工确认)"
+  }
+}

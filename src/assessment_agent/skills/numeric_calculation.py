@@ -176,6 +176,14 @@ class NumericCalculationSkill(BaseSkill):
             raw_label = payload.get("matched_label")
             degenerate = raw_label is not None and _degenerate_percent(expression, question.stem)
             label = None if degenerate else raw_label
+            # R9-D：raw 匹配成功也要先让位确定性语义模板——"碰巧等值"的
+            # 表面抽取（如把"增长50%"读成 50*(1/100)）即使命中选项也不构成
+            # 计算证据；模板计划绑定了全部题面数量，是更强的推理凭证。
+            if label is not None:
+                word_solution = self._solve_word_problem(question, ctx, options)
+                if word_solution is not None:
+                    word_solution.tool_calls = [invocation] + list(word_solution.tool_calls or [])
+                    return word_solution
             if label is None:
                 # 直接抽取的算式可能本身抽错（如把"比…便宜20%"读成减 20、
                 # 或把"浓度变为多少"原样换算成 12%）：先走数量关系建模层（R2c/R7）
@@ -473,10 +481,15 @@ class NumericCalculationSkill(BaseSkill):
             single_step = len(sp_meta["steps"]) <= 1
         expr_txt = str(solution.meta.get("expression") or "")
         real_computation = ("+" in expr_txt or "-" in expr_txt)
+        # R9-D：×100/÷100 等值类只对题面带 % 号的数值生效（百分数搬运语义）；
+        # 无 % 的裸数（如比例尺 1∶2000000 的 1）不构成"百分搬运"证据，
+        # 否则 5×2000000/100000=100 会被 1×100 误扣（收紧语义范围，非放松核验）。
+        _pct_nums = {float(m) for m in _re.findall(r"(\d+(?:\.\d+)?)\s*[%％]", question.stem or "")}
         if value is not None and single_step and not real_computation:
             degenerate = next(
                 (s for s in stem_nums
-                 if _close(float(value), s) or _close(float(value) * 100, s) or _close(float(value), s * 100)),
+                 if _close(float(value), s)
+                 or (s in _pct_nums and (_close(float(value) * 100, s) or _close(float(value), s * 100)))),
                 None,
             )
             if degenerate is not None:

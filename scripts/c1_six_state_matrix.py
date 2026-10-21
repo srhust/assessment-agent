@@ -160,13 +160,15 @@ def probe_verified(card: MethodCard) -> Dict[str, Any]:
 def _load_dev_runs() -> Dict[str, Dict[str, Any]]:
     """读 dev 评估产物：case_id → {status, answer, correct, run}。
 
-    覆盖 results/dev 与 results/xingce_dev；跨目录按 mtime 新→旧取每个 case
-    最新一条（xd-* 题族在 xingce_dev 目录）。"""
+    覆盖 results/dev、results/xingce_dev 与 results/xingce_dev_variants；
+    跨目录按 mtime 新→旧取每个 case 最新一条（xd-*/dv-* 题族）。"""
     runs: List[Path] = []
-    for sub in ("dev", "xingce_dev"):
+    for sub in ("dev", "xingce_dev", "xingce_dev_variants"):
         base = ROOT / "results" / sub
         if base.is_dir():
-            runs += [p for p in base.iterdir() if (p / "predictions.jsonl").is_file()]
+            runs += [p for p in base.iterdir()
+                     if (p / "predictions.jsonl").is_file()
+                     and "_rules_only" not in p.name]   # 消融弱臂不充当部署态证据
     runs.sort(key=lambda p: p.stat().st_mtime, reverse=True)   # 新→旧
     out: Dict[str, Dict[str, Any]] = {}
     for p in runs:
@@ -213,6 +215,11 @@ def main() -> None:
     dev_items = [json.loads(l) for l in
                  (ROOT / "data/benchmark_xingce_dev/dev/xingce_dev.jsonl")
                  .read_text(encoding="utf-8").splitlines() if l.strip()]
+    # R9-D：变体 corpus 参与 dev_passed（运行证据 method_refs + tag family），不动 verified 选点
+    vpath = ROOT / "data/benchmark_xingce_dev/variants/xingce_dev_variants.jsonl"
+    if vpath.is_file():
+        dev_items += [json.loads(l) for l in
+                      vpath.read_text(encoding="utf-8").splitlines() if l.strip()]
     dev_results = _load_dev_runs()
 
     matrix: Dict[str, Any] = {}
