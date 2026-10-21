@@ -157,6 +157,24 @@ def image_to_data_url(image_path: str | Path) -> str:
     return f"data:image/{mime};base64,{payload}"
 
 
+def image_audit_meta(image_path: str | Path) -> Dict[str, Any]:
+    """R11-A：不保存 Base64/密钥的图像请求证据（SHA/尺寸/字节/内容块标志）。"""
+    import hashlib
+
+    path = Path(image_path)
+    data = path.read_bytes()
+    meta: Dict[str, Any] = {"sha256_16": hashlib.sha256(data).hexdigest()[:16],
+                            "bytes": len(data), "file": path.name}
+    try:
+        from PIL import Image
+        with Image.open(path) as im:
+            meta["size_wh"] = [im.width, im.height]
+            meta["format"] = im.format
+    except Exception:  # noqa: BLE001 - 证据缺尺寸不阻断请求
+        pass
+    return meta
+
+
 class OpenAICompatibleClient:
     """最小可用的 OpenAI 兼容客户端（同步）。
 
@@ -407,7 +425,9 @@ class OpenAICompatibleClient:
         model: Optional[str] = None,
     ) -> Dict[str, Any]:
         content: Any = user
+        img_meta: Optional[Dict[str, Any]] = None
         if image_path:
+            img_meta = image_audit_meta(image_path)
             content = [
                 {"type": "text", "text": user},
                 {"type": "image_url", "image_url": {"url": image_to_data_url(image_path)}},
@@ -420,6 +440,11 @@ class OpenAICompatibleClient:
             model=model,
         )
         phase = self._classify_phase([{"role": "system", "content": system}])
+        if img_meta is not None:
+            ph = self._phase(phase)
+            ph.setdefault("image_evidence", []).append(
+                {**img_meta, "has_image_content_block": True,
+                 "model_echo": (response.raw or {}).get("model")})
         try:
             parsed = extract_json_object(response.text)
         except LLMError as exc:

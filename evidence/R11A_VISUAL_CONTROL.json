@@ -1,0 +1,96 @@
+{
+ "verdict": "VISION_GATEWAY_VERIFIED",
+ "http_budget": 4,
+ "http_used": 2,
+ "same_text_prompt": "图中黑色实心图形是什么形状、共几个？输出 {\"shape\": \"circle|square\", \"count\": <整数>}",
+ "results": [
+  {
+   "id": "ctrl1",
+   "expect": {
+    "shape": "circle",
+    "count": 3
+   },
+   "image_audit": {
+    "sha256_16": "71ef3cb81bc5d34e",
+    "bytes": 734,
+    "file": "control_1_three_circles.png",
+    "size_wh": [
+     300,
+     160
+    ],
+    "format": "PNG"
+   },
+   "answer": {
+    "shape": "circle",
+    "count": 3
+   },
+   "correct": true
+  },
+  {
+   "id": "ctrl2",
+   "expect": {
+    "shape": "square",
+    "count": 7
+   },
+   "image_audit": {
+    "sha256_16": "576bd204e2ed11d2",
+    "bytes": 521,
+    "file": "control_2_seven_squares.png",
+    "size_wh": [
+     300,
+     200
+    ],
+    "format": "PNG"
+   },
+   "answer": {
+    "shape": "square",
+    "count": 7
+   },
+   "correct": true
+  }
+ ],
+ "audit": {
+  "requests_sent": 2,
+  "requests_succeeded": 2,
+  "echoed_models": [
+   "glm-5.3-flash"
+  ],
+  "error_types": {},
+  "image_evidence": {
+   "solver_or_skill": {
+    "http_succeeded": 2,
+    "http_failed": 0,
+    "malformed_envelope": 0,
+    "json_output_valid": 2,
+    "json_output_invalid": 0,
+    "latency_ms_sum": 9348.2,
+    "image_evidence": [
+     {
+      "sha256_16": "71ef3cb81bc5d34e",
+      "bytes": 734,
+      "file": "control_1_three_circles.png",
+      "size_wh": [
+       300,
+       160
+      ],
+      "format": "PNG",
+      "has_image_content_block": true,
+      "model_echo": "glm-5.3-flash"
+     },
+     {
+      "sha256_16": "576bd204e2ed11d2",
+      "bytes": 521,
+      "file": "control_2_seven_squares.png",
+      "size_wh": [
+       300,
+       200
+      ],
+      "format": "PNG",
+      "has_image_content_block": true,
+      "model_echo": "glm-5.3-flash"
+     }
+    ]
+   }
+  }
+ }
+}
