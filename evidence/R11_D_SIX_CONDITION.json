@@ -501,26 +501,10 @@
      "answer": null,
      "verify": null
     },
-    "E_meta": {
-     "grid": [
-      1,
-      4
-     ],
-     "gold_grid": [
-      1,
-      4
-     ],
-     "grid_correct": true,
-     "target": [
-      0,
-      3
-     ],
-     "target_rowmajor": 3
-    },
     "E": {
-     "status": "failed",
+     "status": "abstain",
      "answer": null,
-     "verify": null
+     "err": "evidence_ambiguous_layout"
     },
     "F": {
      "status": "failed",
@@ -607,26 +591,10 @@
      "answer": null,
      "verify": null
     },
-    "E_meta": {
-     "grid": [
-      3,
-      3
-     ],
-     "gold_grid": [
-      3,
-      3
-     ],
-     "grid_correct": true,
-     "target": [
-      2,
-      2
-     ],
-     "target_rowmajor": null
-    },
     "E": {
-     "status": "failed",
+     "status": "abstain",
      "answer": null,
-     "verify": null
+     "err": "evidence_ambiguous_layout"
     },
     "F": {
      "status": "failed",
@@ -716,7 +684,7 @@
     "E": {
      "status": "abstain",
      "answer": null,
-     "err": "evidence_blank_not_at_row_end"
+     "err": "evidence_ambiguous_layout"
     },
     "F": {
      "status": "failed",

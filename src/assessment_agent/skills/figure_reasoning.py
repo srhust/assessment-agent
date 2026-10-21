@@ -283,6 +283,8 @@ class FigureReasoningSkill(BaseSkill):
             sregions = res.get("stem_regions") or []
             if not sregions:
                 return None, notes + ["stem_band_missing（像素证据无题干带）"]
+            from ..tools.diagram_grid_evidence import merge_stem_regions
+            sregions = merge_stem_regions(sregions)
             try:
                 from ..tools.diagram_grid_evidence import (
                     build_grid_evidence, known_sequence)
@@ -294,7 +296,8 @@ class FigureReasoningSkill(BaseSkill):
             sb = _xywh_to_xyxy(sregions[0]["bbox_page"])
             ev = build_grid_evidence(mask, img_sha, sb,
                                       0, 0, expects_blank=True,
-                                      cells_hint=sregions[0].get("cells"))
+                                      cells_hint=sregions[0].get("cells"),
+                                      rows_hint=int(sregions[0].get("sub_band_count") or 1))
             seq = known_sequence(ev)
             if ev["verification_status"] == "ambiguous" or seq.get("mode") == "unsupported":
                 return None, notes + [
@@ -404,7 +407,8 @@ class FigureReasoningSkill(BaseSkill):
                 ev2 = build_grid_evidence(mask, "", _xywh_to_xyxy(sregions[0]["bbox_page"]),
                                           int(sev["grid"][0]), int(sev["grid"][1]),
                                           expects_blank=True,
-                                          cells_hint=sregions[0].get("cells"))
+                                          cells_hint=sregions[0].get("cells"),
+                                          rows_hint=int(sregions[0].get("sub_band_count") or 1))
                 canvas2 = render_canvas(mask, ev2)
                 sha2 = hashlib.sha256(
                     np.ascontiguousarray(canvas2).tobytes()).hexdigest()[:16]

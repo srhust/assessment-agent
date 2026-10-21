@@ -41,8 +41,8 @@ def slot_boxes(x0: int, y0: int, x1: int, y1: int, rows: int, cols: int):
 
 def layout_hypotheses(mask: np.ndarray, stem_box: Sequence[int],
                       expects_blank: bool,
-                      cells_hint: Optional[Sequence[Dict[str, Any]]] = None
-                      ) -> List[Dict[str, Any]]:
+                      cells_hint: Optional[Sequence[Dict[str, Any]]] = None,
+                      rows_hint: int = 1) -> List[Dict[str, Any]]:
     """基于几何给出候选 (rows, cols)：1×N / 2×N / 3×3，按 ink 槽位拟合打分。
 
     cells_hint：定位器已检出的可见格（小页面 col_segments 阈值切不到时的种子）。
@@ -97,6 +97,10 @@ def layout_hypotheses(mask: np.ndarray, stem_box: Sequence[int],
                        "n_cells": rows * cols,
                        "score": fit * 3 + bonus * 2 + visible - 0.5 * (len(slots) - visible - emptyish)})
     scored.sort(key=lambda d: -d["score"])
+    if rows_hint and rows_hint > 1:
+        filt = [d for d in scored if d["rows"] == rows_hint]
+        if filt:
+            return filt
     return scored
 
 
@@ -104,7 +108,8 @@ def build_grid_evidence(mask: np.ndarray, image_sha: str,
                         stem_box: Sequence[int], rows: int, cols: int,
                         expects_blank: bool = True,
                         vlm_declared: Optional[Dict[str, Any]] = None,
-                        cells_hint: Optional[Sequence[Dict[str, Any]]] = None) -> Dict[str, Any]:
+                        cells_hint: Optional[Sequence[Dict[str, Any]]] = None,
+                      rows_hint: int = 1) -> Dict[str, Any]:
     """按选定 (rows, cols) 生成格证据；多假设打平时 status=ambiguous。"""
     # 确定性等距分支：≥2 个等间距可见格 + 期望空白 → 1×(N+1)，目标在末槽
     pitch_ev = None
@@ -123,7 +128,8 @@ def build_grid_evidence(mask: np.ndarray, image_sha: str,
             y0, y1 = min(ys), max(y + h for y, h in zip(ys, hs))
             slots = [[x0 + i * pitch, y0, x0 + (i + 1) * pitch, y1] for i in range(n_cells)]
             pitch_ev = {"slots": slots, "n": n_cells}
-    hypos = layout_hypotheses(mask, stem_box, expects_blank, cells_hint=cells_hint)
+    hypos = layout_hypotheses(mask, stem_box, expects_blank, cells_hint=cells_hint,
+                          rows_hint=rows_hint)
     status = "ok"
     confidence = "high"
     if pitch_ev and not (rows and cols):
@@ -277,3 +283,36 @@ def known_sequence(evidence: Dict[str, Any]) -> Dict[str, Any]:
     if rows == 1:
         return {"mode": "unsupported", "reason": "blank_not_at_row_end"}
     return {"mode": "unsupported", "reason": "multi_empty_or_internal_blank"}
+
+
+def merge_stem_regions(sregions: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """R11-B：九宫格因行距被拆成多条题干带时，按 x 重叠>0.7 且纵向间隙<=60 合并
+    （overlay-13 视觉复核确为 3 行矩阵）。返回合并后的区域列表（保持首元素结构）。"""
+    if len(sregions) <= 1:
+        return list(sregions)
+    def _ov(a, b):
+        ix = min(a[0] + a[2], b[0] + b[2]) - max(a[0], b[0])
+        iw = min(a[2], b[2])
+        return ix / iw if iw > 0 else 0.0
+    srg = sorted(sregions, key=lambda r: r["bbox_page"][1])
+    merged: List[Dict[str, Any]] = []
+    for r in srg:
+        if merged:
+            last = merged[-1]
+            ygap = r["bbox_page"][1] - last["y1"]
+            if _ov(r["bbox_page"], last["box"]) > 0.7 and ygap <= 60:
+                b0, b1 = last["box"], r["bbox_page"]
+                last["box"] = [min(b0[0], b1[0]), b0[1],
+                               max(b0[0] + b0[2], b1[0] + b1[2]), b1[1] + b1[3]]
+                last["y1"] = b1[1] + b1[3]
+                last["cells"] = last["cells"] + list(r.get("cells") or [])
+                continue
+        b = r["bbox_page"]
+        merged.append({"box": list(b), "y1": b[1] + b[3],
+                       "cells": list(r.get("cells") or []), "n_bands": 1})
+    tall = max(merged, key=lambda mm: (mm["y1"] - mm["box"][1]) * mm["box"][2])
+    first = dict(sregions[0])
+    first["bbox_page"] = tall["box"]
+    first["cells"] = tall["cells"]
+    first["sub_band_count"] = tall.get("n_bands", 1)
+    return [first]

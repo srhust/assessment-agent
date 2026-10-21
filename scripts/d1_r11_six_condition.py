@@ -128,12 +128,15 @@ def main() -> int:
             mask = load_mask(str(FIG / "images" / "dev" / f"{pid}.png"))
             n_opts = len(item["options"])
             res = localize_page(mask, n_options=n_opts)
-            sr = (res.get("stem_regions") or [None])[0]
+            from assessment_agent.tools.diagram_grid_evidence import merge_stem_regions
+            sr_list = merge_stem_regions(res.get("stem_regions") or [])
+            sr = (sr_list or [None])[0]
             if not sr:
                 raise RuntimeError("no_stem_band")
             x, y, w, h = sr["bbox_page"]
             ev = build_grid_evidence(mask, "e", [x, y, x + w, y + h], 0, 0,
-                                     expects_blank=True, cells_hint=sr.get("cells"))
+                                     expects_blank=True, cells_hint=sr.get("cells"),
+                                     rows_hint=int(sr.get("sub_band_count") or 1))
             seq = known_sequence(ev)
             if seq.get("mode") in (None, "unsupported"):
                 raise RuntimeError(f"evidence_{seq.get('reason')}")
