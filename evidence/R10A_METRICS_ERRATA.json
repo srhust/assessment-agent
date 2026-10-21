@@ -1,0 +1,171 @@
+{
+  "corpora": {
+    "xingce_dev": {
+      "rules_only": {
+        "n": 26,
+        "n_answerable": 25,
+        "n_unanswerable": 1,
+        "可答正确释放率": 0.32,
+        "候选覆盖率": 0.44,
+        "候选正确率": 0.7273,
+        "错误接受数_可答": 0,
+        "错误接受_ids": [],
+        "弃权失守数": 0,
+        "正确弃权数": 1,
+        "各题首失败阶段": {
+          "solve:计算结果与所有选项均不匹配": 4,
+          "verify:unverified": 3,
+          "solve:未能从题干中解析出算术表达式": 6,
+          "none": 8,
+          "abstain_ok": 1,
+          "solve:言语理解规则核无法可靠判定: no_coveri": 1,
+          "solve:言语理解规则核无法可靠判定: no_colloc": 1,
+          "solve:规律族冲突（ambiguous）：六类规律 ce": 1,
+          "solve:已有规律无法唯一匹配选项：未找到能同时解释所有完": 1
+        }
+      },
+      "rules+templates": {
+        "n": 26,
+        "n_answerable": 25,
+        "n_unanswerable": 1,
+        "可答正确释放率": 0.84,
+        "候选覆盖率": 0.84,
+        "候选正确率": 1.0,
+        "错误接受数_可答": 0,
+        "错误接受_ids": [],
+        "弃权失守数": 0,
+        "正确弃权数": 1,
+        "各题首失败阶段": {
+          "none": 21,
+          "abstain_ok": 1,
+          "solve:言语理解规则核无法可靠判定: no_coveri": 1,
+          "solve:言语理解规则核无法可靠判定: no_colloc": 1,
+          "solve:规律族冲突（ambiguous）：六类规律 ce": 1,
+          "solve:已有规律无法唯一匹配选项：未找到能同时解释所有完": 1
+        }
+      },
+      "rules+planner": {
+        "n": 26,
+        "n_answerable": 25,
+        "n_unanswerable": 1,
+        "可答正确释放率": 0.88,
+        "候选覆盖率": 0.92,
+        "候选正确率": 0.9565,
+        "错误接受数_可答": 0,
+        "错误接受_ids": [],
+        "弃权失守数": 0,
+        "正确弃权数": 1,
+        "各题首失败阶段": {
+          "none": 22,
+          "abstain_ok": 1,
+          "verify:unverified": 1,
+          "solve:规律族冲突（ambiguous）：六类规律 ce": 1,
+          "solve:已有规律无法唯一匹配选项：未找到能同时解释所有完": 1
+        }
+      },
+      "image_only(R9E单跑)": {
+        "n": 26,
+        "n_answerable": 25,
+        "n_unanswerable": 1,
+        "可答正确释放率": 0.8,
+        "候选覆盖率": 0.84,
+        "候选正确率": 0.9524,
+        "错误接受数_可答": 0,
+        "错误接受_ids": [],
+        "弃权失守数": 0,
+        "正确弃权数": 1,
+        "各题首失败阶段": {
+          "none": 20,
+          "solve:结构化规划未成立: plan_invalid: ": 1,
+          "abstain_ok": 1,
+          "verify:unverified": 1,
+          "solve:unsupported_skill": 1,
+          "solve:没有支持范围内的规律能解释已知图形（当前支持：个": 1,
+          "solve:pipeline_error: 视觉结构化解析失": 1
+        },
+        "OCR_文字精确匹配率": {
+          "value": 0.3077,
+          "num": 8
+        },
+        "OCR_关键条件完整率": {
+          "value": 0.9615,
+          "num": 25
+        },
+        "usage": {
+          "calls": 32,
+          "model": "glm-5.3-flash",
+          "prompt_tokens": 30846,
+          "completion_tokens": 33745,
+          "total_tokens": 64591
+        }
+      }
+    },
+    "xingce_dev_variants": {
+      "rules_only": {
+        "n": 44,
+        "n_answerable": 34,
+        "n_unanswerable": 10,
+        "可答正确释放率": 0.0,
+        "候选覆盖率": 0.2647,
+        "候选正确率": 0.0,
+        "错误接受数_可答": 1,
+        "错误接受_ids": [
+          "dv-expr-operators-03"
+        ],
+        "弃权失守数": 0,
+        "正确弃权数": 10,
+        "各题首失败阶段": {
+          "solve:计算结果与所有选项均不匹配": 10,
+          "abstain_ok": 10,
+          "verify:unverified": 8,
+          "solve:未能从题干中解析出算术表达式": 13,
+          "solve:无法解析表达式 '2)+2**4': Sympi": 1,
+          "release:false_accept": 1,
+          "solve:无法解析表达式 '2) + 5': Sympif": 1
+        }
+      },
+      "rules+templates": {
+        "n": 44,
+        "n_answerable": 34,
+        "n_unanswerable": 10,
+        "可答正确释放率": 0.8824,
+        "候选覆盖率": 0.9118,
+        "候选正确率": 0.9677,
+        "错误接受数_可答": 0,
+        "错误接受_ids": [],
+        "弃权失守数": 0,
+        "正确弃权数": 10,
+        "各题首失败阶段": {
+          "none": 30,
+          "abstain_ok": 10,
+          "solve:无法解析表达式 '2)+2**4': Sympi": 1,
+          "solve:计算结果与所有选项均不匹配": 1,
+          "verify:unverified": 1,
+          "solve:无法解析表达式 '2) + 5': Sympif": 1
+        }
+      },
+      "rules+planner": {
+        "n": 44,
+        "n_answerable": 34,
+        "n_unanswerable": 10,
+        "可答正确释放率": 0.8824,
+        "候选覆盖率": 0.9706,
+        "候选正确率": 0.9091,
+        "错误接受数_可答": 1,
+        "错误接受_ids": [
+          "dv-expr-operators-03"
+        ],
+        "弃权失守数": 0,
+        "正确弃权数": 10,
+        "各题首失败阶段": {
+          "none": 30,
+          "abstain_ok": 10,
+          "verify:reject": 2,
+          "solve:结构化规划未成立: plan_unbound": 1,
+          "release:false_accept": 1
+        }
+      }
+    }
+  },
+  "rule": "分母=金标 answerability==has_unique_answer；不可答单列弃权块；文字精确匹配≠关键条件完整（后者允许非逐字但数值条件齐备）"
+}

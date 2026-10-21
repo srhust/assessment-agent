@@ -287,12 +287,22 @@ class NumericCalculationSkill(BaseSkill):
                  "text": o.get("text") if isinstance(o, dict) else getattr(o, "text", "")}
                 for o in (question.options or [])]
         plan, _cards, why = planner.plan_llm(question.stem, opts, self.id)
+
+        def _retrieval_meta(cards, chosen_plan, reject: Optional[str]) -> dict:
+            # R10-A4：检索证据持久化——候选卡与版本、最终选中卡、拒绝原因
+            return {
+                "methods_retrieved": [{"method_id": c.method_id, "version": c.version}
+                                      for c in (cards or [])],
+                "selected_method": chosen_plan.method_id if chosen_plan else None,
+                "rejection_reason": None if chosen_plan is not None else str(reject or "")[:200],
+            }
         if plan is None:
             return Solution(
                 status="failed", skill=self.id, method="reasoning_planner",
                 error=f"结构化规划未成立: {why}",
-                meta={"planner_failure": str(why)[:200]})
+                meta={"planner_failure": str(why)[:200], **_retrieval_meta(_cards, None, why)})
         ex = execute_plan(plan)
+        used_cards = _cards
         if ex.final is not None:
             stale = self._stale_target_probe(plan, ex.final, question.stem)
             if stale:
@@ -302,11 +312,13 @@ class NumericCalculationSkill(BaseSkill):
                     ex2 = execute_plan(plan2)
                     if ex2.final is not None and ex2.final != ex.final:
                         plan, ex = plan2, ex2
+                        used_cards = _c2
         if ex.final is None:
             return Solution(
                 status="failed", skill=self.id, method="reasoning_planner",
                 error=f"计划执行失败: {ex.error}",
-                meta={"structured_plan": plan.to_dict()})
+                meta={"structured_plan": plan.to_dict(),
+                      **_retrieval_meta(used_cards, plan, None)})
         value = float(ex.final)
         exact = (f"{ex.final.numerator}/{ex.final.denominator}"
                  if ex.final.denominator != 1 else str(ex.final.numerator))
@@ -330,7 +342,8 @@ class NumericCalculationSkill(BaseSkill):
             label = best[1]
         meta = {"structured_plan": plan.to_dict(), "solver_source": "llm_planner",
                 "expression": ex.expression, "value": value, "exact": exact,
-                "planner_method": plan.method_id}
+                "planner_method": plan.method_id,
+                **_retrieval_meta(used_cards, plan, None)}
         if label is None:
             meta.update({"planner_failure": "plan_result_not_in_options"})
             return Solution(status="failed", skill=self.id, method="reasoning_planner",
@@ -440,11 +453,16 @@ class NumericCalculationSkill(BaseSkill):
                         return Verification(passed=False, action="unverified", checks=checks,
                                             final_answer=None,
                                             notes="题面直读独立求值与 Solver 抽取表达式不符：禁止释放")
-                except Exception:  # noqa: BLE001
-                    # Verifier 无法独立求值纯算术题面（解析器缺口）：如实跳过，
-                    # 不因此前已 accept 的题 retroactive 阻断（避免回归）；
-                    # 只在能独立求值且与 Solver 不符时才 blocking。
-                    pass
+                except Exception as exc:  # noqa: BLE001
+                    # R10-A6（工单）：独立复核执行异常 = 受控 unverified，
+                    # 不允许跳过独立检查释放——证据不可重建即不释放。
+                    checks.append(VerificationCheck(
+                        name="numeric.stem_direct_parse", passed=False, severity="blocking",
+                        detail=f"题面直读式 {_sa!r} 独立求值异常（{type(exc).__name__}: {exc}）"
+                               "——复核不可执行，禁止释放"))
+                    return Verification(passed=False, action="unverified", checks=checks,
+                                        final_answer=None,
+                                        notes="题面直读独立复核执行异常：受控 unverified")
         repaired: Optional[str] = None
         plan = solution.meta.get("word_problem")
         # R6-B/R6.1 操作数覆盖（blocking）：题干数量必须全部被**表达式操作数**绑定

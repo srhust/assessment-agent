@@ -57,6 +57,23 @@ def test_faithful_arithmetic_stem_still_released():
     assert ver.action == "accept"
 
 
+def test_stem_reparse_exception_is_controlled_unverified():
+    """R10-A6：独立复核执行异常必须落 unverified，不得静默跳过检查。"""
+    from assessment_agent.schemas import Solution
+    sk = NumericCalculationSkill()
+    q = _q("计算：9//2 = ?", [("A", "4"), ("B", "4.5"), ("C", "5"), ("D", "9")])
+    sol = Solution(status="solved", skill="numeric_calculation", answer="B",
+                   method="sympy_exact",
+                   meta={"expression": "9//2", "value": 4.5, "exact": "4.5",
+                         "matched_label": "B"})
+    ver = sk.verify(q, sol, _ctx())
+    names = {c.name for c in (ver.checks or [])}
+    assert "numeric.stem_direct_parse" in names
+    chk = next(c for c in ver.checks if c.name == "numeric.stem_direct_parse")
+    assert chk.passed is False and chk.severity == "blocking"
+    assert ver.action == "unverified" and ver.final_answer is None
+
+
 def test_natural_language_stem_not_applicable():
     """含中文实词的应用题不适用直读通道（不误伤模板路径）。"""
     sk = NumericCalculationSkill()

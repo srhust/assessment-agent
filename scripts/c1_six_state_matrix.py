@@ -220,13 +220,27 @@ def main() -> None:
         dev_items += [json.loads(l) for l in
                       vpath.read_text(encoding="utf-8").splitlines() if l.strip()]
     dev_results = _load_dev_runs()
+    # R10-A5：plannable 分列——技能级接口可用性 ≠ 逐卡构造证据。
+    # 逐卡证据 = 有 dev/变体题通过运行证据映射（method_refs）到该卡且出现在最新运行中
+    # （不要求答对——答对与否是 dev_passed 的门槛）。
+    ref_pool = {it["id"]: it for it in dev_items}
+    def per_card_plannable(card_id: str) -> bool:
+        return any(card_id in (it.get("method_refs") or [])
+                   for iid, it in ref_pool.items() if iid in dev_results)
 
     matrix: Dict[str, Any] = {}
     for cid, card in sorted(cards.items()):
+        pl = probe_plannable(card)
+        pe = per_card_plannable(cid)
         st = {
             "documented": probe_documented(kb, card, errors),
             "retrievable": probe_retrievable(kb, card),
-            "plannable": probe_plannable(card),
+            "plannable": {**pl,
+                          "interface_available": pl["ok"],
+                          "per_card_evidence": pe,
+                          "ok": bool(pl["ok"] and pe),
+                          "note": pl["note"] + (
+                              "；逐卡构造证据：有" if pe else "；无逐卡构造证据（仅技能级接口在）")},
             "executable": probe_executable(card),
             "verified": probe_verified(card),
             "dev_passed": probe_dev_passed(card, dev_items, dev_results),
@@ -236,10 +250,19 @@ def main() -> None:
     summary = {state: sum(1 for c in matrix.values() if c[state]["ok"])
                for state in ("documented", "retrievable", "plannable",
                              "executable", "verified", "dev_passed")}
-    payload = {"n_cards": len(matrix), "summary": summary,
+    summary_extra = {
+        "plannable_interface_only": sum(1 for c in matrix.values()
+                                        if c["plannable"]["interface_available"]
+                                        and not c["plannable"]["per_card_evidence"]),
+        "plannable_per_card_evidence": sum(1 for c in matrix.values()
+                                           if c["plannable"]["per_card_evidence"]),
+    }
+    payload = {"n_cards": len(matrix), "summary": {**summary, **summary_extra},
+               "probe_scope_note": ("plannable 已分列 interface/per_card；verified 仍为技能级 live "
+                                    "solve→verify 实调（该 skill 首个 dev 题），逐卡真实性以 dev_passed 为准"),
                "dev_results_run": next(iter(dev_results.values()))["run"] if dev_results else None,
                "cards": matrix}
-    out = ROOT / "evidence/R9C_SIX_STATE_MATRIX.json"
+    out = ROOT / "evidence/R10_SIX_STATE_MATRIX.json"  # R10 产物新路径；R9 原件保持不动
     out.write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
     print(json.dumps({"cards": len(matrix), "summary": summary}, ensure_ascii=False))
     # 六态全真卡清单（能力闭环已成立的卡）

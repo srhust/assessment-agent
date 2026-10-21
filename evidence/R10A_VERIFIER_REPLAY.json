@@ -1,0 +1,876 @@
+{
+  "meta_truncation_note": "存盘 solver_meta 仅 4 字段；重放针对新核验通道",
+  "arms": {
+    "xingce_dev/r9d_xingce_dev_rules_planner_140856": {
+      "rows": 26,
+      "false_accepts_old": 0,
+      "blocked_by_new_verifier": 0,
+      "still_accepted_wrong": 0,
+      "action_changes": [
+        {
+          "case": "xd-nc-03",
+          "old": "accept",
+          "new": "unverified",
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case": "xd-nc-04",
+          "old": "accept",
+          "new": "unverified",
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case": "xd-nc-06",
+          "old": "accept",
+          "new": "unverified",
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case": "xd-nc-21",
+          "old": "accept",
+          "new": "unverified",
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case": "xd-da-11",
+          "old": "accept",
+          "new": null,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case": "xd-da-12",
+          "old": "accept",
+          "new": null,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case": "xd-da-13",
+          "old": "accept",
+          "new": null,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case": "xd-lg-14",
+          "old": "accept",
+          "new": null,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case": "xd-lg-15",
+          "old": "accept",
+          "new": null,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case": "xd-ana-16",
+          "old": "reject",
+          "new": null,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case": "xd-vu-22",
+          "old": "unverified",
+          "new": null,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case": "xd-vu-23",
+          "old": "accept",
+          "new": null,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case": "xd-lang-24",
+          "old": "accept",
+          "new": null,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case": "xd-ns-17",
+          "old": "accept",
+          "new": null,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case": "xd-ns-18",
+          "old": "accept",
+          "new": null,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case": "xd-fig-19",
+          "old": "reject",
+          "new": null,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case": "xd-fig-20",
+          "old": "reject",
+          "new": null,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        }
+      ],
+      "classification_counts": {
+        "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)": 4,
+        "faithful_unchanged": 9,
+        "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)": 13
+      },
+      "detail": [
+        {
+          "case_id": "xd-nc-01",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "xd-nc-02",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "xd-nc-03",
+          "old_action": "accept",
+          "new_action": "unverified",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case_id": "xd-nc-04",
+          "old_action": "accept",
+          "new_action": "unverified",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case_id": "xd-nc-05",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "xd-nc-06",
+          "old_action": "accept",
+          "new_action": "unverified",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case_id": "xd-nc-07",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "xd-nc-08",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "xd-nc-09",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "xd-nc-10",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "xd-nc-19",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "xd-nc-20",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "xd-nc-21",
+          "old_action": "accept",
+          "new_action": "unverified",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case_id": "xd-da-11",
+          "old_action": "accept",
+          "new_action": null,
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case_id": "xd-da-12",
+          "old_action": "accept",
+          "new_action": null,
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case_id": "xd-da-13",
+          "old_action": "accept",
+          "new_action": null,
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case_id": "xd-lg-14",
+          "old_action": "accept",
+          "new_action": null,
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case_id": "xd-lg-15",
+          "old_action": "accept",
+          "new_action": null,
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case_id": "xd-ana-16",
+          "old_action": "reject",
+          "new_action": null,
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case_id": "xd-vu-22",
+          "old_action": "unverified",
+          "new_action": null,
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case_id": "xd-vu-23",
+          "old_action": "accept",
+          "new_action": null,
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case_id": "xd-lang-24",
+          "old_action": "accept",
+          "new_action": null,
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case_id": "xd-ns-17",
+          "old_action": "accept",
+          "new_action": null,
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case_id": "xd-ns-18",
+          "old_action": "accept",
+          "new_action": null,
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case_id": "xd-fig-19",
+          "old_action": "reject",
+          "new_action": null,
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        },
+        {
+          "case_id": "xd-fig-20",
+          "old_action": "reject",
+          "new_action": null,
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "cross_skill_noop(重放仅过 nc 核验器，其他技能核验器不在此重放范围)"
+        }
+      ]
+    },
+    "xingce_dev_variants/r9d_variants_rules_planner_141211": {
+      "rows": 44,
+      "false_accepts_old": 1,
+      "blocked_by_new_verifier": 1,
+      "still_accepted_wrong": 0,
+      "action_changes": [
+        {
+          "case": "dv-compound-pct-04",
+          "old": "reject",
+          "new": null,
+          "classification": "other_change"
+        },
+        {
+          "case": "dv-concentration-02",
+          "old": "accept",
+          "new": "unverified",
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case": "dv-concentration-04",
+          "old": "reject",
+          "new": null,
+          "classification": "other_change"
+        },
+        {
+          "case": "dv-concentration-05",
+          "old": "accept",
+          "new": "unverified",
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case": "dv-travel-04",
+          "old": "reject",
+          "new": null,
+          "classification": "other_change"
+        },
+        {
+          "case": "dv-travel-05",
+          "old": "accept",
+          "new": "unverified",
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case": "dv-net-growth-04",
+          "old": "reject",
+          "new": null,
+          "classification": "other_change"
+        },
+        {
+          "case": "dv-pct-restore-04",
+          "old": "reject",
+          "new": null,
+          "classification": "other_change"
+        },
+        {
+          "case": "dv-work-rate-04",
+          "old": "reject",
+          "new": null,
+          "classification": "other_change"
+        },
+        {
+          "case": "dv-work-rate-05",
+          "old": "accept",
+          "new": "unverified",
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case": "dv-map-scale-02",
+          "old": "reject",
+          "new": null,
+          "classification": "other_change"
+        },
+        {
+          "case": "dv-unit-count-02",
+          "old": "reject",
+          "new": null,
+          "classification": "other_change"
+        },
+        {
+          "case": "dv-ratio-share-03",
+          "old": "reject",
+          "new": null,
+          "classification": "other_change"
+        },
+        {
+          "case": "dv-expr-operators-01",
+          "old": "reject",
+          "new": "unverified",
+          "classification": "other_change"
+        },
+        {
+          "case": "dv-expr-operators-02",
+          "old": "reject",
+          "new": null,
+          "classification": "other_change"
+        },
+        {
+          "case": "dv-expr-operators-03",
+          "old": "accept",
+          "new": "unverified",
+          "classification": "target_block(新通道翻转的真实 false_accept)"
+        },
+        {
+          "case": "dv-expr-operators-04",
+          "old": "reject",
+          "new": null,
+          "classification": "other_change"
+        },
+        {
+          "case": "dv-expr-operators-05",
+          "old": "reject",
+          "new": "unverified",
+          "classification": "other_change"
+        }
+      ],
+      "classification_counts": {
+        "other_change": 13,
+        "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)": 4,
+        "target_block(新通道翻转的真实 false_accept)": 1,
+        "faithful_unchanged": 26
+      },
+      "detail": [
+        {
+          "case_id": "dv-compound-pct-01",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-compound-pct-02",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-compound-pct-03",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-compound-pct-04",
+          "old_action": "reject",
+          "new_action": null,
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "other_change"
+        },
+        {
+          "case_id": "dv-compound-pct-05",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-concentration-01",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-concentration-02",
+          "old_action": "accept",
+          "new_action": "unverified",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case_id": "dv-concentration-03",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-concentration-04",
+          "old_action": "reject",
+          "new_action": null,
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "other_change"
+        },
+        {
+          "case_id": "dv-concentration-05",
+          "old_action": "accept",
+          "new_action": "unverified",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case_id": "dv-travel-01",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-travel-02",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-travel-03",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-travel-04",
+          "old_action": "reject",
+          "new_action": null,
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "other_change"
+        },
+        {
+          "case_id": "dv-travel-05",
+          "old_action": "accept",
+          "new_action": "unverified",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case_id": "dv-net-growth-01",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-net-growth-02",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-net-growth-03",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-net-growth-04",
+          "old_action": "reject",
+          "new_action": null,
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "other_change"
+        },
+        {
+          "case_id": "dv-net-growth-05",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-pct-restore-01",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-pct-restore-02",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-pct-restore-03",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-pct-restore-04",
+          "old_action": "reject",
+          "new_action": null,
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "other_change"
+        },
+        {
+          "case_id": "dv-pct-restore-05",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-work-rate-01",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-work-rate-02",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-work-rate-03",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-work-rate-04",
+          "old_action": "reject",
+          "new_action": null,
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "other_change"
+        },
+        {
+          "case_id": "dv-work-rate-05",
+          "old_action": "accept",
+          "new_action": "unverified",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "truncation_artifact(存盘 meta 无完整计划，重放低估；live 运行含计划可复核)"
+        },
+        {
+          "case_id": "dv-map-scale-01",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-map-scale-02",
+          "old_action": "reject",
+          "new_action": null,
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "other_change"
+        },
+        {
+          "case_id": "dv-unit-count-01",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-unit-count-02",
+          "old_action": "reject",
+          "new_action": null,
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "other_change"
+        },
+        {
+          "case_id": "dv-ratio-share-01",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-ratio-share-02",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-ratio-share-03",
+          "old_action": "reject",
+          "new_action": null,
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "other_change"
+        },
+        {
+          "case_id": "dv-ratio-share-04",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-ratio-share-05",
+          "old_action": "accept",
+          "new_action": "accept",
+          "correct": true,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "faithful_unchanged"
+        },
+        {
+          "case_id": "dv-expr-operators-01",
+          "old_action": "reject",
+          "new_action": "unverified",
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "other_change"
+        },
+        {
+          "case_id": "dv-expr-operators-02",
+          "old_action": "reject",
+          "new_action": null,
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "other_change"
+        },
+        {
+          "case_id": "dv-expr-operators-03",
+          "old_action": "accept",
+          "new_action": "unverified",
+          "correct": false,
+          "was_false_accept": true,
+          "now_blocked": true,
+          "classification": "target_block(新通道翻转的真实 false_accept)"
+        },
+        {
+          "case_id": "dv-expr-operators-04",
+          "old_action": "reject",
+          "new_action": null,
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "other_change"
+        },
+        {
+          "case_id": "dv-expr-operators-05",
+          "old_action": "reject",
+          "new_action": "unverified",
+          "correct": false,
+          "was_false_accept": false,
+          "now_blocked": false,
+          "classification": "other_change"
+        }
+      ]
+    }
+  }
+}
