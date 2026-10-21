@@ -107,6 +107,21 @@ def test_equal_speed_pursuit_div_zero_controlled():
     assert ex.final is None and ex.error  # 除零被受控捕获，不误出值
 
 
+def test_mixed_script_varname_not_falsely_unbound():
+    """pv-travel-04 根因回归：中英混排变量名 v和 曾被 ASCII 截断误报未绑定。"""
+    stem = "甲乙两人从相距 240 千米的两地同时相向出发，甲每小时 60 千米，乙每小时 40 千米，几小时后相遇？"
+    p = StructuredPlan(
+        family="travel-meeting", method_id="nc.travel-meeting-pursuit",
+        givens=[Given("距离", "240", "相距 240 千米", kind="quantity"),
+               Given("v1", "60", "甲每小时 60 千米", kind="rate"),
+               Given("v2", "40", "乙每小时 40 千米", kind="rate")],
+        steps=[PlanStep("v和", "REL(v1, v2, 相向)", "同时相向出发", ["v1", "v2"]),
+               PlanStep("t小时", "距离 / v和", "几小时后相遇", ["距离", "v和"])],
+        target="t小时")
+    assert validate_plan(p, stem) == []
+    assert execute_plan(p).final == Fraction(240, 100)
+
+
 def test_dict_roundtrip_keeps_slots():
     p = _meet_plan()
     q = StructuredPlan.from_dict(p.to_dict())

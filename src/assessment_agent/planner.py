@@ -455,8 +455,10 @@ def validate_plan(plan: StructuredPlan, stem: str) -> List[str]:
     for step in plan.steps:
         if step.var in vars_defined:
             problems.append(f"步骤变量重复: {step.var}")
-        for tok in re.findall(r"[A-Za-z_][A-Za-z0-9_]*", step.expr):
-            if tok in _FNAMES:          # R9-C：函数名不是未绑定标识符
+        # R10-B：中英混排完整名（"v和/t小时" 曾按 ASCII 截断致误报未绑定——pv-travel-04 根因）
+        for tok in re.findall(r"[A-Za-z_\u4e00-\u9fff][A-Za-z0-9_\u4e00-\u9fff]*", step.expr):
+            if tok in _FNAMES or tok in REL_SUM_MODES | REL_DIFF_MODES:
+                # R9-C 函数名 / R10-B REL 字面方向词不是未绑定标识符
                 continue
             if tok not in seen:
                 problems.append(f"步骤 {step.var} 引用未绑定标识符 {tok}")

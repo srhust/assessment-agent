@@ -292,14 +292,17 @@ def _solver_meta(solution) -> Dict[str, Any]:
     m = getattr(solution, "meta", None) or {}
     out: Dict[str, Any] = {}
     for key in ("solver_source", "expression", "value", "exact", "method",
-                "question_kind", "planner_failure", "rule", "plan_source"):
+                "question_kind", "planner_failure", "rule", "plan_source",
+                # R10-A4：检索/选卡/拒绝原因持久化（可审计性，不含金标）
+                "methods_retrieved", "selected_method", "rejection_reason"):
         if key in m:
             out[key] = m[key]
     sp = m.get("structured_plan")
     if isinstance(sp, dict):
         out["structured_plan"] = {
             "family": sp.get("family"), "method_id": sp.get("method_id"),
-            "givens": [[g.get("label"), g.get("value"), g.get("stem_span")]
+            "givens": [[g.get("label"), g.get("value"), g.get("stem_span"),
+                        g.get("kind"), g.get("mode")]
                        for g in sp.get("givens", [])][:8],
             "steps": [[s.get("var"), s.get("expr")] for s in sp.get("steps", [])][:8],
             "target": sp.get("target"),
