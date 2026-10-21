@@ -1,0 +1,261 @@
+{
+ "stage": "R10-B",
+ "corpus": "data/benchmark_xingce_dev/planvar/xingce_dev_planvar.jsonl",
+ "corpus_note": "6 独立同族变体（模板弃权断言通过、金标手工复算、区别于 R9 44 变体与方法卡示例）",
+ "runs": [
+  {
+   "run": "r10b_planvar_planner",
+   "correct": 1,
+   "n": 6,
+   "llm_calls": 7,
+   "requests_sent": 17,
+   "read_timeouts": 10,
+   "tokens": 17946
+  },
+  {
+   "run": "r10b2_planvar_planner",
+   "correct": 3,
+   "n": 6,
+   "llm_calls": 9,
+   "requests_sent": 17,
+   "read_timeouts": 8,
+   "tokens": 22617
+  },
+  {
+   "run": "r10b3_planvar_planner",
+   "correct": 3,
+   "n": 6,
+   "llm_calls": 9,
+   "requests_sent": 16,
+   "read_timeouts": 7,
+   "tokens": 24519
+  }
+ ],
+ "per_item": {
+  "pv-travel-01": {
+   "gold": "B",
+   "answerability": "has_unique_answer",
+   "outcomes": [
+    {
+     "status": "solved",
+     "correct": true,
+     "fail": "",
+     "expr": "(((((55) + (45))))*3)",
+     "selected_method": null,
+     "retrieved": null
+    },
+    {
+     "status": "solved",
+     "correct": true,
+     "fail": "",
+     "expr": "(((((55) + (45))))*3)",
+     "selected_method": "nc.travel-meeting-pursuit",
+     "retrieved": [
+      "nc.travel-meeting-pursuit",
+      "nc.ratio-share-parts"
+     ]
+    },
+    {
+     "status": "solved",
+     "correct": true,
+     "fail": "",
+     "expr": "((((55) + (45)))*3)",
+     "selected_method": "nc.travel-meeting-pursuit",
+     "retrieved": [
+      "nc.travel-meeting-pursuit",
+      "nc.ratio-share-parts"
+     ]
+    }
+   ]
+  },
+  "pv-travel-02": {
+   "gold": "B",
+   "answerability": "has_unique_answer",
+   "outcomes": [
+    {
+     "status": "failed",
+     "correct": false,
+     "fail": "结构化规划未成立: plan_unbound",
+     "expr": null,
+     "selected_method": null,
+     "retrieved": null
+    },
+    {
+     "status": "failed",
+     "correct": false,
+     "fail": "结构化规划未成立: llm_error_retry: 模型调用重试后仍失败: The read operation timed out",
+     "expr": null,
+     "selected_method": null,
+     "retrieved": [
+      "nc.travel-meeting-pursuit",
+      "nc.alligation-cross"
+     ]
+    },
+    {
+     "status": "failed",
+     "correct": false,
+     "fail": "结构化规划未成立: llm_error_retry: 模型调用重试后仍失败: The read operation timed out",
+     "expr": null,
+     "selected_method": null,
+     "retrieved": [
+      "nc.travel-meeting-pursuit",
+      "nc.alligation-cross"
+     ]
+    }
+   ]
+  },
+  "pv-travel-03": {
+   "gold": "B",
+   "answerability": "has_unique_answer",
+   "outcomes": [
+    {
+     "status": "failed",
+     "correct": false,
+     "fail": "结构化规划未成立: llm_error_retry: 模型调用重试后仍失败: The read operation timed out",
+     "expr": null,
+     "selected_method": null,
+     "retrieved": null
+    },
+    {
+     "status": "solved",
+     "correct": true,
+     "fail": "",
+     "expr": "((((60) + (80)))*10)",
+     "selected_method": "nc.travel-meeting-pursuit",
+     "retrieved": [
+      "nc.travel-meeting-pursuit",
+      "nc.successive-discount"
+     ]
+    },
+    {
+     "status": "failed",
+     "correct": false,
+     "fail": "结构化规划未成立: llm_error_retry: 模型调用重试后仍失败: The read operation timed out",
+     "expr": null,
+     "selected_method": null,
+     "retrieved": [
+      "nc.travel-meeting-pursuit",
+      "nc.successive-discount"
+     ]
+    }
+   ]
+  },
+  "pv-travel-04": {
+   "gold": "C",
+   "answerability": "has_unique_answer",
+   "outcomes": [
+    {
+     "status": "failed",
+     "correct": false,
+     "fail": "结构化规划未成立: plan_invalid: 步骤 vsum 引用未绑定标识符 v; 步骤 vsum 引用未绑定标识符 v; 步骤 t小时",
+     "expr": null,
+     "selected_method": null,
+     "retrieved": null
+    },
+    {
+     "status": "failed",
+     "correct": false,
+     "fail": "结构化规划未成立: plan_invalid: 步骤 v和 引用未绑定标识符 v; 步骤 v和 引用未绑定标识符 v; 步骤 t小时 的 s",
+     "expr": null,
+     "selected_method": null,
+     "retrieved": [
+      "nc.travel-meeting-pursuit",
+      "nc.combinatorics-bundling"
+     ]
+    },
+    {
+     "status": "solved",
+     "correct": true,
+     "fail": "",
+     "expr": "((120 / (90 + 30)) * 60)",
+     "selected_method": "nc.travel-meeting-pursuit",
+     "retrieved": [
+      "nc.travel-meeting-pursuit",
+      "nc.combinatorics-bundling"
+     ]
+    }
+   ]
+  },
+  "pv-travel-05": {
+   "gold": "B",
+   "answerability": "has_unique_answer",
+   "outcomes": [
+    {
+     "status": "failed",
+     "correct": false,
+     "fail": "结构化规划未成立: llm_error_retry: 模型调用重试后仍失败: The read operation timed out",
+     "expr": null,
+     "selected_method": null,
+     "retrieved": null
+    },
+    {
+     "status": "solved",
+     "correct": true,
+     "fail": "",
+     "expr": "(400 / (((6) + (4))))",
+     "selected_method": "nc.travel-meeting-pursuit",
+     "retrieved": [
+      "nc.travel-meeting-pursuit",
+      "nc.successive-discount"
+     ]
+    },
+    {
+     "status": "solved",
+     "correct": true,
+     "fail": "",
+     "expr": "((400)/(((6) + (4))))",
+     "selected_method": "nc.travel-meeting-pursuit",
+     "retrieved": [
+      "nc.travel-meeting-pursuit",
+      "nc.successive-discount"
+     ]
+    }
+   ]
+  },
+  "pv-travel-06": {
+   "gold": "C",
+   "answerability": "insufficient_conditions",
+   "outcomes": [
+    {
+     "status": "failed",
+     "correct": false,
+     "fail": "结构化规划未成立: llm_error_retry: 模型调用重试后仍失败: The read operation timed out",
+     "expr": null,
+     "selected_method": null,
+     "retrieved": null
+    },
+    {
+     "status": "failed",
+     "correct": false,
+     "fail": "结构化规划未成立: llm_error_retry: 模型调用重试后仍失败: The read operation timed out",
+     "expr": null,
+     "selected_method": null,
+     "retrieved": [
+      "nc.travel-meeting-pursuit",
+      "nc.inclusion-exclusion"
+     ]
+    },
+    {
+     "status": "failed",
+     "correct": false,
+     "fail": "结构化规划未成立: plan_invalid: 目标量 t_相遇（小时） 无定义",
+     "expr": null,
+     "selected_method": null,
+     "retrieved": [
+      "nc.travel-meeting-pursuit",
+      "nc.inclusion-exclusion"
+     ]
+    }
+   ]
+  }
+ },
+ "bugs_found_fixed": [
+  "validate_plan ASCII-only token 扫描把中英混排变量名截断（pv-04 首两次误拒根因）——已修+锁定测试",
+  "travel 方法卡检索面缺追及/相背/环形同族表述（pv-02 题面 top1=alligation）——卡 v2",
+  "runner _solver_meta 白名单吞掉 A4 持久化字段——已修，run3 起 predictions 可见检索轨迹"
+ ],
+ "honest_limits": [
+  "pv-02 三次均因网络 ReadTimeout 未能评估（非能力结论）；pv-06 仅 run3 得到评估：无 plan_unbound 式泄漏，failed 不释放（正确方向），但 insufficient 类的定向弃权未走 unknowns 通道，留待 Stage E 观察",
+  "三次跑合计预算 3x20，实际调用见各 run llm_evidence"
+ ]
+}
