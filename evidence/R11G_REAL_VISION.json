@@ -1,0 +1,383 @@
+{
+ "stage": "R11-G",
+ "aborted": null,
+ "requests_attempted": 6,
+ "network_timeouts": 0,
+ "usage_audit": {
+  "requests_sent": 6,
+  "requests_succeeded": 5,
+  "http_status_counts": {
+   "200": 5
+  },
+  "error_types": {
+   "ReadTimeout": 1
+  },
+  "echoed_models": [
+   "glm-5.3-flash"
+  ],
+  "request_ids_sample": [
+   "90bf51c4-47a9-4eff-bb76-50fc0062d400",
+   "49ec1574-b59c-4265-98f9-757d38ac2ba5",
+   "5a39290b-ab8d-426f-b508-4374de7c6f28",
+   "23b6668a-043e-4120-8bc6-fb9707f895f5",
+   "6196b41e-1ca8-4cc8-9a7e-2b9d50951c13"
+  ],
+  "base_url_host": "st8tp3ajl0df3n8b8l8qu.apigateway-cn-beijing.volceapi.com",
+  "vision_model_configured": "glm-5.3-flash",
+  "mock_or_injected_transport": false,
+  "offline_mode": false,
+  "by_phase": {
+   "vision_parse": {
+    "http_succeeded": 5,
+    "http_failed": 0,
+    "malformed_envelope": 0,
+    "json_output_valid": 5,
+    "json_output_invalid": 0,
+    "latency_ms_sum": 240184.8,
+    "image_evidence": [
+     {
+      "sha256_16": "91bda3d1cfbb9788",
+      "bytes": 4070,
+      "file": "ft-rot90-01.png",
+      "size_wh": [
+       380,
+       208
+      ],
+      "format": "PNG",
+      "has_image_content_block": true,
+      "model_echo": "glm-5.3-flash"
+     },
+     {
+      "sha256_16": "092496aac4e638c8",
+      "bytes": 3697,
+      "file": "ft-mirror-04.png",
+      "size_wh": [
+       348,
+       208
+      ],
+      "format": "PNG",
+      "has_image_content_block": true,
+      "model_echo": "glm-5.3-flash"
+     },
+     {
+      "sha256_16": "b526f4dd7eef5405",
+      "bytes": 3661,
+      "file": "ft-trans-07.png",
+      "size_wh": [
+       348,
+       208
+      ],
+      "format": "PNG",
+      "has_image_content_block": true,
+      "model_echo": "glm-5.3-flash"
+     },
+     {
+      "sha256_16": "19a99ec90e72080e",
+      "bytes": 3737,
+      "file": "ft-scale-09.png",
+      "size_wh": [
+       348,
+       208
+      ],
+      "format": "PNG",
+      "has_image_content_block": true,
+      "model_echo": "glm-5.3-flash"
+     },
+     {
+      "sha256_16": "00a2649ecc70855b",
+      "bytes": 4341,
+      "file": "ft-overlay-12.png",
+      "size_wh": [
+       380,
+       304
+      ],
+      "format": "PNG",
+      "has_image_content_block": true,
+      "model_echo": "glm-5.3-flash"
+     }
+    ]
+   }
+  }
+ },
+ "per_item": [
+  {
+   "id": "ft-rot90-01",
+   "family": "rotation",
+   "gold": "A",
+   "status": "failed",
+   "solver_answer": null,
+   "verification_action": "reject",
+   "final_answer": null,
+   "answer": null,
+   "vlm_stem_grid": [
+    "rows=1 cols=3"
+   ],
+   "stem_evidence": {
+    "grid": [
+     1,
+     4
+    ],
+    "target_cell": [
+     0,
+     3
+    ],
+    "target_basis": "unique_empty_slot",
+    "status": "ok",
+    "confidence": "high",
+    "visible_cells": [
+     [
+      0,
+      0
+     ],
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ]
+    ],
+    "blank_cells": [
+     [
+      0,
+      3
+     ]
+    ],
+    "cell_pixel_shas": [
+     "c9cc0315ac712991",
+     "0b017c9f3558a817",
+     "557b879ec813d3e3",
+     "671a03b622d3d43f"
+    ],
+    "canvas_sha": "fd821e325bd07f06"
+   },
+   "stem_crop_source": "pixel_grid_evidence",
+   "elapsed_s": 40.1,
+   "correct": false
+  },
+  {
+   "id": "ft-mirror-04",
+   "family": "mirror",
+   "gold": "A",
+   "status": "failed",
+   "solver_answer": null,
+   "verification_action": "reject",
+   "final_answer": null,
+   "answer": null,
+   "vlm_stem_grid": [
+    "rows=1 cols=2"
+   ],
+   "stem_evidence": {
+    "grid": [
+     1,
+     3
+    ],
+    "target_cell": [
+     0,
+     2
+    ],
+    "target_basis": "unique_empty_slot",
+    "status": "ok",
+    "confidence": "high",
+    "visible_cells": [
+     [
+      0,
+      0
+     ],
+     [
+      0,
+      1
+     ]
+    ],
+    "blank_cells": [
+     [
+      0,
+      2
+     ]
+    ],
+    "cell_pixel_shas": [
+     "b6ee0e6b1fa86a9f",
+     "0860190ec0dd27a6",
+     "7f079a43b601f72c"
+    ],
+    "canvas_sha": "494a8b32c560af02"
+   },
+   "stem_crop_source": "pixel_grid_evidence",
+   "elapsed_s": 92.4,
+   "correct": false
+  },
+  {
+   "id": "ft-trans-07",
+   "family": "translation",
+   "gold": "A",
+   "status": "failed",
+   "solver_answer": null,
+   "verification_action": "reject",
+   "final_answer": null,
+   "answer": null,
+   "vlm_stem_grid": [
+    "rows=1 cols=3"
+   ],
+   "stem_evidence": {
+    "grid": [
+     1,
+     4
+    ],
+    "target_cell": [
+     0,
+     3
+    ],
+    "target_basis": "unique_empty_slot",
+    "status": "ok",
+    "confidence": "high",
+    "visible_cells": [
+     [
+      0,
+      0
+     ],
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ]
+    ],
+    "blank_cells": [
+     [
+      0,
+      3
+     ]
+    ],
+    "cell_pixel_shas": [
+     "9fa604819c79f194",
+     "9fa604819c79f194",
+     "9fa604819c79f194",
+     "1fe2373734955e60"
+    ],
+    "canvas_sha": "874e2b04015d4b63"
+   },
+   "stem_crop_source": "pixel_grid_evidence",
+   "elapsed_s": 47.5,
+   "correct": false
+  },
+  {
+   "id": "ft-scale-09",
+   "family": "scale",
+   "gold": "A",
+   "status": "failed",
+   "solver_answer": null,
+   "verification_action": "reject",
+   "final_answer": null,
+   "answer": null,
+   "vlm_stem_grid": [
+    "rows=1 cols=1",
+    "rows=1 cols=1",
+    "rows=1 cols=1"
+   ],
+   "stem_evidence": null,
+   "stem_crop_source": null,
+   "elapsed_s": 34.6,
+   "correct": false
+  },
+  {
+   "id": "ft-overlay-12",
+   "family": "3x3_overlay",
+   "gold": "A",
+   "status": "failed",
+   "solver_answer": null,
+   "verification_action": "reject",
+   "final_answer": null,
+   "answer": null,
+   "vlm_stem_grid": [
+    "rows=3 cols=3"
+   ],
+   "stem_evidence": {
+    "grid": [
+     3,
+     3
+    ],
+    "target_cell": [
+     2,
+     2
+    ],
+    "target_basis": "unique_empty_slot",
+    "status": "ok",
+    "confidence": "high",
+    "visible_cells": [
+     [
+      0,
+      0
+     ],
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      1
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      2,
+      0
+     ],
+     [
+      2,
+      1
+     ]
+    ],
+    "blank_cells": [
+     [
+      2,
+      2
+     ]
+    ],
+    "cell_pixel_shas": [
+     "9df0d2805305577c",
+     "3b8040162096e51c",
+     "e1fdd863d5e475a9",
+     "0abccc0f799c68ed",
+     "b7f04a6c8ffe9f13",
+     "3b7a6839fc2b9dd4",
+     "259dcf44e0123b08",
+     "d53352d27fa1ce9b",
+     "065cc6b2b996ca72"
+    ],
+    "canvas_sha": "91fe16b2174e7839"
+   },
+   "stem_crop_source": "pixel_grid_evidence",
+   "elapsed_s": 25.8,
+   "correct": false
+  },
+  {
+   "id": "ft-rot90-01--distractor",
+   "family": "new_layout_distractors",
+   "gold": "A",
+   "status": "failed",
+   "solver_answer": null,
+   "verification_action": "reject",
+   "final_answer": null,
+   "answer": null,
+   "vlm_stem_grid": null,
+   "stem_evidence": null,
+   "stem_crop_source": null,
+   "elapsed_s": 0.0,
+   "correct": false
+  }
+ ],
+ "note": "Dev 集内受控真实视觉；非盲测、非泛化宣称"
+}

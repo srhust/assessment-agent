@@ -1,0 +1,58 @@
+{
+ "stage": "R11-G",
+ "frozen_before_run": true,
+ "max_http": 40,
+ "used_so_far": 2,
+ "stop_rule": "first 8 requests contain 3 ReadTimeouts -> abort paid stage",
+ "items": [
+  {
+   "id": "ft-rot90-01",
+   "family": "rotation",
+   "image": "data/benchmark_figshots/images/dev/ft-rot90-01.png",
+   "gold_answer": "A",
+   "image_sha256_16": "91bda3d1cfbb9788",
+   "image_exists": true
+  },
+  {
+   "id": "ft-mirror-04",
+   "family": "mirror",
+   "image": "data/benchmark_figshots/images/dev/ft-mirror-04.png",
+   "gold_answer": "A",
+   "image_sha256_16": "092496aac4e638c8",
+   "image_exists": true
+  },
+  {
+   "id": "ft-trans-07",
+   "family": "translation",
+   "image": "data/benchmark_figshots/images/dev/ft-trans-07.png",
+   "gold_answer": "A",
+   "image_sha256_16": "b526f4dd7eef5405",
+   "image_exists": true
+  },
+  {
+   "id": "ft-scale-09",
+   "family": "scale",
+   "image": "data/benchmark_figshots/images/dev/ft-scale-09.png",
+   "gold_answer": "A",
+   "image_sha256_16": "19a99ec90e72080e",
+   "image_exists": true
+  },
+  {
+   "id": "ft-overlay-12",
+   "family": "3x3_overlay",
+   "image": "data/benchmark_figshots/images/dev/ft-overlay-12.png",
+   "gold_answer": "A",
+   "image_sha256_16": "00a2649ecc70855b",
+   "image_exists": true
+  },
+  {
+   "id": "ft-rot90-01--distractor",
+   "family": "new_layout_distractors",
+   "image": "data/benchmark_figshots_perturb/images/ft-rot90-01--distractor.png",
+   "gold_answer": "A",
+   "image_sha256_16": "57c4bfe4901a2a5c",
+   "image_exists": true
+  }
+ ],
+ "note": "覆盖旋转/镜像/平移/缩放/3x3叠加/新布局干扰；不含 R5 87 题与 60 题盲评"
+}
