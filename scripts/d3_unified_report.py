@@ -135,16 +135,28 @@ def main() -> None:
         p1 = latest_pred(split, r"rules_only")
         if p1:
             arms["rules_only"] = unified(p1)
-        p2 = latest_pred(split, r"(r9d_dev_fix|r9d_variants_fix)")
+        p2 = latest_pred(split, r"(r9d_dev_fix|r9d_variants_fix|r9d2_dev_fix|r9d2_variants_fix)")
         if p2:
             arms["rules+templates(deterministic)"] = unified(p2)
+        p3 = latest_pred(split, r"rules_planner")
+        if p3:
+            # planner 臂已单跑（预算 30 内，19 call）；此后仅从存盘产物重算，不再触 API
+            arms["rules+planner"] = unified(p3)
         report["corpora"][corpus] = arms
     if "--with-llm" in sys.argv:
         for corpus, split in CORPORA.items():
             path = run_planner_arm(split, f"r9d_{corpus}_rules_planner")
             report["corpora"][corpus]["rules+planner"] = unified(path)
     report["unimplemented_operators"] = unimplemented_operators()
-    report["full_pipeline"] = "Stage E 截图端到端臂（本轮不执行）"
+    report["full_pipeline"] = ("Stage E 截图端到端已单跑（预算120/实际32成功36发送4超时），"
+                               "见 evidence/R9E_PAIRED_EVAL.json；正确释放 20/25 可答，错误接受 0")
+    report["arm_provenance_notes"] = {
+        "rules+planner": ("产物为 stem_direct_parse 修复前单跑存盘（预算已用于单跑，不重跑触 API）。"
+                          "其 dv-expr-03 错接经确定性复放证明在新代码下被拦截：该题 method=sympy_exact"
+                          "（planner 仅为未触发的回退），修复后 solve→verify 返回 unverified"
+                          "（题面直读式 '-2^4+2^4' 独立求值 0 ≠ Solver 32）。"),
+        "deterministic_arms": "r9d2_* 为修复后复跑（零 API），错误接受=0",
+    }
     out = ROOT / "evidence" / "R9D_UNIFIED_METRICS.json"
     out.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({c: {a: {k: v for k, v in m.items() if k != "逐题阶段表"}

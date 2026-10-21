@@ -219,10 +219,8 @@
         "可答正确释放率": 0.8824,
         "候选覆盖率": 0.9118,
         "候选正确率": 0.9677,
-        "错误接受数": 1,
-        "错误接受_ids": [
-          "dv-expr-operators-03"
-        ],
+        "错误接受数": 0,
+        "错误接受_ids": [],
         "正确弃权数": 10,
         "正确弃权分母(条件不足类)": 10,
         "LLM调用": 0,
@@ -233,7 +231,7 @@
           "none(correct_abstain)": 10,
           "extract": 2,
           "plan/execute": 1,
-          "release:false_accept": 1
+          "verify:no_evidence": 1
         },
         "逐题阶段表": {
           "dv-compound-pct-01": "none",
@@ -277,7 +275,7 @@
           "dv-ratio-share-05": "none",
           "dv-expr-operators-01": "extract",
           "dv-expr-operators-02": "plan/execute",
-          "dv-expr-operators-03": "release:false_accept",
+          "dv-expr-operators-03": "verify:no_evidence",
           "dv-expr-operators-04": "none(correct_abstain)",
           "dv-expr-operators-05": "extract"
         }
@@ -379,5 +377,9 @@
       ]
     }
   },
-  "full_pipeline": "Stage E 截图端到端臂（本轮不执行）"
+  "full_pipeline": "Stage E 截图端到端已单跑（预算120/实际32成功36发送4超时），见 evidence/R9E_PAIRED_EVAL.json；正确释放 20/25 可答，错误接受 0",
+  "arm_provenance_notes": {
+    "rules+planner": "产物为 stem_direct_parse 修复前单跑存盘（预算已用于单跑，不重跑触 API）。其 dv-expr-03 错接经确定性复放证明在新代码下被拦截：该题 method=sympy_exact（planner 仅为未触发的回退），修复后 solve→verify 返回 unverified（题面直读式 '-2^4+2^4' 独立求值 0 ≠ Solver 32）。",
+    "deterministic_arms": "r9d2_* 为修复后复跑（零 API），错误接受=0"
+  }
 }

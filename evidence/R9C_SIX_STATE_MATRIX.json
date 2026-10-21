@@ -8,7 +8,7 @@
   "verified": 35,
   "dev_passed": 8
  },
- "dev_results_run": "r9d_xingce_dev_rules_planner_140856",
+ "dev_results_run": "r9d2_dev_fix",
  "cards": {
   "da.annual-average-timing": {
    "skill": "data_analysis",

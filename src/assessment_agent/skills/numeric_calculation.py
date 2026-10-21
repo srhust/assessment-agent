@@ -66,6 +66,24 @@ def _stem_numbers(stem: str) -> List[float]:
     return out
 
 
+def _stem_pure_arithmetic(stem: str) -> Optional[str]:
+    """题面去掉"计算"前缀与"=?/？"后缀后若为纯算术串则返回之（含 ×÷/全角归一）。
+
+    用于 Verifier 的第二条独立通道：直接从题干原文再解析，不复用 Solver 的
+    extract_expression——含任何中文实词（自然语言应用题）返回 None（不适用）。
+    """
+    s = (stem or "").strip()
+    s = _re.sub(r"^计算[:：]?\s*", "", s)
+    s = _re.sub(r"[=＝]\s*[?？]\s*$", "", s).strip()
+    if not s or _re.search(r"[\u4e00-\u9fff]", s):
+        return None
+    s = (s.replace("×", "*").replace("÷", "/").replace("（", "(").replace("）", ")")
+          .replace("％", "%").replace(" ", ""))
+    if not _re.fullmatch(r"[0-9.+\-*/^()%]+", s):
+        return None
+    return s
+
+
 def _ratio_groups(stem: str) -> List[List[float]]:
     """比例式数字组（2∶3∶4）：结构项，其成员共享绑定命运（分母/总份数参与计算即可）。"""
     groups = []
@@ -402,6 +420,31 @@ class NumericCalculationSkill(BaseSkill):
         if not expression:
             return None
         checks: List[VerificationCheck] = []
+        # R9-D：纯算术题面独立直评——Verifier 自己把题面算式串再解析一遍
+        # （不经 Solver 的 extract_expression），捕获抽取失真（如 -2^4 丢负号）。
+        # 这是对"同一计划算两遍"禁令的真正补救：第二条通道从题干原始文本出发。
+        if solution.method == "sympy_exact" and question.options:
+            _sa = _stem_pure_arithmetic(question.stem)
+            if _sa is not None:
+                try:
+                    _sv = float(fraction_eval(_sa))
+                    _ok = _close(float(solution.meta.get("value") or float("nan")), _sv)
+                    checks.append(VerificationCheck(
+                        name="numeric.stem_direct_parse",
+                        passed=_ok,
+                        severity="blocking",
+                        detail=(f"题面直读式 {_sa!r} 独立求值 = {_sv:g}"
+                                + ("，与 Solver 一致" if _ok else
+                                   f"，但 Solver 得 {float(solution.meta.get('value')):g}——抽取失真，不释放"))))
+                    if not _ok:
+                        return Verification(passed=False, action="unverified", checks=checks,
+                                            final_answer=None,
+                                            notes="题面直读独立求值与 Solver 抽取表达式不符：禁止释放")
+                except Exception:  # noqa: BLE001
+                    # Verifier 无法独立求值纯算术题面（解析器缺口）：如实跳过，
+                    # 不因此前已 accept 的题 retroactive 阻断（避免回归）；
+                    # 只在能独立求值且与 Solver 不符时才 blocking。
+                    pass
         repaired: Optional[str] = None
         plan = solution.meta.get("word_problem")
         # R6-B/R6.1 操作数覆盖（blocking）：题干数量必须全部被**表达式操作数**绑定

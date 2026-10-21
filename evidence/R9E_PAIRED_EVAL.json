@@ -1,0 +1,326 @@
+{
+  "budget_declared": {
+    "LLM_CALL_BUDGET": "120",
+    "runs": "single",
+    "model_channel": "scripts/r61_dsh_env.py (glm-5.3-flash, temperature=0)",
+    "prompt": "production (unmodified)"
+  },
+  "n_items": 26,
+  "usage": {
+    "calls_succeeded": 32,
+    "requests_sent": 36,
+    "retries_timeouts": 4,
+    "total_tokens": 64591,
+    "model": "glm-5.3-flash"
+  },
+  "OCR条件完整率": {
+    "value": 0.3077,
+    "num": 8,
+    "note": "extraction_accurate（题干文本抽取精确），分母=全部 26 题"
+  },
+  "区域完整率": {
+    "value": 0.0,
+    "num": 0,
+    "denominator": 3,
+    "note": "金标含矩阵布局的题，region_iou≥0.5 记命中，漏检计 0"
+  },
+  "路由准确率": {
+    "value": 0.8846,
+    "num": 23
+  },
+  "方法检索命中率": {
+    "value": "N/A(单跑产物未持久化检索候选清单；如实报告，不造数)"
+  },
+  "规划执行成功率": {
+    "value": 0.8077,
+    "num": 21
+  },
+  "正确释放率": {
+    "value": 0.7692,
+    "num": 20
+  },
+  "错误接受率": {
+    "value": 0.0,
+    "num": 0,
+    "ids": []
+  },
+  "文本oracle_截图净损失": {
+    "count": 2,
+    "ids": [
+      "xd-lang-24",
+      "xd-nc-05"
+    ]
+  },
+  "截图侧净增益(对照)": {
+    "count": 1,
+    "ids": [
+      "xd-vu-23"
+    ]
+  },
+  "oracle_正确基线": {
+    "count": 22,
+    "of": 26
+  },
+  "逐题": {
+    "xd-ana-16": {
+      "gold": "language_reasoning",
+      "routed": "logical_reasoning",
+      "status": "failed",
+      "correct": true,
+      "verify": "reject",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-da-11": {
+      "gold": "data_analysis",
+      "routed": "data_analysis",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-da-12": {
+      "gold": "data_analysis",
+      "routed": "data_analysis",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-da-13": {
+      "gold": "data_analysis",
+      "routed": "data_analysis",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-fig-19": {
+      "gold": "figure_reasoning",
+      "routed": "figure_reasoning",
+      "status": "failed",
+      "correct": false,
+      "verify": "reject",
+      "extract_accurate": false,
+      "region_iou": 0.4162,
+      "oracle_correct": false
+    },
+    "xd-fig-20": {
+      "gold": "figure_reasoning",
+      "routed": null,
+      "status": "failed",
+      "correct": false,
+      "verify": "reject",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": false
+    },
+    "xd-lang-24": {
+      "gold": "language_reasoning",
+      "routed": "verbal_understanding",
+      "status": "unsupported",
+      "correct": false,
+      "verify": "reject",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-lg-14": {
+      "gold": "logical_reasoning",
+      "routed": "logical_reasoning",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": true,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-lg-15": {
+      "gold": "logical_reasoning",
+      "routed": "logical_reasoning",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-nc-01": {
+      "gold": "numeric_calculation",
+      "routed": "numeric_calculation",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-nc-02": {
+      "gold": "numeric_calculation",
+      "routed": "numeric_calculation",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-nc-03": {
+      "gold": "numeric_calculation",
+      "routed": "numeric_calculation",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": true,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-nc-04": {
+      "gold": "numeric_calculation",
+      "routed": "numeric_calculation",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-nc-05": {
+      "gold": "numeric_calculation",
+      "routed": "numeric_calculation",
+      "status": "failed",
+      "correct": false,
+      "verify": "reject",
+      "extract_accurate": true,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-nc-06": {
+      "gold": "numeric_calculation",
+      "routed": "numeric_calculation",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-nc-07": {
+      "gold": "numeric_calculation",
+      "routed": "numeric_calculation",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-nc-08": {
+      "gold": "numeric_calculation",
+      "routed": "numeric_calculation",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-nc-09": {
+      "gold": "numeric_calculation",
+      "routed": "numeric_calculation",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": true,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-nc-10": {
+      "gold": "numeric_calculation",
+      "routed": "numeric_calculation",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-nc-19": {
+      "gold": "numeric_calculation",
+      "routed": "numeric_calculation",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-nc-20": {
+      "gold": "numeric_calculation",
+      "routed": "numeric_calculation",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": true,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-nc-21": {
+      "gold": "numeric_calculation",
+      "routed": "numeric_calculation",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-ns-17": {
+      "gold": "number_series",
+      "routed": "number_series",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": true,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-ns-18": {
+      "gold": "number_series",
+      "routed": "number_series",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": true,
+      "region_iou": null,
+      "oracle_correct": true
+    },
+    "xd-vu-22": {
+      "gold": "verbal_understanding",
+      "routed": "verbal_understanding",
+      "status": "solved",
+      "correct": false,
+      "verify": "unverified",
+      "extract_accurate": false,
+      "region_iou": null,
+      "oracle_correct": false
+    },
+    "xd-vu-23": {
+      "gold": "verbal_understanding",
+      "routed": "verbal_understanding",
+      "status": "solved",
+      "correct": true,
+      "verify": "accept",
+      "extract_accurate": true,
+      "region_iou": null,
+      "oracle_correct": false
+    }
+  }
+}

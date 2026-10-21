@@ -48,8 +48,34 @@ def find_latest(split: str, pattern: str) -> Optional[Path]:
     return cand[0] / "predictions.jsonl"
 
 
+def _matrix_gold_ids() -> set:
+    """金标带矩阵布局的 dev 题 id（区域完整率分母）。"""
+    out = set()
+    for l in (ROOT / "data/benchmark_xingce_dev/dev/xingce_dev.jsonl").read_text(encoding="utf-8").splitlines():
+        if not l.strip():
+            continue
+        r = json.loads(l)
+        lay = r.get("layout")
+        if isinstance(lay, str) and lay and lay not in ("text", "text-material"):
+            out.add(r["id"])  # 矩阵类金标（table/seq/grid9）
+        elif isinstance(lay, dict) and lay:
+            out.add(r["id"])
+    return out
+
+
+def _load_usage() -> Dict[str, Any]:
+    p = ROOT / "results" / "xingce_dev" / "r9e_dev_imageonly" / "llm_evidence.json"
+    if not p.is_file():
+        return {}
+    ev = json.loads(p.read_text(encoding="utf-8"))
+    u, a = ev.get("usage") or {}, ev.get("audit") or {}
+    return {"calls_succeeded": u.get("calls"), "requests_sent": a.get("requests_sent"),
+            "retries_timeouts": sum(v for k, v in (a.get("error_types") or {}).items()),
+            "total_tokens": u.get("total_tokens"), "model": u.get("model")}
+
+
 def main() -> None:
-    # 1) 单轮 image_only 运行（真实 VLM，固定通道与预算）
+    # 1) image_only 单轮运行（真实 VLM；产物存在则复用——预算 120，实际 32 成功/36 发送/4 ReadTimeout）
     run_name = "r9e_dev_imageonly"
     env = dict(os.environ)
     env.update({"PYTHONPATH": "src", "PYTHONIOENCODING": "utf-8",
@@ -75,7 +101,14 @@ def main() -> None:
     def pct(num: int, den: int = n):
         return round(num / den, 4) if den else None
 
-    ocr_full = sum(1 for r in img.values() if r.get("extraction_stem_ok") is True)
+    # OCR 条件完整率：题干文本抽取精确（extraction_accurate）；
+    # 区域完整率：有矩阵金标的题 region_iou≥0.5（漏检记 0，分母=金标有矩阵题数）
+    ocr_full = sum(1 for r in img.values() if r.get("extraction_accurate") is True)
+    mat_ids = {cid for cid in img if (img[cid].get("region_iou") is not None)
+               or cid in _matrix_gold_ids()}
+    region_full = sum(1 for cid in mat_ids
+                      if (img[cid].get("region_iou") or 0) >= 0.5)
+    usage = _load_usage()
     # 路由准确：与金标 skill 比对——金标从 corpus 读取
     gold = {json.loads(l)["id"]: json.loads(l)["skill"]
             for l in (ROOT / "data/benchmark_xingce_dev/dev/xingce_dev.jsonl")
@@ -103,9 +136,14 @@ def main() -> None:
                             "model_channel": "scripts/r61_dsh_env.py (glm-5.3-flash, temperature=0)",
                             "prompt": "production (unmodified)"},
         "n_items": n,
-        "OCR条件完整率": {"value": pct(ocr_full), "num": ocr_full},
+        "usage": usage,
+        "OCR条件完整率": {"value": pct(ocr_full), "num": ocr_full,
+                          "note": "extraction_accurate（题干文本抽取精确），分母=全部 26 题"},
+        "区域完整率": {"value": round(region_full / len(mat_ids), 4) if mat_ids else None,
+                       "num": region_full, "denominator": len(mat_ids),
+                       "note": "金标含矩阵布局的题，region_iou≥0.5 记命中，漏检计 0"},
         "路由准确率": {"value": pct(route_ok), "num": route_ok},
-        "方法检索命中率": {"value": "N/A(当前预测行不携检索清单)" if not retrieval_computable else pct(retrieval_hits)},
+        "方法检索命中率": {"value": "N/A(单跑产物未持久化检索候选清单；如实报告，不造数)"},
         "规划执行成功率": {"value": pct(len(solved)), "num": len(solved)},
         "正确释放率": {"value": pct(len(correct)), "num": len(correct)},
         "错误接受率": {"value": round(len(false_accept) / len(solved), 4) if solved else None,
@@ -116,7 +154,8 @@ def main() -> None:
         "逐题": {cid: {"gold": gold.get(cid), "routed": img[cid].get("routed_skill"),
                        "status": img[cid].get("status"), "correct": img[cid].get("correct"),
                        "verify": img[cid].get("verification_action"),
-                       "stem_ok": img[cid].get("extraction_stem_ok"),
+                       "extract_accurate": img[cid].get("extraction_accurate"),
+                       "region_iou": img[cid].get("region_iou"),
                        "oracle_correct": orc.get(cid, {}).get("correct")}
                  for cid in sorted(img)},
     }
