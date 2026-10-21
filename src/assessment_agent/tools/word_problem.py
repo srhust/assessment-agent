@@ -64,29 +64,27 @@ def extract_word_problem(stem: str) -> Optional[Dict[str, Any]]:
 
     # 0a. R9-C 浓度加溶质/加水/蒸发（concentration）：盐=质量×浓度 守恒
     m = re.search(_NUM + r"\s*(?:克|千克|公斤)[^0-9%]{0,8}?浓度\s*" + _NUM + r"\s*[%％]", text)
-    if m:
+    if m and "浓度" in text:
         mass, c = m.group(1), m.group(2)
         add = re.search(r"(?:加入|加|倒入)\s*" + _NUM + r"\s*(?:克|千克|公斤)的?\s*(水|盐)", text)
+        add_pre = re.search(r"(?:加入|加|倒入)\s*(水|盐)\s*" + _NUM + r"\s*(?:克|千克|公斤)", text)
         evap = re.search(r"蒸发\s*(?:掉)?\s*" + _NUM + r"\s*(?:克|千克|公斤)", text)
-        if add and "浓度" in text:
+        kind = x = None
+        if add:
             x, kind = add.group(1), add.group(2)
+        elif add_pre:
+            kind, x = add_pre.group(1), add_pre.group(2)
+        if x is not None:
+            salt_step = ("salt", f"{mass}*{c}/100", f"原溶质 = {mass}×{c}%")
             if kind == "盐":
-                steps = [
-                    ("salt", f"{mass}*{c}/100", f"原溶质 = {mass}×{c}%"),
-                    ("result", f"(salt+{x})/({mass}+{x})", "新浓度=(盐+加盐)/(总+加盐)"),
-                ]
+                steps = [salt_step, ("result", f"(salt+{x})/({mass}+{x})", "新浓度=(盐+加盐)/(总+加盐)")]
             else:
-                steps = [
-                    ("salt", f"{mass}*{c}/100", f"原溶质 = {mass}×{c}%"),
-                    ("result", f"salt/({mass}+{x})", "新浓度=盐/(总+加水)"),
-                ]
+                steps = [salt_step, ("result", f"salt/({mass}+{x})", "新浓度=盐/(总+加水)")]
             return _plan("concentration", steps, "result")
-        if evap and "浓度" in text:
+        if evap:
             w = evap.group(1)
-            steps = [
-                ("salt", f"{mass}*{c}/100", f"原溶质 = {mass}×{c}%"),
-                ("result", f"salt/({mass}-{w})", "新浓度=盐/(总-蒸发水)"),
-            ]
+            steps = [("salt", f"{mass}*{c}/100", f"原溶质 = {mass}×{c}%"),
+                     ("result", f"salt/({mass}-{w})", "新浓度=盐/(总-蒸发水)")]
             return _plan("concentration", steps, "result")
 
     # 0b. R9-C 行程相遇/追及（travel）：相向÷速度和、同向÷速度差；
@@ -94,6 +92,11 @@ def extract_word_problem(stem: str) -> Optional[Dict[str, Any]]:
     dist_m = re.search(r"(?:相距|距离|相隔)\s*" + _NUM + r"\s*(?:千米|公里|米)", text)
     speeds = [(a, u) for a, u in
               re.findall(_NUM + r"\s*(?:千米|公里|米)/(小时|分钟|分)", text)]
+    if len(speeds) < 2:
+        # 并列写法："速度 40 与 60 千米/小时"、"分别 40 和 60 千米/小时"
+        pair = re.search(_NUM + r"\s*[与和]\s*" + _NUM + r"\s*(?:千米|公里|米)/(小时|分钟|分)", text)
+        if pair:
+            speeds = [(pair.group(1), pair.group(3)), (pair.group(2), pair.group(3))]
     if len(speeds) >= 2:
         u0 = speeds[0][1]
         v1, v2 = Fraction(speeds[0][0]), Fraction(speeds[1][0])
@@ -110,7 +113,7 @@ def extract_word_problem(stem: str) -> Optional[Dict[str, Any]]:
                 return _plan("travel_pursuit", steps, "result")
         else:
             # 领先式追及：慢者先出发 t，快者追及时间 = 慢速×t ÷ 速度差
-            lead = re.search(r"先出发\s*" + _NUM + r"\s*(分钟|小时|天)", text)
+            lead = re.search(r"先(?:出发|走|行)\s*" + _NUM + r"\s*(分钟|小时|天)", text)
             if lead and any(w in text for w in ("追及", "追上", "追赶")):
                 slow = min(v1, v2)
                 t = Fraction(lead.group(1))
@@ -124,6 +127,17 @@ def extract_word_problem(stem: str) -> Optional[Dict[str, Any]]:
 
     # 0c. R9-C 多阶段百分变化（compound_pct）：≥2 个乘性因子逐步复合，禁止相加
     changes = re.findall(r"(降价|涨价|提价|加价|提高|增长|降低|减少)\s*" + _NUM + r"\s*[%％]", text)
+    # 并列写法 "增长 A% 与/和/、 B%"：动词只出现一次，两个百分比都要吃到
+    pair_pct = re.search(r"(增长|提高|降低|减少|涨价|降价)\s*" + _NUM + r"\s*[%％]"
+                         r"[^0-9]{0,3}[与和、]\s*" + _NUM + r"\s*[%％]", text)
+    if pair_pct and len(changes) < 2:
+        w = pair_pct.group(1)
+        changes = [(w, pair_pct.group(2)), (w, pair_pct.group(3))]
+    # 连续 N 次各降/涨同一百分比
+    repeat = re.search(r"连续([两二三23])次各?(降价|涨价|提高|降低|减少|增长)\s*" + _NUM + r"\s*[%％]", text)
+    if repeat:
+        n = {"两": 2, "二": 2, "三": 3, "2": 2, "3": 3}[repeat.group(1)]
+        changes = [(repeat.group(2), repeat.group(3))] * n
     zhe_factors = [_discount_factor(raw) for raw in
                    re.findall(r"打\s*([一二两三四五六七八九半]|\d{1,2}(?:\.\d)?)\s*折", text)]
     base_m = re.search(r"(?:原价|标价|定价|成本价?|单价)\s*(?:为|是)?\s*" + _NUM + r"\s*(?:元|千克|克)?", text)
@@ -146,7 +160,7 @@ def extract_word_problem(stem: str) -> Optional[Dict[str, Any]]:
     # 0c-2. 无基准的纯率链（net_compound）：连续增长率本身 → (1+p1)(1+p2)−1
     if (not base_m and len(changes) >= 2
             and all(w in ("增长", "提高", "降低", "减少") for w, _ in changes)
-            and re.search(r"(?:增长|降低|提高|减少)\s*(?:了)?\s*(?:多少|约多少|几)|增长约", text)):
+            and re.search(r"(?:增长|降低|提高|减少|净增)\D{0,6}(?:多少|几|情况如何)\D{0,4}[?？]|增长约", text)):
         prod = "*".join(f"(1{'-' if w in ('降低', '减少') else '+'}{p}/100)" for w, p in changes)
         steps = [("result", f"abs({prod}-1)",
                   "净变化率 = (1+p1)(1+p2)…−1 的绝对值：" + "；".join(descs))]
@@ -162,9 +176,9 @@ def extract_word_problem(stem: str) -> Optional[Dict[str, Any]]:
         return _plan("net_compound", steps, "result")
 
     # 0c-3. 降价后恢复原价的反向变动率（pct_restore）：r/(1−r)
-    m = re.search(r"(?:降价|降低|减少)[^0-9]{0,4}" + _NUM + r"\s*[%％][^0-9]{0,24}"
-                  r"(?:恢复原价|回到原价|恢复原价)[^0-9]{0,24}(?:提价|涨价|增长|增加)?"
-                  r"[^0-9]{0,8}(?:多少|几)", text)
+    m = re.search(r"(?:降价|降低|减少|低了)\s*[^0-9]{0,3}" + _NUM + r"\s*[%％][^0-9]{0,24}"
+                  r"(?:恢复原(?:价|成本|值)|回到原(?:价|成本))[^0-9]{0,24}"
+                  r"(?:提价|涨价|增长|增加|上涨)?[^0-9]{0,8}(?:多少|几|百分之几)", text)
     if m:
         p = m.group(1)
         steps = [("result", f"({p}/100)/(1-{p}/100)",
@@ -227,7 +241,7 @@ def extract_word_problem(stem: str) -> Optional[Dict[str, Any]]:
 
     # 4b. R9-C 单位数量 × 组数（unit_count）：每箱 n 个 × m 箱
     match = re.search(r"每(箱|盒|袋|份|组|批|排|列|捆)[^0-9]{0,12}?" + _NUM +
-                      r"\s*(个|件|本|支|张|名|人|只)[^0-9]{0,20}?" + _NUM +
+                      r"\s*(个|件|本|支|张|名|人|只|块)[^0-9]{0,20}?" + _NUM +
                       r"\s*(?:箱|盒|袋|份|组|批|排|列|捆)[^0-9]{0,10}?(?:共|总|一共|多少)", text)
     if match:
         per, groups = match.group(2), match.group(4)
@@ -235,13 +249,13 @@ def extract_word_problem(stem: str) -> Optional[Dict[str, Any]]:
                                     f"每组 {per} × {groups} 组")], "result")
 
     # 5. 比例分配（最多/最小的一方）
-    match = re.search(r"按\s*(\d+)\s*[:：∶]\s*(\d+)(?:\s*[:：∶]\s*(\d+))?\s*(?:分配|分成|比|分给)", text)
+    match = re.search(r"按\s*(\d+)\s*[:：∶]\s*(\d+)(?:\s*[:：∶]\s*(\d+))?\s*(?:分配|分成|分给|按比|分)", text)
     if match:
         parts = [int(g) for g in match.groups() if g]
         total_match = re.search(_NUM + r"\s*(?:元|个|本|张|千克|公斤|斤)[^0-9]{0,30}?(?:最多|最大|最少|最小|最少的一方|最大的一方)?", text)
         if total_match and len(parts) >= 2:
             total = total_match.group(1)
-            pick = ("max" if any(w in text for w in ("最多", "最大"))
+            pick = ("max" if any(w in text for w in ("最多", "最大", "较多", "更多"))
                     else "min" if any(w in text for w in ("最少", "最小"))
                     else "mid" if any(w in text for w in ("中间", "居中", "居中的")) else None)
             if pick:
@@ -271,7 +285,7 @@ def extract_word_problem(stem: str) -> Optional[Dict[str, Any]]:
     # 6c. R9-C 地图比例尺（map_scale）：1∶N 地图图上 d 厘米 → 实际千米（cm→km 精确换算）
     m = re.search(r"1\s*[:：∶]\s*(\d+)\s*(?:的)?地图", text)
     if m:
-        cm = re.search(r"图上距离\s*" + _NUM + r"\s*厘米", text)
+        cm = re.search(r"(?:图上距离|图上)\s*" + _NUM + r"\s*厘米", text)
         if cm and "千米" in text:
             den = m.group(1)
             steps = [("result", f"{cm.group(1)}*{den}/100000",

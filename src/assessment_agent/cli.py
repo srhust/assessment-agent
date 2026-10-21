@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from .config import Settings
-from .evaluation.runner import EvaluationRunner
+from .evaluation.runner import EvaluationRunner, SPLITS
 from .pipeline import Pipeline, PipelineError
 
 
@@ -42,12 +42,7 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate.add_argument(
         "--split",
         default="test",
-        choices=["train", "dev", "test", "screens", "bench_dev", "bench_holdout",
-                  "verbal_dev", "verbal_blind", "verbal_epistemic_dev",
-                  "language_dev", "language_blind", "verbal_blind2",
-                  "figtrans_dev", "figtrans_test",
-                  "figshots_dev", "figshots_test", "xingce_test", "xingce_dev",
-                  "xingce_blind", "xingce_blind_v11", "xingce_blind_v2"],
+        choices=list(SPLITS),
         help="screens=合成截图回归基线；bench_dev/bench_holdout=独立泛化基准（可调参/冻结）；"
               "verbal_epistemic_dev=R3c 命题归属对照组（最小对比对，可调参）；"
               "language_dev/language_blind=R3c 语言推理（可调参/冻结）；"
