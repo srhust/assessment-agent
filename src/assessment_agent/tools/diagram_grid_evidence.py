@@ -333,8 +333,8 @@ def _cols_aligned(cells_a: list, cells_b: list, tol: int = 12) -> bool:
 def merge_stem_regions(sregions: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """R11-B：九宫格因行距被拆成多条题干带时，按 x 重叠>0.7 且纵向间隙<=60 合并
     （overlay-13 视觉复核确为 3 行矩阵）。返回合并后的区域列表（保持首元素结构）。"""
-    if len(sregions) <= 1:
-        return list(sregions)
+    if not sregions:
+        return []
     def _ov(a, b):
         ix = min(a[0] + a[2], b[0] + b[2]) - max(a[0], b[0])
         iw = min(a[2], b[2])
