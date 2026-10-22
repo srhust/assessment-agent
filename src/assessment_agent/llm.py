@@ -191,7 +191,8 @@ class OpenAICompatibleClient:
     """
 
     def __init__(self, settings: LLMSettings, *, transport: Optional[httpx.BaseTransport] = None,
-                 max_requests: Optional[int] = None):
+                 max_requests: Optional[int] = None,
+                 max_tokens: Optional[int] = None):
         self.settings = settings
         # R13-G 原子预算：在**每次实际发出前**（含每一次重试）检查并拒绝越界，
         # 与 R12 的"逐题检查"不同——逐题检查会被重试穿透超发。
@@ -199,6 +200,11 @@ class OpenAICompatibleClient:
         env_cap = os.environ.get("ASSESSMENT_LLM_MAX_REQUESTS")
         self.max_requests = max_requests if max_requests is not None else (
             int(env_cap) if env_cap and env_cap.isdigit() else None)
+        # R14-G：token 硬顶（累计 total_tokens 超限后**下一次请求发出前**拒绝；
+        # 已在途响应如实计入，不允许"最后一次超发"）。env 兜底同请求预算。
+        env_tok = os.environ.get("ASSESSMENT_LLM_MAX_TOKENS")
+        self.max_tokens = max_tokens if max_tokens is not None else (
+            int(env_tok) if env_tok and env_tok.isdigit() else None)
         self._json_mode_supported = settings.json_mode
         self._transport = transport
         # R2b 用量聚合
@@ -235,6 +241,12 @@ class OpenAICompatibleClient:
         attempts = max(0, self.settings.max_retries) + 1
         for attempt in range(attempts):
             # 原子预算闸：计数+1 > cap 时在 socket 之前抛，绝不"先发后看"。
+            if self.max_tokens is not None \
+                    and self._usage_totals.get("total_tokens", 0) >= self.max_tokens:
+                raise LLMRequestBudgetExhausted(
+                    f"token 硬顶 {self.max_tokens} 已达"
+                    f"（total_tokens={self._usage_totals.get('total_tokens')}）；"
+                    "本次请求（含重试）在发出前被拒绝，评测停止")
             if self.max_requests is not None \
                     and self._requests_sent + 1 > self.max_requests:
                 raise LLMRequestBudgetExhausted(
@@ -491,9 +503,10 @@ class OpenAICompatibleClient:
 
 
 def build_client(settings_llm: LLMSettings, *, transport: Optional[httpx.BaseTransport] = None,
-                  max_requests: Optional[int] = None) -> OpenAICompatibleClient:
+                  max_requests: Optional[int] = None,
+                  max_tokens: Optional[int] = None) -> OpenAICompatibleClient:
     return OpenAICompatibleClient(settings_llm, transport=transport,
-                            max_requests=max_requests)
+                            max_requests=max_requests, max_tokens=max_tokens)
 
 
 def _smoke_test() -> List[str]:  # 供 doctor 使用
