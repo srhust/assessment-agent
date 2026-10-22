@@ -1,0 +1,55 @@
+{
+ "stage": "R13-G offline replay of REAL saved extractions (0 new HTTP); R4G pixel_only + truncated-cue prefix tolerance + option label-strip",
+ "items": {
+  "ft-mirror-04": {
+   "status": "failed",
+   "answer": null,
+   "gold": "A",
+   "verify": null,
+   "final_answer": null,
+   "layer": 0,
+   "fail_checks": [],
+   "err": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 0.990127, 'B': 0.990127, 'C': 0.899576}}"
+  },
+  "ft-rot90-01": {
+   "status": "failed",
+   "answer": null,
+   "gold": "A",
+   "verify": null,
+   "final_answer": null,
+   "layer": 0,
+   "fail_checks": [],
+   "err": "规律族冲突（ambiguous）：六类规律 symmetry 指向 A，变换规律指向 多个/无法唯一，不能共同支持同一选项"
+  },
+  "ft-trans-07": {
+   "status": "failed",
+   "answer": null,
+   "gold": "A",
+   "verify": null,
+   "final_answer": null,
+   "layer": 0,
+   "fail_checks": [],
+   "err": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配; 墨迹面"
+  },
+  "ft-overlay-12": {
+   "status": "failed",
+   "answer": null,
+   "gold": "A",
+   "verify": null,
+   "final_answer": null,
+   "layer": 0,
+   "fail_checks": [],
+   "err": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：变换规律不可唯一判定"
+  },
+  "ft-mirror-04--tight": {
+   "status": "failed",
+   "answer": null,
+   "gold": "A",
+   "verify": null,
+   "final_answer": null,
+   "layer": 0,
+   "fail_checks": [],
+   "err": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）"
+  }
+ }
+}

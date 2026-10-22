@@ -162,10 +162,20 @@ class FigureReasoningSkill(BaseSkill):
 
             mask = load_mask(str(question.image_path))
             # R9-B：补全线索取自题干文字自身（部署链路由解析通道判定，非坐标/案例硬编码）
+            # R13-G 截断容错：视觉通道题干常被截掉尾字（"…最符合规律的一"），
+            # 完整短语匹配失效；改为 **≥4 字前缀命中**即算线索——仍是题面词族，
+            # 不做任何页面级硬编码。
             stem_text = str(question.stem or "") + str(vision.get("stem") or "")
             cue_markers = ("补全", "填入", "填上", "？", "?", "符合规律的一项",
                            "下一", "未知", "问号")
-            expects_blank = any(m in stem_text for m in cue_markers)
+            def _cue_hit(m: str) -> bool:
+                if m in stem_text:
+                    return True
+                if len(m) >= 4 and not m.isascii() and m[:4] in stem_text:
+                    return stem_text.index(m[:4]) > max(
+                        -1, len(stem_text) - 14)
+                return False
+            expects_blank = any(_cue_hit(m) for m in cue_markers)
             res = assemble_stem_layout(
                 mask, stem_regions, vision.get("option_regions") or [],
                 profile=profile, trust_vlm_grid=(profile != "pixel_only"),

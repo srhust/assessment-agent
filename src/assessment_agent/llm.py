@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import base64
 import json
+import os
 import re
 import time
 from dataclasses import dataclass, field
@@ -76,6 +77,10 @@ class LLMError(RuntimeError):
 
 class LLMBudgetExhausted(LLMError):
     """R8-E：预设调用预算触顶——评测必须停止而非继续消耗。"""
+
+
+class LLMRequestBudgetExhausted(RuntimeError):
+    """R13-G：原子预算耗尽（发送前拒绝，不计数、不重试穿透）。"""
 
 
 class LLMNotConfigured(LLMError):
@@ -185,8 +190,15 @@ class OpenAICompatibleClient:
     依据这些计数而非进程退出码。
     """
 
-    def __init__(self, settings: LLMSettings, *, transport: Optional[httpx.BaseTransport] = None):
+    def __init__(self, settings: LLMSettings, *, transport: Optional[httpx.BaseTransport] = None,
+                 max_requests: Optional[int] = None):
         self.settings = settings
+        # R13-G 原子预算：在**每次实际发出前**（含每一次重试）检查并拒绝越界，
+        # 与 R12 的"逐题检查"不同——逐题检查会被重试穿透超发。
+        # env ASSESSMENT_LLM_MAX_REQUESTS 为全局兜底（评测脚本可显式传参覆盖）。
+        env_cap = os.environ.get("ASSESSMENT_LLM_MAX_REQUESTS")
+        self.max_requests = max_requests if max_requests is not None else (
+            int(env_cap) if env_cap and env_cap.isdigit() else None)
         self._json_mode_supported = settings.json_mode
         self._transport = transport
         # R2b 用量聚合
@@ -222,6 +234,13 @@ class OpenAICompatibleClient:
         last_error: Optional[Exception] = None
         attempts = max(0, self.settings.max_retries) + 1
         for attempt in range(attempts):
+            # 原子预算闸：计数+1 > cap 时在 socket 之前抛，绝不"先发后看"。
+            if self.max_requests is not None \
+                    and self._requests_sent + 1 > self.max_requests:
+                raise LLMRequestBudgetExhausted(
+                    f"HTTP 预算上限 {self.max_requests} 已达"
+                    f"（requests_sent={self._requests_sent}, attempt={attempt}）；"
+                    "本次发送被原子闸拒绝")
             self._requests_sent += 1
             try:
                 with httpx.Client(
@@ -471,8 +490,10 @@ class OpenAICompatibleClient:
         self.close()
 
 
-def build_client(settings_llm: LLMSettings, *, transport: Optional[httpx.BaseTransport] = None) -> OpenAICompatibleClient:
-    return OpenAICompatibleClient(settings_llm, transport=transport)
+def build_client(settings_llm: LLMSettings, *, transport: Optional[httpx.BaseTransport] = None,
+                  max_requests: Optional[int] = None) -> OpenAICompatibleClient:
+    return OpenAICompatibleClient(settings_llm, transport=transport,
+                            max_requests=max_requests)
 
 
 def _smoke_test() -> List[str]:  # 供 doctor 使用

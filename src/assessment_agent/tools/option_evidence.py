@@ -145,3 +145,31 @@ def options_release_ok(evidences: List[Dict[str, Any]], n_expected: int) -> Tupl
         if e.get("label_association_verified") is not True:
             reasons.append(f"#{e['index']} 标签关联未证实（False/None 均不放行）")
     return (not reasons), reasons
+
+def strip_label_from_crop(mask):
+    """R13-G：把"字母在左、图形在右"的宽裁剪中的标签笔触剥掉（与门同一不变量）。
+
+    判据完全复用 label_anchor_frames 规则：左端小高度 run（≤0.6×主高、≤15px）
+    且与下一 run 间距 ≤1.6×主高 → 视为标签，置零。无此形态则原样返回。
+    """
+    import numpy as np
+    m = np.asarray(mask)
+    if m.ndim != 2 or not m.any():
+        return mask
+    h = m.shape[1]
+    runs = _row_runs(m, 0, m.shape[0])
+    if len(runs) < 2:
+        return mask
+    heights = []
+    for x0, x1, _ink in runs:
+        col = m[:, x0:x1]
+        nz = np.nonzero(col.any(axis=1))[0]
+        heights.append(int(nz[-1] - nz[0] + 1) if len(nz) else 0)
+    main_h = max(heights)
+    x0, x1, ink0 = runs[0]
+    if (heights[0] <= 0.60 * main_h and heights[0] <= 15
+            and runs[1][0] - x1 <= int(1.6 * main_h) + 2):
+        out = m.copy()
+        out[:, x0:x1] = 0
+        return out
+    return mask

@@ -1,0 +1,152 @@
+{
+ "stage": "R13-G real-vision batch (atomic cap)",
+ "cap": 6,
+ "requests_sent": 6,
+ "error_types": {
+  "ReadTimeout": 1
+ },
+ "token_usage": {
+  "calls": 5,
+  "model": "glm-5.3-flash",
+  "prompt_tokens": 4186,
+  "completion_tokens": 9469,
+  "total_tokens": 13655
+ },
+ "stop_reason": "atomic cap reached before ft-rot90-01--small",
+ "release_rule": "layer3 需 verifier 实返 final_answer 且==gold",
+ "results": [
+  {
+   "item": "ft-mirror-04",
+   "image": "data/benchmark_figshots/images/dev/ft-mirror-04.png",
+   "image_sha16": "092496aac4e638c8",
+   "gold": "A",
+   "run_dir": "E:\\assessment-agent\\runs\\r13g-ft-mirror-04",
+   "route": "figure_reasoning",
+   "extraction_stem_len": 22,
+   "extraction_opts": 3,
+   "solution": {
+    "status": "failed",
+    "answer": null,
+    "gold": "A",
+    "verify": "reject",
+    "final_answer": null
+   },
+   "failed_checks": [
+    "solution.status",
+    "solution.answer_present",
+    "answer.in_options",
+    "solution.confidence"
+   ],
+   "layer": 0,
+   "requests_sent_after": 1,
+   "elapsed_s": 29.42
+  },
+  {
+   "item": "ft-rot90-01",
+   "image": "data/benchmark_figshots/images/dev/ft-rot90-01.png",
+   "image_sha16": "91bda3d1cfbb9788",
+   "gold": "A",
+   "run_dir": "E:\\assessment-agent\\runs\\r13g-ft-rot90-01",
+   "route": "figure_reasoning",
+   "extraction_stem_len": 51,
+   "extraction_opts": 4,
+   "solution": {
+    "status": "failed",
+    "answer": null,
+    "gold": "A",
+    "verify": "reject",
+    "final_answer": null
+   },
+   "failed_checks": [
+    "solution.status",
+    "solution.answer_present",
+    "answer.in_options",
+    "solution.confidence"
+   ],
+   "layer": 0,
+   "requests_sent_after": 2,
+   "elapsed_s": 40.7
+  },
+  {
+   "item": "ft-trans-07",
+   "image": "data/benchmark_figshots/images/dev/ft-trans-07.png",
+   "image_sha16": "b526f4dd7eef5405",
+   "gold": "A",
+   "run_dir": "E:\\assessment-agent\\runs\\r13g-ft-trans-07",
+   "route": "figure_reasoning",
+   "extraction_stem_len": 22,
+   "extraction_opts": 3,
+   "solution": {
+    "status": "failed",
+    "answer": null,
+    "gold": "A",
+    "verify": "reject",
+    "final_answer": null
+   },
+   "failed_checks": [
+    "solution.status",
+    "solution.answer_present",
+    "answer.in_options",
+    "solution.confidence"
+   ],
+   "layer": 0,
+   "requests_sent_after": 3,
+   "elapsed_s": 25.04
+  },
+  {
+   "item": "ft-overlay-12",
+   "image": "data/benchmark_figshots/images/dev/ft-overlay-12.png",
+   "image_sha16": "00a2649ecc70855b",
+   "gold": "A",
+   "run_dir": "E:\\assessment-agent\\runs\\r13g-ft-overlay-12",
+   "route": "figure_reasoning",
+   "extraction_stem_len": 24,
+   "extraction_opts": 4,
+   "solution": {
+    "status": "failed",
+    "answer": null,
+    "gold": "A",
+    "verify": "reject",
+    "final_answer": null
+   },
+   "failed_checks": [
+    "solution.status",
+    "solution.answer_present",
+    "answer.in_options",
+    "solution.confidence"
+   ],
+   "layer": 0,
+   "requests_sent_after": 5,
+   "elapsed_s": 99.91
+  },
+  {
+   "item": "ft-mirror-04--tight",
+   "image": "data/benchmark_figshots_perturb/images/ft-mirror-04--tight.png",
+   "image_sha16": "8a201b3d90468fe1",
+   "gold": "A",
+   "run_dir": "E:\\assessment-agent\\runs\\r13g-ft-mirror-04--tight",
+   "route": "figure_reasoning",
+   "extraction_stem_len": 0,
+   "extraction_opts": 0,
+   "solution": {
+    "status": "failed",
+    "answer": null,
+    "gold": "A",
+    "verify": "reject",
+    "final_answer": null
+   },
+   "failed_checks": [
+    "solution.status",
+    "solution.answer_present",
+    "solution.confidence"
+   ],
+   "layer": 0,
+   "requests_sent_after": 6,
+   "elapsed_s": 26.7
+  },
+  {
+   "item": "ft-rot90-01--small",
+   "skipped": "atomic cap reached before ft-rot90-01--small"
+  }
+ ]
+}

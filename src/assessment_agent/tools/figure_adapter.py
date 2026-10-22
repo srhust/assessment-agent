@@ -97,8 +97,9 @@ def solve_figure_regions(
     # ------------------------------------------------ 选项特征
     option_masks: List[np.ndarray] = []
     option_features: List[Dict[str, Any]] = []
+    from .option_evidence import strip_label_from_crop
     for label, path in option_images:
-        mask = load_mask(path, threshold)
+        mask = strip_label_from_crop(load_mask(path, threshold))
         features = cell_features(mask)
         if features["blank"]:
             return _blank_option_failure(stem_layout, option_images, label, str(stem))
