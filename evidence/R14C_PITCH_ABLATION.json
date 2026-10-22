@@ -1,0 +1,1062 @@
+{
+ "stage": "R14-C pitch causal ablation (0 HTTP; fixed text/options/solver/verifier/thresholds)",
+ "canvas_groups": [
+  "A_old_maxink",
+  "B_center_pitch",
+  "C_gold(off diagnostic only)"
+ ],
+ "items": {
+  "ft-mirror-04": {
+   "label": "unchanged",
+   "rows": {
+    "A_old_maxink": {
+     "solver_status": "solved",
+     "solver_answer": "A",
+     "solver_error": "",
+     "verifier_action": "accept",
+     "final_answer": "A",
+     "candidates": [
+      {
+       "rule": "rotate_flip_seq/FH",
+       "scores": {
+        "A": 0.039,
+        "B": 0.5769,
+        "C": 0.6674
+       },
+       "margin": 0.538
+      }
+     ],
+     "release": {
+      "released": true,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "assembled",
+      "pitch_x": 52.0,
+      "pitch_y": 43,
+      "slots": [
+       [
+        20,
+        58,
+        72,
+        101
+       ],
+       [
+        72,
+        58,
+        124,
+        101
+       ]
+      ],
+      "confidence": {
+       "level": "medium",
+       "basis": "single_gap_only",
+       "gap_spread": 0.0,
+       "note": "两已知格只有一个间距样本，pitch 无冗余校验；规律唯一性必须由下游规则通道独立证明"
+      },
+      "stats": {
+       "canvas_shape": [
+        43,
+        78
+       ],
+       "canvas_sha": "b5fe0435bfa5",
+       "cells": [
+        {
+         "slot_bbox_px": [
+          0,
+          0,
+          78,
+          43
+         ],
+         "ink": 336,
+         "ink_width": 50,
+         "center_x": 25.5,
+         "sha": "b5fe0435bfa5"
+        }
+       ]
+      }
+     }
+    },
+    "A_old_maxink__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 1.0}}",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [
+      {
+       "rule": "rotate_flip_seq/FH",
+       "scores": {
+        "A": 1.0,
+        "B": 1.0,
+        "C": 1.0
+       },
+       "margin": 0.0
+      }
+     ],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    },
+    "B_center_pitch": {
+     "solver_status": "solved",
+     "solver_answer": "A",
+     "solver_error": "",
+     "verifier_action": "accept",
+     "final_answer": "A",
+     "candidates": [
+      {
+       "rule": "rotate_flip_seq/FH",
+       "scores": {
+        "A": 0.039,
+        "B": 0.5769,
+        "C": 0.6674
+       },
+       "margin": 0.538
+      }
+     ],
+     "release": {
+      "released": true,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "assembled",
+      "pitch_x": 52.0,
+      "pitch_y": 43,
+      "slots": [
+       [
+        20,
+        58,
+        72,
+        101
+       ],
+       [
+        72,
+        58,
+        124,
+        101
+       ]
+      ],
+      "confidence": {
+       "level": "medium",
+       "basis": "single_gap_only",
+       "gap_spread": 0.0,
+       "note": "两已知格只有一个间距样本，pitch 无冗余校验；规律唯一性必须由下游规则通道独立证明"
+      },
+      "stats": {
+       "canvas_shape": [
+        43,
+        156
+       ],
+       "canvas_sha": "0f99d666e57f",
+       "cells": [
+        {
+         "slot_bbox_px": [
+          0,
+          0,
+          156,
+          43
+         ],
+         "ink": 336,
+         "ink_width": 76,
+         "center_x": 51.5,
+         "sha": "0f99d666e57f"
+        }
+       ]
+      }
+     }
+    },
+    "B_center_pitch__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 1.0}}",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [
+      {
+       "rule": "rotate_flip_seq/FH",
+       "scores": {
+        "A": 1.0,
+        "B": 1.0,
+        "C": 1.0
+       },
+       "margin": 0.0
+      }
+     ],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    },
+    "C_gold": {
+     "solver_status": "solved",
+     "solver_answer": "A",
+     "solver_error": "",
+     "verifier_action": "accept",
+     "final_answer": "A",
+     "candidates": [
+      {
+       "rule": "rotate_flip_seq/FH",
+       "scores": {
+        "A": 0.039,
+        "B": 0.5769,
+        "C": 0.6674
+       },
+       "margin": 0.538
+      }
+     ],
+     "release": {
+      "released": true,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "gold_regions_png"
+     }
+    },
+    "C_gold__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 1.0}}",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [
+      {
+       "rule": "rotate_flip_seq/FH",
+       "scores": {
+        "A": 1.0,
+        "B": 1.0,
+        "C": 1.0
+       },
+       "margin": 0.0
+      }
+     ],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    }
+   }
+  },
+  "ft-rot90-01": {
+   "label": "unchanged",
+   "rows": {
+    "A_old_maxink": {
+     "solver_status": "solved",
+     "solver_answer": "A",
+     "solver_error": "",
+     "verifier_action": "accept",
+     "final_answer": "A",
+     "candidates": [
+      {
+       "rule": "rotate_flip_seq/R270",
+       "scores": {
+        "A": 0.0456,
+        "B": 0.8002,
+        "C": 1.0,
+        "D": 1.0
+       },
+       "margin": 0.7546
+      }
+     ],
+     "release": {
+      "released": true,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "assembled",
+      "pitch_x": 53.0,
+      "pitch_y": 37,
+      "slots": [
+       [
+        20,
+        60,
+        72,
+        97
+       ],
+       [
+        72,
+        60,
+        126,
+        97
+       ]
+      ],
+      "confidence": {
+       "level": "medium",
+       "basis": "single_gap_only",
+       "gap_spread": 0.0,
+       "note": "两已知格只有一个间距样本，pitch 无冗余校验；规律唯一性必须由下游规则通道独立证明"
+      },
+      "stats": {
+       "canvas_shape": [
+        37,
+        52
+       ],
+       "canvas_sha": "8b642b2f85d0",
+       "cells": [
+        {
+         "slot_bbox_px": [
+          0,
+          0,
+          52,
+          37
+         ],
+         "ink": 332,
+         "ink_width": 49,
+         "center_x": 25.23,
+         "sha": "8b642b2f85d0"
+        }
+       ]
+      }
+     }
+    },
+    "A_old_maxink__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "规律族冲突（ambiguous）：六类规律 symmetry 指向 A，变换规律指向 多个/无法唯一，不能共同支持同一选项",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [
+      {
+       "rule": "rotate_flip_seq/R270",
+       "scores": {
+        "A": 1.0,
+        "B": 1.0,
+        "C": 1.0,
+        "D": 0.7436
+       },
+       "margin": 0.2564
+      }
+     ],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    },
+    "B_center_pitch": {
+     "solver_status": "solved",
+     "solver_answer": "A",
+     "solver_error": "",
+     "verifier_action": "accept",
+     "final_answer": "A",
+     "candidates": [
+      {
+       "rule": "rotate_flip_seq/R270",
+       "scores": {
+        "A": 0.0456,
+        "B": 0.8002,
+        "C": 1.0,
+        "D": 1.0
+       },
+       "margin": 0.7546
+      }
+     ],
+     "release": {
+      "released": true,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "assembled",
+      "pitch_x": 53.0,
+      "pitch_y": 37,
+      "slots": [
+       [
+        20,
+        60,
+        72,
+        97
+       ],
+       [
+        72,
+        60,
+        126,
+        97
+       ]
+      ],
+      "confidence": {
+       "level": "medium",
+       "basis": "single_gap_only",
+       "gap_spread": 0.0,
+       "note": "两已知格只有一个间距样本，pitch 无冗余校验；规律唯一性必须由下游规则通道独立证明"
+      },
+      "stats": {
+       "canvas_shape": [
+        37,
+        106
+       ],
+       "canvas_sha": "33ecd7180322",
+       "cells": [
+        {
+         "slot_bbox_px": [
+          0,
+          0,
+          106,
+          37
+         ],
+         "ink": 332,
+         "ink_width": 76,
+         "center_x": 51.57,
+         "sha": "33ecd7180322"
+        }
+       ]
+      }
+     }
+    },
+    "B_center_pitch__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "规律族冲突（ambiguous）：六类规律 symmetry 指向 A，变换规律指向 多个/无法唯一，不能共同支持同一选项",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [
+      {
+       "rule": "rotate_flip_seq/R270",
+       "scores": {
+        "A": 1.0,
+        "B": 1.0,
+        "C": 1.0,
+        "D": 0.7436
+       },
+       "margin": 0.2564
+      }
+     ],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    },
+    "C_gold": {
+     "solver_status": "solved",
+     "solver_answer": "A",
+     "solver_error": "",
+     "verifier_action": "accept",
+     "final_answer": "A",
+     "candidates": [
+      {
+       "rule": "rotate_flip_seq/R270",
+       "scores": {
+        "A": 0.0456,
+        "B": 0.8002,
+        "C": 1.0,
+        "D": 1.0
+       },
+       "margin": 0.7546
+      }
+     ],
+     "release": {
+      "released": true,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "gold_regions_png"
+     }
+    },
+    "C_gold__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "规律族冲突（ambiguous）：六类规律 symmetry 指向 A，变换规律指向 多个/无法唯一，不能共同支持同一选项",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [
+      {
+       "rule": "rotate_flip_seq/R270",
+       "scores": {
+        "A": 1.0,
+        "B": 1.0,
+        "C": 1.0,
+        "D": 0.7436
+       },
+       "margin": 0.2564
+      }
+     ],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    }
+   }
+  },
+  "ft-trans-07": {
+   "label": "rule_conflict",
+   "rows": {
+    "A_old_maxink": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配; 墨迹面积外推到 160px，多个选项接近，无法唯一确定；变换通道：变换规律不可唯一判定",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "assembled",
+      "pitch_x": 54.0,
+      "pitch_y": 29,
+      "slots": [
+       [
+        15,
+        76,
+        69,
+        105
+       ],
+       [
+        69,
+        76,
+        123,
+        105
+       ],
+       [
+        123,
+        76,
+        177,
+        105
+       ]
+      ],
+      "confidence": {
+       "level": "high",
+       "basis": "multi_gap_median",
+       "gap_spread": 0.0
+      },
+      "stats": {
+       "canvas_shape": [
+        29,
+        88
+       ],
+       "canvas_sha": "fc2ca10fa4dc",
+       "cells": [
+        {
+         "slot_bbox_px": [
+          0,
+          0,
+          88,
+          29
+         ],
+         "ink": 480,
+         "ink_width": 64,
+         "center_x": 32.5,
+         "sha": "fc2ca10fa4dc"
+        }
+       ]
+      }
+     }
+    },
+    "A_old_maxink__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配; 墨迹面积外推到 160px，多个选项接近，无法唯一确定；变换通道：变换规律不可唯一判定",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    },
+    "B_center_pitch": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配; 墨迹面积外推到 160px，多个选项接近，无法唯一确定；变换通道：变换规律不可唯一判定",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "assembled",
+      "pitch_x": 54.0,
+      "pitch_y": 29,
+      "slots": [
+       [
+        15,
+        76,
+        69,
+        105
+       ],
+       [
+        69,
+        76,
+        123,
+        105
+       ],
+       [
+        123,
+        76,
+        177,
+        105
+       ]
+      ],
+      "confidence": {
+       "level": "high",
+       "basis": "multi_gap_median",
+       "gap_spread": 0.0
+      },
+      "stats": {
+       "canvas_shape": [
+        29,
+        216
+       ],
+       "canvas_sha": "0c04057d2fe1",
+       "cells": [
+        {
+         "slot_bbox_px": [
+          0,
+          0,
+          216,
+          29
+         ],
+         "ink": 480,
+         "ink_width": 128,
+         "center_x": 80.5,
+         "sha": "0c04057d2fe1"
+        }
+       ]
+      }
+     }
+    },
+    "B_center_pitch__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配; 墨迹面积外推到 160px，多个选项接近，无法唯一确定；变换通道：变换规律不可唯一判定",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    },
+    "C_gold": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配; 墨迹面积外推到 160px，多个选项接近，无法唯一确定；变换通道：变换规律不可唯一判定",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "gold_regions_png"
+     }
+    },
+    "C_gold__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配; 墨迹面积外推到 160px，多个选项接近，无法唯一确定；变换通道：变换规律不可唯一判定",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    }
+   }
+  },
+  "ft-overlay-12": {
+   "label": "option_crop_error",
+   "rows": {
+    "A_old_maxink": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：变换规律不可唯一判定",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "assembled",
+      "pitch_x": 48.0,
+      "pitch_y": 153,
+      "slots": [
+       [
+        22,
+        52,
+        70,
+        205
+       ],
+       [
+        74,
+        52,
+        122,
+        205
+       ],
+       [
+        118,
+        52,
+        166,
+        205
+       ]
+      ],
+      "confidence": {
+       "level": "high",
+       "basis": "multi_gap_median",
+       "gap_spread": 0.1667
+      },
+      "stats": {
+       "canvas_shape": [
+        153,
+        104
+       ],
+       "canvas_sha": "08df54d88d70",
+       "cells": [
+        {
+         "slot_bbox_px": [
+          0,
+          0,
+          104,
+          153
+         ],
+         "ink": 1664,
+         "ink_width": 76,
+         "center_x": 39.46,
+         "sha": "08df54d88d70"
+        }
+       ]
+      }
+     }
+    },
+    "A_old_maxink__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：变换规律不可唯一判定",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    },
+    "B_center_pitch": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：变换规律不可唯一判定",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "assembled",
+      "pitch_x": 48.0,
+      "pitch_y": 153,
+      "slots": [
+       [
+        22,
+        52,
+        70,
+        205
+       ],
+       [
+        74,
+        52,
+        122,
+        205
+       ],
+       [
+        118,
+        52,
+        166,
+        205
+       ]
+      ],
+      "confidence": {
+       "level": "high",
+       "basis": "multi_gap_median",
+       "gap_spread": 0.1667
+      },
+      "stats": {
+       "canvas_shape": [
+        153,
+        192
+       ],
+       "canvas_sha": "dd15700dfc6b",
+       "cells": [
+        {
+         "slot_bbox_px": [
+          0,
+          0,
+          192,
+          153
+         ],
+         "ink": 1664,
+         "ink_width": 120,
+         "center_x": 72.88,
+         "sha": "dd15700dfc6b"
+        }
+       ]
+      }
+     }
+    },
+    "B_center_pitch__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：变换规律不可唯一判定",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    },
+    "C_gold": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：变换规律不可唯一判定",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "gold_regions_png"
+     }
+    },
+    "C_gold__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：变换规律不可唯一判定",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    }
+   }
+  },
+  "ft-mirror-04--tight": {
+   "label": "rule_not_applicable",
+   "rows": {
+    "A_old_maxink": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "assembled",
+      "pitch_x": 72.5,
+      "pitch_y": 155,
+      "slots": [
+       [
+        16,
+        36,
+        88,
+        191
+       ],
+       [
+        79,
+        36,
+        151,
+        191
+       ],
+       [
+        161,
+        36,
+        233,
+        191
+       ]
+      ],
+      "confidence": {
+       "level": "medium",
+       "basis": "multi_gap_median",
+       "gap_spread": 0.2621
+      },
+      "stats": {
+       "canvas_shape": [
+        155,
+        144
+       ],
+       "canvas_sha": "46dd3ffa764f",
+       "cells": [
+        {
+         "slot_bbox_px": [
+          0,
+          0,
+          144,
+          155
+         ],
+         "ink": 840,
+         "ink_width": 119,
+         "center_x": 62.76,
+         "sha": "46dd3ffa764f"
+        }
+       ]
+      }
+     }
+    },
+    "A_old_maxink__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    },
+    "B_center_pitch": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "assembled",
+      "pitch_x": 72.5,
+      "pitch_y": 155,
+      "slots": [
+       [
+        16,
+        36,
+        88,
+        191
+       ],
+       [
+        79,
+        36,
+        151,
+        191
+       ],
+       [
+        161,
+        36,
+        233,
+        191
+       ]
+      ],
+      "confidence": {
+       "level": "medium",
+       "basis": "multi_gap_median",
+       "gap_spread": 0.2621
+      },
+      "stats": {
+       "canvas_shape": [
+        155,
+        216
+       ],
+       "canvas_sha": "60f8bdc49795",
+       "cells": [
+        {
+         "slot_bbox_px": [
+          0,
+          0,
+          216,
+          155
+         ],
+         "ink": 840,
+         "ink_width": 167,
+         "center_x": 93.96,
+         "sha": "60f8bdc49795"
+        }
+       ]
+      }
+     }
+    },
+    "B_center_pitch__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    },
+    "C_gold": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     },
+     "geometry": {
+      "source": "gold_regions_png"
+     }
+    },
+    "C_gold__legacy_scale": {
+     "solver_status": "failed",
+     "solver_answer": null,
+     "solver_error": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）",
+     "verifier_action": null,
+     "final_answer": null,
+     "candidates": [],
+     "release": {
+      "released": false,
+      "wrong_accept": false,
+      "release_anomaly_missing_final": false
+     }
+    }
+   }
+  }
+ },
+ "causal_conclusion": {
+  "scale_protocol": "mirror-04/rot90-01：legacy 相对尺度惩罚下 A/B/C 三种画布**全部**饱和 1.0 失败；protocol-aware 绝对面积下三种画布**全部**正确判定（残差 0.039/0.0456，margin≥0.54）。→ R13-G live 失败充分原因是跨协议尺度惩罚，不是格宽协议。",
+  "pitch": "B_center_pitch + legacy_scale 仍失败；A_old_maxink + protocol-aware 已正确。pitch 修复单独不充分、非必需。CellGeometry 保留的价值是槽边界/空格槽/墨偏移的正确几何（重建与证据层），不是打分通路。",
+  "ticket_label": "pitch_causal_fixed 未触发；真实标签=scale_protocol_fixed（对 mirror-04/rot90-01），其余为 option_crop_error/rule_conflict/rule_not_applicable（如实单列）。",
+  "human_adjudication_answer": "对“待因果验证的 Live pitch 根因”的裁定：不是全部 Live 失败的原因，甚至不是主因。"
+ }
+}
