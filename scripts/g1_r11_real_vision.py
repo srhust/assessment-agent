@@ -15,6 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from assessment_agent.llm import build_client  # noqa: E402
+from assessment_agent.tools.release_scoring import (  # noqa: E402
+    audit_network_timeouts, audit_requests_sent)
 from assessment_agent.pipeline import Pipeline  # noqa: E402
 from assessment_agent.config import Settings  # noqa: E402
 
@@ -49,9 +51,11 @@ def main() -> int:
         if only and it["id"] not in only:
             continue
         snap = client.audit_snapshot() if hasattr(client, "audit_snapshot") else {}
-        by = snap.get("by_phase") or {}
-        sent = sum(int((v or {}).get("calls", (v or {}).get("requests", 0)) or 0)
-                   for v in by.values())
+        sent = audit_requests_sent(snap)          # R12：真实计数（含每次重试）
+        timeouts = audit_network_timeouts(snap)   # R12：HTTP 层 error_types，非外层异常
+        if sent and sent <= 8 and timeouts >= 3:
+            aborted = "stop_rule_3_timeouts_within_first_8_requests"
+            break
         if ALREADY_USED + sent >= MAX_HTTP_TOTAL:
             aborted = "budget_http_cap"
             break
@@ -61,17 +65,8 @@ def main() -> int:
         t0 = time.time()
         rec = {"id": it["id"], "family": it["family"], "gold": it["gold_answer"]}
         try:
-            extra_text = None
-            if "--" in it["id"]:
-                cor = json.loads((ROOT / "evidence/R10D_PERTURB_CORPUS.json")
-                                 .read_text(encoding="utf-8"))
-                src = next(x for x in cor["items"] if x["id"] == it["id"])
-                for l in (ROOT / "data/benchmark_figshots/dev/figshots.jsonl"
-                          ).read_text(encoding="utf-8").splitlines():
-                    if l.strip() and json.loads(l)["id"] == src["source_item"]:
-                        extra_text = json.loads(l)["stem"]
-                        break
-            res = pipe.run(text=extra_text, image_path=str(ROOT / it["image"]),
+            # R12：image_only 必须 text=None，让 VisionParser 真实解析（传文本会跳过视觉路径）
+            res = pipe.run(text=None, image_path=str(ROOT / it["image"]),
                            skill="figure_reasoning", save=False,
                            hint="figure_reasoning")
             sol = getattr(res, "solution", None)
@@ -94,20 +89,32 @@ def main() -> int:
                 "elapsed_s": round(time.time() - t0, 1),
             })
             rec["correct"] = rec.get("answer") == it["gold_answer"]
+            parser = getattr(ext, "parser", None) if ext is not None else None
+            rec["extraction_parser"] = parser
+            rec["image_only_eligible"] = parser == "vision_parser"
+            if parser != "vision_parser":
+                rec.setdefault("note", "未走 VisionParser，不计入 image_only 合格样本")
+            snap_after = client.audit_snapshot()
+            rec["audit_after_item"] = {
+                "requests_sent": audit_requests_sent(snap_after),
+                "network_timeouts": audit_network_timeouts(snap_after)}
             if rec.get("final_answer") and rec["final_answer"] != it["gold_answer"]:
                 rec["wrong_release"] = True
         except Exception as exc:  # noqa: BLE001
             txt = f"{type(exc).__name__}: {exc}"
             rec.update({"status": "error", "error": txt[:160],
                         "failure_bucket": classify(txt)})
-            if classify(txt) == "sent_no_response":
-                timeouts += 1
+            # R12：超时数以 audit.error_types 为准（循环顶部重取），不再外层自增
         requests += 1
         results.append(rec)
         print(json.dumps(rec, ensure_ascii=False, default=str)[:220], flush=True)
     snap = client.audit_snapshot() if hasattr(client, "audit_snapshot") else {}
-    out = {"stage": "R11-G", "aborted": aborted,
-           "requests_attempted": requests, "network_timeouts": timeouts,
+    snap = client.audit_snapshot()
+    out = {"stage": "R11-G (r12-audited)", "aborted": aborted,
+           "requests_attempted": requests,
+           "requests_sent_real": audit_requests_sent(snap),
+           "network_timeouts_http_layer": audit_network_timeouts(snap),
+           "eligible_image_only": sum(1 for r in results if r.get("image_only_eligible")),
            "usage_audit": snap, "per_item": results,
            "note": "Dev 集内受控真实视觉；非盲测、非泛化宣称"}
     (ROOT / "evidence/R11G_REAL_VISION.json").write_text(

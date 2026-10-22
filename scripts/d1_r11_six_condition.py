@@ -80,7 +80,8 @@ def main() -> int:
         pid = item["id"]
         ansb = ansb_key(item)
         gold = item["answer"]
-        row = {"id": pid, "answerability": ansb, "gold": gold, "conds": {}}
+        row = {"id": pid, "answerability": ansb, "gold": gold, "conds": {},
+               "design_abstain": pid in ("ft-sym-14", "ft-conflict-15")}
         tmp = Path(tempfile.mkdtemp())
         settings = make_settings(tmp)
         # ---- A-D：金标 + 缓存 VLM extraction（v2，含 crop 文件路径）
@@ -181,28 +182,16 @@ def main() -> int:
         out_rows.append(row)
 
     def summarize(cond):
-        rel = [r for r in out_rows
-               if (r["conds"].get(cond) or {}).get("status") == "solved"
-               and (r["conds"].get(cond) or {}).get("verify") != "unverified"]
-        cor = [r for r in rel if r["conds"][cond]["answer"] == r["gold"]]
-        wrong = [r["id"] for r in rel if r["conds"][cond]["answer"] != r["gold"]]
-        ansb_items = [r for r in out_rows if r["answerability"] == "solved"]
-        abst_ok = [r["id"] for r in out_rows
-                   if r["answerability"] != "solved"
-                   and (r["conds"].get(cond) or {}).get("status") != "solved"]
-        fa = [r["id"] for r in out_rows
-              if r["answerability"] != "solved"
-              and (r["conds"].get(cond) or {}).get("status") == "solved"]
-        return {"released": len(rel), "correct": len(cor),
-                "of_answerable": f"{len(cor)}/{len(ansb_items)}",
-                "wrong_releases": wrong, "insufficient_abstained": len(abst_ok),
-                "insufficient_false_accepts": fa}
+        from assessment_agent.tools.release_scoring import summarize_rows
+        return summarize_rows(out_rows, cond)
+
     ev_out = {"answerability_flags_seen": ab_flags, "conditions": {c: summarize(c) for c in "ABCDEF"},
               "llm_calls_used": BUDGET["llm_calls"],
               "per_item": out_rows,
               "note": "E/F 条件名对应实际像素重建裁剪内容；F 含验证器独立复核"}
-    (ROOT / "evidence/R11_D_SIX_CONDITION.json").write_text(
-        json.dumps(ev_out, ensure_ascii=False, indent=1), encoding="utf-8")
+    out_path = Path(sys.argv[sys.argv.index("--out") + 1]) if "--out" in sys.argv \
+        else ROOT / "evidence/R12A_SIX_CONDITION_RESCORED.json"
+    out_path.write_text(json.dumps(ev_out, ensure_ascii=False, indent=1), encoding="utf-8")
     print(json.dumps(ev_out["conditions"], ensure_ascii=False, indent=1))
     return 0
 

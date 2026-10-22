@@ -1,0 +1,296 @@
+{
+ "stage": "R12-A errata",
+ "reason": "人工裁决：solved+reject/unverified 不得计为释放；R11 汇总口径 status==solved and verify!=unverified 把 reject 也算了释放",
+ "R11_reported": {
+  "A": {
+   "released": 10,
+   "correct": 10,
+   "of_answerable": "10/13",
+   "wrong_releases": [],
+   "insufficient_abstained": 2,
+   "insufficient_false_accepts": []
+  },
+  "B": {
+   "released": 0,
+   "correct": 0,
+   "of_answerable": "0/13",
+   "wrong_releases": [],
+   "insufficient_abstained": 2,
+   "insufficient_false_accepts": []
+  },
+  "C": {
+   "released": 1,
+   "correct": 1,
+   "of_answerable": "1/13",
+   "wrong_releases": [],
+   "insufficient_abstained": 2,
+   "insufficient_false_accepts": []
+  },
+  "D": {
+   "released": 0,
+   "correct": 0,
+   "of_answerable": "0/13",
+   "wrong_releases": [],
+   "insufficient_abstained": 2,
+   "insufficient_false_accepts": []
+  },
+  "E": {
+   "released": 2,
+   "correct": 2,
+   "of_answerable": "2/13",
+   "wrong_releases": [],
+   "insufficient_abstained": 2,
+   "insufficient_false_accepts": []
+  },
+  "F": {
+   "released": 1,
+   "correct": 1,
+   "of_answerable": "1/13",
+   "wrong_releases": [],
+   "insufficient_abstained": 2,
+   "insufficient_false_accepts": []
+  }
+ },
+ "R12_rescored_three_layer": {
+  "A": {
+   "correct_candidates": 13,
+   "wrong_candidates": 0,
+   "verified_accepted": 10,
+   "final_released": 10,
+   "of_effective_answerable": "10/13",
+   "effective_answerable_n": 13,
+   "wrong_releases": [],
+   "gated_rejects": [],
+   "gated_unverified": [
+    "ft-trans-07",
+    "ft-trans-08",
+    "ft-overlay-12"
+   ],
+   "design_abstain_ok": [
+    "ft-sym-14",
+    "ft-conflict-15"
+   ],
+   "design_false_accepts": [],
+   "lists": {
+    "correct_candidates": [
+     "ft-rot90-01",
+     "ft-rot180-02",
+     "ft-rot270-03",
+     "ft-mirror-04",
+     "ft-mirror-05",
+     "ft-comp-06",
+     "ft-trans-07",
+     "ft-trans-08",
+     "ft-scale-09",
+     "ft-grid-10",
+     "ft-grid-11",
+     "ft-overlay-12",
+     "ft-overlay-13"
+    ],
+    "released": [
+     "ft-rot90-01",
+     "ft-rot180-02",
+     "ft-rot270-03",
+     "ft-mirror-04",
+     "ft-mirror-05",
+     "ft-comp-06",
+     "ft-scale-09",
+     "ft-grid-10",
+     "ft-grid-11",
+     "ft-overlay-13"
+    ]
+   }
+  },
+  "B": {
+   "correct_candidates": 0,
+   "wrong_candidates": 0,
+   "verified_accepted": 0,
+   "final_released": 0,
+   "of_effective_answerable": "0/13",
+   "effective_answerable_n": 13,
+   "wrong_releases": [],
+   "gated_rejects": [],
+   "gated_unverified": [],
+   "design_abstain_ok": [
+    "ft-sym-14",
+    "ft-conflict-15"
+   ],
+   "design_false_accepts": [],
+   "lists": {
+    "correct_candidates": [],
+    "released": []
+   }
+  },
+  "C": {
+   "correct_candidates": 1,
+   "wrong_candidates": 0,
+   "verified_accepted": 1,
+   "final_released": 1,
+   "of_effective_answerable": "1/13",
+   "effective_answerable_n": 13,
+   "wrong_releases": [],
+   "gated_rejects": [],
+   "gated_unverified": [],
+   "design_abstain_ok": [
+    "ft-sym-14",
+    "ft-conflict-15"
+   ],
+   "design_false_accepts": [],
+   "lists": {
+    "correct_candidates": [
+     "ft-grid-11"
+    ],
+    "released": [
+     "ft-grid-11"
+    ]
+   }
+  },
+  "D": {
+   "correct_candidates": 0,
+   "wrong_candidates": 1,
+   "verified_accepted": 0,
+   "final_released": 0,
+   "of_effective_answerable": "0/13",
+   "effective_answerable_n": 13,
+   "wrong_releases": [],
+   "gated_rejects": [],
+   "gated_unverified": [
+    "ft-trans-07"
+   ],
+   "design_abstain_ok": [
+    "ft-sym-14",
+    "ft-conflict-15"
+   ],
+   "design_false_accepts": [],
+   "lists": {
+    "correct_candidates": [],
+    "released": []
+   }
+  },
+  "E": {
+   "correct_candidates": 2,
+   "wrong_candidates": 1,
+   "verified_accepted": 1,
+   "final_released": 1,
+   "of_effective_answerable": "1/13",
+   "effective_answerable_n": 13,
+   "wrong_releases": [],
+   "gated_rejects": [
+    "ft-mirror-05"
+   ],
+   "gated_unverified": [
+    "ft-trans-08"
+   ],
+   "design_abstain_ok": [
+    "ft-sym-14",
+    "ft-conflict-15"
+   ],
+   "design_false_accepts": [],
+   "lists": {
+    "correct_candidates": [
+     "ft-mirror-04",
+     "ft-mirror-05"
+    ],
+    "released": [
+     "ft-mirror-04"
+    ]
+   }
+  },
+  "F": {
+   "correct_candidates": 2,
+   "wrong_candidates": 1,
+   "verified_accepted": 0,
+   "final_released": 0,
+   "of_effective_answerable": "0/13",
+   "effective_answerable_n": 13,
+   "wrong_releases": [],
+   "gated_rejects": [
+    "ft-mirror-05"
+   ],
+   "gated_unverified": [
+    "ft-mirror-04",
+    "ft-trans-08"
+   ],
+   "design_abstain_ok": [
+    "ft-sym-14",
+    "ft-conflict-15"
+   ],
+   "design_false_accepts": [],
+   "lists": {
+    "correct_candidates": [
+     "ft-mirror-04",
+     "ft-mirror-05"
+    ],
+    "released": []
+   }
+  }
+ },
+ "headline_corrections": {
+  "E_final_released": "1/13（原报告 2/13）",
+  "F_final_released": "0/13（原报告 1/13）",
+  "gateway_timeouts": "真实 HTTP 层 ReadTimeout=1，脚本外层 network_timeouts=0 统计的是被捕获异常，不能宣称网关零超时",
+  "requests_sent_real": 6,
+  "distractor_item": "第 6 题传了 extra_text → Pipeline 跳过 VisionParser，非合格 image_only 样本；合格视觉解析样本数=5",
+  "scoring_baseline_note": "R11 A=10/13 为 Verifier 门控口径，与 R9 A=13/13（Solver 层正确候选口径）不可直接比较，非退化"
+ },
+ "audit_spot_checks": {
+  "ft-mirror-04": {
+   "E": {
+    "status": "solved",
+    "answer": "A",
+    "verify": "accept"
+   },
+   "F": {
+    "status": "solved",
+    "answer": "A",
+    "verify": "unverified"
+   },
+   "gold": "A"
+  },
+  "ft-mirror-05": {
+   "E": {
+    "status": "solved",
+    "answer": "B",
+    "verify": "reject"
+   },
+   "F": {
+    "status": "solved",
+    "answer": "B",
+    "verify": "reject"
+   },
+   "gold": "B"
+  }
+ },
+ "visual_audit_dev_gap": {
+  "solver_rule_missing_all": [
+   "ft-rot90-01",
+   "ft-rot180-02",
+   "ft-rot270-03",
+   "ft-comp-06",
+   "ft-trans-07",
+   "ft-grid-10",
+   "ft-overlay-12",
+   "ft-sym-14",
+   "ft-conflict-15"
+  ],
+  "design_ambiguous_excluded": [
+   "ft-conflict-15",
+   "ft-sym-14"
+  ],
+  "true_dev_gap_items": [
+   "ft-rot90-01",
+   "ft-rot180-02",
+   "ft-rot270-03",
+   "ft-comp-06",
+   "ft-trans-07",
+   "ft-grid-10",
+   "ft-overlay-12"
+  ],
+  "note": "设计性不可唯一题按裁决从研发缺口剔除，属正确弃权目标而非求解失败"
+ },
+ "inputs_readonly": [
+  "evidence/R11_D_SIX_CONDITION.json",
+  "evidence/R11B_VISUAL_AUDIT.json",
+  "evidence/R11G_REAL_VISION.json"
+ ]
+}

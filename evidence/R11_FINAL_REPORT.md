@@ -91,3 +91,27 @@ declared_insufficient`，写入 planner 失败 meta。条件不足弃权走**模
   释放仍 0/6——**准入判定维持"尚不满足"，等待人工裁决下一步优先级**。
 
 **停于此，等待人工 adjudication。**
+
+
+---
+
+## 附：R12-A 勘误（2026-10-22，人工裁决触发；原正文保留不覆盖）
+
+详细数据见 `evidence/R11_ERRATA_SCORING.{json,md}`（由零 API 重计分脚本
+`scripts/a2_r12_rescore.py` 从原始 per_item 数据产出，原件未改动）。
+
+1. **六条件释放口径更正（P0）**：原汇总把 `solved + reject` 计成了释放。三层重计：
+   E 正确候选 2 / 验证接受 1 / **最终释放 1/13**；F 正确候选 2 / 验证接受 0 /
+   **最终释放 0/13**。`ft-mirror-05` E/F 均提交正确候选 B 但被 Verifier reject——不计释放；
+   `ft-mirror-04` E accept 计入、F unverified 不计。原 §4 表格中的 E=2/F=1 全部以本勘误为准。
+2. **网关超时表述更正**：HTTP 层实际 `error_types.ReadTimeout=1`（`requests_sent=6,
+   requests_succeeded=5`）；“0 网络超时”仅对外层脚本未捕获异常成立，对网关不成立。
+3. **第 6 题非合格 image_only 样本**：脚本传了 `extra_text`，Pipeline 走文本路径跳过
+   VisionParser；合格视觉解析端到端样本=5。§8 的“6 题”表述相应更正。
+4. **口径不可比声明**：R11 A=10（Verifier 门控释放）与 R9 A=13/13（Solver 层正确候选）
+   不同口径，不构成退化对比。
+5. **研发缺口剔除设计性题**：`ft-sym-14`、`ft-conflict-15` 为设计性不可唯一判定题，
+   正确弃权即目标；`solver_rule_missing` 9 项中的真实研发缺口为 7 项。
+6. **归因结论的边界收缩**：§5 “契约修复→释放部分恢复”在最终释放口径下为 E +1 题
+   （mirror-04 accept）；像素重建恢复的是**正确候选**能力（E/F 各 2 例），从候选到
+   释放之间仍隔着验证一致性与（经 R12-B 审计的）表示保真两层。
