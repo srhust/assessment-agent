@@ -1,0 +1,23 @@
+{
+  "status": "failed",
+  "skill": "figure_reasoning",
+  "answer": null,
+  "answer_text": null,
+  "steps": [
+    "[区域检查] 带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个"
+  ],
+  "confidence": 0.0,
+  "method": "figure_rules_adapter",
+  "tool_calls": [],
+  "error": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）",
+  "meta": {
+    "stage": 1,
+    "reason": "region_incomplete",
+    "problems": [
+      "带图形的选项仅 0 个（至少需要 2 个）",
+      "选项图形裁剪不足 2 份",
+      "像素定位器：选项少于 2 个"
+    ],
+    "latency_ms": 0.26
+  }
+}

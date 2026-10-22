@@ -20,7 +20,8 @@ sys.path.insert(0, str(ROOT))
 from assessment_agent.config import Settings  # noqa: E402
 from assessment_agent.llm import build_client  # noqa: E402
 from assessment_agent.pipeline import Pipeline  # noqa: E402
-from assessment_agent.tools.release_scoring import row_layer  # noqa: E402
+from assessment_agent.tools.release_scoring import (  # noqa: E402
+    release_status, row_layer)
 
 MAX_HTTP_TOTAL = 6
 ORDER = [
@@ -69,6 +70,7 @@ def main() -> int:
             checks = [getattr(c, "name", None) for c in (v.checks or [])] \
                 if v is not None else []
             fa = getattr(v, "final_answer", None) if v else None
+            act = getattr(v, "action", None) if v else None
             row = {"status": sol.status, "answer": sol.answer, "gold": gold,
                    "verify": getattr(v, "action", None) if v else None,
                    "final_answer": fa}
@@ -85,11 +87,14 @@ def main() -> int:
                 "requests_sent_after": client._requests_sent,
                 "elapsed_s": round(time.perf_counter() - t0, 2),
             })
-            if rec["layer"] == 3 and fa != gold:
-                stop_reason = f"WRONG ACCEPT on {pid} ({fa}≠{gold}) — batch halted"
-                rec["release"] = "final"
-            elif rec["layer"] == 3:
-                rec["release"] = "final"
+            rs = release_status(act, fa, gold)
+            rec["release_status"] = rs
+            rec["release"] = "final" if rs["released"] else None
+            if rs["wrong_accept"]:
+                # R14：误放即刻停机——直接由 Verifier 原始输出判定，
+                # 不经 row_layer（其定义使 R13 的旧条件不可达）。
+                stop_reason = (f"WRONG ACCEPT/REPAIR on {pid}: action={act} "
+                               f"final_answer={fa!r} != gold={gold!r} — batch halted")
         except Exception as exc:  # noqa: BLE001
             rec["exception"] = str(exc)[:220]
             rec["requests_sent_after"] = client._requests_sent
@@ -103,13 +108,20 @@ def main() -> int:
         audit = client.audit_snapshot()
     except Exception:  # noqa: BLE001
         pass
+    executed = [r for r in results if "skipped" not in r]
     out = {"stage": "R13-G real-vision batch (atomic cap)",
+           "denominator": {
+               "planned": len(ORDER), "executed": len(executed),
+               "skipped_by_cap": len(results) - len(executed),
+               "exceptions": sum(1 for r in executed if r.get("exception")),
+               "note": ("任何模型响应失败/网络问题都留在 executed 分母里（异常条目"
+                        "同样计入端到端任务），不静默消失")},
            "cap": MAX_HTTP_TOTAL,
            "requests_sent": audit.get("requests_sent"),
            "error_types": audit.get("error_types"),
            "token_usage": usage,
            "stop_reason": stop_reason,
-           "release_rule": "layer3 需 verifier 实返 final_answer 且==gold",
+           "release_rule": "R14: released=action∈{accept,repair}∧final_answer非空；wrong_accept 直接停机，不经 row_layer",
            "results": results}
     (ROOT / "evidence/R13G_REAL_VISION.json").write_text(
         json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")

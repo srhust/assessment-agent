@@ -1,0 +1,177 @@
+{
+  "stem": "根据题目图形中蕴含的规律，选择最符合规律的一项补\n（注：题干文字在截图右缘被截断，最后一字仅部分可见）",
+  "options": [
+    {
+      "label": "A",
+      "text": "A."
+    },
+    {
+      "label": "B",
+      "text": "B."
+    },
+    {
+      "label": "C",
+      "text": "C."
+    },
+    {
+      "label": "D",
+      "text": "D."
+    }
+  ],
+  "question_type": "single_choice",
+  "skill_hint": "figure_reasoning",
+  "has_diagram": true,
+  "raw_text": "根据题目图形中蕴含的规律，选择最符合规律的一项补\n（注：题干文字在截图右缘被截断，最后一字仅部分可见）",
+  "model": "glm-5.3-flash",
+  "confidence": 0.85,
+  "warnings": [],
+  "schema_version": 2,
+  "bbox_format": "pixel_xywh",
+  "image_width": 380,
+  "image_height": 208,
+  "text_regions": [
+    {
+      "region_id": "t1",
+      "bbox": [
+        14,
+        26,
+        366,
+        22
+      ],
+      "text": "根据题目图形中蕴含的规律，选择最符合规律的一项补"
+    }
+  ],
+  "diagram_regions": [
+    {
+      "region_id": "d1",
+      "role": "stem_figure",
+      "bbox": [
+        33,
+        66,
+        24,
+        24
+      ],
+      "grid": {
+        "rows": 1,
+        "cols": 1
+      },
+      "crop_path": "$ROOT\\runs\\r13g-ft-rot90-01\\regions\\diagram_d1.png"
+    },
+    {
+      "region_id": "d2",
+      "role": "stem_figure",
+      "bbox": [
+        93,
+        66,
+        24,
+        24
+      ],
+      "grid": {
+        "rows": 1,
+        "cols": 1
+      },
+      "crop_path": "$ROOT\\runs\\r13g-ft-rot90-01\\regions\\diagram_d2.png"
+    },
+    {
+      "region_id": "d3",
+      "role": "stem_figure",
+      "bbox": [
+        131,
+        74,
+        24,
+        24
+      ],
+      "grid": {
+        "rows": 1,
+        "cols": 1
+      },
+      "crop_path": "$ROOT\\runs\\r13g-ft-rot90-01\\regions\\diagram_d3.png"
+    }
+  ],
+  "option_regions": [
+    {
+      "label": "A",
+      "bbox": [
+        25,
+        136,
+        62,
+        48
+      ],
+      "text": "A.",
+      "has_figure": true,
+      "figure_bbox": [
+        55,
+        138,
+        30,
+        42
+      ],
+      "crop_path": "$ROOT\\runs\\r13g-ft-rot90-01\\regions\\option_A.png"
+    },
+    {
+      "label": "B",
+      "bbox": [
+        105,
+        136,
+        62,
+        42
+      ],
+      "text": "B.",
+      "has_figure": true,
+      "figure_bbox": [
+        133,
+        138,
+        30,
+        32
+      ],
+      "crop_path": "$ROOT\\runs\\r13g-ft-rot90-01\\regions\\option_B.png"
+    },
+    {
+      "label": "C",
+      "bbox": [
+        185,
+        136,
+        70,
+        48
+      ],
+      "text": "C.",
+      "has_figure": true,
+      "figure_bbox": [
+        225,
+        138,
+        30,
+        42
+      ],
+      "crop_path": "$ROOT\\runs\\r13g-ft-rot90-01\\regions\\option_C.png"
+    },
+    {
+      "label": "D",
+      "bbox": [
+        250,
+        136,
+        65,
+        42
+      ],
+      "text": "D.",
+      "has_figure": true,
+      "figure_bbox": [
+        288,
+        138,
+        30,
+        32
+      ],
+      "crop_path": "$ROOT\\runs\\r13g-ft-rot90-01\\regions\\option_D.png"
+    }
+  ],
+  "table_regions": [],
+  "reading_order": [
+    "t1",
+    "d1",
+    "d2",
+    "d3",
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "parser": "vision_parser"
+}

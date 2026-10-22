@@ -1,0 +1,334 @@
+{
+  "status": "failed",
+  "skill": "figure_reasoning",
+  "answer": null,
+  "answer_text": null,
+  "steps": [
+    "选项 C 裁剪为空"
+  ],
+  "confidence": 0.0,
+  "method": "figure_rules_adapter",
+  "tool_calls": [
+    {
+      "tool": "figure_rules_adapter",
+      "args": {
+        "stem_crop": "$ROOT\\runs\\r13g-ft-overlay-12\\regions\\diagram_d1.png",
+        "option_labels": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "grid": [
+          3,
+          3
+        ]
+      },
+      "ok": true,
+      "result": {
+        "status": "failed",
+        "mode": "regions",
+        "rule": null,
+        "answer": null,
+        "reason": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）",
+        "agreement": []
+      },
+      "error": null,
+      "duration_ms": 0.0
+    }
+  ],
+  "error": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：变换规律不可唯一判定",
+  "meta": {
+    "stage": 1,
+    "image": "$ROOT\\runs\\r13g-ft-overlay-12\\image\\original.png",
+    "mode": "regions",
+    "rule": null,
+    "agreement": [],
+    "layout": {
+      "mode": "regions",
+      "size": [
+        128,
+        140
+      ],
+      "cells_per_band": []
+    },
+    "predicted": null,
+    "options_from_image": [],
+    "candidates": [],
+    "regions": {
+      "stem_crop": "$ROOT\\runs\\r13g-ft-overlay-12\\regions\\diagram_d1.png",
+      "option_labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "option_crops": [
+        "$ROOT\\runs\\r13g-ft-overlay-12\\regions\\option_A.png",
+        "$ROOT\\runs\\r13g-ft-overlay-12\\regions\\option_B.png",
+        "$ROOT\\runs\\r13g-ft-overlay-12\\regions\\option_C.png",
+        "$ROOT\\runs\\r13g-ft-overlay-12\\regions\\option_D.png"
+      ],
+      "stem_grid": [
+        3,
+        3
+      ]
+    },
+    "tool": "figure_rules_adapter",
+    "transform": {
+      "status": "failed",
+      "answer": null,
+      "reason": "变换规律不可唯一判定",
+      "verdict": {
+        "verdict": "no_rule",
+        "answer": null,
+        "support": {}
+      },
+      "candidates": [],
+      "parameter_stable": false,
+      "independently_verified": false,
+      "symmetry_unresolvable": [
+        "cell0: 对称不可区分 ['FH', 'FV', 'I', 'R180']",
+        "cell1: 对称不可区分 ['FH', 'FV', 'I', 'R180']",
+        "cell3: 对称不可区分 ['FH', 'FV', 'I', 'R180']",
+        "cell4: 对称不可区分 ['FH', 'FV', 'I', 'R180']",
+        "cell5: 对称不可区分 ['FV', 'I']",
+        "cell6: 对称不可区分 ['FH', 'FV', 'I', 'R180']",
+        "cell7: 对称不可区分 ['FH', 'FV', 'I', 'R180']"
+      ],
+      "stem_fingerprint": {
+        "cell_count": 8,
+        "ink": [
+          160,
+          224,
+          256,
+          160,
+          224,
+          256,
+          160,
+          224
+        ],
+        "canvas": [
+          [
+            47,
+            43
+          ],
+          [
+            47,
+            42
+          ],
+          [
+            47,
+            43
+          ],
+          [
+            46,
+            43
+          ],
+          [
+            46,
+            42
+          ],
+          [
+            46,
+            43
+          ],
+          [
+            47,
+            43
+          ],
+          [
+            47,
+            42
+          ]
+        ]
+      },
+      "verification": {
+        "passed": false,
+        "action": "unverified",
+        "checks": [
+          {
+            "name": "figure_transform.abstain",
+            "passed": true,
+            "detail": "求解器未作答，无验证对象",
+            "severity": "info"
+          }
+        ],
+        "final_answer": null,
+        "repaired_answer": null,
+        "notes": "abstain",
+        "duration_ms": 0.0
+      },
+      "blockers": [
+        {
+          "code": "overlay_residual_over_tol",
+          "stage": "overlay_eval",
+          "cells": [],
+          "detail": "overlay_grid_col:xor 最小演示残差 0.661 > 容差 0.12"
+        }
+      ],
+      "overlay_eval": {
+        "overlay_grid_row:xor": {
+          "best_demo_residual": 0.828,
+          "accepted": false,
+          "alignment": [
+            "grid_top_left",
+            null
+          ],
+          "tol": 0.12
+        },
+        "overlay_grid_row:or": {
+          "best_demo_residual": 0.75,
+          "accepted": false,
+          "alignment": [
+            "grid_top_left",
+            null
+          ],
+          "tol": 0.12
+        },
+        "overlay_grid_row:and": {
+          "best_demo_residual": 0.852,
+          "accepted": false,
+          "alignment": [
+            "grid_top_left",
+            null
+          ],
+          "tol": 0.12
+        },
+        "overlay_grid_col:xor": {
+          "best_demo_residual": 0.661,
+          "accepted": false,
+          "alignment": [
+            "grid_top_left",
+            null
+          ],
+          "tol": 0.12
+        },
+        "overlay_grid_col:or": {
+          "best_demo_residual": 0.661,
+          "accepted": false,
+          "alignment": [
+            "grid_top_left",
+            null
+          ],
+          "tol": 0.12
+        },
+        "overlay_grid_col:and": {
+          "best_demo_residual": 1.0,
+          "accepted": false,
+          "alignment": [
+            "grid_top_left",
+            null
+          ],
+          "tol": 0.12
+        }
+      },
+      "coord_contract": {
+        "stem_canvas": [
+          140,
+          128
+        ],
+        "cell_bboxes": [
+          [
+            0,
+            0,
+            43,
+            47
+          ],
+          [
+            43,
+            0,
+            85,
+            47
+          ],
+          [
+            85,
+            0,
+            128,
+            47
+          ],
+          [
+            0,
+            47,
+            43,
+            93
+          ],
+          [
+            43,
+            47,
+            85,
+            93
+          ],
+          [
+            85,
+            47,
+            128,
+            93
+          ],
+          [
+            0,
+            93,
+            43,
+            140
+          ],
+          [
+            43,
+            93,
+            85,
+            140
+          ]
+        ],
+        "pair_align": {
+          "0-1": {
+            "verified": true,
+            "mode": "grid_top_left",
+            "common_canvas": [
+              47,
+              43
+            ],
+            "offsets": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "jitter": [
+              0,
+              1
+            ],
+            "reason": "同行/列网格原点整数平移对齐"
+          },
+          "0-3": {
+            "verified": true,
+            "mode": "grid_top_left",
+            "common_canvas": [
+              47,
+              43
+            ],
+            "offsets": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "jitter": [
+              1,
+              0
+            ],
+            "reason": "同行/列网格原点整数平移对齐"
+          }
+        },
+        "tol_px": 3
+      }
+    },
+    "latency_ms": 121.338
+  }
+}

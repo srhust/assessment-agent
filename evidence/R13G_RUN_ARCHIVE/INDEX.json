@@ -1,0 +1,615 @@
+{
+ "stage": "R14-A3 sanitized archive of local R13G runs",
+ "artifact_unavailable": [
+  "原始 HTTP 请求体/响应体（管线 save=True 不持久化 wire-level 载荷）",
+  "求解中间重建画布 stem_reconstructed.png 与 regions_pixel/*（本次真实批在 layout=off 档执行，中间件未生成；离线重放可再生产生）"
+ ],
+ "items": {
+  "ft-mirror-04": {
+   "files": {
+    "extraction.json": {
+     "sha256_16": "fc5b6d35803e9bfb",
+     "bytes": 2322
+    },
+    "image/original.png": {
+     "sha256_16": "092496aac4e638c8",
+     "bytes": 3697,
+     "png": {
+      "shape": [
+       208,
+       348
+      ],
+      "ink_pixels": 2502,
+      "ink_bbox": [
+       36,
+       24
+      ]
+     },
+     "png_content_sha16": "dbd2228a9efbae92"
+    },
+    "question.json": {
+     "sha256_16": "b162c371422d3544",
+     "bytes": 3024
+    },
+    "regions/diagram_d1.png": {
+     "sha256_16": "91544d975ca70076",
+     "bytes": 184,
+     "png": {
+      "shape": [
+       30,
+       78
+      ],
+      "ink_pixels": 320,
+      "ink_bbox": [
+       10,
+       1
+      ]
+     },
+     "png_content_sha16": "55de1b82decd71dc"
+    },
+    "regions/option_A.png": {
+     "sha256_16": "1bdb0df2c12efe6e",
+     "bytes": 138,
+     "png": {
+      "shape": [
+       27,
+       26
+      ],
+      "ink_pixels": 168,
+      "ink_bbox": [
+       4,
+       0
+      ]
+     },
+     "png_content_sha16": "43a536b58a8884f5"
+    },
+    "regions/option_B.png": {
+     "sha256_16": "c0a6cc3a583540ce",
+     "bytes": 136,
+     "png": {
+      "shape": [
+       27,
+       26
+      ],
+      "ink_pixels": 168,
+      "ink_bbox": [
+       4,
+       2
+      ]
+     },
+     "png_content_sha16": "6eace9950e45b7fe"
+    },
+    "regions/option_C.png": {
+     "sha256_16": "75f7549ccfe0e329",
+     "bytes": 146,
+     "png": {
+      "shape": [
+       27,
+       26
+      ],
+      "ink_pixels": 164,
+      "ink_bbox": [
+       4,
+       3
+      ]
+     },
+     "png_content_sha16": "846fa5837dfa259d"
+    },
+    "report.md": {
+     "sha256_16": "89c4526d6833bbbe",
+     "bytes": 1650
+    },
+    "route.json": {
+     "sha256_16": "5586d387947e7211",
+     "bytes": 224
+    },
+    "run.json": {
+     "sha256_16": "73c6f971192fcebb",
+     "bytes": 1246
+    },
+    "solution.json": {
+     "sha256_16": "01121c9f97e7e5b2",
+     "bytes": 3162
+    },
+    "trace.jsonl": {
+     "sha256_16": "3db7c8c52ae0654c",
+     "bytes": 1412
+    },
+    "verification.json": {
+     "sha256_16": "2da1090f953abfe1",
+     "bytes": 976
+    }
+   },
+   "crop_coordinates": "crop_coordinates.json",
+   "original_page_sha16": "092496aac4e638c8"
+  },
+  "ft-mirror-04--tight": {
+   "files": {
+    "extraction.json": {
+     "sha256_16": "55c15b8cd852f957",
+     "bytes": 752
+    },
+    "image/original.png": {
+     "sha256_16": "8a201b3d90468fe1",
+     "bytes": 554,
+     "png": {
+      "shape": [
+       240,
+       264
+      ],
+      "ink_pixels": 840,
+      "ink_bbox": [
+       50,
+       40
+      ]
+     },
+     "png_content_sha16": "33a1d5cba2bd1075"
+    },
+    "question.json": {
+     "sha256_16": "42bcb5cb1f31dc54",
+     "bytes": 1172
+    },
+    "regions/diagram_d1.png": {
+     "sha256_16": "1cd2578b1b3078f9",
+     "bytes": 634,
+     "png": {
+      "shape": [
+       142,
+       178
+      ],
+      "ink_pixels": 840,
+      "ink_bbox": [
+       8,
+       5
+      ]
+     },
+     "png_content_sha16": "8c42c7a4d3eb8d59"
+    },
+    "report.md": {
+     "sha256_16": "2147ea3955e995ba",
+     "bytes": 1303
+    },
+    "route.json": {
+     "sha256_16": "5586d387947e7211",
+     "bytes": 224
+    },
+    "run.json": {
+     "sha256_16": "1771a7e79d2457ca",
+     "bytes": 1253
+    },
+    "solution.json": {
+     "sha256_16": "997f6edb21beed33",
+     "bytes": 857
+    },
+    "trace.jsonl": {
+     "sha256_16": "7f754b5846827d5a",
+     "bytes": 1009
+    },
+    "verification.json": {
+     "sha256_16": "becd48e263e3f0c6",
+     "bytes": 866
+    }
+   },
+   "crop_coordinates": "crop_coordinates.json",
+   "original_page_sha16": "8a201b3d90468fe1"
+  },
+  "ft-overlay-12": {
+   "files": {
+    "extraction.json": {
+     "sha256_16": "46fb94090983009d",
+     "bytes": 2739
+    },
+    "image/original.png": {
+     "sha256_16": "00a2649ecc70855b",
+     "bytes": 4341,
+     "png": {
+      "shape": [
+       304,
+       380
+      ],
+      "ink_pixels": 4300,
+      "ink_bbox": [
+       36,
+       24
+      ]
+     },
+     "png_content_sha16": "c09962c7325239f4"
+    },
+    "question.json": {
+     "sha256_16": "9beb99a61d71eccb",
+     "bytes": 3515
+    },
+    "regions/diagram_d1.png": {
+     "sha256_16": "d6ce686c0025619b",
+     "bytes": 817,
+     "png": {
+      "shape": [
+       140,
+       128
+      ],
+      "ink_pixels": 1664,
+      "ink_bbox": [
+       10,
+       2
+      ]
+     },
+     "png_content_sha16": "d7a917aa537eb09f"
+    },
+    "regions/option_A.png": {
+     "sha256_16": "0138cf5b25270b30",
+     "bytes": 196,
+     "png": {
+      "shape": [
+       32,
+       28
+      ],
+      "ink_pixels": 240,
+      "ink_bbox": [
+       6,
+       6
+      ]
+     },
+     "png_content_sha16": "b3ae9ada1cea8f2d"
+    },
+    "regions/option_B.png": {
+     "sha256_16": "0df2a7bf0c7158b2",
+     "bytes": 213,
+     "png": {
+      "shape": [
+       42,
+       32
+      ],
+      "ink_pixels": 320,
+      "ink_bbox": [
+       12,
+       4
+      ]
+     },
+     "png_content_sha16": "419011ac3cad289a"
+    },
+    "regions/option_C.png": {
+     "sha256_16": "c6b89bee50375fd3",
+     "bytes": 99,
+     "png": {
+      "shape": [
+       12,
+       16
+      ],
+      "ink_pixels": 16,
+      "ink_bbox": [
+       2,
+       14
+      ]
+     },
+     "png_content_sha16": "27ca966ec399486e"
+    },
+    "regions/option_D.png": {
+     "sha256_16": "b669c7badd040240",
+     "bytes": 105,
+     "png": {
+      "shape": [
+       10,
+       32
+      ],
+      "ink_pixels": 144,
+      "ink_bbox": [
+       0,
+       14
+      ]
+     },
+     "png_content_sha16": "52d63f2d238a963e"
+    },
+    "report.md": {
+     "sha256_16": "fa7bd860d793f2e2",
+     "bytes": 1389
+    },
+    "route.json": {
+     "sha256_16": "5586d387947e7211",
+     "bytes": 224
+    },
+    "run.json": {
+     "sha256_16": "fc77f1e8dcc999cf",
+     "bytes": 1249
+    },
+    "solution.json": {
+     "sha256_16": "d7cf21b45b4e2dba",
+     "bytes": 7647
+    },
+    "trace.jsonl": {
+     "sha256_16": "135eaf1dfbc94c78",
+     "bytes": 1408
+    },
+    "verification.json": {
+     "sha256_16": "d2014be13032578b",
+     "bytes": 929
+    }
+   },
+   "crop_coordinates": "crop_coordinates.json",
+   "original_page_sha16": "00a2649ecc70855b"
+  },
+  "ft-rot90-01": {
+   "files": {
+    "extraction.json": {
+     "sha256_16": "24bfc28eb57dd5da",
+     "bytes": 3495
+    },
+    "image/original.png": {
+     "sha256_16": "91bda3d1cfbb9788",
+     "bytes": 4070,
+     "png": {
+      "shape": [
+       208,
+       380
+      ],
+      "ink_pixels": 3012,
+      "ink_bbox": [
+       36,
+       24
+      ]
+     },
+     "png_content_sha16": "0574c4bd1cf8c901"
+    },
+    "question.json": {
+     "sha256_16": "b7bc048c9f2af21c",
+     "bytes": 4313
+    },
+    "regions/diagram_d1.png": {
+     "sha256_16": "107ea3677496208e",
+     "bytes": 131,
+     "png": {
+      "shape": [
+       24,
+       24
+      ],
+      "ink_pixels": 140,
+      "ink_bbox": [
+       8,
+       1
+      ]
+     },
+     "png_content_sha16": "33cdfb3ed8a3fdb1"
+    },
+    "regions/diagram_d2.png": {
+     "sha256_16": "084b4570d65be69e",
+     "bytes": 147,
+     "png": {
+      "shape": [
+       24,
+       24
+      ],
+      "ink_pixels": 116,
+      "ink_bbox": [
+       8,
+       0
+      ]
+     },
+     "png_content_sha16": "aeee945a0b4cdd27"
+    },
+    "regions/diagram_d3.png": {
+     "sha256_16": "1b772ca90213f76f",
+     "bytes": 118,
+     "png": {
+      "shape": [
+       24,
+       24
+      ],
+      "ink_pixels": 18,
+      "ink_bbox": [
+       6,
+       23
+      ]
+     },
+     "png_content_sha16": "afb7ed201295ea40"
+    },
+    "regions/option_A.png": {
+     "sha256_16": "3cb70001ce3a0fe2",
+     "bytes": 197,
+     "png": {
+      "shape": [
+       42,
+       30
+      ],
+      "ink_pixels": 168,
+      "ink_bbox": [
+       12,
+       5
+      ]
+     },
+     "png_content_sha16": "40be5adb1d5b2111"
+    },
+    "regions/option_B.png": {
+     "sha256_16": "9ed613b59542d5a4",
+     "bytes": 170,
+     "png": {
+      "shape": [
+       32,
+       30
+      ],
+      "ink_pixels": 140,
+      "ink_bbox": [
+       8,
+       13
+      ]
+     },
+     "png_content_sha16": "09e9a350cc93b869"
+    },
+    "regions/option_C.png": {
+     "sha256_16": "c6dda36ce3a90771",
+     "bytes": 149,
+     "png": {
+      "shape": [
+       42,
+       30
+      ],
+      "ink_pixels": 76,
+      "ink_bbox": [
+       32,
+       11
+      ]
+     },
+     "png_content_sha16": "1fd4632f88796482"
+    },
+    "regions/option_D.png": {
+     "sha256_16": "c279e7fe21012f0e",
+     "bytes": 289,
+     "png": {
+      "shape": [
+       32,
+       30
+      ],
+      "ink_pixels": 54,
+      "ink_bbox": [
+       18,
+       0
+      ]
+     },
+     "png_content_sha16": "179068620a31c9ea"
+    },
+    "report.md": {
+     "sha256_16": "4e4984aa79fc08c4",
+     "bytes": 1714
+    },
+    "route.json": {
+     "sha256_16": "5586d387947e7211",
+     "bytes": 224
+    },
+    "run.json": {
+     "sha256_16": "545045cfaa186e01",
+     "bytes": 1244
+    },
+    "solution.json": {
+     "sha256_16": "ffa9fadfcd94f302",
+     "bytes": 3190
+    },
+    "trace.jsonl": {
+     "sha256_16": "846912bb682444de",
+     "bytes": 1393
+    },
+    "verification.json": {
+     "sha256_16": "c10a6be872baf7bf",
+     "bytes": 959
+    }
+   },
+   "crop_coordinates": "crop_coordinates.json",
+   "original_page_sha16": "91bda3d1cfbb9788"
+  },
+  "ft-trans-07": {
+   "files": {
+    "extraction.json": {
+     "sha256_16": "e14f9f6e4627d87d",
+     "bytes": 2318
+    },
+    "image/original.png": {
+     "sha256_16": "b526f4dd7eef5405",
+     "bytes": 3661,
+     "png": {
+      "shape": [
+       208,
+       348
+      ],
+      "ink_pixels": 2622,
+      "ink_bbox": [
+       36,
+       24
+      ]
+     },
+     "png_content_sha16": "8b11723f43deb729"
+    },
+    "question.json": {
+     "sha256_16": "76d75419411e95d7",
+     "bytes": 3018
+    },
+    "regions/diagram_d1.png": {
+     "sha256_16": "388eae9ae0997ebf",
+     "bytes": 159,
+     "png": {
+      "shape": [
+       16,
+       136
+      ],
+      "ink_pixels": 472,
+      "ink_bbox": [
+       2,
+       0
+      ]
+     },
+     "png_content_sha16": "942b552df3049066"
+    },
+    "regions/option_A.png": {
+     "sha256_16": "2101b236620a2953",
+     "bytes": 110,
+     "png": {
+      "shape": [
+       14,
+       26
+      ],
+      "ink_pixels": 96,
+      "ink_bbox": [
+       3,
+       14
+      ]
+     },
+     "png_content_sha16": "b5e235a91cad40ae"
+    },
+    "regions/option_B.png": {
+     "sha256_16": "e7875c7234c0a432",
+     "bytes": 109,
+     "png": {
+      "shape": [
+       14,
+       26
+      ],
+      "ink_pixels": 160,
+      "ink_bbox": [
+       3,
+       0
+      ]
+     },
+     "png_content_sha16": "fb8b9996b98b5f94"
+    },
+    "regions/option_C.png": {
+     "sha256_16": "02456aac06fc6f2d",
+     "bytes": 147,
+     "png": {
+      "shape": [
+       26,
+       16
+      ],
+      "ink_pixels": 160,
+      "ink_bbox": [
+       3,
+       6
+      ]
+     },
+     "png_content_sha16": "5c7245ed818c6046"
+    },
+    "report.md": {
+     "sha256_16": "a2a5fff780924ac8",
+     "bytes": 1926
+    },
+    "route.json": {
+     "sha256_16": "5586d387947e7211",
+     "bytes": 224
+    },
+    "run.json": {
+     "sha256_16": "58ca4c975bbed1ba",
+     "bytes": 1245
+    },
+    "solution.json": {
+     "sha256_16": "1187438c78350808",
+     "bytes": 4343
+    },
+    "trace.jsonl": {
+     "sha256_16": "d02502f270854825",
+     "bytes": 1548
+    },
+    "verification.json": {
+     "sha256_16": "6f04c10baa1d7635",
+     "bytes": 1115
+    }
+   },
+   "crop_coordinates": "crop_coordinates.json",
+   "original_page_sha16": "b526f4dd7eef5405"
+  }
+ }
+}

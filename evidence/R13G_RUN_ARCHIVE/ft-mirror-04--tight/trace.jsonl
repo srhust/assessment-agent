@@ -1,0 +1,5 @@
+{"ts": "2026-10-22T07:34:15.518022+00:00", "event": "run_start", "text": null, "image_path": "$ROOT\\data\\benchmark_figshots_perturb\\images\\ft-mirror-04--tight.png", "skill": null}
+{"ts": "2026-10-22T07:34:42.209843+00:00", "event": "extraction", "confidence": 0.6, "warnings": [], "schema_version": 2, "regions": {"text": 0, "diagram": 1, "option": 0, "table": 0}}
+{"ts": "2026-10-22T07:34:42.214850+00:00", "event": "solution", "status": "failed", "answer": null, "skill": "figure_reasoning", "confidence": 0.0, "tool_calls": []}
+{"ts": "2026-10-22T07:34:42.214850+00:00", "event": "verification", "passed": false, "action": "reject", "final_answer": null}
+{"ts": "2026-10-22T07:34:42.216853+00:00", "event": "run_end", "answer": null, "artifacts": {"run": "run.json", "question": "question.json", "route": "route.json", "solution": "solution.json", "verification": "verification.json", "trace": "trace.jsonl", "report": "report.md", "extraction": "extraction.json", "image": "image/original.png"}}

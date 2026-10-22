@@ -1,0 +1,122 @@
+{
+  "stem": "根据题目图形中蕴含的规律，选择最符合规律的一",
+  "options": [
+    {
+      "label": "A",
+      "text": "A."
+    },
+    {
+      "label": "B",
+      "text": "B."
+    },
+    {
+      "label": "C",
+      "text": "C."
+    }
+  ],
+  "question_type": "single_choice",
+  "skill_hint": "figure_reasoning",
+  "has_diagram": true,
+  "raw_text": "根据题目图形中蕴含的规律，选择最符合规律的一",
+  "model": "glm-5.3-flash",
+  "confidence": 0.82,
+  "warnings": [],
+  "schema_version": 2,
+  "bbox_format": "pixel_xywh",
+  "image_width": 348,
+  "image_height": 208,
+  "text_regions": [
+    {
+      "region_id": "t1",
+      "bbox": [
+        18,
+        28,
+        326,
+        18
+      ],
+      "text": "根据题目图形中蕴含的规律，选择最符合规律的一"
+    }
+  ],
+  "diagram_regions": [
+    {
+      "region_id": "d1",
+      "role": "stem_figure",
+      "bbox": [
+        33,
+        64,
+        78,
+        30
+      ],
+      "grid": {
+        "rows": 1,
+        "cols": 2
+      },
+      "crop_path": "$ROOT\\runs\\r13g-ft-mirror-04\\regions\\diagram_d1.png"
+    }
+  ],
+  "option_regions": [
+    {
+      "label": "A",
+      "bbox": [
+        20,
+        140,
+        70,
+        32
+      ],
+      "text": "A.",
+      "has_figure": true,
+      "figure_bbox": [
+        60,
+        142,
+        26,
+        27
+      ],
+      "crop_path": "$ROOT\\runs\\r13g-ft-mirror-04\\regions\\option_A.png"
+    },
+    {
+      "label": "B",
+      "bbox": [
+        113,
+        140,
+        64,
+        32
+      ],
+      "text": "B.",
+      "has_figure": true,
+      "figure_bbox": [
+        148,
+        142,
+        26,
+        27
+      ],
+      "crop_path": "$ROOT\\runs\\r13g-ft-mirror-04\\regions\\option_B.png"
+    },
+    {
+      "label": "C",
+      "bbox": [
+        198,
+        140,
+        64,
+        32
+      ],
+      "text": "C.",
+      "has_figure": true,
+      "figure_bbox": [
+        235,
+        142,
+        26,
+        27
+      ],
+      "crop_path": "$ROOT\\runs\\r13g-ft-mirror-04\\regions\\option_C.png"
+    }
+  ],
+  "table_regions": [],
+  "reading_order": [
+    "t1",
+    "d1",
+    "A",
+    "B",
+    "C"
+  ],
+  "parser": "vision_parser"
+}

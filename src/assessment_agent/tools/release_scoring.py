@@ -12,6 +12,27 @@ from typing import Any, Dict, Iterable, List
 RELEASE_ACTIONS = ("accept", "repair")
 
 
+
+def release_status(action, final_answer, gold):
+    """R14-A（P0 死分支修复）：释放/误放判定**只**依赖 Verifier 原始输出。
+
+    R13-G 停机条件写作 `row_layer()==3 and final_answer!=gold`，而 row_layer
+    定义上仅在 final_answer==gold 时返回 3 —— 该分支不可达，误 accept/repair
+    不会触发停止。此处不加任何题号/案例特判：
+
+      released: action ∈ {accept, repair} 且 final_answer 为非空值
+      wrong_accept: released 且 final_answer != gold
+        （覆盖 Solver 候选正确但 Verifier repair 改错的情形）
+      release_anomaly_missing_final: action ∈ {accept, repair} 但
+        final_answer 缺失——不算释放，但必须出现在审计里
+    """
+    a = str(action or "")
+    released = a in ("accept", "repair") and final_answer not in (None, "")
+    anomaly = a in ("accept", "repair") and final_answer in (None, "")
+    return {"released": bool(released),
+            "wrong_accept": bool(released and final_answer != gold),
+            "release_anomaly_missing_final": bool(anomaly)}
+
 def row_layer(rec: Dict[str, Any]) -> int:
     """返回该行达到的最高层：0 未释放候选错误/无、1 正确候选、3 最终释放。
 

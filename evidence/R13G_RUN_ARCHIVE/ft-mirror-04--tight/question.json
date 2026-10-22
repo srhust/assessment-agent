@@ -1,0 +1,50 @@
+{
+  "id": "q_865ad87bff67",
+  "stem": "",
+  "options": [],
+  "skill": null,
+  "question_type": "single_choice",
+  "image_path": "$ROOT\\runs\\r13g-ft-mirror-04--tight\\image\\original.png",
+  "source": "image",
+  "meta": {
+    "extraction_confidence": 0.6,
+    "has_diagram": true,
+    "vision": {
+      "bbox_format": "pixel_xywh",
+      "image_size": [
+        264,
+        240
+      ],
+      "stem_matrix_bbox": [
+        35,
+        42,
+        178,
+        142
+      ],
+      "stem_matrix_grid": null,
+      "stem_matrix_crop": "$ROOT\\runs\\r13g-ft-mirror-04--tight\\regions\\diagram_d1.png",
+      "diagram_regions": [
+        {
+          "region_id": "d1",
+          "role": "stem_figure",
+          "bbox": [
+            35,
+            42,
+            178,
+            142
+          ],
+          "grid": null,
+          "crop_path": "$ROOT\\runs\\r13g-ft-mirror-04--tight\\regions\\diagram_d1.png"
+        }
+      ],
+      "option_regions": [],
+      "table_regions": [],
+      "text_regions": [],
+      "reading_order": [
+        "d1"
+      ],
+      "parser": "vision_parser",
+      "confidence": 0.6
+    }
+  }
+}

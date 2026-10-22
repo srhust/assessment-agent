@@ -1,0 +1,50 @@
+{
+ "stem_matrix_bbox": null,
+ "stem_matrix_grid": null,
+ "option_regions": [
+  {
+   "label": "A",
+   "bbox_xywh": [
+    25,
+    136,
+    62,
+    48
+   ],
+   "has_figure": true,
+   "crop": "regions/option_A.png"
+  },
+  {
+   "label": "B",
+   "bbox_xywh": [
+    105,
+    136,
+    62,
+    42
+   ],
+   "has_figure": true,
+   "crop": "regions/option_B.png"
+  },
+  {
+   "label": "C",
+   "bbox_xywh": [
+    185,
+    136,
+    70,
+    48
+   ],
+   "has_figure": true,
+   "crop": "regions/option_C.png"
+  },
+  {
+   "label": "D",
+   "bbox_xywh": [
+    250,
+    136,
+    65,
+    42
+   ],
+   "has_figure": true,
+   "crop": "regions/option_D.png"
+  }
+ ]
+}

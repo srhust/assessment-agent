@@ -1,0 +1,39 @@
+{
+ "stem_matrix_bbox": null,
+ "stem_matrix_grid": null,
+ "option_regions": [
+  {
+   "label": "A",
+   "bbox_xywh": [
+    20,
+    140,
+    70,
+    32
+   ],
+   "has_figure": true,
+   "crop": "regions/option_A.png"
+  },
+  {
+   "label": "B",
+   "bbox_xywh": [
+    113,
+    140,
+    64,
+    32
+   ],
+   "has_figure": true,
+   "crop": "regions/option_B.png"
+  },
+  {
+   "label": "C",
+   "bbox_xywh": [
+    198,
+    140,
+    64,
+    32
+   ],
+   "has_figure": true,
+   "crop": "regions/option_C.png"
+  }
+ ]
+}

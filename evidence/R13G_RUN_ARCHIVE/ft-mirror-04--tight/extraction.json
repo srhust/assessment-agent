@@ -1,0 +1,36 @@
+{
+  "stem": "",
+  "options": [],
+  "question_type": "single_choice",
+  "skill_hint": "figure_reasoning",
+  "has_diagram": true,
+  "raw_text": "",
+  "model": "glm-5.3-flash",
+  "confidence": 0.6,
+  "warnings": [],
+  "schema_version": 2,
+  "bbox_format": "pixel_xywh",
+  "image_width": 264,
+  "image_height": 240,
+  "text_regions": [],
+  "diagram_regions": [
+    {
+      "region_id": "d1",
+      "role": "stem_figure",
+      "bbox": [
+        35,
+        42,
+        178,
+        142
+      ],
+      "grid": null,
+      "crop_path": "$ROOT\\runs\\r13g-ft-mirror-04--tight\\regions\\diagram_d1.png"
+    }
+  ],
+  "option_regions": [],
+  "table_regions": [],
+  "reading_order": [
+    "d1"
+  ],
+  "parser": "vision_parser"
+}
