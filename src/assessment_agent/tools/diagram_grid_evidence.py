@@ -172,12 +172,25 @@ def build_grid_evidence(mask: np.ndarray, image_sha: str,
         else:
             kind = "unknown"
         cx0, cy0, cx1, cy1 = s["bbox_page"]
-        cells.append({"row": s["row"], "col": s["col"],
-                      "cell_bbox_page": s["bbox_page"],
-                      "cell_bbox_local": [s["bbox_page"][0] - x0, s["bbox_page"][1] - y0,
-                                          s["bbox_page"][2] - x0, s["bbox_page"][3] - y0],
-                      "ink": ink, "cell_kind": kind,
-                      "cell_pixel_sha": _crop_hash(mask, cx0, cy0, cx1, cy1)})
+        entry = {"row": s["row"], "col": s["col"],
+                 "cell_bbox_page": s["bbox_page"],
+                 "cell_bbox_local": [s["bbox_page"][0] - x0, s["bbox_page"][1] - y0,
+                                     s["bbox_page"][2] - x0, s["bbox_page"][3] - y0],
+                 "ink": ink, "cell_kind": kind,
+                 "cell_pixel_sha": _crop_hash(mask, cx0, cy0, cx1, cy1)}
+        if kind == "visible":
+            sub = mask[cy0:cy1, cx0:cx1] > 0
+            ys, xs = sub.nonzero()
+            entry["ink_bbox_page"] = [int(cx0 + xs.min()), int(cy0 + ys.min()),
+                                      int(cx0 + xs.max() + 1), int(cy0 + ys.max() + 1)]
+            entry["ink_offset_in_slot"] = [int(xs.min()), int(ys.min())]
+        cells.append(entry)
+    vis_sorted = [c for c in cells if c["cell_kind"] == "visible"]
+    ink_deltas: List[List[int]] = []
+    for a, b in zip(vis_sorted, vis_sorted[1:]):
+        ia, ib = a.get("ink_bbox_page"), b.get("ink_bbox_page")
+        if ia and ib:
+            ink_deltas.append([ib[0] - ia[0], ib[1] - ia[1]])
     blanks = [(c["row"], c["col"]) for c in cells
               if c["cell_kind"] in ("blank_or_undetected", "unknown")]
     visible = [(c["row"], c["col"]) for c in cells if c["cell_kind"] == "visible"]
@@ -211,13 +224,28 @@ def build_grid_evidence(mask: np.ndarray, image_sha: str,
             "unknown_cells": [],   # 与 blank_or_undetected 合并上报，不臆断区分
             "target_cell": target, "target_basis": target_basis,
             "cells": cells,
+            "ink_deltas": ink_deltas,
             "layout_hypotheses": hypos[:4],
             "evidence_source": "pixel_localizer",
             "vlm_declared": vlm_declared, "vlm_agreement": vlm_agreement,
             "expects_blank": bool(expects_blank)}
 
 
-def render_canvas(mask: np.ndarray, evidence: Dict[str, Any]) -> np.ndarray:
+def render_canvas(mask: np.ndarray, evidence: Dict[str, Any],
+                  mode: str = "shape") -> np.ndarray:
+    """R12-B 双重表示：
+    mode="shape"    Shape-normalized：墨迹紧框居中入统一 padding-cell（形状/对称用）；
+    mode="position" Position-preserving：直接裁原页面 [stem 带 ∪ 全部槽] 的**原始像素**，
+                    不平移不居中——格间绝对位移与格内偏移无损保留（平移/叠加/位置族用）。
+    两种表示由同一证据对象产生，像素哈希分别记录。"""
+    if mode == "position":
+        cs = evidence["cells"]
+        bx0 = min(c["cell_bbox_page"][0] for c in cs)
+        by0 = min(c["cell_bbox_page"][1] for c in cs)
+        bx1 = max(c["cell_bbox_page"][2] for c in cs)
+        by1 = max(c["cell_bbox_page"][3] for c in cs)
+        return np.asarray(mask[by0:by1, bx0:bx1])
+    assert mode == "shape", f"unknown canvas mode: {mode}"
     """把可见格的**墨迹紧框**居中放入统一 padding-cell（金标裁剪约定：
     ink~24px + 12px 四周一侧留白 = 48px 格）。空格保持空白。确定性纯函数。"""
     rows, cols = evidence["grid_rows"], evidence["grid_cols"]
@@ -316,3 +344,21 @@ def merge_stem_regions(sregions: Sequence[Dict[str, Any]]) -> List[Dict[str, Any
     first["cells"] = tall["cells"]
     first["sub_band_count"] = tall.get("n_bands", 1)
     return [first]
+
+
+def frame_boxes(band: Sequence[int], ink_boxes: Sequence[Sequence[int]]) -> List[List[int]]:
+    """按列间隙中点给行带内每个墨迹单元划“布局框”（过合并修复与位置帧共用）。
+
+    band=[x0,y0,x1,y1]；ink_boxes 需按 x 排序、互不重叠。相邻单元间隙中点为框边界，
+    行带左右缘封边。确定性、不依赖金标列数。"""
+    bx0, by0, bx1, by1 = [int(v) for v in band]
+    if not ink_boxes:
+        return []
+    edges = [bx0]
+    for a, b in zip(ink_boxes, ink_boxes[1:]):
+        edges.append(int(round((a[2] + b[0]) / 2)))
+    edges.append(bx1)
+    out = []
+    for i, ib in enumerate(ink_boxes):
+        out.append([edges[i], by0, edges[i + 1], by1])
+    return out

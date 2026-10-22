@@ -1,0 +1,79 @@
+{
+ "trans07_stem_deltas": [
+  [
+   54,
+   0
+  ],
+  [
+   54,
+   0
+  ]
+ ],
+ "stem_ink_boxes": [
+  [
+   32,
+   84,
+   52,
+   92
+  ],
+  [
+   86,
+   84,
+   106,
+   92
+  ],
+  [
+   140,
+   84,
+   160,
+   92
+  ]
+ ],
+ "option_rows": [
+  {
+   "label": null,
+   "band": [
+    29,
+    150,
+    14,
+    20
+   ],
+   "n_cells": 0,
+   "frame_offsets": []
+  },
+  {
+   "label": null,
+   "band": [
+    76,
+    150,
+    82,
+    20
+   ],
+   "n_cells": 0,
+   "frame_offsets": []
+  },
+  {
+   "label": null,
+   "band": [
+    201,
+    150,
+    13,
+    20
+   ],
+   "n_cells": 0,
+   "frame_offsets": []
+  },
+  {
+   "label": null,
+   "band": [
+    242,
+    150,
+    8,
+    20
+   ],
+   "n_cells": 0,
+   "frame_offsets": []
+  }
+ ],
+ "finding": "R12-B 审计：ft-trans-07 三格 cell_pixel_sha 相同的原因=墨迹步长恰为节距（渲染器在 48px 金标格内每步 +6px 平移，绝对步长 54=48+6）；像素侧无格线时平移信号在绝对墨迹坐标中（ink_deltas 与 Position-preserving 画布已无损保留）。若格间距本身即答案维度，Position 帧+gap-bounded frame_boxes 提供判别数据。"
+}

@@ -306,6 +306,7 @@ class FigureReasoningSkill(BaseSkill):
             rows, cols = ev["grid_rows"], ev["grid_cols"]
             from ..tools.diagram_grid_evidence import render_canvas
             canvas = render_canvas(mask, ev)
+            pos_canvas = render_canvas(mask, ev, mode="position")
             out_dir.mkdir(parents=True, exist_ok=True)
             sp = out_dir / "stem_evidence.png"
             if not cv2.imwrite(str(sp), np.where(canvas, 0, 255).astype(np.uint8)):
@@ -318,6 +319,11 @@ class FigureReasoningSkill(BaseSkill):
                 "visible_cells": ev["visible_cells"], "blank_cells": ev["blank_cells"],
                 "cell_pixel_shas": [c["cell_pixel_sha"] for c in ev["cells"]],
                 "canvas_sha": hashlib.sha256(np.ascontiguousarray(canvas).tobytes()).hexdigest()[:16],
+                "canvas_position_sha": hashlib.sha256(
+                    np.ascontiguousarray(pos_canvas).tobytes()).hexdigest()[:16],
+                "representation_pair": "shape_normalized+position_preserving",
+                "consumed_representation": "shape_normalized",
+                "ink_deltas": (ev.get("ink_deltas") or [])[:8],
             }
         inputs = {
             "stem_crop": str(stem_crop),
@@ -414,6 +420,10 @@ class FigureReasoningSkill(BaseSkill):
                     np.ascontiguousarray(canvas2).tobytes()).hexdigest()[:16]
                 if sha2 != sev.get("canvas_sha"):
                     return False, "题干证据画布复推哈希不一致（格内容漂移）"
+                psha2 = hashlib.sha256(np.ascontiguousarray(
+                    render_canvas(mask, ev2, mode="position")).tobytes()).hexdigest()[:16]
+                if sev.get("canvas_position_sha") and psha2 != sev["canvas_position_sha"]:
+                    return False, "位置保持画布复推哈希不一致（绝对位移漂移）"
                 if list(ev2.get("target_cell") or []) != list(sev.get("target_cell") or []):
                     return False, f"目标空格复推 {ev2.get('target_cell')} ≠ 求解时 {sev.get('target_cell')}"
                 return True, (f"{len(fresh)} 选项区哈希复推一致且完整；"
