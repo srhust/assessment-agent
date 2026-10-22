@@ -92,10 +92,17 @@ def layout_hypotheses(mask: np.ndarray, stem_box: Sequence[int],
         fit = 1.0 if (visible + emptyish == len(slots) and square_ok) else 0.0
         # 期望含一个空白（补全题）时，emptyish>=1 加分；否则不奖励空白
         bonus = (1 if expects_blank and emptyish >= 1 else 0)
+        # R12-C 跨界惩罚：完整墨迹段（图形）被槽边界切到两个槽 = 该假设把
+        # 一个图形拆成多格（幻影格来源），每个跨界段扣 0.75。
+        boundaries = [sl["bbox_page"][0] for sl in slots[1:]]
+        straddle = sum(sum(1 for bx in boundaries if a < bx < b)
+                       for (a, b) in segs)
         scored.append({"rows": rows, "cols": cols, "visible": visible,
                        "emptyish": emptyish, "fit": fit, "bonus": bonus,
-                       "n_cells": rows * cols,
-                       "score": fit * 3 + bonus * 2 + visible - 0.5 * (len(slots) - visible - emptyish)})
+                       "straddle": straddle, "n_cells": rows * cols,
+                       "score": fit * 3 + bonus * 2
+                               - 0.5 * (len(slots) - visible - emptyish)
+                               - 0.75 * straddle})
     scored.sort(key=lambda d: -d["score"])
     if rows_hint and rows_hint > 1:
         filt = [d for d in scored if d["rows"] == rows_hint]
@@ -313,6 +320,16 @@ def known_sequence(evidence: Dict[str, Any]) -> Dict[str, Any]:
     return {"mode": "unsupported", "reason": "multi_empty_or_internal_blank"}
 
 
+def _cols_aligned(cells_a: list, cells_b: list, tol: int = 12) -> bool:
+    """两组条带的列起点须互相贴合（九宫格行特征）；题干×选项行的列不对齐 → 拒并。"""
+    if not cells_a or not cells_b:
+        return True
+    xa = sorted({c["bbox_page"][0] for c in cells_a})
+    xb = sorted({c["bbox_page"][0] for c in cells_b})
+    return all(min(abs(a - b) for b in xb) <= tol for a in xa)
+
+
+
 def merge_stem_regions(sregions: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """R11-B：九宫格因行距被拆成多条题干带时，按 x 重叠>0.7 且纵向间隙<=60 合并
     （overlay-13 视觉复核确为 3 行矩阵）。返回合并后的区域列表（保持首元素结构）。"""
@@ -328,7 +345,14 @@ def merge_stem_regions(sregions: Sequence[Dict[str, Any]]) -> List[Dict[str, Any
         if merged:
             last = merged[-1]
             ygap = r["bbox_page"][1] - last["y1"]
-            if _ov(r["bbox_page"], last["box"]) > 0.7 and ygap <= 60:
+            # R12-C 合并门：x 重叠高 + 纵向贴合 + 待并条带格数 ≤ 已并带最大列数+1。
+            # 选项行格数必然超过九宫格单行列数 → 天然拒并（scale-09/mirror-05 教训）；
+            # 真网格行的空缺格只会让格数变少，不会超。
+            mc = max((len([c for c in last["cells"]
+                           if abs(c["bbox_page"][1] - y) <= 6])
+                      for y in {c["bbox_page"][1] for c in last["cells"]}), default=0)
+            if _ov(r["bbox_page"], last["box"]) > 0.7 and ygap <= 60 \
+                    and len(r.get("cells") or []) <= mc + 1:
                 b0, b1 = last["box"], r["bbox_page"]
                 last["box"] = [min(b0[0], b1[0]), b0[1],
                                max(b0[0] + b0[2], b1[0] + b1[2]), b1[1] + b1[3]]
@@ -338,11 +362,43 @@ def merge_stem_regions(sregions: Sequence[Dict[str, Any]]) -> List[Dict[str, Any
         b = r["bbox_page"]
         merged.append({"box": list(b), "y1": b[1] + b[3],
                        "cells": list(r.get("cells") or []), "n_bands": 1})
-    tall = max(merged, key=lambda mm: (mm["y1"] - mm["box"][1]) * mm["box"][2])
+    # R12-C：题干永远位于选项之上——取最上条带组为题干主区，
+    # 面积最大者可能是选项行（scale-09 教训）。所有组按 y 重排索引后返回。
+    merged.sort(key=lambda mm: mm["box"][1])
+    tall = merged[0]
     first = dict(sregions[0])
     first["bbox_page"] = tall["box"]
-    first["cells"] = tall["cells"]
-    first["sub_band_count"] = tall.get("n_bands", 1)
+    # R12-C：合并后必须按条带 y 重排行优先索引——此前直接拼接各区域的局部
+    # (row,col)，出现重复 (0,0)/(0,1)，喂给 build_grid_evidence 的 cells_hint
+    # 错乱（grid-11/overlay-13 类九宫格受此拖累）。
+    bands_y: List[int] = []
+    for c in tall["cells"]:
+        ytop = c["bbox_page"][1]
+        for i, by in enumerate(bands_y):
+            if abs(by - ytop) <= 6:
+                c["_band"] = i
+                break
+        else:
+            c["_band"] = len(bands_y)
+            bands_y.append(ytop)
+    band_rank = {i: k for k, i in
+                 enumerate(sorted(range(len(bands_y)), key=lambda j: bands_y[j]))}
+    ordered = sorted(tall["cells"], key=lambda c: (band_rank[c["_band"]],
+                                                   c["bbox_page"][0]))
+    band_ids = [c["_band"] for c in ordered]
+    col_seq = []
+    seen: dict = {}
+    for b in band_ids:
+        seen[b] = seen.get(b, -1) + 1
+        col_seq.append(seen[b])
+    clean = []
+    for c, b, col in zip(ordered, band_ids, col_seq):
+        c.pop("_band", None)
+        c["row"] = band_rank[b]
+        c["col"] = col
+        clean.append(c)
+    first["cells"] = clean
+    first["sub_band_count"] = max(len(bands_y), tall.get("n_bands", 1))
     return [first]
 
 

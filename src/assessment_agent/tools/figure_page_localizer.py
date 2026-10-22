@@ -109,6 +109,47 @@ def _split_point(prof: np.ndarray, a: int, b: int) -> Optional[int]:
     return best_start + best_len // 2
 
 
+def _solidity(mask: np.ndarray, y0: int, y1: int, a: int, b: int) -> float:
+    """子段墨量 / 自身墨迹紧框面积。弧线/箭头碎片 <0.3，实体图形 ≥0.3。"""
+    sub = mask[y0:y1, a:b] > 0
+    n = int(sub.sum())
+    if n == 0:
+        return 0.0
+    ys, xs = sub.nonzero()
+    box = (int(xs.max()) - int(xs.min()) + 1) * (int(ys.max()) - int(ys.min()) + 1)
+    return n / box if box else 0.0
+
+
+
+def _narrow_gap_split_point(prof: np.ndarray, mask: np.ndarray, a: int, b: int,
+                            y0: int, y1: int) -> Optional[int]:
+    """[a,b) 内找 ≥2px 全白列隙且两侧墨量≥30、宽≥8 的分裂点；否则 None。"""
+    if b - a < 26:
+        return None
+    best_len, best_mid = 0, None
+    run = 0
+    for x in range(a + 6, b - 5):          # 两侧各留 ≥6px 边距，避免啃笔画端部
+        if prof[x] == 0:
+            run += 1
+        else:
+            if run >= 2 and run > best_len:
+                mid = x - run // 2
+                if (mid - a >= 8 and b - mid >= 8
+                        and int(mask[y0:y1, a:mid].sum()) >= 30
+                        and int(mask[y0:y1, mid:b].sum()) >= 30):
+                    w_l, w_r = mid - a, b - mid
+                    i_l = int(mask[y0:y1, a:mid].sum())
+                    i_r = int(mask[y0:y1, mid:b].sum())
+                    # R12-C：真“两图并一格”= 两半近似均衡（宽度比≥0.8、墨量比≥0.6）；
+                    # 图形内部缝隙（头/杆、双弧）两侧不均衡 → 不分裂
+                    if min(w_l, w_r) / max(w_l, w_r) >= 0.8 \
+                            and min(i_l, i_r) / max(i_l, i_r) >= 0.6:
+                        best_len, best_mid = run, mid
+            run = 0
+    return best_mid
+
+
+
 def cluster_cells(mask: np.ndarray, y0: int, y1: int, merge_gap: int = MERGE_GAP,
                   prune_labels: bool = True,
                   expect: Optional[int] = None) -> List[Tuple[int, int]]:
@@ -132,6 +173,17 @@ def cluster_cells(mask: np.ndarray, y0: int, y1: int, merge_gap: int = MERGE_GAP
                     if not ((s[1] - s[0]) <= 18 and hgt < 0.75 * mx)]
             g = keep or g
         out.append((g[0][0], g[-1][1]))
+    # R12-C narrow-gap：≥2px 纯白列隙 + 两侧墨量/宽度双门槛才分裂。
+    # 防“两个紧贴图形并成一格”（幻影格根源），也防碎单图形笔画。
+    prof = mask[y0:y1, :].sum(axis=0)
+    split_out: List[Tuple[int, int]] = []
+    for a, b in out:
+        mid = _narrow_gap_split_point(prof, mask, a, b, y0, y1)
+        if mid is None:
+            split_out.append((a, b))
+        else:
+            split_out.extend([(a, mid), (mid, b)])
+    out = sorted(split_out)
     if expect:
         prof = mask[y0:y1, :].sum(axis=0)
         guard = 0
@@ -271,7 +323,17 @@ def localize_page(mask: np.ndarray, n_options: int,
                     merged[-1] = (merged[-1][0], s[1])
                 else:
                     merged.append(s)
-            row_cells.append(merged)
+            # R12-C：本路径同样应用窄隙保守分裂（mirror-05 实测 13px 白隙被
+            # merge<15 吞并 → 过合并幻影格的根源）
+            prof2 = mask[b[0]:b[1], :].sum(axis=0)
+            split_merged: List[Tuple[int, int]] = []
+            for a0, a1 in merged:
+                mid = _narrow_gap_split_point(prof2, mask, a0, a1, b[0], b[1])
+                if mid is None:
+                    split_merged.append((a0, a1))
+                else:
+                    split_merged.extend([(a0, mid), (mid, a1)])
+            row_cells.append(split_merged)
         cols = max(len(rc) for rc in row_cells) if row_cells else 0
         cells_out = []
         for ri, rc in enumerate(row_cells):
