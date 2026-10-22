@@ -1,0 +1,110 @@
+{
+ "stage": "R12-F planner recall attribution (zero API)",
+ "source": "evidence/R11E_PLANNER_SELECTION.json per_item + r10gen jsonl",
+ "rows": [
+  {
+   "id": "r10g-01",
+   "gold": [
+    "da.growth-amount"
+   ],
+   "top3_retrieved": [
+    "nc.compound-growth",
+    "nc.combinatorics-bundling"
+   ],
+   "selected": "nc.compound-growth",
+   "status": "solved",
+   "exact_hit": false,
+   "functional_hit": false,
+   "stem": "某厂去年产值 250 万元，今年比去年增长了 12%。今年产值增加了多少万元？"
+  },
+  {
+   "id": "r10g-02",
+   "gold": [
+    "nc.travel-meeting-pursuit"
+   ],
+   "top3_retrieved": [
+    "nc.travel-meeting-pursuit",
+    "nc.inclusion-exclusion"
+   ],
+   "selected": "nc.travel-meeting-pursuit",
+   "status": "solved",
+   "exact_hit": true,
+   "functional_hit": true,
+   "stem": "两地相距 60 千米，甲、乙两人同时从两地出发相向而行，甲每小时行 4 千米，乙每小时行 6 千米。出发后几小时两人相遇？"
+  },
+  {
+   "id": "r10g-03",
+   "gold": [
+    "nc.combinatorics-power"
+   ],
+   "top3_retrieved": [
+    "nc.inclusion-exclusion",
+    "nc.travel-meeting-pursuit"
+   ],
+   "selected": null,
+   "status": "failed",
+   "exact_hit": false,
+   "functional_hit": true,
+   "stem": "计算：C(5,2) + 2^3 − 3! = ？"
+  },
+  {
+   "id": "r10g-04",
+   "gold": [
+    "da.growth-amount"
+   ],
+   "top3_retrieved": [
+    "nc.successive-discount",
+    "nc.compound-growth"
+   ],
+   "selected": "nc.successive-discount",
+   "status": "solved",
+   "exact_hit": false,
+   "functional_hit": false,
+   "stem": "车间连续三天加工零件：第一天加工 45 个，第二天比第一天多 20%，第三天比第二天少 9 个。第三天加工多少个？"
+  },
+  {
+   "id": "r10g-05",
+   "gold": [
+    "nc.work-rate"
+   ],
+   "top3_retrieved": [
+    "nc.work-rate-lcm",
+    "nc.travel-meeting-pursuit"
+   ],
+   "selected": "nc.work-rate-lcm",
+   "status": "solved",
+   "exact_hit": false,
+   "functional_hit": true,
+   "stem": "一批文档，甲打印机单独打需 12 分钟，乙打印机单独打需 18 分钟。两台同时开，多少分钟打完？"
+  },
+  {
+   "id": "r10g-07",
+   "gold": [
+    "nc.arithmetic-precedence"
+   ],
+   "top3_retrieved": [],
+   "selected": null,
+   "status": "solved",
+   "exact_hit": false,
+   "functional_hit": false,
+   "stem": "计算 (1+2)×3^2−4÷2 的值。"
+  },
+  {
+   "id": "r10g-08",
+   "gold": [
+    "jr.categorical-syllogism"
+   ],
+   "top3_retrieved": [],
+   "selected": null,
+   "status": "solved",
+   "exact_hit": false,
+   "functional_hit": false,
+   "stem": "所有玫瑰花都需要每天浇水；所有月季都耐旱、不需要每天浇水。据此一定可以推出："
+  }
+ ],
+ "n": 7,
+ "exact_hits": 1,
+ "functional_hits": 3,
+ "retrieval_recorded": 5,
+ "conclusion": "未见表达 7 题，其中 2 题**检索记录缺失**（本身是管线缺陷，不计入召回分母即 R11 的 1/5 口径）。有检索的 5 题：Exact 1/5，Functional 3/5。功能同族卡多数可被召回而金标具体卡缺席 → 瓶颈在**触发词/卡面词面覆盖**；彻底缺席同族：[['da.growth-amount'], ['da.growth-amount']]——如 da.growth-amount(增长量) 与 nc.* 卡间无词面桥。任何检索策略替换必须先在本独立 Dev 上验证，且禁止更换金标方法 ID 口径。"
+}
