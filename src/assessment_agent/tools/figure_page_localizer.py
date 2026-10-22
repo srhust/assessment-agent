@@ -150,6 +150,198 @@ def _narrow_gap_split_point(prof: np.ndarray, mask: np.ndarray, a: int, b: int,
 
 
 
+def _option_band_cells(mask, y0, y1, expect):
+    """R14-E：标签锚点选项带切分（真实截图选项带恢复，零金标零 case-id）。
+
+    失败模式实测（R13G 真实截图，零 API）：选项带是"字母段+图形段"交替且
+    间距不等（trans-07 段隙 [33,20,23,73,71,10]），固定 merge_gap 列聚类
+    无法恢复 n 个选项；把字母当分隔物剪掉又造成"选项裁剪近空白"（overlay-12
+    C 被剪成只剩点号、ink 16px）与"标签丢失只剩图形"（tight 页 0 选项）。
+    **版式内置的标签字母才是切分锚点**：锚点→下一锚点即一个选项单元，
+    标签与其图形同单元（Solver 消费前按 label 域剥离，标签不污染图形哈希）。
+    判据（页内像素导出）：
+      ①域尺寸取 tight 外接框——行占用数在竖条笔画虚报（trans-07 C 竖条
+        boxh=20 实高 8）；
+      ②字母候选=连通域高 8-16 且宽 5-18；逐高度层尝试：恰 expect 个、
+        不触左缘（≥2px）、等距（0.6-1.5×中位 pitch）、锚点间与末锚后
+        带墨 ≥20、**每单元恰 1 字母 + ≥1 图形域**（面积≥24 或宽≥10）、
+        字母与所属图形间隙 ≤1.9×字母高（overlay-12 2×2：D 字母与末图形
+        间隙 18>1.9×13 被拒，防把邻列首字母当本列标签）；
+      ③多层同时成立=歧义→回退旧路径（宁可不切，绝不造数）。
+    真实截图 5 页：mirror-04/rot90-01/trans-07/overlay-12 命中；tight 页
+    无字母版式按判据正确回退（旧路径即可，其 0 选项缺陷另有成因，见回归）。
+    """
+    W = mask.shape[1]
+    if not (2 <= expect <= 6) or (y1 - y0) > 40:
+        return None
+    from scipy import ndimage as ndi
+    # 页级互证（R14-E）：选项字母与页面上方**文本行**的字母同高（dev15 与
+    # 真实截图实测：题面文字行含"…A…"字母高 13，与选项字母一致；图形碎片
+    # 层——rot180 弧片 12、grid-11 圆片 11——不在文本行高频出现）。
+    # support=上方窄带（高 ≤20，真文本行带）窄域高度中频次 ≥3 者；字母层
+    # 必须落在 support 内（消歧），support 空（无文本行页）退回纯几何判据。
+    support: set = set()
+    for (by0, by1) in row_bands(mask):
+        if by0 >= y0 or (by1 - by0) > 20:
+            continue
+        sub = mask[by0:by1, :]
+        if int(sub.sum()) < 40:
+            continue
+        lt, nt = ndi.label(sub, structure=np.ones((3, 3), int))
+        if nt > 120:
+            continue
+        hs = []
+        for s2 in range(1, nt + 1):
+            ys2, xs2 = np.nonzero(lt == s2)
+            h2 = int(ys2.max() - ys2.min() + 1)
+            w2 = int(xs2.max() - xs2.min() + 1)
+            if 6 <= h2 <= 18 and w2 <= 18:
+                hs.append(h2)
+        for v in set(hs):
+            if hs.count(v) >= 3:
+                support.add(v)
+    lab, nc = ndi.label(mask[y0:y1, :], structure=np.ones((3, 3), int))
+    if nc > 60:
+        return None                              # 文本行碎域爆炸：非选项带
+    band_hmax = 0
+    for s in range(1, nc + 1):
+        ys0 = np.nonzero(lab == s)[0]
+        if len(ys0):
+            band_hmax = max(band_hmax, int(ys0.max() - ys0.min() + 1))
+    # R14-E 排布密度门：选项带是**单元级**排布（字母—图形—间隙，段隙中位
+    # ≈ 域高量级），说明文字行是**字距级**排布（段隙 ≤ 半域高）。实测：
+    # 4 张真实截图选项带段隙中位 22-30（带内最高域 13-28）；screens 页脚
+    # 文字行中位 5（最高域 13）→ 阈值两侧余量 ≥8px，页级不变量非逐例调参。
+    segs_all = col_segments(mask, y0, y1, min_col_ink=1, gap=2, min_ink=1)
+    # 密度门只在**碎域成行**时才有意义：3 个及以上连通域（字距级排布会把每
+    # 个字/每条竖线各自成域）；≤2 域的带（如 2 图题干）中位段隙来自单元间
+    # 距，不是字距（实测 tight 页题干带 2 域、段隙 28、域高 22 → 旧判据误杀）。
+    if len(segs_all) >= 2:
+        gaps = [segs_all[i + 1][0] - segs_all[i][1]
+                for i in range(len(segs_all) - 1)]
+        if float(np.median(gaps)) < max(4.0, 0.5 * band_hmax):
+            return None                          # 字距级排布=文本行，非选项带
+    doms: List[Tuple[int, int, int, int]] = []   # (x0,x1,h,w)
+    for s in range(1, nc + 1):
+        ys, xs = np.nonzero(lab == s)
+        doms.append((int(xs.min()), int(xs.max()) + 1,
+                     int(ys.max() - ys.min() + 1), int(xs.max() - xs.min() + 1)))
+    frag = [d for d in doms if d[2] <= 4]
+    layers: Dict[int, List[Tuple[int, int, int]]] = {}
+    for x0, x1, h, w in doms:
+        if 8 <= h <= 16 and 5 <= w <= 18 and (not support or h in support):
+            layers.setdefault(h, []).append((x0, x1, h))
+    def _try_layer(dom, h_key):
+        dom = sorted(dom)
+        if len(dom) != expect or dom[0][0] < 2:
+            return None
+        units = []
+        for a, b, h in dom:
+            nb = [f for f in frag if f[0] >= b - 1 and f[0] - b <= 8]
+            units.append((a, max([b] + [f[1] for f in nb]), h))
+        if dom[0][0] < 2:
+            return None                      # 字母域触左缘=页眉字
+        astart = [u[0] for u in units]
+        diffs = [astart[i + 1] - astart[i] for i in range(len(astart) - 1)]
+        pitch = float(np.median(diffs))
+        if pitch <= 0:
+            return None
+        keep = [astart[0]]
+        for st_ in astart[1:]:
+            if 0.6 * pitch <= st_ - keep[-1] <= 1.5 * pitch:
+                keep.append(st_)
+        if len(keep) != expect:
+            return None
+        anchors = [(u[0], u[1]) for u in units]
+        prof = mask[y0:y1, :].sum(axis=0)
+        for i in range(expect - 1):
+            if int(prof[anchors[i][1]:anchors[i + 1][0]].sum()) < 20:
+                return None
+        if int(prof[anchors[-1][1]:].sum()) < 20:
+            return None
+        step = (anchors[-1][0] - anchors[0][0]) / max(1, expect - 1)
+        end = min(W, anchors[-1][1] + int(round(1.05 * max(20.0, step))))
+        # 末单元右界按**本单元图形紧框**收口：等距节距外扩（1.05×step）在
+        # 2×2 选项带（overlay-12 实测末带第二行左缘 A 标签 x=28、D 图形止
+        # 于 340）会把邻列首标签吞进末选项。取 [末锚右缘, end) 内最后一个
+        # 图形域右缘 +3 为止界；触带右缘视为真贴边（tight/rot90 末图 x1=W-2）。
+        last_span = mask[y0:y1, anchors[-1][1]:end]
+        nz_cols = np.nonzero(last_span.any(axis=0))[0]
+        if len(nz_cols):
+            last_right = anchors[-1][1] + int(nz_cols[-1]) + 1
+            if last_right < end and (end - last_right) >= 6:
+                nxt = [d for d in layers[h_key] if d[0] >= last_right and d[0] < end]
+                if not nxt:
+                    end = min(W, last_right + 3)
+        cells = [(anchors[i][0], anchors[i + 1][0] if i + 1 < expect else end)
+                 for i in range(expect)]
+        # 标签↔所属图形绑定：图形**紧框**（单元内非字母非碎片域的并集框）
+        # 须与字母同条文本行线上（|垂直中心差| ≤ 0.6×字母高）。页级不变量：
+        # 行测选项的字母与图形同行居中（15 页 dev15 + 4 张真实截图实测：
+        # 字母 cy≈17、图形 cy≈17；rot180 弧片 cy16 / 竖条 cy10 同过）——
+        # 文本行碎片的垂直散布大，靠它当字母会在行线上找不到同伴图形。
+        # 首版用"间隙 ≤1.9×字母高"误杀 trans-07（A 与图形间隙 33）与
+        # overlay-12（C 间隙 30）：版式间距本就大于字母高，行线判据才稳。
+        # 标签↔所属图形绑定（一一对应的几何面）：单元内所有"图形域"
+        # （非该层字母域、面积 ≥24 或宽 ≥10）的**并集紧框**与字母同条文本
+        # 行线上（|垂直中心差| ≤ 0.6×字母高 + 4px 行对齐容差）。overlay-12
+        # C 单元含 B 图（cy246）+ 本图（cy253）并集中心 249.5，字母 cy253
+        # → 过；首版只取"字母后第一个域"让 B 图把门判歪（30>24.7 误杀）。
+        # 版式间距本就大于字母高（trans-07 A 间隙 33、overlay C 间隙 30），
+        # 纯间隙门在真实排版上不成立，行线判据才稳。
+        for (xa, xb), u in zip(cells, units):
+            in_unit = [d for d in doms if d[0] >= xa and d[1] <= xb]
+            letter_n = sum(1 for d in in_unit if d[2] == h_key and 5 <= d[3] <= 18)
+            figs = [d for d in in_unit if d[0] >= u[1]
+                    and (d[2] * d[3] >= 24 or d[3] >= 10)
+                    and d[2] <= 40]            # 触带域=题干续行混入，不计图形
+            if letter_n != 1:
+                return None
+            if not figs:
+                # 唯一例外（scale-09/overlay-12 C）：单元内只有一个**完整**
+                # 图形域（四边距带缘 ≥2px 且 ≥14px 高）被字母域吃掉——此时
+                # 字母实为图形组件，须与单元内全部非字母域同条行线。
+                wide_in = [d for d in in_unit if d[0] >= u[1]]
+                if len(wide_in) == 1 and wide_in[0][2] >= 14:
+                    figs = wide_in
+                else:
+                    return None
+            rows_all = np.zeros((y1 - y0,), dtype=bool)
+            for d in figs:
+                rows_all |= mask[y0:y1, d[0]:d[1]].any(axis=1)
+            fz = np.nonzero(rows_all)[0]
+            if int(mask[y0:y1, u[1]:min(xb, W)].sum()) < 20:
+                return None                      # 标签后须有真实图形墨
+            fy = (int(fz.min()) + int(fz.max()) + 1) / 2 + y0
+            letter_rows = np.nonzero(mask[y0:y1, u[0]:u[1]].any(axis=1))[0]
+            ly = (int(letter_rows.min()) + int(letter_rows.max()) + 1) / 2 + y0
+            if abs(fy - ly) > 0.6 * h_key + 4:
+                return None
+        return {"cells": cells, "labels": [(u[0], u[1]) for u in units]}
+
+    sols = []
+    for h0 in sorted(layers):
+        sl = _try_layer(layers[h0], h0)
+        if sl is None:
+            continue
+        # 2×2 选项带（overlay-12）：末列右侧邻着**下一行首列标签**，其域高
+        # 常为行间距（20px>字母 13）而漏进字母层。锚点集取"末锚右侧不再
+        # 存在同高字母域"的最大前缀子集，且子集内部仍等距/一一对应。
+        xs = sorted(d[0] for d in layers[h0])
+        drop = [i for i in range(len(xs) - 1)
+                if xs[i + 1] > sl["cells"][-1][1]]      # 单元右界外的同高层域
+        if drop:
+            cut = min(drop) + 1
+            if cut >= expect:
+                sub = _try_layer(layers[h0][:cut], h0)
+                if sub is not None:
+                    sl = sub
+        sols.append(sl)
+    if len(sols) != 1:
+        return None                              # 无解或歧义：回退旧路径
+    return sols[0]
+
+
 def cluster_cells(mask: np.ndarray, y0: int, y1: int, merge_gap: int = MERGE_GAP,
                   prune_labels: bool = True,
                   expect: Optional[int] = None) -> List[Tuple[int, int]]:
@@ -258,22 +450,53 @@ def localize_page(mask: np.ndarray, n_options: int,
         notes.append("空图")
         return result
 
-    # ---- 选项带：从底部带开始尝试（含末两带拼 2×2），要求聚类后恰为 n_options
+    # ---- 选项带识别（R14-E 根修）：固定"最后一带"在真实排版上不成立——
+    # 题干续行/页脚会排在选项带之后（trans-07 实测选项带是倒数第二带，
+    # 末带是"？"行；--tight 页末带为空行）→ 旧路径直接 options_band_not_detected
+    # → 0 选项。改为：从底部向上扫描**所有带**，逐带取首个"单元数恰 n_options"
+    # 的切分（锚点优先，其次 natural/宽度校正），带簇（末两带拼 2×2）保留给
+    # 双列版式。选择顺序仍是底部优先（最像选项带者先中），不引入金标。
+    # ---- 选项带：候选集与 HEAD 完全一致（末带 / 末两带拼 2×2），
+    #      R14-E 标签锚点只在同一候选集内**优先**替换切分方式。
     opt_cells: Optional[List[Tuple[Tuple[int, int], Tuple[int, int]]]] = None  # ((x0,x1),(y0,y1))
     opt_span: Optional[Tuple[int, int]] = None
+    label_boxes: Optional[List[Tuple[int, int]]] = None   # R14-E 标签一一对应
+
     def try_band_pair(bidx: List[int]) -> Optional[List]:
+        nonlocal label_boxes
         cells = []
         for bi in bidx:
             y0, y1 = bands[bi]
             natural = cluster_cells(mask, y0, y1)
             exp = n_options if len(bidx) == 1 else None
-            got = natural if exp is None else cluster_cells(mask, y0, y1, expect=exp)
+            got = None
+            if exp is not None:
+                # R14-E：标签锚点切分（字母域一一对应，自带 expect 校验）
+                ab = _option_band_cells(mask, y0, y1, exp)
+                if ab is not None:
+                    label_boxes = ab["labels"]
+                    for cx0, cx1 in ab["cells"]:
+                        cells.append(((cx0, cx1), (y0, y1)))
+                    continue
+            if got is None:
+                # 岛数下界**不采用**（对照实测：加界后紧页末带 3 簇→expect 4
+                # 被拒，退到"末两带"候选 → 题干第二行被选成选项带 → 题干只剩
+                # 1 行 → 1×4 假格阵且可释放；不加界时与 HEAD 完全一致
+                # （opts band=(150,188)、stem 2×3、test_r13a 5 passed）。
+                # 页级安全由锚点路径自身（字母↔图形一一对应）与格证据通道
+                # 的行数互证承担，不在聚类数量上做手脚。
+                got = natural if exp is None else cluster_cells(mask, y0, y1, expect=exp)
+            if not got:
+                return None                      # 本候选带无单元
             # 文本否决只在**自然聚类数不符**时生效（数都对上就不是文字行）
             if exp is not None and len(natural) != n_options and is_text_band(mask, y0, y1):
                 return None
+            if label_boxes is not None and exp is None:
+                label_boxes = None            # 2×2 簇路径无锚点：不得沿用标签框
             for cx0, cx1 in got:
                 cells.append(((cx0, cx1), (y0, y1)))
         return cells if len(cells) == n_options else None
+
     for bidx in ([len(bands) - 1], [len(bands) - 2, len(bands) - 1]):
         if len(bidx) > 1 and len(bands) < 2:
             continue
@@ -283,7 +506,6 @@ def localize_page(mask: np.ndarray, n_options: int,
             break
     if opt_cells is None:
         notes.append("options_band_not_detected")
-
     # ---- 图形带：选项带上方、非文本、与紧邻带 x 范围重叠者可拼多行矩阵
     hi = len(bands)
     if opt_cells:
@@ -367,7 +589,12 @@ def localize_page(mask: np.ndarray, n_options: int,
         from .diagram_layout import check_option_crop
         for i, ((x0, x1), (y0, y1)) in enumerate(opt_cells):
             crop = mask[y0:y1, x0:x1]
-            comp = check_option_crop(crop)
+            content_only = label_boxes is not None
+            if content_only:
+                lx0, lx1 = label_boxes[i]
+                crop = crop.copy()
+                crop[:, max(0, lx0 - x0):max(0, lx0 - x0) + (lx1 - lx0)] = False
+            comp = check_option_crop(crop, content_only=content_only)
             rec: Dict[str, Any] = {
                 "index": i, "bbox_page": [x0, y0, x1 - x0, y1 - y0],
                 "bbox_local": [x0, 0, x1 - x0, y1 - y0], "band": [y0, y1],
@@ -377,6 +604,42 @@ def localize_page(mask: np.ndarray, n_options: int,
                 "source": "pixel_localizer",
                 "confidence": round(min(1.0, comp["ink_ratio"] * 12) *
                                     (1.0 if comp["passed"] else 0.4), 3)}
+            if label_boxes is not None:
+                # R14-E：锚点切分单元=标签+图形同单元；标签框单独随行，
+                # 下游可把标签从内容里剥出（一一对应已由切分门控）。
+                lx0, lx1 = label_boxes[i]
+                rec["label_bbox"] = [lx0, y0, lx1 - lx0, y1 - y0]
+                rec["cell_bbox"] = [x0, y0, x1 - x0, y1 - y0]
+                rec["provenance"] = "localizer+label_anchor"
+                rec["has_letter_labels"] = True
+            elif len(opt_cells) > 1:
+                # R14-E 选项带**标签存在性**页级实测（无锚点路径：只如实标注，
+                # **不改几何、不新增否决**）。真选项带每个单元都是"标签在左 +
+                # 真空隙 + 图形在右"（dev grid-10 实测首段 w 8-15、h 13、其后
+                # gap 2-17；真实截图 4 页锚点同构）。若**任一**单元首段就是
+                # 图形本体（首段宽 ≥0.9×其行高，即竖框/圆环类；或该单元只有
+                # 一个域、左侧无独立小段），本带**不含标签**，标签↔图形一一
+                # 对应无从建立 → has_letter_labels=False。tight 排版页实测
+                # 3/3、4/4 单元首段宽=单元宽（图形本体），判 False 正确。
+                widths = sorted(cx1 - cx0 for (cx0, cx1), _ in opt_cells)
+                med_w = widths[len(widths) // 2] or 1
+                no_label = False
+                for (a0, a1), (_y0, _y1) in opt_cells:
+                    seg = [g for g in col_segments(mask, _y0, _y1,
+                                                   min_col_ink=1, gap=1,
+                                                   min_ink=1)
+                           if g[0] >= a0 and g[1] <= a1]
+                    if not seg:
+                        continue
+                    g0 = seg[0]
+                    ys3 = np.nonzero(mask[_y0:_y1, g0[0]:g0[1]].any(axis=1))[0]
+                    h3 = int(ys3.max() - ys3.min() + 1) if len(ys3) else 0
+                    w3 = g0[1] - g0[0]
+                    if (w3 >= 0.9 * max(h3, 1) and w3 >= 0.6 * med_w) \
+                            or len(seg) == 1:
+                        no_label = True
+                        break
+                rec["has_letter_labels"] = not no_label
             bx, by, bw, bh = rec["bbox_page"]
             cx, cy = bx + bw / 2, by + bh / 2
             covering = [v for v in vlm_options

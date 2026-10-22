@@ -1,0 +1,1986 @@
+{
+ "pages": [
+  {
+   "kind": "real13g",
+   "id": "mirror-04",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     146,
+     170
+    ]
+   ],
+   "stem": [
+    [
+     [
+      34,
+      74,
+      76,
+      22
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "real13g",
+   "id": "mirror-04--tight",
+   "n_declared": 4,
+   "opts": 0,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [],
+   "stem": [
+    [
+     [
+      40,
+      50,
+      76,
+      22
+     ],
+     [
+      1,
+      2
+     ]
+    ],
+    [
+     [
+      40,
+      160,
+      168,
+      24
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": [
+    "options_band_not_detected"
+   ]
+  },
+  {
+   "kind": "real13g",
+   "id": "overlay-12",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     238,
+     266
+    ]
+   ],
+   "stem": [
+    [
+     [
+      34,
+      68,
+      120,
+      126
+     ],
+     [
+      3,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "real13g",
+   "id": "rot90-01",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     146,
+     174
+    ]
+   ],
+   "stem": [
+    [
+     [
+      34,
+      74,
+      124,
+      28
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "real13g",
+   "id": "trans-07",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     150,
+     170
+    ]
+   ],
+   "stem": [
+    [
+     [
+      32,
+      84,
+      128,
+      8
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-comp-06",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     144,
+     176
+    ]
+   ],
+   "stem": [
+    [
+     [
+      34,
+      72,
+      74,
+      30
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-conflict-15",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     244,
+     268
+    ]
+   ],
+   "stem": [
+    [
+     [
+      34,
+      76,
+      124,
+      120
+     ],
+     [
+      3,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-grid-10",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     242,
+     270
+    ]
+   ],
+   "stem": [
+    [
+     [
+      34,
+      74,
+      124,
+      124
+     ],
+     [
+      3,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-grid-11",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     242,
+     271
+    ]
+   ],
+   "stem": [
+    [
+     [
+      30,
+      78,
+      128,
+      70
+     ],
+     [
+      2,
+      3
+     ]
+    ],
+    [
+     [
+      50,
+      170,
+      44,
+      28
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-mirror-04",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     146,
+     170
+    ]
+   ],
+   "stem": [
+    [
+     [
+      34,
+      74,
+      76,
+      22
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-mirror-05",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     144,
+     176
+    ]
+   ],
+   "stem": [
+    [
+     [
+      28,
+      72,
+      82,
+      32
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-overlay-12",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     238,
+     266
+    ]
+   ],
+   "stem": [
+    [
+     [
+      34,
+      68,
+      120,
+      126
+     ],
+     [
+      3,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-overlay-13",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     242,
+     270
+    ]
+   ],
+   "stem": [
+    [
+     [
+      32,
+      65,
+      126,
+      22
+     ],
+     [
+      1,
+      3
+     ]
+    ],
+    [
+     [
+      32,
+      132,
+      132,
+      28
+     ],
+     [
+      1,
+      3
+     ]
+    ],
+    [
+     [
+      45,
+      171,
+      65,
+      26
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-rot180-02",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     142,
+     172
+    ]
+   ],
+   "stem": [
+    [
+     [
+      30,
+      76,
+      84,
+      24
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-rot270-03",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     144,
+     176
+    ]
+   ],
+   "stem": [
+    [
+     [
+      34,
+      72,
+      124,
+      32
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-rot90-01",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     146,
+     174
+    ]
+   ],
+   "stem": [
+    [
+     [
+      34,
+      74,
+      124,
+      28
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-scale-09",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     143,
+     176
+    ]
+   ],
+   "stem": [
+    [
+     [
+      88,
+      77,
+      68,
+      22
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-sym-14",
+   "n_declared": 2,
+   "opts": 2,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     148,
+     172
+    ]
+   ],
+   "stem": [
+    [
+     [
+      34,
+      76,
+      124,
+      24
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-trans-07",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": true,
+   "consumable_by_solver": true,
+   "opt_bands": [
+    [
+     150,
+     170
+    ]
+   ],
+   "stem": [
+    [
+     [
+      32,
+      84,
+      128,
+      8
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "dev15",
+   "id": "ft-trans-08",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     137,
+     181
+    ]
+   ],
+   "stem": [
+    [
+     [
+      34,
+      69,
+      124,
+      38
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-grid-10--distractor",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     170,
+     217
+    ]
+   ],
+   "stem": [
+    [
+     [
+      60,
+      70,
+      124,
+      76
+     ],
+     [
+      2,
+      5
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-grid-10--large",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     177,
+     228
+    ]
+   ],
+   "stem": [
+    [
+     [
+      72,
+      52,
+      156,
+      96
+     ],
+     [
+      2,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-grid-10--small",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     187,
+     209
+    ]
+   ],
+   "stem": [
+    [
+     [
+      67,
+      47,
+      94,
+      94
+     ],
+     [
+      3,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-grid-10--tight",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     150,
+     188
+    ]
+   ],
+   "stem": [
+    [
+     [
+      40,
+      50,
+      124,
+      76
+     ],
+     [
+      2,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-grid-10--vertical",
+   "n_declared": 4,
+   "opts": 0,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [],
+   "stem": [
+    [
+     [
+      40,
+      40,
+      188,
+      144
+     ],
+     [
+      3,
+      3
+     ]
+    ],
+    [
+     [
+      50,
+      240,
+      178,
+      28
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   ],
+   "notes": [
+    "options_band_not_detected"
+   ]
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-mirror-04--distractor",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     176,
+     208
+    ]
+   ],
+   "stem": [
+    [
+     [
+      60,
+      63,
+      76,
+      29
+     ],
+     [
+      1,
+      4
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-mirror-04--large",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     192,
+     223
+    ]
+   ],
+   "stem": [
+    [
+     [
+      72,
+      52,
+      96,
+      28
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-mirror-04--small",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     187,
+     206
+    ]
+   ],
+   "stem": [
+    [
+     [
+      67,
+      47,
+      58,
+      17
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-mirror-04--tight",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     160,
+     184
+    ]
+   ],
+   "stem": [
+    [
+     [
+      40,
+      50,
+      76,
+      22
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-mirror-04--vertical",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     160,
+     182
+    ],
+    [
+     240,
+     264
+    ]
+   ],
+   "stem": [
+    [
+     [
+      40,
+      40,
+      76,
+      22
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-overlay-13--distractor",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     175,
+     212
+    ]
+   ],
+   "stem": [
+    [
+     [
+      58,
+      57,
+      126,
+      28
+     ],
+     [
+      1,
+      5
+     ]
+    ],
+    [
+     [
+      58,
+      126,
+      132,
+      33
+     ],
+     [
+      1,
+      5
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-overlay-13--large",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     185,
+     228
+    ]
+   ],
+   "stem": [
+    [
+     [
+      70,
+      41,
+      158,
+      28
+     ],
+     [
+      1,
+      3
+     ]
+    ],
+    [
+     [
+      70,
+      125,
+      165,
+      35
+     ],
+     [
+      1,
+      3
+     ]
+    ],
+    [
+     [
+      67,
+      173,
+      12,
+      7
+     ],
+     [
+      1,
+      1
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-overlay-13--small",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     120,
+     140
+    ],
+    [
+     188,
+     208
+    ]
+   ],
+   "stem": [
+    [
+     [
+      66,
+      41,
+      99,
+      71
+     ],
+     [
+      2,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-overlay-13--tight",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     156,
+     188
+    ]
+   ],
+   "stem": [
+    [
+     [
+      38,
+      41,
+      126,
+      22
+     ],
+     [
+      1,
+      3
+     ]
+    ],
+    [
+     [
+      38,
+      108,
+      132,
+      28
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-overlay-13--vertical",
+   "n_declared": 4,
+   "opts": 0,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [],
+   "stem": [
+    [
+     [
+      38,
+      31,
+      126,
+      22
+     ],
+     [
+      1,
+      3
+     ]
+    ],
+    [
+     [
+      36,
+      98,
+      192,
+      90
+     ],
+     [
+      3,
+      3
+     ]
+    ],
+    [
+     [
+      208,
+      250,
+      20,
+      8
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   ],
+   "notes": [
+    "options_band_not_detected"
+   ]
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-rot90-01--distractor",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     178,
+     210
+    ]
+   ],
+   "stem": [
+    [
+     [
+      60,
+      70,
+      124,
+      28
+     ],
+     [
+      1,
+      4
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-rot90-01--large",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     192,
+     228
+    ]
+   ],
+   "stem": [
+    [
+     [
+      72,
+      52,
+      156,
+      36
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-rot90-01--small",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     187,
+     209
+    ]
+   ],
+   "stem": [
+    [
+     [
+      67,
+      47,
+      94,
+      22
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-rot90-01--tight",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     160,
+     188
+    ]
+   ],
+   "stem": [
+    [
+     [
+      40,
+      50,
+      124,
+      28
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-rot90-01--vertical",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     160,
+     188
+    ],
+    [
+     240,
+     268
+    ]
+   ],
+   "stem": [
+    [
+     [
+      40,
+      40,
+      124,
+      28
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-scale-09--distractor",
+   "n_declared": 3,
+   "opts": 0,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [],
+   "stem": [
+    [
+     [
+      114,
+      73,
+      68,
+      25
+     ],
+     [
+      1,
+      5
+     ]
+    ],
+    [
+     [
+      52,
+      174,
+      240,
+      36
+     ],
+     [
+      1,
+      5
+     ]
+    ]
+   ],
+   "notes": [
+    "options_band_not_detected"
+   ]
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-scale-09--large",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     189,
+     230
+    ]
+   ],
+   "stem": [
+    [
+     [
+      82,
+      56,
+      143,
+      28
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-scale-09--small",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     50,
+     66
+    ],
+    [
+     185,
+     210
+    ]
+   ],
+   "stem": [],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-scale-09--tight",
+   "n_declared": 3,
+   "opts": 0,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [],
+   "stem": [
+    [
+     [
+      94,
+      53,
+      68,
+      22
+     ],
+     [
+      1,
+      3
+     ]
+    ],
+    [
+     [
+      36,
+      157,
+      172,
+      33
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": [
+    "options_band_not_detected"
+   ]
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-scale-09--vertical",
+   "n_declared": 3,
+   "opts": 0,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [],
+   "stem": [
+    [
+     [
+      94,
+      43,
+      68,
+      22
+     ],
+     [
+      1,
+      3
+     ]
+    ],
+    [
+     [
+      46,
+      157,
+      36,
+      33
+     ],
+     [
+      1,
+      2
+     ]
+    ],
+    [
+     [
+      54,
+      240,
+      24,
+      22
+     ],
+     [
+      1,
+      1
+     ]
+    ]
+   ],
+   "notes": [
+    "options_band_not_detected"
+   ]
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-trans-07--distractor",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     182,
+     205
+    ]
+   ],
+   "stem": [
+    [
+     [
+      58,
+      78,
+      128,
+      10
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-trans-07--large",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     197,
+     223
+    ]
+   ],
+   "stem": [
+    [
+     [
+      70,
+      65,
+      160,
+      10
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-trans-07--small",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     190,
+     206
+    ]
+   ],
+   "stem": [
+    [
+     [
+      66,
+      55,
+      96,
+      6
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-trans-07--tight",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     164,
+     184
+    ]
+   ],
+   "stem": [
+    [
+     [
+      38,
+      60,
+      128,
+      8
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "perturb",
+   "id": "ft-trans-07--vertical",
+   "n_declared": 3,
+   "opts": 3,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     170,
+     178
+    ],
+    [
+     244,
+     264
+    ]
+   ],
+   "stem": [
+    [
+     [
+      38,
+      50,
+      128,
+      8
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "screens",
+   "id": "sch-dev-figure-count-lowres",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     292,
+     299
+    ]
+   ],
+   "stem": [
+    [
+     [
+      27,
+      35,
+      200,
+      12
+     ],
+     [
+      1,
+      3
+     ]
+    ],
+    [
+     [
+      75,
+      101,
+      210,
+      15
+     ],
+     [
+      1,
+      4
+     ]
+    ],
+    [
+     [
+      66,
+      189,
+      316,
+      26
+     ],
+     [
+      1,
+      8
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "screens",
+   "id": "sch-dev-figure-sides",
+   "n_declared": 4,
+   "opts": 0,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [],
+   "stem": [
+    [
+     [
+      114,
+      154,
+      396,
+      84
+     ],
+     [
+      1,
+      3
+     ]
+    ],
+    [
+     [
+      57,
+      434,
+      290,
+      85
+     ],
+     [
+      1,
+      4
+     ]
+    ],
+    [
+     [
+      57,
+      594,
+      294,
+      80
+     ],
+     [
+      1,
+      4
+     ]
+    ]
+   ],
+   "notes": [
+    "options_band_not_detected"
+   ]
+  },
+  {
+   "kind": "screens",
+   "id": "sch-dev-unsupported-chart",
+   "n_declared": 4,
+   "opts": 0,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [],
+   "stem": [],
+   "notes": [
+    "options_band_not_detected"
+   ]
+  },
+  {
+   "kind": "screens",
+   "id": "sch-test-figure-grid",
+   "n_declared": 4,
+   "opts": 4,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [
+    [
+     748,
+     835
+    ],
+    [
+     890,
+     903
+    ]
+   ],
+   "stem": [
+    [
+     [
+      97,
+      141,
+      394,
+      84
+     ],
+     [
+      1,
+      3
+     ]
+    ],
+    [
+     [
+      105,
+      298,
+      366,
+      87
+     ],
+     [
+      1,
+      3
+     ]
+    ],
+    [
+     [
+      105,
+      448,
+      216,
+      87
+     ],
+     [
+      1,
+      2
+     ]
+    ],
+    [
+     [
+      27,
+      598,
+      444,
+      87
+     ],
+     [
+      1,
+      5
+     ]
+    ]
+   ],
+   "notes": []
+  },
+  {
+   "kind": "screens",
+   "id": "sch-test-figure-unmatched",
+   "n_declared": 4,
+   "opts": 0,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [],
+   "stem": [
+    [
+     [
+      137,
+      183,
+      381,
+      27
+     ],
+     [
+      1,
+      4
+     ]
+    ],
+    [
+     [
+      57,
+      325,
+      610,
+      83
+     ],
+     [
+      1,
+      9
+     ]
+    ]
+   ],
+   "notes": [
+    "options_band_not_detected"
+   ]
+  },
+  {
+   "kind": "screens",
+   "id": "sch-train-arith",
+   "n_declared": 4,
+   "opts": 0,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [],
+   "stem": [
+    [
+     [
+      61,
+      113,
+      367,
+      15
+     ],
+     [
+      1,
+      8
+     ]
+    ]
+   ],
+   "notes": [
+    "options_band_not_detected"
+   ]
+  },
+  {
+   "kind": "screens",
+   "id": "sch-train-figure-count",
+   "n_declared": 4,
+   "opts": 0,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [],
+   "stem": [
+    [
+     [
+      137,
+      183,
+      381,
+      27
+     ],
+     [
+      1,
+      4
+     ]
+    ],
+    [
+     [
+      57,
+      343,
+      638,
+      47
+     ],
+     [
+      1,
+      10
+     ]
+    ]
+   ],
+   "notes": [
+    "options_band_not_detected"
+   ]
+  },
+  {
+   "kind": "screens",
+   "id": "sch-train-series-arith",
+   "n_declared": 4,
+   "opts": 0,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [],
+   "stem": [
+    [
+     [
+      61,
+      113,
+      366,
+      15
+     ],
+     [
+      1,
+      8
+     ]
+    ]
+   ],
+   "notes": [
+    "options_band_not_detected"
+   ]
+  },
+  {
+   "kind": "screens",
+   "id": "sch-train-series-geo",
+   "n_declared": 4,
+   "opts": 0,
+   "label_anchored": false,
+   "consumable_by_solver": false,
+   "opt_bands": [],
+   "stem": [
+    [
+     [
+      61,
+      113,
+      160,
+      54
+     ],
+     [
+      2,
+      4
+     ]
+    ]
+   ],
+   "notes": [
+    "options_band_not_detected"
+   ]
+  }
+ ],
+ "note": "Stage E 锚点/消费状态全量扫描（零 API，页级不变量）",
+ "summary": {
+  "total": 59,
+  "anchored": 18,
+  "by_kind": {
+   "real13g": {
+    "total": 5,
+    "anchored": 4
+   },
+   "dev15": {
+    "total": 15,
+    "anchored": 14
+   },
+   "perturb": {
+    "total": 30,
+    "anchored": 0
+   },
+   "screens": {
+    "total": 9,
+    "anchored": 0
+   }
+  },
+  "perturb_anchored_ids": []
+ }
+}

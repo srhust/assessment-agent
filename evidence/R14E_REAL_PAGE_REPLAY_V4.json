@@ -1,0 +1,393 @@
+{
+  "ft-mirror-04": {
+    "solver_status": "solved",
+    "solver_answer": "A",
+    "verify_action": "accept",
+    "final_answer": "A",
+    "released": true,
+    "wrong_accept": false,
+    "release_anomaly_missing_final": false,
+    "failed_checks": [],
+    "options_used": [
+      "A",
+      "B",
+      "C"
+    ],
+    "chain": [
+      "declared_options:3"
+    ],
+    "option_boxes": [
+      [
+        [
+          28,
+          146,
+          88,
+          24
+        ],
+        [
+          28,
+          146,
+          15,
+          24
+        ],
+        168
+      ],
+      [
+        [
+          116,
+          146,
+          85,
+          24
+        ],
+        [
+          116,
+          146,
+          12,
+          24
+        ],
+        168
+      ],
+      [
+        [
+          201,
+          146,
+          62,
+          24
+        ],
+        [
+          201,
+          146,
+          13,
+          24
+        ],
+        168
+      ]
+    ],
+    "option_sha256": [
+      "b89eb0d5c84280c8",
+      "59783c0d44a3f077",
+      "73746abb55f83330"
+    ],
+    "provenance": [
+      "localizer+label_anchor",
+      "localizer+label_anchor",
+      "localizer+label_anchor"
+    ],
+    "label_association_verified": [
+      true,
+      true,
+      true
+    ],
+    "consumption_binding": "rebuilt",
+    "consumed_crop_shas": null,
+    "solver_error": ""
+  },
+  "ft-rot90-01": {
+    "solver_status": "solved",
+    "solver_answer": "A",
+    "verify_action": "accept",
+    "final_answer": "A",
+    "released": true,
+    "wrong_accept": false,
+    "release_anomaly_missing_final": false,
+    "failed_checks": [],
+    "options_used": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "chain": [
+      "declared_options:4"
+    ],
+    "option_boxes": [
+      [
+        [
+          28,
+          146,
+          88,
+          28
+        ],
+        [
+          28,
+          146,
+          15,
+          28
+        ],
+        168
+      ],
+      [
+        [
+          116,
+          146,
+          85,
+          28
+        ],
+        [
+          116,
+          146,
+          12,
+          28
+        ],
+        168
+      ],
+      [
+        [
+          201,
+          146,
+          87,
+          28
+        ],
+        [
+          201,
+          146,
+          13,
+          28
+        ],
+        168
+      ],
+      [
+        [
+          288,
+          146,
+          61,
+          28
+        ],
+        [
+          288,
+          146,
+          14,
+          28
+        ],
+        168
+      ]
+    ],
+    "option_sha256": [
+      "52b3fc247734d4aa",
+      "5896f34be920015d",
+      "4a2f7db5ef4feed3",
+      "f817c48b4889899d"
+    ],
+    "provenance": [
+      "localizer+label_anchor",
+      "localizer+label_anchor",
+      "localizer+label_anchor",
+      "localizer+label_anchor"
+    ],
+    "label_association_verified": [
+      true,
+      true,
+      true,
+      true
+    ],
+    "consumption_binding": "rebuilt",
+    "consumed_crop_shas": null,
+    "solver_error": ""
+  },
+  "ft-trans-07": {
+    "solver_status": "failed",
+    "solver_answer": null,
+    "verify_action": null,
+    "final_answer": null,
+    "released": false,
+    "wrong_accept": false,
+    "release_anomaly_missing_final": false,
+    "failed_checks": [],
+    "options_used": [
+      "A",
+      "B",
+      "C"
+    ],
+    "chain": [
+      "declared_options:3"
+    ],
+    "option_boxes": [
+      [
+        [
+          28,
+          150,
+          88,
+          20
+        ],
+        [
+          28,
+          150,
+          15,
+          20
+        ],
+        160
+      ],
+      [
+        [
+          116,
+          150,
+          85,
+          20
+        ],
+        [
+          116,
+          150,
+          12,
+          20
+        ],
+        160
+      ],
+      [
+        [
+          201,
+          150,
+          52,
+          20
+        ],
+        [
+          201,
+          150,
+          13,
+          20
+        ],
+        160
+      ]
+    ],
+    "option_sha256": [
+      "2c8483b4af6ee1a8",
+      "0fbfa086d45ef6a4",
+      "b61c6c3fd7cf5d57"
+    ],
+    "provenance": [
+      "localizer+label_anchor",
+      "localizer+label_anchor",
+      "localizer+label_anchor"
+    ],
+    "label_association_verified": [
+      true,
+      true,
+      true
+    ],
+    "consumption_binding": "rebuilt",
+    "consumed_crop_shas": null,
+    "solver_error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配; 墨迹面积外推到 160px，多个选项接近，无法唯一确定；变换通道：变换规律不可唯一判定"
+  },
+  "ft-overlay-12": {
+    "solver_status": "failed",
+    "solver_answer": null,
+    "verify_action": null,
+    "final_answer": null,
+    "released": false,
+    "wrong_accept": false,
+    "release_anomaly_missing_final": false,
+    "failed_checks": [],
+    "options_used": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "chain": [
+      "declared_options:4"
+    ],
+    "option_boxes": [
+      [
+        [
+          28,
+          238,
+          88,
+          28
+        ],
+        [
+          28,
+          238,
+          15,
+          28
+        ],
+        256
+      ],
+      [
+        [
+          116,
+          238,
+          85,
+          28
+        ],
+        [
+          116,
+          238,
+          12,
+          28
+        ],
+        320
+      ],
+      [
+        [
+          201,
+          238,
+          87,
+          28
+        ],
+        [
+          201,
+          238,
+          13,
+          28
+        ],
+        64
+      ],
+      [
+        [
+          288,
+          238,
+          55,
+          28
+        ],
+        [
+          288,
+          238,
+          14,
+          28
+        ],
+        160
+      ]
+    ],
+    "option_sha256": [
+      "67c81cfa4aacc3b0",
+      "2ff83e867c8d4444",
+      "bd3f10377ef775ff",
+      "c87be50da5dc3bc4"
+    ],
+    "provenance": [
+      "localizer+label_anchor",
+      "localizer+label_anchor",
+      "localizer+label_anchor",
+      "localizer+label_anchor"
+    ],
+    "label_association_verified": [
+      true,
+      true,
+      true,
+      true
+    ],
+    "consumption_binding": "rebuilt",
+    "consumed_crop_shas": null,
+    "solver_error": "没有支持范围内的规律能解释已知图形（当前支持：个数、边数、面积、平移、对称性）；变换通道：变换规律不可唯一判定"
+  },
+  "ft-mirror-04--tight": {
+    "solver_status": "failed",
+    "solver_answer": null,
+    "verify_action": null,
+    "final_answer": null,
+    "released": false,
+    "wrong_accept": false,
+    "release_anomaly_missing_final": false,
+    "failed_checks": [],
+    "options_used": [],
+    "chain": [
+      "declared_options:0"
+    ],
+    "option_boxes": [],
+    "option_sha256": [],
+    "provenance": [],
+    "label_association_verified": [],
+    "consumption_binding": null,
+    "consumed_crop_shas": null,
+    "solver_error": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个；rebound_option_crops_from_page:['A', 'C']（不回退整图求解，避免在网页截图上产生假证据）"
+  }
+}

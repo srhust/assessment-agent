@@ -146,30 +146,62 @@ def options_release_ok(evidences: List[Dict[str, Any]], n_expected: int) -> Tupl
             reasons.append(f"#{e['index']} 标签关联未证实（False/None 均不放行）")
     return (not reasons), reasons
 
-def strip_label_from_crop(mask):
+def strip_label_from_crop(mask, band_mask=None, band_x0: int = 0):
     """R13-G：把"字母在左、图形在右"的宽裁剪中的标签笔触剥掉（与门同一不变量）。
 
     判据完全复用 label_anchor_frames 规则：左端小高度 run（≤0.6×主高、≤15px）
     且与下一 run 间距 ≤1.6×主高 → 视为标签，置零。无此形态则原样返回。
+
+    R14-E：overlay-12 版式（小图 8×8 **比字母 13px 矮**）让 0.60×主高主判据
+    永远失效——字母成了"主墨"、图被当附属。第二条路走**页级行线互证**：
+    调用方给出整条选项带 `band_mask`（与裁剪同一次域分解）时，若本 run 是
+    窄低墨（≤18px 宽、≤16px 高、墨量 < 邻右图形），且**同一垂直行线**在带
+    内其他列还再现 ≥2 次（字母基线=版式不变量）→ 视为标签剥除。
+    不给 band 时主判据原样（dev 合成页、二次进入适配层均如此，不回归）。
     """
     import numpy as np
     m = np.asarray(mask)
     if m.ndim != 2 or not m.any():
         return mask
-    h = m.shape[1]
     runs = _row_runs(m, 0, m.shape[0])
     if len(runs) < 2:
         return mask
-    heights = []
-    for x0, x1, _ink in runs:
-        col = m[:, x0:x1]
-        nz = np.nonzero(col.any(axis=1))[0]
-        heights.append(int(nz[-1] - nz[0] + 1) if len(nz) else 0)
-    main_h = max(heights)
+
+    def _span(arr, x0: int, x1: int):
+        nz = np.nonzero(arr[:, x0:x1].any(axis=1))[0]
+        return (int(nz[0]), int(nz[-1] + 1)) if len(nz) else (0, 0)
+
+    heights = [_span(m, a, b)[1] - _span(m, a, b)[0] for a, b, _ in runs]
     x0, x1, ink0 = runs[0]
+    ink1 = runs[1][2]
+    # 主判据（R13-G 原语义，dev 页/既有测试全部保持）：main_h 取全部 run 的
+    # 最大高——字母 run 不得是最高者（字母 ≤0.6×主高且 ≤15）且与图间距有限。
+    main_h = max(heights)
     if (heights[0] <= 0.60 * main_h and heights[0] <= 15
             and runs[1][0] - x1 <= int(1.6 * main_h) + 2):
         out = m.copy()
         out[:, x0:x1] = 0
         return out
+    # R14-E 第二路（小图版式：overlay-12 图 8×8 比字母 13px 矮，主判据恒假）：
+    # 首 run 是**字母尺寸**（高 ≤16、宽 ≤18）、墨量 < 邻右 run，且调用方提供
+    # 整带 `band_mask`（页级行线互证；窄墨段=字母段——图形的整块填充段高/墨
+    # 都过不了字母尺寸门），同一条垂直行线在带内其他列再现 ≥2 次、且该带在
+    # 首 run 左侧无墨（本 run 是带最左字母）→ 字母基线不变量成立，剥除。
+    if band_mask is not None and (x1 - x0) <= 18 and heights[0] <= 16 \
+            and ink0 < ink1:
+        bm = np.asarray(band_mask)
+        bx0, bx1 = x0 + band_x0, x1 + band_x0
+        a0, b0 = _span(bm, bx0, bx1)
+        band_runs = _row_runs(bm, 0, bm.shape[0])
+        if not any(r1 <= bx0 for r0, r1, _ in band_runs):
+            same_line = sum(
+                1 for r0, r1, rink in band_runs
+                if not (r1 <= bx1 + 1 and r0 >= bx0 - 1)      # 排除自身
+                and (r1 - r0) <= 18 and (b0 - a0) <= 16
+                and _span(bm, r0, r1) == (a0, b0)
+                and rink <= max(1, int(1.6 * ink0)))
+            if same_line >= 2:
+                out = m.copy()
+                out[:, x0:x1] = 0
+                return out
     return mask

@@ -54,8 +54,8 @@ def _r13c_enrich_option_cells(cells, boxes, mask):
     out = []
     for c, bx in zip(cells, boxes):
         rec = {k: c[k] for k in
-               ("bbox_page", "bbox_local", "pixel_sha",
-                "completeness", "source", "confidence")}
+               ("bbox_page", "bbox_local", "pixel_sha", "ink",
+                "completeness", "source", "confidence") if k in c}
         rec["cell_bbox"] = bx
         bk = tuple(c.get("band") or [])
         cx0, cy0, cw, ch = c["bbox_page"]
@@ -69,6 +69,13 @@ def _r13c_enrich_option_cells(cells, boxes, mask):
         rec["geometry_frame"] = list(fr_hit["frame"]) if fr_hit else None
         rec["label_association_verified"] = (
             fr_hit["label_association_verified"] if fr_hit else None)
+        # R14-E：定位器标签锚点切分的单元**自带标签框**（一一对应在切分时
+        # 已页级验证）——fr_hit 缺失时据此回填，不得把已证实的关联丢成 None。
+        if rec["label_association_verified"] is None and c.get("label_bbox") \
+                and c.get("provenance") == "localizer+label_anchor":
+            rec["label_association_verified"] = True
+            rec["label_bbox"] = list(c["label_bbox"])
+            rec["provenance"] = "localizer+label_anchor"
         if bk and len(bk) == 2:
             y0b, y1b = bk
             outside = 0
@@ -83,6 +90,50 @@ def _r13c_enrich_option_cells(cells, boxes, mask):
             rec["clipping_detected"] = None
         out.append(rec)
     return out
+
+
+def _rebuild_boxes(cells, mask):
+    """锚点/定位单元的**格盒公式**（唯一实现）：ink 框 + pad12，相邻单元以
+    间隙中点为帽，端头按半高外扩；保底不得切进墨迹。与 R11 padding-cell
+    几何对齐，无任何页面/案例特例。"""
+    import numpy as np
+    m = np.asarray(mask)
+    n = len(cells)
+    boxes = []
+    starts = [c["bbox_page"][0] for c in cells]
+    ends = [c["bbox_page"][0] + c["bbox_page"][2] for c in cells]
+    for i, c in enumerate(cells):
+        ink_x0, ink_y0, iw, ih = c["bbox_page"]
+        ink_x1 = ink_x0 + iw
+        pad = 12
+        left_cap = (ends[i - 1] + starts[i]) // 2 if i > 0 else 0
+        right_cap = (ends[i] + starts[i + 1]) // 2 if i < n - 1 else m.shape[1]
+        x0 = max(0, ink_x0 - pad) if i == 0 else max(left_cap, ink_x0 - pad)
+        x1 = min(m.shape[1], ink_x1 + pad) if i == n - 1 else min(right_cap, ink_x1 + pad)
+        y0 = max(0, ink_y0 - int(ih * 0.5))
+        y1 = min(m.shape[0], ink_y0 + ih + int(ih * 0.5))
+        x0 = min(x0, ink_x0); x1 = max(x1, ink_x1)
+        y1 = max(y1, ink_y0 + ih)
+        boxes.append([x0, y0, x1, y1])
+    return boxes
+
+
+def _tight_set(a):
+    """墨迹紧框裁剪（pad/平移对账用）。"""
+    import numpy as np
+    ys, xs = np.nonzero(a)
+    return np.asarray(a)[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+
+
+def _inter_at_origin(a, b):
+    """两紧框集按**原点**对齐后的交集像素数（尺寸差补零）。"""
+    import numpy as np
+    H, Wd = max(a.shape[0], b.shape[0]), max(a.shape[1], b.shape[1])
+    pa = np.zeros((H, Wd), bool)
+    pb = np.zeros((H, Wd), bool)
+    pa[:a.shape[0], :a.shape[1]] = a
+    pb[:b.shape[0], :b.shape[1]] = b
+    return int((pa & pb).sum())
 
 
 class FigureReasoningSkill(BaseSkill):
@@ -222,6 +273,258 @@ class FigureReasoningSkill(BaseSkill):
                     "profile": profile}
             return inputs
 
+    def _rebind_option_evidence(self, question: Question, ctx: SkillContext,
+                                inputs: Dict[str, Any]):
+        """R14-E：OptionEvidence↔Solver 消费哈希绑定（页面像素为唯一真值）。
+
+        meta/vision 里的选项裁剪若**无法**由当前页面像素以"带单元+标签剥除"
+        复现（哈希对不上/文件缺失），即为陈旧证据（旧切分器产物），弃用，
+        改由 _localizer_fallback_inputs 从页面**重建**格盒裁剪（重建几何=
+        生产既有 ink+pad+间隙帽公式，非新造第二套）。页面无法定位等量单元
+        或无可比对页面时**保持旧行为**并如实记录（dev 合成页 regions/* 为
+        基准产物、页面即题图，等量单元定位成功时同样可对账）。
+        返回 (inputs, notes)；notes 非空且 inputs=None 表示须走重建路径。
+        """
+        # R14-E：对账/重建是**一次性**动作——重建产物=页面像素，天然可对账；
+        # 重入（Verifier 复核会再调 solve）必须跳过对账，否则刚写出的重建
+        # 裁剪会被再剥标签/再对账，notes 翻倍、弹层空输入误报"选项少于 2 个"。
+        if getattr(self, "_r14e_rebind_active", False):
+            return inputs, []
+        self._r14e_binding = None
+        self._r14e_rebind_active = True
+        try:
+            out = self._rebind_option_evidence_once(question, ctx, inputs)
+        finally:
+            self._r14e_rebind_active = False
+        return out
+
+    def _rebind_option_evidence_once(self, question: Question, ctx: SkillContext,
+                                     inputs: Dict[str, Any]):
+        notes: List[str] = []
+        opts = inputs.get("options") or []
+        if not opts or not question.image_path \
+                or not Path(str(question.image_path)).is_file():
+            return inputs, ["consumption_binding:skipped_no_page"]
+        try:
+            import hashlib
+            import numpy as np
+            from ..tools.figure_page_localizer import localize_page
+            from ..tools.figure_tools import load_mask
+            mask = load_mask(str(question.image_path))
+        except Exception as exc:  # noqa: BLE001
+            return inputs, [f"consumption_binding:skipped_{type(exc).__name__}"]
+        # 页面唯一真值：在**题面声明的选项数**上做锚点切分，收集成立的
+        # "标签+图形"单元紧框墨集（标签按 label_bbox 确定性剥除）。
+        # R14-E 修订：不再扫描 expect=2..6——expect≠声明数时锚点可能命中
+        # 页面上**其他**"字母+短墨"结构（实测 screens 页脚文字行在 expect=2
+        # 时凑出 2 个"单元"），把非选项像素当页真值 → 好证据被误判陈旧。
+        # 真值只认"与 Solver 消费同一 expect 的锚点切分"，无锚点=无真值
+        # （保留旧行为 + no_page_truth 说明），诚实且页内自洽。
+        n_declared = len(question.options or [])
+        page_figs: List[Any] = []
+        _truth_ns = [n_declared] if n_declared >= 2 else list(range(2, 7))
+        for cand_n in _truth_ns:
+            res_c = localize_page(mask, n_options=cand_n)
+            cells_c = res_c.get("option_regions") or []
+            if len(cells_c) != cand_n or not all(
+                    c.get("label_bbox")
+                    and c.get("provenance") == "localizer+label_anchor"
+                    for c in cells_c):
+                continue
+            for c in cells_c:
+                bx, by, bw, bh = c["bbox_page"]
+                pc = np.asarray(mask[by:by + bh, bx:bx + bw], dtype=bool)
+                lx0, ly0, lw_, lh_ = c["label_bbox"]
+                pc = pc.copy()
+                pc[max(0, ly0 - by):max(0, ly0 - by) + lh_,
+                   max(0, lx0 - bx):max(0, lx0 - bx) + lw_] = False
+                if pc.any():
+                    page_figs.append(_tight_set(pc))
+        n_opts = n_declared
+        res = localize_page(mask, n_options=n_opts) if n_opts >= 2 else None
+        cells = (res or {}).get("option_regions") or []
+        page_shas = set()
+        if n_opts >= 2 and len(cells) == n_opts:
+            from ..tools.option_evidence import strip_label_from_crop
+            for c in cells:
+                bx, by, bw, bh = c["bbox_page"]
+                crop = np.asarray(mask[by:by + bh, bx:bx + bw], dtype=bool)
+                lb = c.get("label_bbox")
+                if lb and c.get("provenance") == "localizer+label_anchor":
+                    lx0, ly0, lw_, lh_ = lb
+                    crop = crop.copy()
+                    crop[max(0, ly0 - by):max(0, ly0 - by) + lh_,
+                         max(0, lx0 - bx):max(0, lx0 - bx) + lw_] = False
+                else:
+                    crop = np.asarray(strip_label_from_crop(crop), dtype=bool)
+                page_shas.add(hashlib.sha256(np.ascontiguousarray(
+                    crop).tobytes()).hexdigest()[:16])
+        consumed, stale, missing = [], [], []
+        from ..tools.option_evidence import strip_label_from_crop as _sl
+        # 陈旧判据（页级不变量，无 case-id；dev/真实同规）：
+        #   ①strip 后无墨 → 陈旧；strip 后近空白（<20px）而页面真值有实图形
+        #     （≥40px）→ 陈旧（overlay-12 旧切分把 C 剪成 16px 残片属此类）；
+        #   ②裁剪紧框必须是某页面真值紧框的**等墨集**（逐像素相等）或其
+        #     **墨超集**（允许 pad 环）——缺块（残条/切半）与并入邻列都拦下。
+        # 页面无任何锚点成立切分（无标签带页/带高>40）→ 无真值可对账，
+        # 保持旧行为并如实记录（不猜、不弃用）。
+        if not page_figs:
+            return inputs, (["consumption_binding:no_page_truth"]
+                            if cells or page_shas else
+                            ["consumption_binding:no_option_band"])
+        for label, path in opts:
+            try:
+                cm = np.asarray(load_mask(str(path)), dtype=bool)
+            except Exception:  # noqa: BLE001
+                missing.append(label)
+                continue
+            sha = hashlib.sha256(np.ascontiguousarray(cm).tobytes()).hexdigest()[:16]
+            consumed.append({"label": label, "content_pixel_sha": sha})
+            if page_shas and sha in page_shas:
+                continue
+            cm_s = np.asarray(_sl(cm), dtype=bool)
+            ink1 = int(cm_s.sum())
+            if not cm_s.any():
+                stale.append(label)
+                continue
+            page_max_ink = max((int(pf.sum()) for pf in page_figs), default=0)
+            if ink1 < 20 and page_max_ink >= 40:
+                stale.append(label)
+                continue
+            t_c = _tight_set(cm_s)
+            ok = False
+            for pf in page_figs:
+                if pf is None or not pf.any():
+                    continue
+                p_ink = int(pf.sum())
+                if t_c.shape == pf.shape and int((t_c ^ pf).sum()) == 0:
+                    ok = True            # 同页同分解：墨集逐像素相等
+                    break
+                inter = _inter_at_origin(t_c, pf)
+                if inter >= 0.95 * p_ink and ink1 >= p_ink:
+                    ok = True            # 墨超集（pad 差吸收）
+                    break
+            if not ok:
+                stale.append(label)
+        self._r14e_binding = {"consumed": [c["content_pixel_sha"] for c in consumed],
+                              "n_opts": len(opts),
+                              "page_truth_cells": len(page_figs),
+                              "stale": stale, "missing": missing}
+        if not (stale or missing):
+            self._r14e_binding["state"] = "verified"
+            inputs["consumption_binding"] = "verified"
+            inputs["consumed_crop_shas"] = [c["content_pixel_sha"] for c in consumed]
+            return inputs, ["consumption_binding:verified"]
+        # 陈旧/缺失：在**锚点切分**（标签一一对应已页级验证）成立时，用
+        # 生产既有格盒公式从页面像素重建选项裁剪，**题干/格证据输入原样保留**
+        # （只换掉坏掉的选项证据，不牵动已验证的题干通道）。锚点不成立
+        # （无标签带页/带高>40 等）→ 整体弃用，交回退链重建（其题干证据
+        # 来自像素格证据，非 meta）。
+        need = sorted(set(stale) | set(missing))
+        if not need:
+            self._r14e_binding["state"] = "ok"
+            return inputs, notes
+        anchored = None
+        if n_opts >= 2:
+            res_a = localize_page(mask, n_options=n_opts)
+            ca = res_a.get("option_regions") or []
+            if len(ca) == n_opts and all(
+                    c.get("label_bbox")
+                    and c.get("provenance") == "localizer+label_anchor"
+                    for c in ca):
+                anchored = ca
+        if anchored is None:
+            notes.append(
+                f"stale_option_evidence:{len(need)}/{len(opts)} 绑定失败"
+                f"（陈旧={stale} 缺失={missing}）→ 弃 meta 裁剪、页面像素重建")
+            self._r14e_binding["state"] = "rejected_rebuild_all"
+            return None, notes
+        rebuilt = self._rebuild_option_crops(question, ctx, inputs, anchored, mask)
+        if rebuilt is None:
+            notes.append("consumption_binding:rebuild_failed")
+            self._r14e_binding["state"] = "rejected_rebuild_failed"
+            return None, notes
+        notes.append(f"rebound_option_crops_from_page:{need}")
+        self._r14e_binding["state"] = "rebuilt"
+        self._r14e_binding["rebuilt"] = need
+        return rebuilt, notes
+
+    def _rebuild_option_crops(self, question: Question, ctx: SkillContext,
+                              inputs: Dict[str, Any], cells: list,
+                              mask) -> Optional[Dict[str, Any]]:
+        """R14-E：仅重建**选项裁剪**（格盒公式与 _localizer_fallback_inputs 同一
+        实现：ink+pad12、间隙帽、label_bbox 确定性剥标签），题干/grid/provenance
+        原样沿用——陈旧证据不牵动好证据。"""
+        import cv2
+        import numpy as np
+        n = len(cells)
+        if n < 2 or len(inputs.get("options") or []) != n:
+            return None
+        boxes = _rebuild_boxes(cells, mask)
+        if ctx is not None and ctx.artifacts is not None:
+            out_dir = ctx.artifacts.dir / "regions_pixel"
+        else:
+            import tempfile
+            out_dir = Path(tempfile.gettempdir()) / "assessment_r14e"
+        from ..tools.option_evidence import strip_label_from_crop
+        out = dict(inputs)
+        opts: List[Tuple[str, str]] = []
+        for (lab, _old), c, (x0, y0, x1, y1) in zip(inputs["options"], cells, boxes):
+            crop = np.asarray(mask[y0:y1, x0:x1], dtype=bool)
+            if c.get("label_bbox") and c.get("provenance") == "localizer+label_anchor":
+                lx0, ly0, lw_, lh_ = c["label_bbox"]
+                a = max(0, lx0 - x0)
+                crop = crop.copy()
+                crop[max(0, ly0 - y0):max(0, ly0 - y0) + lh_, a:a + lw_] = False
+            else:
+                crop = strip_label_from_crop(crop)
+            if int(crop.sum()) == 0:
+                return None
+            img = np.where(crop, 0, 255).astype(np.uint8)
+            out_dir.mkdir(parents=True, exist_ok=True)
+            p = out_dir / f"option_{lab}.png"
+            if not cv2.imwrite(str(p), img):
+                return None
+            opts.append((lab, str(p)))
+        out["options"] = opts
+        # R14-E：选项证据来源换为页面重建 → provenance **同步**换成页面锚点
+        # 单元（带 label_bbox/provenance/格盒/像素哈希），不得留下陈旧来源
+        # 冒充——审计字段必须描述实际被消费的那份像素。
+        # `pixel_sha` 必须是**定位器同源**的墨迹框哈希（验证器独立复推用它
+        # 对账）；实际消费文件的哈希另记 `consumed_crop_sha`（绑定证据）。
+        import hashlib
+        prev = inputs.get("region_provenance") or {}
+        cells_out = []
+        for lab, c, (x0, y0, x1, y1) in zip([l for l, _ in opts], cells, boxes):
+            crop_m = np.asarray(mask[y0:y1, x0:x1], dtype=bool)
+            if c.get("label_bbox"):
+                lx0, ly0, lw_, lh_ = c["label_bbox"]
+                a = max(0, lx0 - x0)
+                crop_m = crop_m.copy()
+                crop_m[max(0, ly0 - y0):max(0, ly0 - y0) + lh_, a:a + lw_] = False
+            cells_out.append({
+                "bbox_page": list(c["bbox_page"]), "cell_bbox": [x0, y0,
+                                                                 x1 - x0, y1 - y0],
+                "label_bbox": list(c["label_bbox"]) if c.get("label_bbox") else None,
+                "provenance": c.get("provenance"),
+                "label_association_verified": True,
+                "band": list(c.get("band") or []),
+                "pixel_sha": c.get("pixel_sha"),
+                "completeness": c.get("completeness"),
+                "confidence": c.get("confidence"),
+                "consumed_crop_sha": hashlib.sha256(np.ascontiguousarray(
+                    crop_m).tobytes()).hexdigest()[:16],
+                "ink": int(crop_m.sum()),
+                "source": "page_pixels_r14e",
+            })
+        prov = dict(prev)
+        prov["option_cells"] = cells_out
+        prov["consumption_binding"] = "rebuilt"
+        prov["binding_notes"] = (prev.get("binding_notes") or []) + \
+            [f"rebound:{len(cells_out)}"]
+        out["region_provenance"] = prov
+        return out
+
     def _region_incomplete(self, question: Question,
                            extra: Optional[List[str]] = None) -> Solution:
         """v2 区域证据不完整：说明缺什么，返回结构化失败（不猜测、不回退整图）。"""
@@ -271,6 +574,77 @@ class FigureReasoningSkill(BaseSkill):
         if not stem_crop_ok and not question.image_path:
             return None, ["no_stem_crop_and_no_page"]
         if n_opts < 2:
+            # R14-E：题面文字缺失时（真实截图 OCR 返回 0 选项），标签字母仍
+            # **内嵌在版式里**——锚点切分要求字母集恰 expect 个、等距、与图形
+            # 一一对应（页级结构验证，非逐字识别），行序 A→… 指派字母即与
+            # 既有 label_assignment=row_major 同语义；Solver 消费裁剪、Verifier
+            # 再核一一对应。不猜内容，只认版式。
+            from ..tools.figure_page_localizer import localize_page as _lp_probe
+            from ..tools.figure_tools import load_mask as _lm_probe
+            try:
+                _pmask = _lm_probe(str(question.image_path))
+            except Exception:  # noqa: BLE001
+                return None, ["选项少于 2 个"]
+            for cand_n in range(2, 7):
+                trial = _lp_probe(_pmask, n_options=cand_n)
+                tc = trial.get("option_regions") or []
+                if (len(tc) == cand_n
+                        and all(c.get("provenance") == "localizer+label_anchor"
+                                and c.get("label_bbox") for c in tc)):
+                    letters = "ABCDEFGH"[:cand_n]
+                    n_opts = cand_n
+                    notes.append(f"labels_from_pixel_anchors:n{cand_n}")
+                    # model_copy(update=) 不过校验 → 必须构 **模型实例**，
+                    # 否则下游 o.label 拿到 dict 会崩（screens 回归实测）。
+                    from ..schemas import QuestionOption as _QO
+                    question = question.model_copy(update={
+                        "options": [_QO(label=l, text="") for l in letters]})
+                    break
+            if n_opts < 2:
+                # R14-E 第二候选：**页面无标签字母**的排版（实测 tight 页：
+                # 选项带 3 个单元 24×24、墨 168/168/168、节距 74/72、单元间
+                # 纯白间隙 ≥20px，has_letter_labels=False 由定位器页级实测
+                # 标注）。选项**内容**证据是真实完整的（不再是"选项 0 份"），
+                # 但标签↔图形一一对应**无从建立** → 行序标签只作为
+                # `row_order_no_letter_evidence` 如实标注，下游 label
+                # association 校验必为 False → 不可释放（候选≠释放）。
+                import numpy as _np
+                for cand_n in range(2, 7):
+                    trial = _lp_probe(_pmask, n_options=cand_n)
+                    tc = trial.get("option_regions") or []
+                    if len(tc) != cand_n:
+                        continue
+                    if not all(c.get("has_letter_labels") is False
+                               and (c.get("completeness") or {}).get("passed")
+                               and int(c.get("ink") or 0) >= 20 for c in tc):
+                        continue
+                    ws = [c["bbox_page"][2] for c in tc]
+                    hs = [c["bbox_page"][3] for c in tc]
+                    st = [c["bbox_page"][0] for c in tc]
+                    pits = [st[i + 1] - st[i] for i in range(len(st) - 1)]
+                    band = {tuple(c["band"]) for c in tc}
+                    med_w = float(_np.median(ws)) if ws else 0
+                    med_p = float(_np.median(pits)) if pits else 0
+                    med_i = float(_np.median([int(c["ink"]) for c in tc]))
+                    same_row = len(band) == 1
+                    regular = (bool(pits) and med_p > 0
+                               and max(pits) - min(pits) <= max(4.0, 0.15 * med_p)
+                               and all(0.75 <= w / med_w <= 1.35 for w in ws)
+                               and max(hs) - min(hs) <= 4
+                               and all(abs(int(c["ink"]) - med_i) <= 0.25 * med_i
+                                       for c in tc))
+                    if same_row and regular:
+                        letters = "ABCDEFGH"[:cand_n]
+                        n_opts = cand_n
+                        notes.append(
+                            f"labels_from_row_order_no_letter_evidence:n{cand_n}"
+                            "（无标签字母版式，行序标签未经页内验证）")
+                        self._r14e_unanchored = True
+                        from ..schemas import QuestionOption as _QO2
+                        question = question.model_copy(update={
+                            "options": [_QO2(label=l, text="") for l in letters]})
+                        break
+        if n_opts < 2:
             return None, ["选项少于 2 个"]
         try:
             import cv2
@@ -287,13 +661,22 @@ class FigureReasoningSkill(BaseSkill):
         extra: List[Dict[str, Any]] = []
         res = localize_page(mask, n_options=n_opts, vlm_options=vlm_opts)
         cells = res.get("option_regions") or []
-        if len(cells) != n_opts:
-            extra = self._targeted_second_observation(question, ctx, res, n_opts)
-            if extra:
-                res2 = localize_page(mask, n_options=n_opts,
-                                     vlm_options=vlm_opts + extra)
-                cells = res2.get("option_regions") or cells
-                notes.append("second_observation_applied")
+        # R14-E 消费门（perturb30 两反例实测，HEAD 等价语义）：Solver 只消费
+        # **标签锚点切分**的选项格（字母↔图形一一对应经页内结构验证）。
+        # 普通列聚类格（如扰动页 3 簇被 expect 校正劈成 4 段）会把题干行选成
+        # 选项带 → 题干被截行 → 1×4/1×5 假格阵**且可释放**（HEAD 在该两页
+        # 不产出可释放证据）。这类页**不整页否决**（test_r10d_wiring 的 tight
+        # 排版页要靠聚类切分），而是走既有严格路径：
+        #   ① 二次观察仍按 HEAD 语义询问缺失框（默认关闭，零 API）；
+        #   ② 仍不足 declared → 如实失败（"定位到 N 个选项区"），不回退整图。
+        if cells and not all(c.get("label_bbox")
+                             and c.get("provenance") == "localizer+label_anchor"
+                             for c in cells):
+            # tight 排版页要靠列聚类切分重建选项证据（test_r10d_wiring 实测
+            # 整页否决会让该类页重新变成"选项 0 份"）→ **保留**旧切分，只如实
+            # 记录"未经标签锚点验证"，并由 consumption_binding 标注供审计。
+            notes.append("option_cells_not_label_anchored")
+            self._r14e_unanchored = True
         if len(cells) != n_opts:
             return None, notes + [f"定位到 {len(cells)} 个选项区，题面 {n_opts} 个选项"]
         bad = [c["index"] for c in cells if not c["completeness"]["passed"]]
@@ -305,30 +688,30 @@ class FigureReasoningSkill(BaseSkill):
             import tempfile
             out_dir = Path(tempfile.gettempdir()) / "assessment_r10d"
         labels = [str(o.label) for o in question.options]
-        # 墨迹框扩为格盒：以相邻单元间隙中点切分，端头按中位节距外扩
-        boxes: List[List[int]] = []
-        n = len(cells)
-        starts = [c["bbox_page"][0] for c in cells]
-        ends = [c["bbox_page"][0] + c["bbox_page"][2] for c in cells]
-        pitch = max(4, (starts[-1] - starts[0]) // max(1, n - 1)) if n > 1 else \
-            max(c["bbox_page"][2] for c in cells)
-        for i, c in enumerate(cells):
-            ink_x0, ink_y0, iw, ih = c["bbox_page"]
-            ink_x1 = ink_x0 + iw
-            pad = 12  # R11：向金标 padding-cell 几何对齐（ink+24px 盒）
-            left_cap = (ends[i - 1] + starts[i]) // 2 if i > 0 else 0
-            right_cap = (ends[i] + starts[i + 1]) // 2 if i < n - 1 else mask.shape[1]
-            x0 = max(0, ink_x0 - pad) if i == 0 else max(left_cap, ink_x0 - pad)
-            x1 = min(mask.shape[1], ink_x1 + pad) if i == n - 1 else min(right_cap, ink_x1 + pad)
-            y0 = max(0, ink_y0 - int(ih * 0.5))
-            y1 = min(mask.shape[0], ink_y0 + ih + int(ih * 0.5))
-            # 保底：格盒必须完整包含墨迹（tight 间隙帽不得切进墨迹框）
-            x0 = min(x0, ink_x0); x1 = max(x1, ink_x1)
-            y1 = max(y1, ink_y0 + ih)
-            boxes.append([x0, y0, x1, y1])
+        # 墨迹框扩为格盒：**调用唯一实现** _rebuild_boxes（R14-E 去重复：
+        # 此处曾有第二份内联同款公式，与 _rebuild_option_crops 消费的同源
+        # 几何必须一处实现，否则两条链路的裁剪会漂移）
+        boxes: List[List[int]] = _rebuild_boxes(cells, mask)
         options: List[Tuple[str, str]] = []
+        from ..tools.option_evidence import strip_label_from_crop
         for lab, c, (x0, y0, x1, y1) in zip(labels, cells, boxes):
             crop = mask[y0:y1, x0:x1]
+            if c.get("label_bbox") and c.get("provenance") == "localizer+label_anchor":
+                # R14-E：锚点切分单元内字母按 label_bbox **确定性置零剥除**
+                # （bbox 来自同一页同一次域分解，剥除内容=像素证据记录）。
+                # 旧启发式 strip_label_from_crop 只剥"左端小高度 run"，
+                # overlay-12 C 的字母被图形域吞并（13≥8×0.6 且宽>8）剥不掉
+                # → Solver 读回"几乎空白"。tight 页（无 label_bbox）走启发式
+                # 或原样，不回归。
+                # 行线上字母与图形上下叠排（overlay-12 dev 页：字母带 238-251、
+                # 图形 246-266）时，整列抹零会吃掉图形——按 label 域行范围
+                # 限定（与图形行的交集列一并保留，剥除只碰标签自己的像素框）。
+                lx0, ly0, lw_, lh_ = c["label_bbox"]
+                a, b = max(0, lx0 - x0), max(0, lx0 - x0) + lw_
+                crop = crop.copy()
+                crop[max(0, ly0 - y0):max(0, ly0 - y0) + lh_, a:b] = False
+            else:
+                crop = strip_label_from_crop(crop)
             img = np.where(crop, 0, 255).astype(np.uint8)
             out_dir.mkdir(parents=True, exist_ok=True)
             p = out_dir / f"option_{lab}.png"
@@ -364,6 +747,10 @@ class FigureReasoningSkill(BaseSkill):
                 return None, notes + [
                     f"stem_evidence_{seq.get('reason') or ev['verification_status']}"
                     f"（布局假设不唯一/空格不可判，弃权不猜）"]
+            if not ev.get("release_eligible"):
+                return None, notes + [
+                    f"stem_evidence_not_releasable:{ev['verification_status']}"
+                    "（格尺寸假设未经页内互证，不据其推理解题）"]
             rows, cols = ev["grid_rows"], ev["grid_cols"]
             from ..tools.diagram_grid_evidence import render_canvas
             canvas = render_canvas(mask, ev)
@@ -388,6 +775,9 @@ class FigureReasoningSkill(BaseSkill):
                 "consumed_representation": "shape_normalized",
                 "ink_deltas": (ev.get("ink_deltas") or [])[:8],
             }
+        if getattr(self, "_r14e_stale_notes", None):
+            notes = list(notes) + list(self._r14e_stale_notes)
+            self._r14e_stale_notes = None
         inputs = {
             "stem_crop": str(stem_crop),
             "options": options,
@@ -404,6 +794,19 @@ class FigureReasoningSkill(BaseSkill):
                 "label_assignment": "row_major",
                 "second_observation": bool(extra),
                 "notes": res.get("notes") or [],
+                # R14-E 如实标注：本页选项切分若未经**标签锚点**页内验证
+                # （字母↔图形一一对应），审计侧必须看得见 no_label_anchor。
+                "option_cut_provenance": (
+                    "label_anchor_verified" if cells and all(
+                        c.get("label_bbox")
+                        and c.get("provenance") == "localizer+label_anchor"
+                        for c in cells) else "column_cluster_no_label_anchor"),
+                "consumption_binding": (getattr(self, "_r14e_binding", None) or {}).get(
+                    "state"),
+                "consumed_crop_shas": (getattr(self, "_r14e_binding", None) or {}).get(
+                    "consumed"),
+                "binding_notes": (getattr(self, "_r14e_binding", None) or {}).get(
+                    "notes") or [],
             },
         }
         return inputs, notes
@@ -729,14 +1132,25 @@ class FigureReasoningSkill(BaseSkill):
         vision_present = isinstance((question.meta or {}).get("vision"), dict)
         region_inputs = self._region_inputs(question, ctx) if vision_present else None
         if region_inputs is not None:
-            return self._solve_regions(question, ctx, region_inputs)
+            # R14-E 消费哈希绑定：meta 里的陈旧选项裁剪（旧缺陷切分产物）
+            # 一律先与**当前页面像素**对账；对不上即弃用，走定位器重建路径。
+            rebound, stale_notes = self._rebind_option_evidence(
+                question, ctx, region_inputs)
+            if rebound is not None:
+                if stale_notes:
+                    self._r14e_stale_notes = stale_notes
+                return self._solve_regions(question, ctx, rebound)
+            self._r14e_stale_notes = stale_notes
         if vision_present:
             # R10-D：VLM 区域不足时，确定性像素定位器补齐选项区（题干裁剪仍需解析
             # 通道提供，不回退整图）；来源与完整性全程可审计
             fb, fb_notes = self._localizer_fallback_inputs(question, ctx)
             if fb is not None:
                 return self._solve_regions(question, ctx, fb)
-            return self._region_incomplete(question, extra=fb_notes)
+            extra_notes = list(fb_notes) + list(
+                getattr(self, "_r14e_stale_notes", None) or [])
+            self._r14e_stale_notes = None
+            return self._region_incomplete(question, extra=extra_notes)
 
         grid = self._grid(question)
         invocation = ctx.toolbox.run(TOOL_ID, path=question.image_path, grid=grid)

@@ -506,8 +506,8 @@
     "match": true,
     "status": "ok",
     "release": {
-     "answer": "A",
-     "verify": "unverified",
+     "answer": null,
+     "verify": null,
      "released": false,
      "wrong_accept": false,
      "grid_match": true
@@ -529,8 +529,8 @@
     "match": true,
     "status": "ok",
     "release": {
-     "answer": "A",
-     "verify": "unverified",
+     "answer": null,
+     "verify": null,
      "released": false,
      "wrong_accept": false,
      "grid_match": true

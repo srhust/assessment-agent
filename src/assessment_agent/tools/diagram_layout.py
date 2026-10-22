@@ -560,11 +560,32 @@ def _compose_canvas(mask: np.ndarray, units: Sequence[tuple], by0: int, by1: int
     return canvas
 
 
-def check_option_crop(crop_mask: np.ndarray) -> Dict[str, Any]:
-    """校验 5：单个选项裁剪的内容完整性（墨迹占比与最小尺寸）。"""
+def check_option_crop(crop_mask: np.ndarray, content_only: bool = False) -> Dict[str, Any]:
+    """校验 5：单个选项裁剪的内容完整性（墨迹占比与最小尺寸）。
+
+    R14-E：`content_only=True`（标签锚点切分单元——标签域已剥除或另录，
+    裁剪只剩图形）时按 tight 外接框算占比：满幅等分格内小图形（overlay-12
+    C：111px 于 87×28 格）被整幅 ratio 误判"内容不足"，而 tight 判据
+    （111/(20×8)=0.69）如实反映图形存在且完好。tight 最小边同守 MIN_CELL_PX。
+    """
     h, w = crop_mask.shape
     ratio = float(crop_mask.mean()) if crop_mask.size else 0.0
     ok = (ratio >= MIN_INK_RATIO) and (min(h, w) >= MIN_CELL_PX)
+    if content_only:
+        nz = np.nonzero(crop_mask.any(axis=1))[0]
+        nx = np.nonzero(crop_mask.any(axis=0))[0]
+        th = int(nz[-1] - nz[0] + 1) if len(nz) else 0
+        tw = int(nx[-1] - nx[0] + 1) if len(nx) else 0
+        ink = int(crop_mask.sum())
+        t_ratio = ink / max(1, th * tw)
+        # tight 基下最小边门放宽到 4px：真图形本就 8px 高（trans-07 横条），
+        # 但"散点假内容"过不了 t_ratio≥MIN_INK_RATIO×(tight 框小) 的占比——
+        # 占比按 tight 框算，111px/8×8 方图=1.0、单像素噪点=1.0 但 th*tw≤3
+        # 被 4px 门挡住。整幅基（旧语义）原样保留。
+        ok = (t_ratio >= MIN_INK_RATIO) and (min(th, tw) >= 4) and (th * tw >= 16)
+        return {"passed": bool(ok), "ink_ratio": round(t_ratio, 5),
+                "size": [tw, th], "threshold": MIN_INK_RATIO,
+                "basis": "tight_content"}
     return {"passed": bool(ok), "ink_ratio": round(ratio, 5),
             "size": [int(w), int(h)], "threshold": MIN_INK_RATIO}
 
