@@ -122,7 +122,9 @@ def build_grid_evidence(mask: np.ndarray, image_sha: str,
     # 确定性等距分支：≥2 个等间距可见格 + 期望空白 → 1×(N+1)，目标在末槽
     pitch_ev = None
     hints = list(cells_hint or [])
-    if not (rows and cols) and expects_blank and len(hints) >= 2:
+    # R13-D：等距外推分支在**显式行列**时同样启用——否则复核（显式网格）走均分槽、
+    # 求解（自动）走外推槽，两套协议制造虚假哈希漂移（mirror-04 F unverified 根因）。
+    if expects_blank and len(hints) >= 2:
         starts = sorted(int(c["bbox_page"][0]) for c in hints)
         hs = [int(c["bbox_page"][3]) for c in hints]
         ys = [int(c["bbox_page"][1]) for c in hints]

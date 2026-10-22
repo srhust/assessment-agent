@@ -153,14 +153,13 @@
   "F": {
    "correct_candidates": 1,
    "wrong_candidates": 1,
-   "verified_accepted": 0,
-   "final_released": 0,
-   "of_effective_answerable": "0/13",
+   "verified_accepted": 1,
+   "final_released": 1,
+   "of_effective_answerable": "1/13",
    "effective_answerable_n": 13,
    "wrong_releases": [],
    "gated_rejects": [],
    "gated_unverified": [
-    "ft-mirror-04",
     "ft-trans-08"
    ],
    "design_abstain_ok": [
@@ -173,7 +172,9 @@
     "correct_candidates": [
      "ft-mirror-04"
     ],
-    "released": []
+    "released": [
+     "ft-mirror-04"
+    ]
    }
   }
  },
@@ -407,8 +408,8 @@
     "F": {
      "status": "solved",
      "answer": "A",
-     "verify": "unverified",
-     "final_answer": null
+     "verify": "accept",
+     "final_answer": "A"
     }
    },
    "design_abstain": false
