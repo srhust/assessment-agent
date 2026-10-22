@@ -1,0 +1,72 @@
+{
+ "stage": "R12-G freeze（先于任何 HTTP 写定）",
+ "frozen_at_head": "b3e9957fb7ce183713b2a3a9186c3568497ff51a",
+ "model": "由 settings.llm 解析并逐请求 echo（R11 实测 glm-5.3-flash, temp0）；模型/温度本轮不改",
+ "prompt_source_shas": {
+  "vision_parser": "5c691edf53355301",
+  "llm_client": "e82e5f0f1758c5a9",
+  "pipeline": "f4a174a0dcf9682a",
+  "figure_skill": "cbe04e210564a5c9",
+  "grid_evidence": "f18ebff5696b39ea",
+  "page_localizer": "9d8bb4cb6ba27154"
+ },
+ "mode": "image_only: Pipeline.run(text=None, image_path=...)；任何传文本一律标记非合格并从指标剔除",
+ "budget": {
+  "max_requests_incl_retries": 8,
+  "timeout_stop": "error_types 中 timeout/connection 类合计>=3（前 8 请求内，逐请求后检查）即停",
+  "token_policy": "优先 usage_snapshot.total_tokens；网关不回显 usage 时用保守估算 Σ(图像字节/4)+prompt 字符/4，硬顶 240k；两者均逐请求记录"
+ },
+ "release_rule": "仅 verification.action ∈ {accept,repair} 且 final_answer 非空计为释放；reject/unverified 不计",
+ "stop_on_wrong_accept": "任一错误答案被接受释放 → 立即停止扩量并归因（剩余预算不追用）",
+ "items": [
+  {
+   "id": "ft-rot90-01",
+   "family": "rotation",
+   "image": "data/benchmark_figshots/images/dev/ft-rot90-01.png",
+   "gold_answer": "A",
+   "why": "历史失败（VLM 网格截断，C 后像素契约 [1,4] 正确）",
+   "image_sha": "91bda3d1cfbb9788"
+  },
+  {
+   "id": "ft-mirror-04",
+   "family": "mirror",
+   "image": "data/benchmark_figshots/images/dev/ft-mirror-04.png",
+   "gold_answer": "A",
+   "why": "历史失败；离线 E 已接受释放，真实链路待验",
+   "image_sha": "092496aac4e638c8"
+  },
+  {
+   "id": "ft-trans-07",
+   "family": "translation",
+   "image": "data/benchmark_figshots/images/dev/ft-trans-07.png",
+   "gold_answer": "A",
+   "why": "平移代表：Position-preserving 表示的实战检验",
+   "image_sha": "b526f4dd7eef5405"
+  },
+  {
+   "id": "ft-overlay-12",
+   "family": "overlay_grid3",
+   "image": "data/benchmark_figshots/images/dev/ft-overlay-12.png",
+   "gold_answer": "A",
+   "why": "九宫格目标非末格历史失败",
+   "image_sha": "00a2649ecc70855b"
+  },
+  {
+   "id": "ft-rot90-01--small",
+   "family": "rotation_newlayout",
+   "image": "data/benchmark_figshots_perturb/images/ft-rot90-01--small.png",
+   "gold_answer": "A",
+   "why": "新布局（缩放扰动）",
+   "image_sha": "187455ec77a45987"
+  },
+  {
+   "id": "ft-mirror-04--tight",
+   "family": "mirror_narrowgap_newlayout",
+   "image": "data/benchmark_figshots_perturb/images/ft-mirror-04--tight.png",
+   "gold_answer": "A",
+   "why": "新布局（窄隙扰动）：narrow-gap 修复实战",
+   "image_sha": "8a201b3d90468fe1"
+  }
+ ],
+ "no_scope": "不跑 R5-87；不启动盲评 Test；不新增规则"
+}

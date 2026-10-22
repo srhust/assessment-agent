@@ -1,0 +1,516 @@
+{
+ "stage": "R12-G",
+ "frozen_at_head": "b3e9957fb7ce183713b2a3a9186c3568497ff51a",
+ "aborted": null,
+ "requests_sent_real_incl_retries": 8,
+ "network_timeouts_http_layer": 2,
+ "tokens": {
+  "usage_snapshot_total": 16946,
+  "conservative_estimate": 16394,
+  "cap": 240000
+ },
+ "eligible_image_only": 4,
+ "three_layer": {
+  "correct_candidates": 0,
+  "accepted": 0,
+  "final_released_correct": 0,
+  "wrong_releases": []
+ },
+ "usage_audit": {
+  "requests_sent": 8,
+  "requests_succeeded": 6,
+  "http_status_counts": {
+   "200": 6
+  },
+  "error_types": {
+   "ReadTimeout": 2
+  },
+  "echoed_models": [
+   "glm-5.3-flash"
+  ],
+  "request_ids_sample": [
+   "29af5001-7d25-4630-8aaf-fc3bd384d328",
+   "77fbd081-8630-4324-9185-f66979bdfa96",
+   "73be6e18-c85d-41e7-8b02-23330b8ab493",
+   "d00e2d1f-e7b0-4bc6-abd0-d47807cc4c16",
+   "5f775b67-1d9e-4faa-82fb-404a1830e045"
+  ],
+  "base_url_host": "st8tp3ajl0df3n8b8l8qu.apigateway-cn-beijing.volceapi.com",
+  "vision_model_configured": "glm-5.3-flash",
+  "mock_or_injected_transport": false,
+  "offline_mode": false,
+  "by_phase": {
+   "vision_parse": {
+    "http_succeeded": 6,
+    "http_failed": 0,
+    "malformed_envelope": 0,
+    "json_output_valid": 6,
+    "json_output_invalid": 0,
+    "latency_ms_sum": 369712.7,
+    "image_evidence": [
+     {
+      "sha256_16": "91bda3d1cfbb9788",
+      "bytes": 4070,
+      "file": "ft-rot90-01.png",
+      "size_wh": [
+       380,
+       208
+      ],
+      "format": "PNG",
+      "has_image_content_block": true,
+      "model_echo": "glm-5.3-flash"
+     },
+     {
+      "sha256_16": "092496aac4e638c8",
+      "bytes": 3697,
+      "file": "ft-mirror-04.png",
+      "size_wh": [
+       348,
+       208
+      ],
+      "format": "PNG",
+      "has_image_content_block": true,
+      "model_echo": "glm-5.3-flash"
+     },
+     {
+      "sha256_16": "b526f4dd7eef5405",
+      "bytes": 3661,
+      "file": "ft-trans-07.png",
+      "size_wh": [
+       348,
+       208
+      ],
+      "format": "PNG",
+      "has_image_content_block": true,
+      "model_echo": "glm-5.3-flash"
+     },
+     {
+      "sha256_16": "00a2649ecc70855b",
+      "bytes": 4341,
+      "file": "ft-overlay-12.png",
+      "size_wh": [
+       380,
+       304
+      ],
+      "format": "PNG",
+      "has_image_content_block": true,
+      "model_echo": "glm-5.3-flash"
+     },
+     {
+      "sha256_16": "187455ec77a45987",
+      "bytes": 1255,
+      "file": "ft-rot90-01--small.png",
+      "size_wh": [
+       520,
+       300
+      ],
+      "format": "PNG",
+      "has_image_content_block": true,
+      "model_echo": "glm-5.3-flash"
+     },
+     {
+      "sha256_16": "8a201b3d90468fe1",
+      "bytes": 554,
+      "file": "ft-mirror-04--tight.png",
+      "size_wh": [
+       264,
+       240
+      ],
+      "format": "PNG",
+      "has_image_content_block": true,
+      "model_echo": "glm-5.3-flash"
+     }
+    ]
+   }
+  }
+ },
+ "per_item": [
+  {
+   "id": "ft-rot90-01",
+   "family": "rotation",
+   "gold": "A",
+   "status": "failed",
+   "solver_answer": null,
+   "verification_action": "reject",
+   "final_answer": null,
+   "released": false,
+   "answer": null,
+   "stem_evidence": {
+    "grid": [
+     1,
+     4
+    ],
+    "target_cell": [
+     0,
+     3
+    ],
+    "target_basis": "unique_empty_slot",
+    "status": "ok",
+    "confidence": "high",
+    "visible_cells": [
+     [
+      0,
+      0
+     ],
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ]
+    ],
+    "blank_cells": [
+     [
+      0,
+      3
+     ]
+    ],
+    "cell_pixel_shas": [
+     "c9cc0315ac712991",
+     "0b017c9f3558a817",
+     "557b879ec813d3e3",
+     "671a03b622d3d43f"
+    ],
+    "canvas_sha": "fd821e325bd07f06",
+    "canvas_position_sha": "f85a68ad25953904",
+    "representation_pair": "shape_normalized+position_preserving",
+    "consumed_representation": "shape_normalized",
+    "ink_deltas": [
+     [
+      54,
+      0
+     ],
+     [
+      46,
+      6
+     ]
+    ]
+   },
+   "stem_crop_source": "pixel_grid_evidence",
+   "elapsed_s": 18.8,
+   "extraction_parser": "vision_parser",
+   "image_only_eligible": true,
+   "correct": false,
+   "audit_after_item": {
+    "requests_sent": 1,
+    "network_timeouts": 0
+   },
+   "token_state": {
+    "usage_snapshot": 2327,
+    "estimate": 3017,
+    "gate_used": "usage_snapshot"
+   }
+  },
+  {
+   "id": "ft-mirror-04",
+   "family": "mirror",
+   "gold": "A",
+   "status": "failed",
+   "solver_answer": null,
+   "verification_action": "reject",
+   "final_answer": null,
+   "released": false,
+   "answer": null,
+   "stem_evidence": {
+    "grid": [
+     1,
+     3
+    ],
+    "target_cell": [
+     0,
+     2
+    ],
+    "target_basis": "unique_empty_slot",
+    "status": "ok",
+    "confidence": "high",
+    "visible_cells": [
+     [
+      0,
+      0
+     ],
+     [
+      0,
+      1
+     ]
+    ],
+    "blank_cells": [
+     [
+      0,
+      2
+     ]
+    ],
+    "cell_pixel_shas": [
+     "b6ee0e6b1fa86a9f",
+     "0860190ec0dd27a6",
+     "7f079a43b601f72c"
+    ],
+    "canvas_sha": "494a8b32c560af02",
+    "canvas_position_sha": "eae4cf927b05f700",
+    "representation_pair": "shape_normalized+position_preserving",
+    "consumed_representation": "shape_normalized",
+    "ink_deltas": [
+     [
+      52,
+      0
+     ]
+    ]
+   },
+   "stem_crop_source": "pixel_grid_evidence",
+   "elapsed_s": 93.4,
+   "extraction_parser": "vision_parser",
+   "image_only_eligible": true,
+   "correct": false,
+   "audit_after_item": {
+    "requests_sent": 3,
+    "network_timeouts": 1
+   },
+   "token_state": {
+    "usage_snapshot": 5109,
+    "estimate": 5941,
+    "gate_used": "usage_snapshot"
+   }
+  },
+  {
+   "id": "ft-trans-07",
+   "family": "translation",
+   "gold": "A",
+   "status": "failed",
+   "solver_answer": null,
+   "verification_action": "reject",
+   "final_answer": null,
+   "released": false,
+   "answer": null,
+   "stem_evidence": {
+    "grid": [
+     1,
+     4
+    ],
+    "target_cell": [
+     0,
+     3
+    ],
+    "target_basis": "unique_empty_slot",
+    "status": "ok",
+    "confidence": "high",
+    "visible_cells": [
+     [
+      0,
+      0
+     ],
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ]
+    ],
+    "blank_cells": [
+     [
+      0,
+      3
+     ]
+    ],
+    "cell_pixel_shas": [
+     "9fa604819c79f194",
+     "9fa604819c79f194",
+     "9fa604819c79f194",
+     "1fe2373734955e60"
+    ],
+    "canvas_sha": "874e2b04015d4b63",
+    "canvas_position_sha": "10d2f707d5e685e6",
+    "representation_pair": "shape_normalized+position_preserving",
+    "consumed_representation": "shape_normalized",
+    "ink_deltas": [
+     [
+      54,
+      0
+     ],
+     [
+      54,
+      0
+     ]
+    ]
+   },
+   "stem_crop_source": "pixel_grid_evidence",
+   "elapsed_s": 41.5,
+   "extraction_parser": "vision_parser",
+   "image_only_eligible": true,
+   "correct": false,
+   "audit_after_item": {
+    "requests_sent": 4,
+    "network_timeouts": 1
+   },
+   "token_state": {
+    "usage_snapshot": 7862,
+    "estimate": 8857,
+    "gate_used": "usage_snapshot"
+   }
+  },
+  {
+   "id": "ft-overlay-12",
+   "family": "overlay_grid3",
+   "gold": "A",
+   "status": "failed",
+   "solver_answer": null,
+   "verification_action": "reject",
+   "final_answer": null,
+   "released": false,
+   "answer": null,
+   "stem_evidence": {
+    "grid": [
+     3,
+     3
+    ],
+    "target_cell": [
+     2,
+     2
+    ],
+    "target_basis": "unique_empty_slot",
+    "status": "ok",
+    "confidence": "high",
+    "visible_cells": [
+     [
+      0,
+      0
+     ],
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      1
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      2,
+      0
+     ],
+     [
+      2,
+      1
+     ]
+    ],
+    "blank_cells": [
+     [
+      2,
+      2
+     ]
+    ],
+    "cell_pixel_shas": [
+     "9df0d2805305577c",
+     "3b8040162096e51c",
+     "e1fdd863d5e475a9",
+     "0abccc0f799c68ed",
+     "b7f04a6c8ffe9f13",
+     "3b7a6839fc2b9dd4",
+     "259dcf44e0123b08",
+     "d53352d27fa1ce9b",
+     "065cc6b2b996ca72"
+    ],
+    "canvas_sha": "91fe16b2174e7839",
+    "canvas_position_sha": "5d01b77ab82110fe",
+    "representation_pair": "shape_normalized+position_preserving",
+    "consumed_representation": "shape_normalized",
+    "ink_deltas": [
+     [
+      58,
+      -6
+     ],
+     [
+      38,
+      0
+     ],
+     [
+      -92,
+      62
+     ],
+     [
+      58,
+      -10
+     ],
+     [
+      38,
+      0
+     ],
+     [
+      -98,
+      54
+     ],
+     [
+      58,
+      -8
+     ]
+    ]
+   },
+   "stem_crop_source": "pixel_grid_evidence",
+   "elapsed_s": 60.9,
+   "extraction_parser": "vision_parser",
+   "image_only_eligible": true,
+   "correct": false,
+   "audit_after_item": {
+    "requests_sent": 5,
+    "network_timeouts": 1
+   },
+   "token_state": {
+    "usage_snapshot": 11537,
+    "estimate": 11942,
+    "gate_used": "usage_snapshot"
+   }
+  },
+  {
+   "id": "ft-rot90-01--small",
+   "family": "rotation_newlayout",
+   "gold": "A",
+   "status": "error",
+   "error": "PipelineError: 截图抽取未得到题干文本；请改用 --text 显式提供题目",
+   "failure_bucket": "other",
+   "released": false,
+   "correct": false,
+   "audit_after_item": {
+    "requests_sent": 6,
+    "network_timeouts": 1
+   },
+   "token_state": {
+    "usage_snapshot": 14744,
+    "estimate": 14256,
+    "gate_used": "usage_snapshot"
+   }
+  },
+  {
+   "id": "ft-mirror-04--tight",
+   "family": "mirror_narrowgap_newlayout",
+   "gold": "A",
+   "status": "error",
+   "error": "PipelineError: 截图抽取未得到题干文本；请改用 --text 显式提供题目",
+   "failure_bucket": "other",
+   "released": false,
+   "correct": false,
+   "audit_after_item": {
+    "requests_sent": 8,
+    "network_timeouts": 2
+   },
+   "token_state": {
+    "usage_snapshot": 16946,
+    "estimate": 16394,
+    "gate_used": "usage_snapshot"
+   }
+  }
+ ],
+ "note": "Dev 集受控真实视觉小批量；非盲测、非泛化宣称；预算/超时/token 均来自真实审计或保守估算"
+}
