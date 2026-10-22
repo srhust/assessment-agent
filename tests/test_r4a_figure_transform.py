@@ -103,7 +103,12 @@ def test_sequence_translate_rule_recorded():
     r = analyze_transform(p, {"A": p[0], "B": box(18, 2, 4, 8)})
     kinds = {c["rule_type"] for c in r["candidates"]}
     assert "translate" in kinds                  # 平移律有审计记录
-    assert r["verdict"]["verdict"] == "unique" and r["verdict"]["answer"] == "A"
+    # R14-D 收紧（人工纪律"两表示同错不算正确性证明"）：内容恒定的序列在
+    # 形状归一空间退化，I/F 族候选是假证据，已整体弃权；平移预测越界时
+    # 如实不作答。旧断言 unique A 实为退化形状恒等放行（trans-07 错误
+    # accept 同型），方向为收紧而非放松。
+    assert r["verdict"]["verdict"] != "unique"
+    assert r["verdict"]["answer"] is None
 
 
 def test_composition_mirror_then_rotate():
@@ -171,13 +176,25 @@ def test_label_and_position_blindness():
 
 
 def test_unresolvable_symmetry_competitors_reported():
-    """旋转对称题面 + 两个不可区分选项 → unresolved_competitors 非空且不 unique。"""
-    bar = box(12, 17, 16, 6)                     # R180 对称
-    bare = box(12, 17, 16, 6, hw=64)             # 同内容、64 画布（与 40 画布 scale 可比性差）
-    s = [bar, bar, bar]
-    r = analyze_transform(s, {"A": bar, "B": np.roll(bar, 2, axis=0)})  # 平移2px：内容同
+    """旋转对称题面 + 两个不可区分选项 → unresolved_competitors 非空且不 unique。
+
+    R14-D：原构造 [bar,bar,bar] 是内容恒等序列——退化形状族已被弃权（不再
+    产生候选），该形态由下方 degenerate 断言单独锁定；competitors 语义改用
+    **非恒定**对称序列（一致 R90 步长）复现。"""
+    t = L()
+    s0 = standardize(t).frame
+    s1 = GROUP["R90"](s0)
+    s2 = GROUP["R90"](s1)
+    seq = [s0, s1, s2]
+    nxt = GROUP["R90"](s2)
+    r = analyze_transform(seq, {"A": nxt, "B": np.roll(nxt, 2, axis=0)})
     assert r["verdict"]["verdict"] != "unique"
     assert any(c["unresolved_competitors"] for c in r["candidates"])
+    # 恒定序列退化：形状族弃权、无候选、不作答
+    bar = box(12, 17, 16, 6)
+    rd = analyze_transform([bar, bar, bar], {"A": bar, "B": np.roll(bar, 2, axis=0)})
+    assert rd["verdict"]["verdict"] != "unique"
+    assert rd["verdict"]["answer"] is None
 
 
 def test_canvas_mismatch_degrades_scale_dimension():

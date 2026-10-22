@@ -217,13 +217,23 @@ def test_parameter_stable_and_independently_verified_are_separate_fields():
     assert "parameter_stable" in r and "independently_verified" in r
     assert isinstance(r["parameter_stable"], bool) and isinstance(r["independently_verified"], bool)
     # 二者独立：存在"参数稳定但代入验证未过"的真实样本（保守拒绝），绝不合并成单一布尔
-    for qid, grid in (("ft-trans-07", (1, 4)), ("ft-overlay-12", (3, 3))):
+    for qid, grid in (("ft-overlay-12", (3, 3)),):
         d2 = FIGSHOTS / "regions/dev" / qid
         o2 = [(p.stem.split("_")[1], str(p)) for p in sorted(d2.glob("option_*.png"))]
         r2 = solve_figure_transform_regions(str(d2 / "stem.png"), o2, grid=grid)
         assert r2["parameter_stable"] is True
         assert r2["independently_verified"] is False, qid
         assert r2["status"] == "unverified", f"{qid}: 代入未过却作答 = 布尔合并回归"
+    # R14-D 能力前进（如实记录，非放松验证）：平移族金标 ft-trans-07 在
+    # ①绝对面积跨协议尺度 ②验证器复用坐标契约 ③退化恒等序列弃权 三项修复后，
+    # 由 translate(+0.12,0) 唯一判 A（=金标），两布尔同时为真且状态 solved。
+    d3 = FIGSHOTS / "regions/dev" / "ft-trans-07"
+    o3 = [(p.stem.split("_")[1], str(p)) for p in sorted(d3.glob("option_*.png"))]
+    r3 = solve_figure_transform_regions(str(d3 / "stem.png"), o3, grid=(1, 4))
+    assert r3["parameter_stable"] is True and r3["independently_verified"] is True
+    assert r3["status"] == "solved" and r3["answer"] == "A"
+    # 两布尔依然分离：overlay-12 为 (True, False)，trans-07 为 (True, True)——
+    # 它们不可能由单一布尔同时表达这两行事实。
 
 
 # ------------------------------------------------------------------ P1-1

@@ -49,6 +49,18 @@ class Shape:
     def sig(self) -> str:
         return "blank" if self.blank else "ink"
 
+    @property
+    def abs_area(self) -> float:
+        """内容包围框的**绝对像素面积**（scale_area × 源画布面积）。
+
+        R14-B/C：跨协议比较必须用它——相对面积把"格画布多大"混进了
+        尺度维度；题干格若为 pitch 槽（宽 52）而选项为贴边裁剪（宽 26），
+        同一图形的相对面积差 4 倍，legacy 惩罚会饱和到 1.0 并把全部候选
+        打死（mirror-04 真实解析批全 1.0 残差的根因）。"""
+        if not self.canvas or self.blank:
+            return 0.0
+        return float(self.scale_area) * float(self.canvas[0] * self.canvas[1])
+
 
 def standardize(x: Any, frame: Optional[int] = None) -> Shape:
     frame = frame or FRAME
@@ -222,6 +234,8 @@ class Candidate:
     unresolved_competitors: List[str] = field(default_factory=list)
     pred_scale: float = 0.0         # 预测格的 bbox 相对面积（0=沿用上一格；等比缩放律改写）
     pred_center: Optional[Tuple[float, float]] = None   # 帧内相对位置预测（None=豁免）
+    pred_abs_expected: Optional[float] = None  # 预测内容绝对像素面积（跨协议尺度用）
+    pred_canvas_size: Optional[Tuple[int, int]] = None  # 来源格画布尺寸（协议核对）
     _pred_canvas: Optional[np.ndarray] = None           # 画布级预测（叠加律专用）
 
     def as_dict(self) -> Dict[str, Any]:
@@ -354,7 +368,9 @@ def align_pair_for_overlay(a: np.ndarray, b: np.ndarray,
 def score_options(pred_frame: np.ndarray, options: Dict[str, Shape],
                   pred_scale: float = 0.0, tol: float = 0.15,
                   pred_center: Optional[Tuple[float, float]] = None,
-                  pred_canvas: Optional[np.ndarray] = None
+                  pred_canvas: Optional[np.ndarray] = None,
+                  pred_abs_expected: Optional[float] = None,
+                  pred_canvas_size: Optional[Tuple[int, int]] = None
                   ) -> Tuple[Dict[str, float], List[str], float]:
     """组合残差 = max(形状残差, 相对尺度惩罚)。等比缩放律下 scale_area 是判别维度；
     未显式预测尺度（pred_scale=0）时沿用上一格尺度（旋转/镜像保面积）。"""
@@ -367,7 +383,18 @@ def score_options(pred_frame: np.ndarray, options: Dict[str, Shape],
         if pred_scale <= EPS:
             score = shape_res
         else:
-            pen = min(1.0, abs(np.log(max(sh.scale_area, 1e-6) / pred_scale)) / np.log(1.6))
+            proto_ok = (pred_canvas_size is None
+                        or (sh.canvas and abs(sh.canvas[0] - pred_canvas_size[0])
+                            <= CANVAS_ALIGN_TOL_PX
+                            and abs(sh.canvas[1] - pred_canvas_size[1])
+                            <= CANVAS_ALIGN_TOL_PX))
+            if proto_ok or pred_abs_expected is None or sh.abs_area <= 0:
+                pen = min(1.0, abs(np.log(max(sh.scale_area, 1e-6) / pred_scale)) / np.log(1.6))
+            else:
+                # 协议不一致：尺度维度改用**绝对像素面积**（内容实际大小），
+                # 形状残差仍走 shape-normalized 帧——两种表示各司其职。
+                pen = min(1.0, abs(np.log(max(sh.abs_area, 1e-6)
+                                          / max(pred_abs_expected, 1e-6))) / np.log(1.6))
             score = max(shape_res, pen)
         if pred_center is not None:
             dist = abs(sh.center[0] - pred_center[0]) + abs(sh.center[1] - pred_center[1])
@@ -389,7 +416,9 @@ def arbitrate(cands: List[Candidate], tol: float = 0.15,
         scores, within, margin = score_options(c._pred_frame, c.options,
                                                c.pred_scale or 0.0, tol,
                                                c.pred_center,
-                                               c._pred_canvas)  # type: ignore
+                                               c._pred_canvas,
+                                               pred_abs_expected=c.pred_abs_expected,
+                                               pred_canvas_size=c.pred_canvas_size)
         c.candidate_scores = scores
         c.geometric_residual = min(scores.values()) if scores else 1.0
         c.discriminative_margin = margin
@@ -431,6 +460,14 @@ def _seq_candidates(shapes: Sequence[Shape], frame: Optional[int] = None) -> Lis
                 step_sets = []
                 break
             step_sets.append(ms)
+        # R14-D（P0 拦截，trans-07 真实解析错误 accept 根因）：若相邻格**恒等
+        # 成立**（每一步 I 都在匹配群中），序列在形状归一空间是常数——恒等与
+        # 图形全部自对称（I/FH/FV/R180…）给出**同一预测**，"多条规律共同
+        # 支持"只是退化重合的假象，不构成任何规律信息（人工纪律：两表示预测
+        # 同一错误选项不算正确性证明）。旋转/镜像族对此类序列如实弃权；
+        # 平移维度由下方 translate 候选按位置独立裁决，不因此放行。
+        if step_sets and all("I" in ms for ms in step_sets):
+            step_sets = []      # 只否决旋转/镜像族；平移/缩放照常构造
         if step_sets:
             common = sorted(set.intersection(*(set(s) for s in step_sets)))
             for g in common:
@@ -658,9 +695,17 @@ def analyze_transform(stem: Sequence[Any], options: Dict[str, Any],
                 "candidates": [], "verdict": {"verdict": "no_rule", "answer": None,
                                               "support": {}},
                 "symmetry_unresolvable": [], "per_cell_stabilizer": {}}
+    base_abs = shapes[-1].abs_area
     for c in cands:
         if c.pred_scale == 0.0:                 # 旋转/镜像/平移保面积：沿用上一格尺度
             c.pred_scale = shapes[-1].scale_area
+            c.pred_abs_expected = base_abs or None
+        elif c.rule_type == "scale":
+            c.pred_abs_expected = (base_abs * c.pred_scale
+                                   if base_abs else None)
+        if shapes[-1].canvas:
+            c.pred_canvas_size = (int(shapes[-1].canvas[0]),
+                                  int(shapes[-1].canvas[1]))
         c.options = option_shapes       # type: ignore[attr-defined]
     # 画布一致性（R4e 口径修正）：
     # - 有可审计格几何（stem_canvas 提供）时，画布事实**只按题干网格格**核对：格来自

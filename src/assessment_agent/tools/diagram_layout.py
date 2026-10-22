@@ -343,7 +343,15 @@ def assemble_stem_layout(
                            checks=checks, hypotheses=hypotheses, rejected=rejected,
                            units=mapping, declared_cols=declared,
                            canvas=_compose_canvas(mask, units, by0, by1,
-                                                  blank_target=blank_confirmed_cols))
+                                                  blank_target=blank_confirmed_cols,
+                                                  pitch=_canvas_pitch(units)),
+                                                  geometry=cell_geometry(
+                                                      units, by0, by1,
+                                                      blank_slot=((blank_evidence or {}).get("x0"),
+                                                                  (blank_evidence or {}).get("x1"))
+                                                      if (blank_confirmed_cols and
+                                                          (blank_evidence or {}).get("accepted"))
+                                                      else None))
 
     if accepted_content:
         consistent = (declared is None) or (declared == cols)
@@ -357,7 +365,15 @@ def assemble_stem_layout(
             checks=checks, hypotheses=hypotheses, rejected=rejected,
             units=mapping, declared_cols=declared,
             canvas=_compose_canvas(mask, units, by0, by1,
-                                   blank_target=blank_confirmed_cols))
+                                   blank_target=blank_confirmed_cols,
+                                   pitch=_canvas_pitch(units)),
+            geometry=cell_geometry(
+                units, by0, by1,
+                blank_slot=((blank_evidence or {}).get("x0"),
+                            (blank_evidence or {}).get("x1"))
+                if (blank_confirmed_cols and
+                    (blank_evidence or {}).get("accepted"))
+                else None))
 
     # ------------------------------------------------ 声明兜底（无像素共识）
     if trust_vlm_grid and declared:
@@ -458,17 +474,80 @@ def _infer_trailing_blank(mask: np.ndarray, units: List[tuple], by0: int, by1: i
             "cellw": round(cellw, 1), "ink": round(float(sub.mean()), 5)}
 
 
+def cell_geometry(units: Sequence[tuple], by0: int, by1: int,
+                  *, blank_slot: Optional[tuple] = None) -> Dict[str, Any]:
+    """R14-B 统一 CellGeometry 契约（全部由页面像素推出，无 case 常量）。"""
+    rects = [(u["bbox"][0], u["bbox"][0] + u["bbox"][2]) if isinstance(u, dict)
+             else (u[0], u[1]) for u in units]
+    if not rects:
+        return {"ok": False, "reason": "no_units"}
+    centers = [(a + b) / 2.0 for a, b in rects]
+    ink_ws = [b - a for a, b in rects]
+    if len(rects) >= 2:
+        gaps = [centers[i + 1] - centers[i] for i in range(len(centers) - 1)]
+        pitch_x = float(np.median(gaps))
+        spread = (max(gaps) - min(gaps)) / max(1e-6, pitch_x)
+    else:
+        gaps, pitch_x, spread = [], float(max(ink_ws)), 1.0
+    out: Dict[str, Any] = {
+        "ok": True,
+        "observed_ink_bbox": [[int(a), int(by0), int(b), int(by1)]
+                              for a, b in rects],
+        "cell_slot_bbox": [[int(round(c - pitch_x / 2)), int(by0),
+                            int(round(c + pitch_x / 2)), int(by1)]
+                           for c in centers],
+        "cell_pitch_x": round(pitch_x, 2),
+        "cell_pitch_y": round(max(1, by1 - by0), 2),
+        "ink_offset_in_slot": [round(c - (a + b) / 2.0, 2)
+                               for c, (a, b) in zip(centers, rects)],
+        "ink_widths": [int(w) for w in ink_ws],
+        "gaps": [round(g, 2) for g in gaps],
+        "grid_rows": 1, "grid_cols": len(rects) + (1 if blank_slot else 0),
+        "source": "page_pixels",
+    }
+    if blank_slot and blank_slot[0] is not None and blank_slot[1] is not None:
+        out["target_slot_bbox"] = [int(blank_slot[0]), int(by0),
+                                   int(blank_slot[1]), int(by1)]
+    if len(rects) < 2:
+        out["geometry_confidence"] = {
+            "level": "low", "basis": "single_known_cell_no_redundancy",
+            "note": "格距由墨迹宽度代替；不得据此宣称规律唯一"}
+    elif len(rects) == 2:
+        out["geometry_confidence"] = {
+            "level": "medium", "basis": "single_gap_only",
+            "gap_spread": round(spread, 4),
+            "note": "两已知格只有一个间距样本，pitch 无冗余校验；"
+                    "规律唯一性必须由下游规则通道独立证明"}
+    else:
+        out["geometry_confidence"] = {
+            "level": "high" if spread <= 0.25 else "medium",
+            "basis": "multi_gap_median", "gap_spread": round(spread, 4)}
+    return out
+
+
 def _compose_canvas(mask: np.ndarray, units: Sequence[tuple], by0: int, by1: int,
-                    *, blank_target: Optional[int] = None) -> Optional[np.ndarray]:
+                    *, blank_target: Optional[int] = None,
+                    pitch: Optional[float] = None) -> Optional[np.ndarray]:
     """各单元内容纯平移到等宽画布（不缩放；空白目标格保持纯白）。
 
     units 为映射 dict 列表或 (x0,x1) 元组列表。
+
+    R14-B（CellGeometry 契约）：逻辑格宽 = **可见单元中心间距 pitch**，
+    不再是 max(墨迹宽)+2——后者把 24px 图形墨迹冒充 52px 的真实格距，
+    重建画布的相对几何随之失真（人工裁决点名的缺陷）。墨迹在槽内保持
+    居中的 position-preserving 偏移；两种表示都可用：shape-normalized =
+    单元 tight 裁剪（页面本身未动），position-preserving = 本画布 +
+    ink_offset_in_slot（记录在 cell_geometry 里，标准化不造成不可逆丢失）。
     """
     rects = [(u["bbox"][0], u["bbox"][0] + u["bbox"][2]) if isinstance(u, dict)
              else (u[0], u[1]) for u in units]
     if not rects:
         return None
-    cw = max(w for a, b in rects for w in [b - a]) + 2
+    max_ink_w = max(w for a, b in rects for w in [b - a])
+    if pitch is not None and len(rects) > 1:
+        cw = max(int(round(pitch)), max_ink_w + 2)
+    else:
+        cw = max_ink_w + 2
     ch = max(1, by1 - by0)
     n_cols = blank_target if blank_target else len(rects)
     canvas = np.zeros((ch, cw * n_cols), dtype=bool)
@@ -490,11 +569,23 @@ def check_option_crop(crop_mask: np.ndarray) -> Dict[str, Any]:
             "size": [int(w), int(h)], "threshold": MIN_INK_RATIO}
 
 
+def _canvas_pitch(units: Sequence[tuple]) -> Optional[float]:
+    """可见单元中心的中位间距；<2 单元时 None（不得用墨宽冒充）。"""
+    rects = [(u["bbox"][0], u["bbox"][0] + u["bbox"][2]) if isinstance(u, dict)
+             else (u[0], u[1]) for u in units]
+    if len(rects) < 2:
+        return None
+    centers = [(a + b) / 2.0 for a, b in rects]
+    return float(np.median([centers[i + 1] - centers[i]
+                             for i in range(len(centers) - 1)]))
+
+
 def _resolution(*, source: str, mode: str, rows: Optional[int], cols: Optional[int],
                 verified: bool, reason: Optional[str], checks: List[Check],
                 hypotheses: List[Dict[str, Any]], rejected: List[Dict[str, Any]],
                 units: List[Dict[str, Any]], declared_cols: Optional[int],
-                canvas: Optional[np.ndarray]) -> Dict[str, Any]:
+                canvas: Optional[np.ndarray],
+                geometry: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     return {
         "layout_source": source, "mode": mode,
         "rows": rows, "cols": cols, "verified": verified,
@@ -505,5 +596,6 @@ def _resolution(*, source: str, mode: str, rows: Optional[int], cols: Optional[i
         "checks": [c.to_dict() for c in checks],
         "hypotheses": hypotheses, "rejected": rejected,
         "units": units,
+        "cell_geometry": geometry,
         "_canvas": canvas,
     }

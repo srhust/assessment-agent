@@ -102,11 +102,20 @@ def verify_transformation(payload: Dict[str, Any],
     """
     checks: List[VerificationCheck] = []
     per_group: List[Dict[str, Any]] = []
+    cc = payload.get("coord_contract") or {}
+    _geo = cc.get("cell_bboxes")
+    _scv = cc.get("stem_canvas")
     for frame, tol in SCAN_GRID:
         res = analyze_transform([_to_mask(m) for m in stem_masks],
                                 {k: _to_mask(v) for k, v in option_masks.items()},
                                 mode=payload.get("mode", "sequence"),
-                                tol=tol, frame=frame)
+                                tol=tol, frame=frame,
+                                # R14-C：验证器**复用**求解坐标契约（同格 bbox +
+                                # 题干画布）。缺这份信息时画布一致性会退回
+                                # legacy 集合判定，把"题干 pitch 槽 vs 选项贴边
+                                # 裁剪"的正常协议差误判为裁剪异常（mirror-04
+                                # 真实解析扫描 0/3 未判的根因）。
+                                cell_geometry=_geo, stem_canvas=_scv)
         v = res["verdict"]
         best = None
         if res["candidates"]:

@@ -142,7 +142,12 @@ def build_grid_evidence(mask: np.ndarray, image_sha: str,
                           rows_hint=rows_hint)
     status = "ok"
     confidence = "high"
-    if pitch_ev and not (rows and cols):
+    if pitch_ev and (not (rows and cols)
+                     or (int(rows) == 1 and int(cols) == pitch_ev["n"])):
+        # R14-C：显式网格若与节距外推**格数一致**也走外推槽——复核传显式
+        # grid 时此前仍走均分槽，与求解自动链不同源，制造第二类虚假漂移
+        # （rot90-01 复核实测 override：显式 [1,4] vs 像素最优 [1,3]）。
+        # 格数不一致的显式网格保持 override 降级，安全语义不放松。
         cols = pitch_ev["n"]
         rows = 1
         # 等距外推是强几何证据：跳过歧义仲裁但仍保留假设列表供审计
