@@ -1,0 +1,246 @@
+{
+ "stage": "R13-F planner five-layer recall (zero API)",
+ "scope": "R11E per_item 共 7 题；r10g-06 金标=条件不足未进该批（R10E: retrieved 有、规划 llm_error 失败）",
+ "kb_gap": {
+  "missing_gold_cards": [
+   "jr.categorical-syllogism",
+   "nc.arithmetic-precedence",
+   "nc.combinatorics-power",
+   "nc.work-rate"
+  ],
+  "note": "r10g-03 金标卡 nc.combinatorics-power **不在 KB**——不是没召回，而是没有这张卡；R12 把它记成容斥族功能命中属双重错误"
+ },
+ "supersedes": "R12-F Functional(prefix)3/5 — 前缀同族等价作废",
+ "note_r10g_07_08": "retr=[] 且 solved：检索**已调用但为空**，作答走 direct-AST；不是日志丢失（R10E 已存 expr 原文为证）",
+ "negative_control_r10g_03": {
+  "id": "r10g-03",
+  "retr": [
+   "nc.inclusion-exclusion",
+   "nc.travel-meeting-pursuit"
+  ],
+  "L4_per_card": [
+   {
+    "card": "nc.inclusion-exclusion",
+    "max_lcs": 0,
+    "applicable_by_lexicon": false
+   },
+   {
+    "card": "nc.travel-meeting-pursuit",
+    "max_lcs": 1,
+    "applicable_by_lexicon": false
+   }
+  ],
+  "conclusion": "容斥/行程卡对组合阶乘题面无 ≥4 连续公共字符的适用条件 → 词面不适用，R12 前缀功能命中判假阳性"
+ },
+ "layer_summary": {
+  "L0_states": {
+   "invoked_with_results": 5,
+   "invoked_empty_direct_ast": 2
+  },
+  "L1_exact": "1/7",
+  "L2_skill": "5/7",
+  "L3_operator_coverage_mean": 0.286,
+  "L4_applicable_any_ge4": "0/7",
+  "L4_applicable_any_ge3": "1/7",
+  "L4_caveat": "词面 LCS 是**下界**判据：r10g-04 折扣题对 successive-discount 卡仅 1 个连续公共字符（卡面条件用抽象书面语），说明 L4 系统性低估；但负方向仍有效——r10g-03 组合题对容斥/行程卡 0-1 分，前缀假阳性被反驳",
+  "L5_plan_valid": "4/7"
+ },
+ "rows": [
+  {
+   "id": "r10g-01",
+   "retrieval_state": "invoked_with_results",
+   "retr": [
+    "nc.compound-growth",
+    "nc.combinatorics-bundling"
+   ],
+   "sel": "nc.compound-growth",
+   "gold_refs": [
+    "da.growth-amount"
+   ],
+   "L1_exact": false,
+   "L2_skill": true,
+   "L3_operator_coverage": 0.5,
+   "L4_applicable_any": false,
+   "L4_per_card": [
+    {
+     "card": "nc.compound-growth",
+     "max_lcs": 3,
+     "applicable_by_lexicon": false
+    },
+    {
+     "card": "nc.combinatorics-bundling",
+     "max_lcs": 2,
+     "applicable_by_lexicon": false
+    }
+   ],
+   "L5_plan_valid": true,
+   "ast_expr": "(250*0.12)",
+   "status": "solved",
+   "correct": true
+  },
+  {
+   "id": "r10g-02",
+   "retrieval_state": "invoked_with_results",
+   "retr": [
+    "nc.travel-meeting-pursuit",
+    "nc.inclusion-exclusion"
+   ],
+   "sel": "nc.travel-meeting-pursuit",
+   "gold_refs": [
+    "nc.travel-meeting-pursuit"
+   ],
+   "L1_exact": true,
+   "L2_skill": true,
+   "L3_operator_coverage": 1.0,
+   "L4_applicable_any": false,
+   "L4_per_card": [
+    {
+     "card": "nc.travel-meeting-pursuit",
+     "max_lcs": 2,
+     "applicable_by_lexicon": false
+    },
+    {
+     "card": "nc.inclusion-exclusion",
+     "max_lcs": 1,
+     "applicable_by_lexicon": false
+    }
+   ],
+   "L5_plan_valid": true,
+   "ast_expr": "(60 / (((4) + (6))))",
+   "status": "solved",
+   "correct": true
+  },
+  {
+   "id": "r10g-03",
+   "retrieval_state": "invoked_with_results",
+   "retr": [
+    "nc.inclusion-exclusion",
+    "nc.travel-meeting-pursuit"
+   ],
+   "sel": null,
+   "gold_refs": [
+    "nc.combinatorics-power"
+   ],
+   "L1_exact": false,
+   "L2_skill": true,
+   "L3_operator_coverage": null,
+   "L4_applicable_any": false,
+   "L4_per_card": [
+    {
+     "card": "nc.inclusion-exclusion",
+     "max_lcs": 0,
+     "applicable_by_lexicon": false
+    },
+    {
+     "card": "nc.travel-meeting-pursuit",
+     "max_lcs": 1,
+     "applicable_by_lexicon": false
+    }
+   ],
+   "L5_plan_valid": false,
+   "ast_expr": null,
+   "status": "failed",
+   "correct": false
+  },
+  {
+   "id": "r10g-04",
+   "retrieval_state": "invoked_with_results",
+   "retr": [
+    "nc.successive-discount",
+    "nc.compound-growth"
+   ],
+   "sel": "nc.successive-discount",
+   "gold_refs": [
+    "da.growth-amount"
+   ],
+   "L1_exact": false,
+   "L2_skill": true,
+   "L3_operator_coverage": 0.5,
+   "L4_applicable_any": false,
+   "L4_per_card": [
+    {
+     "card": "nc.successive-discount",
+     "max_lcs": 1,
+     "applicable_by_lexicon": false
+    },
+    {
+     "card": "nc.compound-growth",
+     "max_lcs": 2,
+     "applicable_by_lexicon": false
+    }
+   ],
+   "L5_plan_valid": true,
+   "ast_expr": "((45 * (1 + 1/5)) - 9)",
+   "status": "solved",
+   "correct": true
+  },
+  {
+   "id": "r10g-05",
+   "retrieval_state": "invoked_with_results",
+   "retr": [
+    "nc.work-rate-lcm",
+    "nc.travel-meeting-pursuit"
+   ],
+   "sel": "nc.work-rate-lcm",
+   "gold_refs": [
+    "nc.work-rate"
+   ],
+   "L1_exact": false,
+   "L2_skill": true,
+   "L3_operator_coverage": null,
+   "L4_applicable_any": false,
+   "L4_per_card": [
+    {
+     "card": "nc.work-rate-lcm",
+     "max_lcs": 2,
+     "applicable_by_lexicon": false
+    },
+    {
+     "card": "nc.travel-meeting-pursuit",
+     "max_lcs": 2,
+     "applicable_by_lexicon": false
+    }
+   ],
+   "L5_plan_valid": true,
+   "ast_expr": "(1/((1/12) + (1/18)))",
+   "status": "solved",
+   "correct": true
+  },
+  {
+   "id": "r10g-07",
+   "retrieval_state": "invoked_empty_direct_ast",
+   "retr": [],
+   "sel": null,
+   "gold_refs": [
+    "nc.arithmetic-precedence"
+   ],
+   "L1_exact": false,
+   "L2_skill": false,
+   "L3_operator_coverage": null,
+   "L4_applicable_any": false,
+   "L4_per_card": [],
+   "L5_plan_valid": false,
+   "ast_expr": "(1+2)*3**2-4/2",
+   "status": "solved",
+   "correct": true
+  },
+  {
+   "id": "r10g-08",
+   "retrieval_state": "invoked_empty_direct_ast",
+   "retr": [],
+   "sel": null,
+   "gold_refs": [
+    "jr.categorical-syllogism"
+   ],
+   "L1_exact": false,
+   "L2_skill": false,
+   "L3_operator_coverage": null,
+   "L4_applicable_any": false,
+   "L4_per_card": [],
+   "L5_plan_valid": false,
+   "ast_expr": null,
+   "status": "solved",
+   "correct": true
+  }
+ ]
+}
