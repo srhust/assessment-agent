@@ -1,0 +1,518 @@
+{
+ "ft-rot90-01": {
+  "grid": [
+   1,
+   4
+  ],
+  "status": "ok",
+  "options_evidenced": 4,
+  "labels": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ],
+  "gold": "A",
+  "option_frames": [
+   [
+    29,
+    146,
+    82,
+    174
+   ],
+   [
+    116,
+    146,
+    170,
+    174
+   ],
+   [
+    201,
+    146,
+    260,
+    174
+   ],
+   [
+    288,
+    146,
+    346,
+    174
+   ]
+  ],
+  "option_fig_assoc": [
+   true,
+   true,
+   true,
+   true
+  ],
+  "CH1_shape_tight": {
+   "identity": {
+    "best": "D",
+    "residual": 0.949468,
+    "margin": 0.003288,
+    "gold_rank": 3
+   },
+   "rot90cw": {
+    "best": "B",
+    "residual": 0.885475,
+    "margin": 0.011173,
+    "gold_rank": 4
+   },
+   "rot180": {
+    "best": "B",
+    "residual": 0.930295,
+    "margin": 0.003407,
+    "gold_rank": 3
+   },
+   "rot90ccw": {
+    "best": "A",
+    "residual": 1.0,
+    "margin": 0.0,
+    "gold_rank": 1
+   },
+   "flip_h": {
+    "best": "B",
+    "residual": 0.89779,
+    "margin": 0.01105,
+    "gold_rank": 3
+   },
+   "flip_v": {
+    "best": "A",
+    "residual": 1.0,
+    "margin": 0.0,
+    "gold_rank": 1
+   }
+  },
+  "CH2_position_identity_shift": {
+   "best": "A",
+   "residual": 0.915468,
+   "margin": 0.020579,
+   "gold_rank": 1,
+   "scores": {
+    "A": 0.915468,
+    "B": 0.942342,
+    "C": 0.941767,
+    "D": 0.936047
+   }
+  },
+  "CH3_arbitration": {
+   "rotate/flip/overlay 族": "CH1 权威（位置不变）",
+   "translate 族": "CH2 权威（CH1 丢失偏移不可判）",
+   "冲突": "两通道权威结论不一致 → 弃权",
+   "平均分数": "禁止"
+  }
+ },
+ "ft-mirror-04": {
+  "grid": [
+   1,
+   3
+  ],
+  "status": "ok",
+  "options_evidenced": 3,
+  "labels": [
+   "A",
+   "B",
+   "C"
+  ],
+  "gold": "A",
+  "option_frames": [
+   [
+    29,
+    146,
+    84,
+    170
+   ],
+   [
+    116,
+    146,
+    174,
+    170
+   ],
+   [
+    201,
+    146,
+    260,
+    170
+   ]
+  ],
+  "option_fig_assoc": [
+   true,
+   true,
+   true
+  ],
+  "CH1_shape_tight": {
+   "identity": {
+    "best": "A",
+    "residual": 1.0,
+    "margin": 0.0,
+    "gold_rank": 1
+   },
+   "rot90cw": {
+    "best": "C",
+    "residual": 0.945355,
+    "margin": 0.002013,
+    "gold_rank": 3
+   },
+   "rot180": {
+    "best": "A",
+    "residual": 0.893557,
+    "margin": 0.001471,
+    "gold_rank": 1
+   },
+   "rot90ccw": {
+    "best": "B",
+    "residual": 0.915989,
+    "margin": 0.017713,
+    "gold_rank": 3
+   },
+   "flip_h": {
+    "best": "B",
+    "residual": 0.927614,
+    "margin": 0.009025,
+    "gold_rank": 3
+   },
+   "flip_v": {
+    "best": "A",
+    "residual": 0.923706,
+    "margin": 0.029174,
+    "gold_rank": 1
+   }
+  },
+  "CH2_position_identity_shift": {
+   "best": "C",
+   "residual": 0.994516,
+   "margin": 0.002065,
+   "gold_rank": 3,
+   "scores": {
+    "A": 0.998347,
+    "B": 0.996581,
+    "C": 0.994516
+   }
+  },
+  "CH3_arbitration": {
+   "rotate/flip/overlay 族": "CH1 权威（位置不变）",
+   "translate 族": "CH2 权威（CH1 丢失偏移不可判）",
+   "冲突": "两通道权威结论不一致 → 弃权",
+   "平均分数": "禁止"
+  }
+ },
+ "ft-trans-07": {
+  "grid": [
+   1,
+   4
+  ],
+  "status": "ok",
+  "options_evidenced": 4,
+  "labels": [
+   "A",
+   "B",
+   "C"
+  ],
+  "gold": "A",
+  "option_frames": [
+   [
+    29,
+    150,
+    43,
+    170
+   ],
+   [
+    76,
+    150,
+    128,
+    170
+   ],
+   [
+    201,
+    150,
+    214,
+    170
+   ],
+   [
+    242,
+    150,
+    250,
+    170
+   ]
+  ],
+  "option_fig_assoc": [
+   null,
+   true,
+   null,
+   null
+  ],
+  "CH1_shape_tight": {
+   "identity": {
+    "best": "B",
+    "residual": 0.282511,
+    "margin": 0.576185,
+    "gold_rank": 3
+   },
+   "rot90cw": {
+    "best": "A",
+    "residual": 0.741379,
+    "margin": 0.023327,
+    "gold_rank": 1
+   },
+   "rot180": {
+    "best": "B",
+    "residual": 0.282511,
+    "margin": 0.576185,
+    "gold_rank": 3
+   },
+   "rot90ccw": {
+    "best": "A",
+    "residual": 0.741379,
+    "margin": 0.023327,
+    "gold_rank": 1
+   },
+   "flip_h": {
+    "best": "B",
+    "residual": 0.282511,
+    "margin": 0.576185,
+    "gold_rank": 3
+   },
+   "flip_v": {
+    "best": "B",
+    "residual": 0.282511,
+    "margin": 0.576185,
+    "gold_rank": 3
+   }
+  },
+  "CH2_position_identity_shift": {
+   "best": "B",
+   "residual": 0.931271,
+   "margin": 0.063493,
+   "gold_rank": 3,
+   "scores": {
+    "A": 1.0,
+    "B": 0.931271,
+    "C": 0.994764
+   }
+  },
+  "CH3_arbitration": {
+   "rotate/flip/overlay 族": "CH1 权威（位置不变）",
+   "translate 族": "CH2 权威（CH1 丢失偏移不可判）",
+   "冲突": "两通道权威结论不一致 → 弃权",
+   "平均分数": "禁止"
+  }
+ },
+ "ft-trans-08": {
+  "grid": [
+   1,
+   4
+  ],
+  "status": "ok",
+  "options_evidenced": 6,
+  "labels": [
+   "A",
+   "B",
+   "C"
+  ],
+  "gold": "A",
+  "option_frames": [
+   [
+    29,
+    137,
+    69,
+    181
+   ],
+   [
+    75,
+    137,
+    88,
+    181
+   ],
+   [
+    116,
+    137,
+    156,
+    181
+   ],
+   [
+    162,
+    137,
+    175,
+    181
+   ],
+   [
+    201,
+    137,
+    238,
+    181
+   ],
+   [
+    246,
+    137,
+    268,
+    181
+   ]
+  ],
+  "option_fig_assoc": [
+   true,
+   null,
+   true,
+   null,
+   true,
+   null
+  ],
+  "CH1_shape_tight": {
+   "identity": {
+    "best": "B",
+    "residual": 0.782468,
+    "margin": 0.217532,
+    "gold_rank": 2
+   },
+   "rot90cw": {
+    "best": "A",
+    "residual": 0.909366,
+    "margin": 0.002138,
+    "gold_rank": 1
+   },
+   "rot180": {
+    "best": "B",
+    "residual": 0.450413,
+    "margin": 0.51307,
+    "gold_rank": 3
+   },
+   "rot90ccw": {
+    "best": "A",
+    "residual": 0.889231,
+    "margin": 0.071332,
+    "gold_rank": 1
+   },
+   "flip_h": {
+    "best": "C",
+    "residual": 0.888554,
+    "margin": 0.049681,
+    "gold_rank": 2
+   },
+   "flip_v": {
+    "best": "A",
+    "residual": 0.925595,
+    "margin": 0.01406,
+    "gold_rank": 1
+   }
+  },
+  "CH2_position_identity_shift": {
+   "best": "B",
+   "residual": 0.883404,
+   "margin": 0.088401,
+   "gold_rank": 2,
+   "scores": {
+    "A": 0.971805,
+    "B": 0.883404,
+    "C": 0.98579
+   }
+  },
+  "CH3_arbitration": {
+   "rotate/flip/overlay 族": "CH1 权威（位置不变）",
+   "translate 族": "CH2 权威（CH1 丢失偏移不可判）",
+   "冲突": "两通道权威结论不一致 → 弃权",
+   "平均分数": "禁止"
+  }
+ },
+ "ft-overlay-12": {
+  "grid": [
+   3,
+   3
+  ],
+  "status": "ok",
+  "options_evidenced": 4,
+  "labels": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ],
+  "gold": "A",
+  "option_frames": [
+   [
+    29,
+    238,
+    82,
+    266
+   ],
+   [
+    116,
+    238,
+    168,
+    266
+   ],
+   [
+    201,
+    238,
+    252,
+    266
+   ],
+   [
+    288,
+    238,
+    340,
+    266
+   ]
+  ],
+  "option_fig_assoc": [
+   true,
+   true,
+   true,
+   true
+  ],
+  "CH1_shape_tight": {
+   "identity": {
+    "best": "C",
+    "residual": 0.868243,
+    "margin": 0.027742,
+    "gold_rank": 4
+   },
+   "rot90cw": {
+    "best": "C",
+    "residual": 0.962848,
+    "margin": 0.004442,
+    "gold_rank": 3
+   },
+   "rot180": {
+    "best": "C",
+    "residual": 0.868243,
+    "margin": 0.027742,
+    "gold_rank": 4
+   },
+   "rot90ccw": {
+    "best": "C",
+    "residual": 0.962848,
+    "margin": 0.004442,
+    "gold_rank": 3
+   },
+   "flip_h": {
+    "best": "C",
+    "residual": 0.868243,
+    "margin": 0.027742,
+    "gold_rank": 4
+   },
+   "flip_v": {
+    "best": "C",
+    "residual": 0.868243,
+    "margin": 0.027742,
+    "gold_rank": 4
+   }
+  },
+  "CH2_position_identity_shift": {
+   "best": "C",
+   "residual": 0.872881,
+   "margin": 0.028887,
+   "gold_rank": 4,
+   "scores": {
+    "A": 0.938744,
+    "B": 0.919463,
+    "C": 0.872881,
+    "D": 0.901768
+   }
+  },
+  "CH3_arbitration": {
+   "rotate/flip/overlay 族": "CH1 权威（位置不变）",
+   "translate 族": "CH2 权威（CH1 丢失偏移不可判）",
+   "冲突": "两通道权威结论不一致 → 弃权",
+   "平均分数": "禁止"
+  }
+ }
+}
