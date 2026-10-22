@@ -450,17 +450,49 @@ def localize_page(mask: np.ndarray, n_options: int,
         notes.append("空图")
         return result
 
-    # ---- 选项带识别（R14-E 根修）：固定"最后一带"在真实排版上不成立——
-    # 题干续行/页脚会排在选项带之后（trans-07 实测选项带是倒数第二带，
-    # 末带是"？"行；--tight 页末带为空行）→ 旧路径直接 options_band_not_detected
-    # → 0 选项。改为：从底部向上扫描**所有带**，逐带取首个"单元数恰 n_options"
-    # 的切分（锚点优先，其次 natural/宽度校正），带簇（末两带拼 2×2）保留给
-    # 双列版式。选择顺序仍是底部优先（最像选项带者先中），不引入金标。
-    # ---- 选项带：候选集与 HEAD 完全一致（末带 / 末两带拼 2×2），
-    #      R14-E 标签锚点只在同一候选集内**优先**替换切分方式。
+    # ---- 选项带识别（R14-E 根修，两级候选）：
+    #   1) 锚点候选（页面字母域一一对应）：按**几何顺序**扫描所有单带
+    #      （含 2×2 双带簇，带高门限 ≤40 由锚点函数自身把关），收集全部
+    #      成立者；整页锚点候选 >1 = 歧义 → 不采用（宁可不切）。
+    #   2) 聚类候选 = HEAD 原样（末带；末两带拼 2×2）。
+    #   HEAD 的"固定末带"候选集在真实排版上会漏（trans-07 选项带是倒数
+    #   第二带，末带是"？"续行；overlay-12 选项带在页面更下方），而 R14-E
+    #   曾把**聚类**候选扩成"自下而上逐带试"，实测制造缺陷：扰动反例页
+    #   （ft-grid-10--tight / ft-overlay-13--vertical）因此选中题干行当
+    #   选项带 → 题干被截成一行 → 1×4/1×5 假格阵且**可释放**（HEAD 在这两页
+    #   只取 1 行题干、格阵 2×3 不合格，不产出可释放证据）。聚类候选因此
+    #   保持 HEAD 不变，只让**锚点**候选覆盖全部带（锚点判据自带 expect
+    #   校验/等距/行线互证/歧义回退，比数量巧合强）。
     opt_cells: Optional[List[Tuple[Tuple[int, int], Tuple[int, int]]]] = None  # ((x0,x1),(y0,y1))
     opt_span: Optional[Tuple[int, int]] = None
     label_boxes: Optional[List[Tuple[int, int]]] = None   # R14-E 标签一一对应
+
+    # R14-E 标签锚点候选：候选集 = HEAD 原样（末带；末两带拼 2×2 整簇）。
+    # 曾试过"逐带自下而上全扫"，实测在扰动反例页把题干行锚定成选项带 →
+    # 题干被截一行 → 1×4 假格阵且可释放；也试过"单元级预筛"（列段恰
+    # n_options/段隙 ≥6/段高一致），实测**过严**：真选项带是"字母｜2px｜
+    # 图形"排布，gap=1 分段 7-11、gap=2 分段 5，都 != n_options（dev
+    # grid-10 实测），会连正确锚定一起杀掉，故不采用。锚点只在 HEAD 候选
+    # 集内**优先替换切分方式**，不成立即回退 HEAD 聚类。
+    anchor_cands: List[Tuple[int, List, List]] = []
+    for _bidx in ([len(bands) - 1], [len(bands) - 2, len(bands) - 1]):
+        if len(_bidx) > 1 and len(bands) < 2:
+            continue
+        _y0a, _y1a = bands[_bidx[0]][0], bands[_bidx[-1]][1]
+        if _y1a - _y0a > 40:
+            continue
+        _ab = _option_band_cells(mask, _y0a, _y1a, n_options)
+        if _ab is not None:
+            anchor_cands.append((_bidx[0], _ab["labels"],
+                                 [((cx0, cx1), (_y0a, _y1a))
+                                  for cx0, cx1 in _ab["cells"]]))
+    if len(anchor_cands) == 1:
+        _bi, label_boxes, opt_cells = anchor_cands[0]
+        # 单元带高按实际切分行跨度计（2×2 簇时即整簇），与 HEAD 聚类候选一致
+        opt_span = (min(c[1][0] for c in opt_cells),
+                    max(c[1][1] for c in opt_cells))
+    elif len(anchor_cands) > 1:
+        notes.append(f"option_band_anchor_ambiguous:{len(anchor_cands)} 个锚点候选带")
 
     def try_band_pair(bidx: List[int]) -> Optional[List]:
         nonlocal label_boxes
@@ -469,41 +501,26 @@ def localize_page(mask: np.ndarray, n_options: int,
             y0, y1 = bands[bi]
             natural = cluster_cells(mask, y0, y1)
             exp = n_options if len(bidx) == 1 else None
-            got = None
             if exp is not None:
-                # R14-E：标签锚点切分（字母域一一对应，自带 expect 校验）
-                ab = _option_band_cells(mask, y0, y1, exp)
-                if ab is not None:
-                    label_boxes = ab["labels"]
-                    for cx0, cx1 in ab["cells"]:
-                        cells.append(((cx0, cx1), (y0, y1)))
-                    continue
-            if got is None:
-                # 岛数下界**不采用**（对照实测：加界后紧页末带 3 簇→expect 4
-                # 被拒，退到"末两带"候选 → 题干第二行被选成选项带 → 题干只剩
-                # 1 行 → 1×4 假格阵且可释放；不加界时与 HEAD 完全一致
-                # （opts band=(150,188)、stem 2×3、test_r13a 5 passed）。
-                # 页级安全由锚点路径自身（字母↔图形一一对应）与格证据通道
-                # 的行数互证承担，不在聚类数量上做手脚。
-                got = natural if exp is None else cluster_cells(mask, y0, y1, expect=exp)
-            if not got:
-                return None                      # 本候选带无单元
-            # 文本否决只在**自然聚类数不符**时生效（数都对上就不是文字行）
-            if exp is not None and len(natural) != n_options and is_text_band(mask, y0, y1):
-                return None
+                if len(natural) != n_options and is_text_band(mask, y0, y1):
+                    return None
             if label_boxes is not None and exp is None:
                 label_boxes = None            # 2×2 簇路径无锚点：不得沿用标签框
+            got = natural if exp is None else cluster_cells(mask, y0, y1, expect=exp)
+            if not got:
+                return None
             for cx0, cx1 in got:
                 cells.append(((cx0, cx1), (y0, y1)))
         return cells if len(cells) == n_options else None
 
-    for bidx in ([len(bands) - 1], [len(bands) - 2, len(bands) - 1]):
-        if len(bidx) > 1 and len(bands) < 2:
-            continue
-        got = try_band_pair(bidx)
-        if got:
-            opt_cells, opt_span = got, (bands[bidx[0]][0], bands[bidx[-1]][1])
-            break
+    if opt_cells is None:
+        for bidx in ([len(bands) - 1], [len(bands) - 2, len(bands) - 1]):
+            if len(bidx) > 1 and len(bands) < 2:
+                continue
+            got = try_band_pair(bidx)
+            if got:
+                opt_cells, opt_span = got, (bands[bidx[0]][0], bands[bidx[-1]][1])
+                break
     if opt_cells is None:
         notes.append("options_band_not_detected")
     # ---- 图形带：选项带上方、非文本、与紧邻带 x 范围重叠者可拼多行矩阵

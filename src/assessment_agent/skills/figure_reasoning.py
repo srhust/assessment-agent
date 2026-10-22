@@ -677,6 +677,25 @@ class FigureReasoningSkill(BaseSkill):
             # 记录"未经标签锚点验证"，并由 consumption_binding 标注供审计。
             notes.append("option_cells_not_label_anchored")
             self._r14e_unanchored = True
+            # R14-E 聚类候选消费门（HEAD 等价语义，页级不变量）：无标签锚点
+            # 的列聚类切分若只占**一行**且其下方还有 >40px 的页面墨迹，说明
+            # 该行是被错选的题干/续行——扰动反例 ft-grid-10--tight 聚类 4 单元
+            # 止于 y188 而页面墨迹延伸到 232（下方另有带），题干被截成一行 →
+            # 1×4 假格阵且**可释放**（HEAD 在该页只取 1 行题干、格阵 2×3 不
+            # 合格，不产出可释放证据）。锚点候选不受限（字母↔图形一一对应已
+            # 由页内结构验证）；跨两行的 2×2 簇候选不受限（其下方残留是文字
+            # 说明行，属版式事实：tight 排版页 HEAD 正是靠该候选拿到证据，
+            # 一并否决会退回"选项 0 份"缺陷）。末行判定用**页面墨迹末行**，
+            # 不用 mask 高度（截图常带页脚/留白）。
+            _lbg = int(max(c["bbox_page"][1] + c["bbox_page"][3] for c in cells))
+            _rows = len({tuple(c["band"]) for c in cells})
+            _ink_rows = np.nonzero(np.asarray(mask).any(axis=1))[0]
+            _page_end = int(_ink_rows[-1]) if len(_ink_rows) else mask.shape[0]
+            if _rows == 1 and _page_end - _lbg > 40:
+                notes.append(
+                    f"option_band_not_last:{len(cells)} 单元止于 y{_lbg}，"
+                    f"页面墨迹延伸至 {_page_end}（单行非末带聚类切分不消费）")
+                return None, notes
         if len(cells) != n_opts:
             return None, notes + [f"定位到 {len(cells)} 个选项区，题面 {n_opts} 个选项"]
         bad = [c["index"] for c in cells if not c["completeness"]["passed"]]
