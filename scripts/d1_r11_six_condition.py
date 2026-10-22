@@ -117,10 +117,13 @@ def main() -> int:
             try:
                 sol = skill.solve(q, SkillContext(settings=settings))
                 va = None
+                fa_out = None
                 if sol.status == "solved":
-                    va = Verifier(settings, registry=SkillRegistry()).verify(q, sol).action
+                    vr = Verifier(settings, registry=SkillRegistry()).verify(q, sol)
+                    va = vr.action
+                    fa_out = getattr(vr, "final_answer", None)
                 row["conds"][cond] = {"status": sol.status, "answer": sol.answer,
-                                      "verify": va}
+                                      "verify": va, "final_answer": fa_out}
             except Exception as exc:  # noqa: BLE001
                 row["conds"][cond] = {"status": "error", "answer": None,
                                       "err": type(exc).__name__}
@@ -137,7 +140,9 @@ def main() -> int:
             x, y, w, h = sr["bbox_page"]
             ev = build_grid_evidence(mask, "e", [x, y, x + w, y + h], 0, 0,
                                      expects_blank=True, cells_hint=sr.get("cells"),
-                                     rows_hint=int(sr.get("sub_band_count") or 1))
+                                     rows_hint=int(sr.get("sub_band_count") or 1),
+                                      stem_continuation_suspect=bool(
+                                          sr.get("continuation_suspect")))
             seq = known_sequence(ev)
             if seq.get("mode") in (None, "unsupported"):
                 raise RuntimeError(f"evidence_{seq.get('reason')}")
@@ -160,10 +165,12 @@ def main() -> int:
                                          for o in r.get("option_regions", [])]}
             q = build_question(item, vision)
             sol = skill.solve(q, SkillContext(settings=settings))
-            va = None
+            va = None; fa_out = None
             if sol.status == "solved":
-                va = Verifier(settings, registry=SkillRegistry()).verify(q, sol).action
-            row["conds"]["E"] = {"status": sol.status, "answer": sol.answer, "verify": va}
+                vr = Verifier(settings, registry=SkillRegistry()).verify(q, sol)
+                va = vr.action; fa_out = getattr(vr, "final_answer", None)
+            row["conds"]["E"] = {"status": sol.status, "answer": sol.answer,
+                                 "verify": va, "final_answer": fa_out}
         except Exception as exc:  # noqa: BLE001
             row["conds"]["E"] = {"status": "abstain", "answer": None,
                                  "err": str(exc)[:80]}
@@ -178,7 +185,9 @@ def main() -> int:
             v = Verifier(settings, registry=SkillRegistry()).verify(q, sol)
             v_action = v.action
         row["conds"]["F"] = {"status": sol.status, "answer": sol.answer,
-                             "verify": v_action}
+                             "verify": v_action,
+                             "final_answer": getattr(v, "final_answer", None)
+                             if sol.status == "solved" else None}
         out_rows.append(row)
 
     def summarize(cond):

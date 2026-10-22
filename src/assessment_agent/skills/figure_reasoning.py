@@ -297,7 +297,9 @@ class FigureReasoningSkill(BaseSkill):
             ev = build_grid_evidence(mask, img_sha, sb,
                                       0, 0, expects_blank=True,
                                       cells_hint=sregions[0].get("cells"),
-                                      rows_hint=int(sregions[0].get("sub_band_count") or 1))
+                                      rows_hint=int(sregions[0].get("sub_band_count") or 1),
+                                      stem_continuation_suspect=bool(
+                                          sregions[0].get("continuation_suspect")))
             seq = known_sequence(ev)
             if ev["verification_status"] == "ambiguous" or seq.get("mode") == "unsupported":
                 return None, notes + [
@@ -315,6 +317,8 @@ class FigureReasoningSkill(BaseSkill):
             stem_evidence = {
                 "grid": [rows, cols], "target_cell": ev.get("target_cell"),
                 "target_basis": ev.get("target_basis"),
+                "safety_notes": ev.get("safety_notes"),
+                "release_eligible": ev.get("release_eligible"),
                 "status": ev["verification_status"], "confidence": ev["confidence"],
                 "visible_cells": ev["visible_cells"], "blank_cells": ev["blank_cells"],
                 "cell_pixel_shas": [c["cell_pixel_sha"] for c in ev["cells"]],
@@ -410,11 +414,26 @@ class FigureReasoningSkill(BaseSkill):
                 sregions = res.get("stem_regions") or []
                 if not sregions:
                     return False, "复核无题干带，无法重建格证据"
+                # R13-D：复核与求解**同链路**（先 merge 再 build）——此前复核用原始
+                # 未合并区域，与求解合并结果不同源，制造虚假哈希漂移。
+                from ..tools.diagram_grid_evidence import merge_stem_regions as _msr
+                sregions = _msr(sregions)
+                if not sregions:
+                    return False, "复核 merge 后无题干主区"
                 ev2 = build_grid_evidence(mask, "", _xywh_to_xyxy(sregions[0]["bbox_page"]),
                                           int(sev["grid"][0]), int(sev["grid"][1]),
                                           expects_blank=True,
                                           cells_hint=sregions[0].get("cells"),
-                                          rows_hint=int(sregions[0].get("sub_band_count") or 1))
+                                          rows_hint=int(sregions[0].get("sub_band_count") or 1),
+                                          stem_continuation_suspect=bool(
+                                              sregions[0].get("continuation_suspect")))
+                # R13-A4 释放资格门：非 ok（含 assumed_target/override/降级）不可接受
+                if sev.get("status") not in (None, "ok") or \
+                        ev2.get("verification_status") != "ok" or \
+                        not ev2.get("release_eligible", True):
+                    return False, ("布局证据非已验证状态（"
+                                   f"{sev.get('status')}/{ev2.get('verification_status')}），"
+                                   "不对外作答")
                 canvas2 = render_canvas(mask, ev2)
                 sha2 = hashlib.sha256(
                     np.ascontiguousarray(canvas2).tobytes()).hexdigest()[:16]

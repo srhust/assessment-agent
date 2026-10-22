@@ -46,7 +46,9 @@ def evidence_for(mask, pid, res=None, n_opts=4):
     x, y, w, h = sr["bbox_page"]
     ev = build_grid_evidence(mask, pid, [x, y, x + w, y + h], 0, 0,
                              expects_blank=True, cells_hint=sr.get("cells"),
-                             rows_hint=int(sr.get("sub_band_count") or 1))
+                             rows_hint=int(sr.get("sub_band_count") or 1),
+                             stem_continuation_suspect=bool(
+                                 sr.get("continuation_suspect")))
     return ev, res
 
 

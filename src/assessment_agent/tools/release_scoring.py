@@ -13,11 +13,11 @@ RELEASE_ACTIONS = ("accept", "repair")
 
 
 def row_layer(rec: Dict[str, Any]) -> int:
-    """返回该行达到的最高层：0 未释放候选错误/无、1 正确候选、2 接受、3 最终释放。
+    """返回该行达到的最高层：0 未释放候选错误/无、1 正确候选、3 最终释放。
 
-    rec 字段：status、answer、gold、verify（action 字符串）、final_answer（可缺省，
-    缺省视为与 answer 同值——Verifier accept 不重写数字答案，repair 才可能改；
-    脚本侧应显式存 final_answer）。
+    rec 字段：status、answer、gold、verify（action 字符串）、final_answer
+    （**必须由实验脚本保存 Verifier 真实返回**；缺失时不得回退 answer，
+    R13 裁决，行停留在第 1 层并由 summarize_rows 计入 release_evidence_missing）。
     """
     if rec.get("status") != "solved":
         return 0
@@ -27,8 +27,10 @@ def row_layer(rec: Dict[str, Any]) -> int:
     action = rec.get("verify")
     if action not in RELEASE_ACTIONS:
         return 1  # 正确候选但验证未通过（reject/unverified/无验证记录）
-    fa = rec.get("final_answer", rec.get("answer"))
-    if not fa:
+    # R13 裁决：释放证据必须来自 Verifier 实际返回并保存的 final_answer；
+    # 字段缺失不得回退到 Solver answer（否则记为 release_evidence_missing，停在第 1 层）。
+    fa = rec.get("final_answer")
+    if fa is None or fa == "":
         return 1
     return 3 if fa == rec.get("gold") else 1
 
@@ -45,6 +47,7 @@ def summarize_rows(rows: Iterable[Dict[str, Any]], cond: str,
     gated_unverified: List[str] = []
     design_abstain_ok: List[str] = []
     design_false_accepts: List[str] = []
+    release_evidence_missing: List[str] = []
     answerable_n = 0
     for r in rows:
         rec = (r.get("conds") or {}).get(cond) or {}
@@ -65,6 +68,8 @@ def summarize_rows(rows: Iterable[Dict[str, Any]], cond: str,
                     wrong_releases.append(r["id"])
         if solved and rec.get("verify") in RELEASE_ACTIONS and rec.get("answer") == gold:
             accepted.append(r["id"])
+            if rec.get("final_answer") in (None, ""):
+                release_evidence_missing.append(r["id"])
             if row_layer({**rec, "gold": gold}) >= 3:
                 released.append(r["id"])
         if solved and rec.get("verify") == "reject":
@@ -88,6 +93,7 @@ def summarize_rows(rows: Iterable[Dict[str, Any]], cond: str,
         "gated_unverified": gated_unverified,
         "design_abstain_ok": design_abstain_ok,
         "design_false_accepts": design_false_accepts,
+        "release_evidence_missing": release_evidence_missing,
         "lists": {"correct_candidates": correct_candidates,
                   "released": released},
     }

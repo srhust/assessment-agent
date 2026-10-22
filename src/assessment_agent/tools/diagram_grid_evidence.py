@@ -116,7 +116,8 @@ def build_grid_evidence(mask: np.ndarray, image_sha: str,
                         expects_blank: bool = True,
                         vlm_declared: Optional[Dict[str, Any]] = None,
                         cells_hint: Optional[Sequence[Dict[str, Any]]] = None,
-                      rows_hint: int = 1) -> Dict[str, Any]:
+                      rows_hint: int = 1,
+                  stem_continuation_suspect: bool = False) -> Dict[str, Any]:
     """按选定 (rows, cols) 生成格证据；多假设打平时 status=ambiguous。"""
     # 确定性等距分支：≥2 个等间距可见格 + 期望空白 → 1×(N+1)，目标在末槽
     pitch_ev = None
@@ -163,6 +164,31 @@ def build_grid_evidence(mask: np.ndarray, image_sha: str,
         chosen = best
     else:
         chosen = best
+    # ---- R13-A4 安全门：错误/假设布局不得以已验证状态向后传递 ----
+    notes_g = []
+    if stem_continuation_suspect:
+        notes_g.append("stem_continuation_suspect")
+        status, confidence = "ambiguous", "low"
+    if not (rows and cols) and int(rows_hint or 0) >= 2 \
+            and chosen["rows"] != int(rows_hint):
+        notes_g.append(f"rows_hint_mismatch(chosen={chosen['rows']},hint={rows_hint})")
+        status, confidence = "ambiguous", "low"
+    if status in ("ok", "assumed_target", "override") \
+            and not (pitch_ev and chosen["cols"] == pitch_ev["n"]):
+        sx0, sy0, sx1, sy1 = [int(v) for v in stem_box]
+        sa = ((sx1 - sx0) / max(1, chosen["cols"])) / max(1.0, (sy1 - sy0) / max(1, chosen["rows"]))
+        hint_inks = [c for c in (cells_hint or []) if c.get("bbox_page")]
+        if hint_inks:
+            asps = []
+            for c in hint_inks:
+                wdt = max(1, int(c["bbox_page"][2]))
+                hgt = max(1, int(c["bbox_page"][3]))
+                asps.append(wdt / hgt)
+            med = float(np.median(asps))
+            if med > 0 and (sa / med > 2.4 or med / sa > 2.4):
+                notes_g.append(f"slot_aspect_mismatch(slot={round(sa,2)},ink={round(med,2)})")
+                status, confidence = "ambiguous", "low"
+    safety_notes = list(notes_g)
     x0, y0, x1, y1 = [int(v) for v in stem_box]
     if pitch_ev and chosen["cols"] == pitch_ev["n"]:
         slots = [{"row": 0, "col": i, "bbox_page": bx}
@@ -223,13 +249,15 @@ def build_grid_evidence(mask: np.ndarray, image_sha: str,
         vlm_agreement = {"iou": round(_iou(list(stem_box), vb), 3),
                          "containment_stem_in_vlm": round(_containment(list(stem_box), vb), 3),
                          "declared_grid": [vlm_declared.get("rows"), vlm_declared.get("cols")]}
-    return {"verification_status": status, "confidence": confidence,
+    return {"verification_status": status,
+                 "release_eligible": status == "ok", "confidence": confidence,
             "image_sha": image_sha, "stem_bbox_page": [x0, y0, x1, y1],
             "grid_rows": chosen["rows"], "grid_cols": chosen["cols"],
             "visible_cells": [list(v) for v in visible],
             "blank_cells": [list(b) for b in blanks],
             "unknown_cells": [],   # 与 blank_or_undetected 合并上报，不臆断区分
             "target_cell": target, "target_basis": target_basis,
+                 "safety_notes": safety_notes,
             "cells": cells,
             "ink_deltas": ink_deltas,
             "layout_hypotheses": hypos[:4],
@@ -399,6 +427,27 @@ def merge_stem_regions(sregions: Sequence[Dict[str, Any]]) -> List[Dict[str, Any
         clean.append(c)
     first["cells"] = clean
     first["sub_band_count"] = max(len(bands_y), tall.get("n_bands", 1))
+    # R13-A4 延续性怀疑（纯几何，无 case-id）：被选最上条带组下方约一个格距处
+    # 存在格数 >= 2 倍于本组的兄弟组——题干被垂直撕裂，单条带选择不可信。
+    _sib = []
+    if clean:
+        _by1 = max(c["bbox_page"][1] + c["bbox_page"][3] for c in clean)
+        _scale = max(8.0, sum(c["bbox_page"][2] for c in clean) / len(clean))
+        _xs = sorted(c["bbox_page"][0] for c in clean)
+        for g in merged[1:]:
+            gc = g.get("cells") or []
+            if len(gc) >= 2 and len(gc) >= 2 * len(clean):
+                gap = g["box"][1] - _by1
+                if abs(gap - _scale) <= 1.2 * _scale:
+                    # 列对齐：兄弟组格起点须落在被选组列网格 ±0.5×scale 内过半，
+                    # 否则更像"另一排"（选项行常整体左移/更宽间距）
+                    tol = 0.5 * _scale
+                    aligned = sum(1 for c in gc
+                                  if min(abs(c["bbox_page"][0] - x) for x in _xs) <= tol)
+                    if aligned >= max(2, int(0.5 * len(gc))):
+                        _sib.append(g["box"])
+    first["continuation_suspect"] = bool(_sib)
+    first["continuation_siblings"] = _sib
     return [first]
 
 

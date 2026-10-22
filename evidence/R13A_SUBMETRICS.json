@@ -1,0 +1,565 @@
+{
+ "stage": "R13-A2/A3",
+ "native15": {
+  "per_item": {
+   "ft-rot90-01": {
+    "grid": [
+     1,
+     4
+    ],
+    "size": [
+     1,
+     4
+    ],
+    "grid_size_ok": true,
+    "blank_ok": true,
+    "target_ok": true,
+    "option_map_ok": true,
+    "content_ok": true,
+    "ev_status": "ok",
+    "target": [
+     0,
+     3
+    ],
+    "target_basis": "unique_empty_slot",
+    "gold_blank": [
+     0,
+     3
+    ],
+    "option_pairs": "4/4"
+   },
+   "ft-rot180-02": {
+    "grid": [
+     1,
+     3
+    ],
+    "size": [
+     1,
+     3
+    ],
+    "grid_size_ok": true,
+    "blank_ok": true,
+    "target_ok": true,
+    "option_map_ok": true,
+    "content_ok": true,
+    "ev_status": "ok",
+    "target": [
+     0,
+     2
+    ],
+    "target_basis": "unique_empty_slot",
+    "gold_blank": [
+     0,
+     2
+    ],
+    "option_pairs": "3/3"
+   },
+   "ft-rot270-03": {
+    "grid": [
+     1,
+     4
+    ],
+    "size": [
+     1,
+     4
+    ],
+    "grid_size_ok": true,
+    "blank_ok": true,
+    "target_ok": true,
+    "option_map_ok": true,
+    "content_ok": true,
+    "ev_status": "ok",
+    "target": [
+     0,
+     3
+    ],
+    "target_basis": "unique_empty_slot",
+    "gold_blank": [
+     0,
+     3
+    ],
+    "option_pairs": "3/3"
+   },
+   "ft-mirror-04": {
+    "grid": [
+     1,
+     3
+    ],
+    "size": [
+     1,
+     3
+    ],
+    "grid_size_ok": true,
+    "blank_ok": true,
+    "target_ok": true,
+    "option_map_ok": true,
+    "content_ok": true,
+    "ev_status": "ok",
+    "target": [
+     0,
+     2
+    ],
+    "target_basis": "unique_empty_slot",
+    "gold_blank": [
+     0,
+     2
+    ],
+    "option_pairs": "3/3"
+   },
+   "ft-mirror-05": {
+    "grid": [
+     1,
+     3
+    ],
+    "size": [
+     1,
+     3
+    ],
+    "grid_size_ok": true,
+    "blank_ok": true,
+    "target_ok": true,
+    "option_map_ok": false,
+    "content_ok": true,
+    "ev_status": "ok",
+    "target": [
+     0,
+     2
+    ],
+    "target_basis": "unique_empty_slot",
+    "gold_blank": [
+     0,
+     2
+    ],
+    "option_pairs": "2/3"
+   },
+   "ft-comp-06": {
+    "grid": [
+     1,
+     3
+    ],
+    "size": [
+     1,
+     3
+    ],
+    "grid_size_ok": true,
+    "blank_ok": true,
+    "target_ok": true,
+    "option_map_ok": true,
+    "content_ok": true,
+    "ev_status": "ok",
+    "target": [
+     0,
+     2
+    ],
+    "target_basis": "unique_empty_slot",
+    "gold_blank": [
+     0,
+     2
+    ],
+    "option_pairs": "3/3"
+   },
+   "ft-trans-07": {
+    "grid": [
+     1,
+     4
+    ],
+    "size": [
+     1,
+     4
+    ],
+    "grid_size_ok": true,
+    "blank_ok": true,
+    "target_ok": true,
+    "option_map_ok": false,
+    "content_ok": true,
+    "ev_status": "ok",
+    "target": [
+     0,
+     3
+    ],
+    "target_basis": "unique_empty_slot",
+    "gold_blank": [
+     0,
+     3
+    ],
+    "option_pairs": "0/3"
+   },
+   "ft-trans-08": {
+    "grid": [
+     1,
+     4
+    ],
+    "size": [
+     1,
+     4
+    ],
+    "grid_size_ok": true,
+    "blank_ok": true,
+    "target_ok": true,
+    "option_map_ok": true,
+    "content_ok": true,
+    "ev_status": "ok",
+    "target": [
+     0,
+     3
+    ],
+    "target_basis": "unique_empty_slot",
+    "gold_blank": [
+     0,
+     3
+    ],
+    "option_pairs": "3/3"
+   },
+   "ft-scale-09": {
+    "grid": [
+     1,
+     4
+    ],
+    "size": [
+     1,
+     4
+    ],
+    "grid_size_ok": true,
+    "blank_ok": true,
+    "target_ok": true,
+    "option_map_ok": false,
+    "content_ok": true,
+    "ev_status": "ok",
+    "target": [
+     0,
+     3
+    ],
+    "target_basis": "unique_empty_slot",
+    "gold_blank": [
+     0,
+     3
+    ],
+    "option_pairs": "0/3"
+   },
+   "ft-grid-10": {
+    "grid": [
+     3,
+     3
+    ],
+    "size": [
+     3,
+     3
+    ],
+    "grid_size_ok": true,
+    "blank_ok": true,
+    "target_ok": true,
+    "option_map_ok": true,
+    "content_ok": true,
+    "ev_status": "ok",
+    "target": [
+     2,
+     2
+    ],
+    "target_basis": "unique_empty_slot",
+    "gold_blank": [
+     2,
+     2
+    ],
+    "option_pairs": "4/4"
+   },
+   "ft-grid-11": {
+    "grid": [
+     3,
+     3
+    ],
+    "size": [
+     3,
+     3
+    ],
+    "grid_size_ok": true,
+    "blank_ok": false,
+    "target_ok": false,
+    "option_map_ok": false,
+    "content_ok": true,
+    "ev_status": "ok",
+    "target": [
+     1,
+     2
+    ],
+    "target_basis": "unique_empty_slot",
+    "gold_blank": [
+     2,
+     2
+    ],
+    "option_pairs": "0/3"
+   },
+   "ft-overlay-12": {
+    "grid": [
+     3,
+     3
+    ],
+    "size": [
+     3,
+     3
+    ],
+    "grid_size_ok": true,
+    "blank_ok": true,
+    "target_ok": true,
+    "option_map_ok": false,
+    "content_ok": true,
+    "ev_status": "ok",
+    "target": [
+     2,
+     2
+    ],
+    "target_basis": "unique_empty_slot",
+    "gold_blank": [
+     2,
+     2
+    ],
+    "option_pairs": "2/4"
+   },
+   "ft-overlay-13": {
+    "grid": [
+     3,
+     3
+    ],
+    "size": [
+     3,
+     3
+    ],
+    "grid_size_ok": true,
+    "blank_ok": false,
+    "target_ok": false,
+    "option_map_ok": false,
+    "content_ok": true,
+    "ev_status": "ambiguous",
+    "target": null,
+    "target_basis": "multiple_empty_slots(2)",
+    "gold_blank": [
+     2,
+     2
+    ],
+    "option_pairs": "2/4"
+   },
+   "ft-sym-14": {
+    "grid": [
+     1,
+     4
+    ],
+    "size": [
+     1,
+     4
+    ],
+    "grid_size_ok": true,
+    "blank_ok": true,
+    "target_ok": true,
+    "option_map_ok": true,
+    "content_ok": true,
+    "ev_status": "ok",
+    "target": [
+     0,
+     3
+    ],
+    "target_basis": "unique_empty_slot",
+    "gold_blank": [
+     0,
+     3
+    ],
+    "option_pairs": "2/2"
+   },
+   "ft-conflict-15": {
+    "grid": [
+     3,
+     3
+    ],
+    "size": [
+     3,
+     3
+    ],
+    "grid_size_ok": true,
+    "blank_ok": true,
+    "target_ok": true,
+    "option_map_ok": false,
+    "content_ok": true,
+    "ev_status": "ok",
+    "target": [
+     2,
+     2
+    ],
+    "target_basis": "unique_empty_slot",
+    "gold_blank": [
+     2,
+     2
+    ],
+    "option_pairs": "2/3"
+   }
+  },
+  "buckets": {
+   "grid_size_ok": "15/15",
+   "blank_ok": "13/15",
+   "target_ok": "13/15",
+   "option_map_ok": "8/15",
+   "content_ok": "15/15"
+  }
+ },
+ "perturb30": {
+  "improved": [
+   "ft-mirror-04--distractor",
+   "ft-scale-09--vertical",
+   "ft-scale-09--distractor",
+   "ft-grid-10--distractor"
+  ],
+  "regressed": [
+   "ft-grid-10--vertical",
+   "ft-grid-10--tight",
+   "ft-overlay-13--vertical",
+   "ft-overlay-13--distractor",
+   "ft-overlay-13--tight"
+  ],
+  "improved_n": 4,
+  "regressed_n": 5,
+  "note": "match 口径=R12E 时点，与人工计数复核；三反例状态见 unsafe"
+ },
+ "unsafe_verified_grid_examples": [
+  {
+   "id": "ft-grid-10--vertical",
+   "r11": [
+    3,
+    3
+   ],
+   "r12": [
+    2,
+    3
+   ],
+   "gold": [
+    3,
+    3
+   ],
+   "r12_status": "ambiguous"
+  },
+  {
+   "id": "ft-grid-10--tight",
+   "r11": [
+    3,
+    3
+   ],
+   "r12": [
+    1,
+    3
+   ],
+   "gold": [
+    3,
+    3
+   ],
+   "r12_status": "assumed_target"
+  },
+  {
+   "id": "ft-overlay-13--vertical",
+   "r11": [
+    3,
+    3
+   ],
+   "r12": [
+    1,
+    5
+   ],
+   "gold": [
+    3,
+    3
+   ],
+   "r12_status": "ok"
+  },
+  {
+   "id": "ft-overlay-13--distractor",
+   "r11": [
+    3,
+    3
+   ],
+   "r12": [
+    2,
+    2
+   ],
+   "gold": [
+    3,
+    3
+   ],
+   "r12_status": "assumed_target"
+  },
+  {
+   "id": "ft-overlay-13--tight",
+   "r11": [
+    3,
+    3
+   ],
+   "r12": [
+    2,
+    2
+   ],
+   "gold": [
+    3,
+    3
+   ],
+   "r12_status": "ambiguous"
+  },
+  {
+   "id": "ft-mirror-04--distractor",
+   "r11": [
+    1,
+    4
+   ],
+   "r12": [
+    1,
+    3
+   ],
+   "gold": [
+    1,
+    3
+   ],
+   "r12_status": "ok"
+  },
+  {
+   "id": "ft-scale-09--vertical",
+   "r11": [
+    3,
+    3
+   ],
+   "r12": [
+    1,
+    4
+   ],
+   "gold": [
+    1,
+    4
+   ],
+   "r12_status": "ok"
+  },
+  {
+   "id": "ft-scale-09--distractor",
+   "r11": [
+    1,
+    10
+   ],
+   "r12": [
+    1,
+    4
+   ],
+   "gold": [
+    1,
+    4
+   ],
+   "r12_status": "ambiguous"
+  },
+  {
+   "id": "ft-grid-10--distractor",
+   "r11": [
+    1,
+    10
+   ],
+   "r12": [
+    3,
+    3
+   ],
+   "gold": [
+    3,
+    3
+   ],
+   "r12_status": "ok"
+  }
+ ]
+}
