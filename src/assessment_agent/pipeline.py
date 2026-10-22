@@ -130,7 +130,16 @@ class Pipeline:
                     },
                 )
             if not stem:
-                raise PipelineError("截图抽取未得到题干文本；请改用 --text 显式提供题目")
+                # R13-E 合法流程：图形题不需要文字题干——VLM 给出可信图形区域
+                # （矩阵/图形/带图选项）即可进入图推技能；两者皆无才拦。
+                # 不做任何金标题干注入；figure 技能几何缺失时仍自行弃权。
+                has_figure_zone = bool(
+                    (extraction is not None and extraction.diagram_regions)
+                    or (extraction is not None and any(
+                        r.has_figure for r in (extraction.option_regions or []))))
+                if not has_figure_zone:
+                    raise PipelineError(
+                        "截图既无题干文字也无图形区域；请改用 --text 显式提供题目")
         elif stem and not question_options:
             parsed_stem, parsed_options = parse_options_from_text(stem)
             if parsed_options:
