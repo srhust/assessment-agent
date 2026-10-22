@@ -75,7 +75,18 @@ def test_pixel_fallback_end_to_end_new_layout(tmp_path: Path):
     assert prov["label_assignment"] == "row_major"
     assert all(c["completeness"]["passed"] for c in prov["option_cells"])
     v = Verifier(settings, registry=SkillRegistry()).verify(q, sol)
-    assert v.action == "accept", [(c.name, c.passed) for c in v.checks if not c.passed]
+    # R13-C 政策收紧（人工授权"允许为了安全放弃部分正确覆盖率"）：
+    # --tight 版式把选项字母裁没，label 关联无法由像素证实（None）。
+    # 门语义 = 只有**证实的**标签关联才允许释放；此页现应停在 unverified。
+    # 这不是放松——是更保守；tight 页的图形本身仍完整（completeness 全过）。
+    tight_labels_missing = all(
+        c.get("label_association_verified") is None
+        for c in prov["option_cells"])
+    if tight_labels_missing:
+        assert v.action == "unverified", [(c.name, c.passed) for c in v.checks]
+        assert any(c.name == "figure.option_evidence_gate" for c in v.checks)
+    else:
+        assert v.action == "accept", [(c.name, c.passed) for c in v.checks if not c.passed]
 
 
 def test_forged_region_hash_blocked(tmp_path: Path):

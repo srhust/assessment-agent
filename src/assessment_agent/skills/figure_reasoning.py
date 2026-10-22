@@ -36,6 +36,55 @@ def _xywh_to_xyxy(b):
     return [x, y, x + w, y + h]
 
 
+
+def _r13c_enrich_option_cells(cells, boxes, mask):
+    """R13-C OptionEvidence 富化：按带做 label-anchor 帧配对，以像素哈希对齐。
+
+    只加字段不改语义；旧来源（无帧可配）字段为 None——验证器对 None 向后兼容，
+    仅对显式 False/True 失败。
+    """
+    import numpy as np
+    from ..tools.option_evidence import label_anchor_frames
+    band_cache = {}
+    for c in cells:
+        bk = tuple(c.get("band") or [])
+        if len(bk) == 2 and bk not in band_cache:
+            band_cache[bk] = label_anchor_frames(mask, bk[0], bk[1],
+                                                 bk[1] - bk[0])
+    out = []
+    for c, bx in zip(cells, boxes):
+        rec = {k: c[k] for k in
+               ("bbox_page", "bbox_local", "pixel_sha",
+                "completeness", "source", "confidence")}
+        rec["cell_bbox"] = bx
+        bk = tuple(c.get("band") or [])
+        cx0, cy0, cw, ch = c["bbox_page"]
+        cx1 = cx0 + cw
+        fr_hit = None
+        for fr in band_cache.get(bk, []):
+            fx0, fy0, fx1, fy1 = fr["frame"]
+            if cx0 >= fx0 - 2 and cx1 <= fx1 + 2:
+                fr_hit = fr
+                break
+        rec["geometry_frame"] = list(fr_hit["frame"]) if fr_hit else None
+        rec["label_association_verified"] = (
+            fr_hit["label_association_verified"] if fr_hit else None)
+        if bk and len(bk) == 2:
+            y0b, y1b = bk
+            outside = 0
+            if cy0 <= y0b + 1 and y0b - 2 >= 0:
+                outside += int(np.asarray(
+                    mask[y0b - 2:y0b, cx0:cx1]).sum())
+            if (cy0 + ch) >= y1b - 1 and y1b + 2 <= mask.shape[0]:
+                outside += int(np.asarray(
+                    mask[y1b:y1b + 2, cx0:cx1]).sum())
+            rec["clipping_detected"] = outside > 0
+        else:
+            rec["clipping_detected"] = None
+        out.append(rec)
+    return out
+
+
 class FigureReasoningSkill(BaseSkill):
     id = "figure_reasoning"
     name_zh = "图形推理"
@@ -338,11 +387,7 @@ class FigureReasoningSkill(BaseSkill):
                 "algorithm": "r10d-page-localizer-v1",
                 "image": str(question.image_path),
                 "n_options": n_opts,
-                "option_cells": [{**{k: c[k] for k in
-                                  ("bbox_page", "bbox_local", "pixel_sha",
-                                   "completeness", "source", "confidence")},
-                                  "cell_bbox": bx}
-                                 for c, bx in zip(cells, boxes)],
+                "option_cells": _r13c_enrich_option_cells(cells, boxes, mask),
                 "stem_crop_source": ("vision_parser" if stem_crop_ok
                                      else "pixel_grid_evidence"),
                 "stem_evidence": stem_evidence,
@@ -823,6 +868,20 @@ class FigureReasoningSkill(BaseSkill):
             if not ok:
                 return Verification(passed=False, action="unverified", checks=[chk],
                                     notes=f"区域来源复核失败：{detail}")
+            # R13-C 选项证据门：标签关联被证伪或图形被切割 → 不释放（cap 到 unverified）
+            oes = prov.get("option_cells") or []
+            bad = [c for c in oes
+                   if c.get("label_association_verified") is not True
+                   or c.get("clipping_detected") is True]
+            gate = VerificationCheck(
+                name="figure.option_evidence_gate", passed=not bad,
+                detail=("全部消费选项帧通过标签关联/切割检查" if not bad else
+                        f"{len(bad)} 个选项帧未过门：" +
+                        "; ".join(f"#{c.get('bbox_page')}" for c in bad[:3])))
+            if bad:
+                return Verification(passed=False, action="unverified",
+                                    checks=[chk, gate],
+                                    notes="选项证据质量门失败（标签/切割），不对外作答")
         if (meta.get("channel") or "") == "transform" or meta.get("transform_cross_support"):
             # R4a：变换通道解 + 双通道互证解 → 由变换独立 verifier 接管复核
             # （R2c substitution 复核不认识旋转/镜像/叠加等几何约束，互证题若再走
