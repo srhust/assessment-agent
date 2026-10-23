@@ -1,9 +1,7 @@
 {
- "head_at_run": "1b5961a4f396c062b425eb97d313a5e3391518f7",
+ "head_at_run": "9dff5eec21db5fd2465f442b2084d8ea1efc22d0",
  "n_steps": 21,
- "docs_step_count_synced": [
-  "R14_STAGE_E_DELIVERABLES.md"
- ],
+ "docs_step_count_synced": [],
  "steps": [
   {
    "step": "scripts/d9_r14_stage_g_manifest.py",
@@ -12,7 +10,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "73b93351cc5a",
+   "artifact_sha256_short": "ffd606f2c9a6",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -27,7 +25,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.3,
-   "artifact_sha256_short": "976b1dce217a",
+   "artifact_sha256_short": "df9fb20693e2",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -56,7 +54,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.8,
+   "seconds": 5.7,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -132,7 +130,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 3.2,
-   "artifact_sha256_short": "7d026300b84c",
+   "artifact_sha256_short": "7e4ed56b5d79",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -146,7 +144,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 4.6,
+   "seconds": 4.5,
    "artifact_sha256_short": "8812f2b72e12",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -177,7 +175,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "81e7881e7ce8",
+   "artifact_sha256_short": "9af762a8a724",
    "artifact_rewritten": true,
    "stdout_tail": [
     "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
@@ -222,7 +220,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.1,
-   "artifact_sha256_short": "877d3b37cdac",
+   "artifact_sha256_short": "94d7bf7f8654",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -236,7 +234,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 21.7,
+   "seconds": 21.3,
    "artifact_sha256_short": "866bf00417dd",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -252,7 +250,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 1.2,
-   "artifact_sha256_short": "a52aa1b45b79",
+   "artifact_sha256_short": "44ebaa9cb387",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -282,7 +280,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 4.6,
-   "artifact_sha256_short": "3268ce4f68a1",
+   "artifact_sha256_short": "ee6392131e4d",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -296,9 +294,9 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 9.6,
+   "seconds": 9.8,
    "artifact_sha256_short": "c3ea0b0dc2ed",
-   "artifact_rewritten": true,
+   "artifact_rewritten": false,
    "stdout_tail": [
     "}"
    ],
@@ -311,14 +309,14 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 7.1,
-   "artifact_sha256_short": "e61f73c2ab1c",
+   "seconds": 7.2,
+   "artifact_sha256_short": "76a205a90816",
    "artifact_rewritten": true,
    "stdout_tail": [
-    "{\"run_mark\": \"4ad4dd143c63\", \"n_artifacts\": 56, \"self_checks_failed\": []}"
+    "{\"run_mark\": \"283e122383a5\", \"n_artifacts\": 56, \"self_checks_failed\": []}"
    ],
-   "run_mark_artifact": "4ad4dd143c63",
-   "run_mark_stdout": "4ad4dd143c63"
+   "run_mark_artifact": "283e122383a5",
+   "run_mark_stdout": "283e122383a5"
   }
  ],
  "comparison_volatile_keys": {
@@ -393,7 +391,6 @@
   " M evidence/R14G_HISTORICAL_BYTES.json",
   " M evidence/R14G_PLAN.json",
   " M evidence/R14H_KB_CHANNEL_HEAD_DELTA.json",
-  " M evidence/R14_CLAIM_AUDIT.json",
   " M evidence/R14_INDEX.json",
   " M evidence/R14_INDEX.md"
  ],
