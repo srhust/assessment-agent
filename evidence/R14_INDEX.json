@@ -1,5 +1,5 @@
 {
- "generated_at_head": "92103ecd74990557e86c8bd884c73c46b9cb30c6",
+ "generated_at_head": "7179844b05a0167fe74cd1d9ad295fa25722d61c",
  "n_artifacts": 45,
  "by_status": {
   "current": [
@@ -61,9 +61,9 @@
  "artifacts": [
   {
    "artifact": "R14_CLAIM_AUDIT.json",
-   "bytes": 3796,
-   "sha256": "a1a92637d1af8402a14009ace5b990a687b1e33f7ba87bccf48100c6d85d551c",
-   "sha_short": "a1a92637d1af",
+   "bytes": 3873,
+   "sha256": "f4b3b1aa296cfcfd6d639fb2533850f1ee86fbbb54a23dd54c08ab0cd9880c67",
+   "sha_short": "f4b3b1aa296c",
    "status": "current",
    "status_note": "交付件一致性审计（含审计器自证）",
    "producer_scripts": [
@@ -75,7 +75,7 @@
    "git_tracked": true,
    "reproducible": true,
    "commit_added": "aa81b50",
-   "commit_last_touched": "92103ec"
+   "commit_last_touched": "7179844"
   },
   {
    "artifact": "R14_CLAIM_AUDIT.md",
@@ -94,9 +94,9 @@
   },
   {
    "artifact": "R14_INDEX.json",
-   "bytes": 29499,
-   "sha256": "fdbb126d2fe501746213b9a7d655157ca21b2b7ac2f57e6b633f99774f3151f8",
-   "sha_short": "fdbb126d2fe5",
+   "bytes": 30832,
+   "sha256": "9207ee0bb368e498a5558a160a4d014db516f8d1b231a2d532ee6a926549c520",
+   "sha_short": "9207ee0bb368",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -107,13 +107,13 @@
    "git_tracked": true,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "92103ec"
+   "commit_last_touched": "7179844"
   },
   {
    "artifact": "R14_INDEX.md",
-   "bytes": 7404,
-   "sha256": "74013f1867a87e19148369c10528de587277c6e8ad96f666af3bdc29d6a8d23b",
-   "sha_short": "74013f1867a8",
+   "bytes": 7659,
+   "sha256": "dd92947cc45b049c536c0ff419b8986093a45f566cdd083cbdcc9ef9ce0cd327",
+   "sha_short": "dd92947cc45b",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [],
@@ -122,13 +122,13 @@
    "git_tracked": true,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "92103ec"
+   "commit_last_touched": "7179844"
   },
   {
    "artifact": "R14_PROGRESS_STOPGATE.md",
-   "bytes": 13675,
-   "sha256": "63ea82b43d6c7016a03c1241de4aeadf8800e1e4e5d3e7fad96b232215ac19e7",
-   "sha_short": "63ea82b43d6c",
+   "bytes": 15422,
+   "sha256": "c5354ce904e471a01ef8146d134a348382c95e0bd312dd19b59222b5027e8538",
+   "sha_short": "c5354ce904e4",
    "status": "current",
    "status_note": "",
    "producer_scripts": [
@@ -145,9 +145,9 @@
   },
   {
    "artifact": "R14_STAGE_E_DELIVERABLES.md",
-   "bytes": 14410,
-   "sha256": "b9708a2f9c67a137d8e919c5ee8b74ff6e8c14a09ececf731c9620e5bcaa93a9",
-   "sha_short": "b9708a2f9c67",
+   "bytes": 15408,
+   "sha256": "40af2cf7dcba4323dba6c9fa00152735594849aac3dba5b9f75bba07ac7da661",
+   "sha_short": "40af2cf7dcba",
    "status": "current",
    "status_note": "",
    "producer_scripts": [],
@@ -160,9 +160,9 @@
   },
   {
    "artifact": "R14_VERIFICATION_BUNDLE.json",
-   "bytes": 5043,
-   "sha256": "3e02093119bd16614119640ce202b5cb61709de2197812f73e28c92a2aeb4a1f",
-   "sha_short": "3e02093119bd",
+   "bytes": 6147,
+   "sha256": "02fbadb91ec0a7ca04c637545fd316ba627a72db2d40bacd0b6265a6705c30b7",
+   "sha_short": "02fbadb91ec0",
    "status": "current",
    "status_note": "",
    "producer_scripts": [
@@ -173,7 +173,7 @@
    "git_tracked": true,
    "reproducible": true,
    "commit_added": "f9a2fc8",
-   "commit_last_touched": "92103ec"
+   "commit_last_touched": "7179844"
   },
   {
    "artifact": "R14C_PITCH_ABLATION.json",
@@ -432,7 +432,7 @@
    "git_tracked": true,
    "reproducible": true,
    "commit_added": "92103ec",
-   "commit_last_touched": "92103ec"
+   "commit_last_touched": "7179844"
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
@@ -779,7 +779,7 @@
    "git_tracked": true,
    "reproducible": true,
    "commit_added": "ce44cc7",
-   "commit_last_touched": "92103ec"
+   "commit_last_touched": "7179844"
   },
   {
    "artifact": "R14G0_READINESS.md",
@@ -815,7 +815,7 @@
    "git_tracked": true,
    "reproducible": true,
    "commit_added": "ce44cc7",
-   "commit_last_touched": "f9a2fc8"
+   "commit_last_touched": "7179844"
   },
   {
    "artifact": "R14H_KB_CHANNEL_AUDIT.json",

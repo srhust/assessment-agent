@@ -82,6 +82,20 @@ of_effective_answerable` 与逐层 `wrong_releases`，并写明四条读法—�
 （那些页没有可验证的字母带，锚点判据必须拒绝）；真实 5 页中唯一未锚定者
 即 tight 页（无字母）。
 
+## 交付索引**与一键复现**（本轮新增，人工评审入口）
+
+`scripts/r14_verify_all.py` → `R14_VERIFICATION_BUNDLE.json`：从干净工作区**真跑**
+14 步离线验证器，当前 `fails []` / `all_steps_exit_zero true`。含 **A4 预检**
+（跑前算出绝对写路径，不等于现行件即拒绝）与 **f1 固定件重跑哈希不变**。
+
+**复现边界（如实）**：`R14E_REAL_PAGE_REPLAY_V8.json` =
+**NOT_REPRODUCIBLE_FROM_HEAD**（富化键产不出、题面 question.json 已就地重写）。
+`R14E_REAL_PAGE_REPLAY_V8_CHECK.json` 分层登记：判定层 9 字段（含 option_boxes）
+**逐字一致 5/5** ⇒ 2/5 结论未变；证据层可核对性退化。bundle 用 **skip 形态**
+不重跑该件并断言 `v8_untouched true`。附带修好一处**诊断字段退化**：重放脚本的
+`option_boxes` 曾被写窄成 `[bbox, ink]` 而丢 `label_bbox`（正是"标签一一对应"
+要看的字段），恢复为三元组后与提交版**逐字相同**。
+
 ## 交付**索引**（本轮新增，人工评审入口）
 `R14_INDEX.json` / `R14_INDEX.md`：42 件逐件登记 **sha256、生产脚本、首次入库
 与最近改动 commit、地位（current 20 / superseded 17 / historical 2 /

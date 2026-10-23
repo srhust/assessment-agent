@@ -111,6 +111,29 @@ G0 也**如实暴露了预算的脆弱面**（C1d）：计划 5 页 + 1 次余�
 `BudgetExhausted` 并计入端到端分母（实测 `sent=6 / succ=4 / tok=4080`、
 `{429:2, 200:4}`）。届时**不得**用降低页数、放松闸或"只除成功件"来抹掉。
 
+## 一键复现与**复现边界**（本轮新增，必读）
+
+`scripts/r14_verify_all.py` → `evidence/R14_VERIFICATION_BUNDLE.json`：
+从**干净工作区**按固定顺序**真跑** 14 步离线验证器（子进程、`PYTHONPATH=src`），
+登记每步退出码/耗时/产物 sha256 与件内关键事实。当前 **`fails []`、
+`all_steps_exit_zero true`**。附带两条强检查：**A4 预检**（跑之前就按 `--out`
+形态算出"将写到哪个绝对路径"，不等于现行件即拒绝——这条抓出了会**覆盖历史件**
+的写路径）与 **f1 固定件重跑后哈希不变**（漂移检查，不是重跑仪式）。
+
+**必须如实的复现边界（不得说成"离线基线全部可复现"）**：
+真实截图复放件 `R14E_REAL_PAGE_REPLAY_V8.json` 属 **NOT reproducible from HEAD**
+——它含富化键（`chain / consumed_crop_shas / consumption_binding /
+label_association_verified / option_sha256 / options_used / provenance`），
+当前 HEAD 的重放脚本产不出，且其题面 `question.json` 已被就地重写。
+分层结论见 `R14E_REAL_PAGE_REPLAY_V8_CHECK.json`：
+· **判定层可复现**：9 个判定字段（含 `option_boxes`）与 V8 **逐字一致 5/5**
+  ⇒ "真实截图端到端 2/5 正确释放"这一结论**未变**；
+· **证据层不可复现**：可核对性退化（不是数字变化）。
+bundle 对此的处理是 **skip 形态**：不重跑该件，并断言其在运行期间**未被改动**
+（`v8_untouched true`，前后哈希相同）——把重跑产物写回 V8 就是目标②禁止的
+"改历史 Test 结果"。若要恢复完整复现，需要把富化步骤纳入可重跑脚本，
+**属新脚本、须人工批准，本轮未做**。
+
 ## 需要人工裁决的点
 
 1. 接受"尺度协议是主因、pitch 非因果必需"这一**弱于预设**的结论

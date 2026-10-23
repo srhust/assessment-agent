@@ -8,7 +8,7 @@
  ],
  "fails": [],
  "notes": {
-  "C1_citations_checked": 42,
+  "C1_citations_checked": 46,
   "C1_missing_but_erratum_context": [
    {
     "doc": "R14G0_READINESS.md",
@@ -31,7 +31,7 @@
     "artifact": "R14E_PERTURB_RELEASE_AUDIT_V5.json",
     "lines": [
      54,
-     125
+     139
     ],
     "why": "该句本身声明此件不存在/被取代，属勘误语境"
    }
@@ -56,6 +56,7 @@
   "R14E_NEWLAYOUT_REGRESSION_V3.json",
   "R14E_PERTURB_RELEASE_AUDIT_V5.json",
   "R14E_REAL_PAGE_REPLAY_V8.json",
+  "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
   "R14E_SIX_CONDITION_V10.json",
   "R14E_STAGE_E_ACCEPTANCE_V8.json",
   "R14E_TIGHT_GAP_DIAGNOSIS.json",
@@ -70,7 +71,8 @@
   "R14_CLAIM_AUDIT.md",
   "R14_INDEX.json",
   "R14_INDEX.md",
-  "R14_PROGRESS_STOPGATE.md"
+  "R14_PROGRESS_STOPGATE.md",
+  "R14_VERIFICATION_BUNDLE.json"
  ],
  "llm_calls_used": 0,
  "http_requests_made": 0,
@@ -92,7 +94,7 @@
     "exit": 1,
     "child_output_parseable": true,
     "caught_expected_check": true,
-    "sample_fail": "C2 R14_PROGRESS_STOPGATE.md:156 把被取代件 R14E_NEWLAYOUT_REGRESSION_V2.json 当作当前引用（该句无勘误语境）",
+    "sample_fail": "C2 R14_PROGRESS_STOPGATE.md:179 把被取代件 R14E_NEWLAYOUT_REGRESSION_V2.json 当作当前引用（该句无勘误语境）",
     "stderr_tail": ""
    },
    {
