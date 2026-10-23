@@ -1,5 +1,5 @@
 {
- "head_at_run": "064a93ebda68b207edeb0d4797e3067f6985dce3",
+ "head_at_run": "acc4c1d7bf734d1df1770ce3871c82c9ee442fec",
  "n_steps": 21,
  "steps": [
   {
@@ -8,8 +8,8 @@
    "out_mode": "fixed",
    "expected_to_change": true,
    "exit": 0,
-   "seconds": 1.2,
-   "artifact_sha256_short": "f935a41a22f2",
+   "seconds": 0.7,
+   "artifact_sha256_short": "0c331904cd24",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -22,7 +22,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.3,
-   "artifact_sha256_short": "61ec6579dc7c",
+   "artifact_sha256_short": "b074a3417401",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -34,7 +34,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.4,
+   "seconds": 1.1,
    "artifact_sha256_short": "d27ba4087d5c",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -47,7 +47,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 6.6,
+   "seconds": 5.7,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -60,7 +60,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.7,
+   "seconds": 1.6,
    "artifact_sha256_short": "da176b1a274b",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -73,7 +73,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.5,
+   "seconds": 2.4,
    "artifact_sha256_short": "9a6a48a7e9ad",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -112,8 +112,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 7.0,
-   "artifact_sha256_short": "a3654b67ff1e",
+   "seconds": 5.1,
+   "artifact_sha256_short": "bd759d6b777a",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -125,7 +125,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 13.2,
+   "seconds": 13.7,
    "artifact_sha256_short": "8812f2b72e12",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -152,7 +152,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "9e80871b55cb",
+   "artifact_sha256_short": "2ebba1a6bf14",
    "artifact_rewritten": true,
    "stdout_tail": [
     "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
@@ -177,9 +177,9 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.6,
+   "seconds": 1.2,
    "artifact_sha256_short": "9fd286b67089",
-   "artifact_rewritten": true,
+   "artifact_rewritten": false,
    "stdout_tail": [
     "{\"missing\": {\"jr.categorical-syllogism\": \"缺卡（三段论属逻辑判断族，numeric\", \"nc.arithmetic-precedence\": \"确定性执行器已覆盖（Direct-AST\", \"nc.combinatorics-power\": \"缺卡（排列组合/幂集计数族 KB 无任何\", \"nc.work-rate\": \"异名等价卡（效率最小公倍数法即工程问题通\"}, \"channel_rows\": 7}"
    ]
@@ -191,7 +191,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.1,
-   "artifact_sha256_short": "df9275c1b4b3",
+   "artifact_sha256_short": "8ef5ef335581",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -203,9 +203,9 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 80.0,
+   "seconds": 133.7,
    "artifact_sha256_short": "640ef933c137",
-   "artifact_rewritten": true,
+   "artifact_rewritten": false,
    "stdout_tail": [
     "}"
    ]
@@ -217,7 +217,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 1.2,
-   "artifact_sha256_short": "8307e6df7703",
+   "artifact_sha256_short": "6e29e2ebf4d5",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -243,7 +243,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 4.7,
-   "artifact_sha256_short": "8baea88449d9",
+   "artifact_sha256_short": "9e99122b02ec",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -255,8 +255,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 8.0,
-   "artifact_sha256_short": "ea07773b83ac",
+   "seconds": 9.8,
+   "artifact_sha256_short": "afee54087687",
    "artifact_rewritten": false,
    "stdout_tail": [
     "}"
@@ -268,8 +268,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 9.0,
-   "artifact_sha256_short": "6acbdaa099cf",
+   "seconds": 8.4,
+   "artifact_sha256_short": "2537a82852a9",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14_INDEX.json"
@@ -337,11 +337,9 @@
   " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.md",
   " M evidence/R14E_ARTIFACT_ATTRIBUTION.json",
   " M evidence/R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
-  " M evidence/R14E_RERUN_SEMANTICS.json",
   " M evidence/R14G0_GATE_READINESS_V5.json",
   " M evidence/R14G_HISTORICAL_BYTES.json",
   " M evidence/R14G_PLAN.json",
-  " M evidence/R14H_KB_CHANNEL_AUDIT.json",
   " M evidence/R14H_KB_CHANNEL_HEAD_DELTA.json",
   " M evidence/R14_INDEX.json",
   " M evidence/R14_INDEX.md"
