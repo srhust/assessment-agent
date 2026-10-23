@@ -1,6 +1,259 @@
 {
- "n_checked": 47,
- "violations": [],
+ "n_checked": 48,
+ "violations": [
+  {
+   "artifact": "R14E_REAL_PAGE_REPLAY_V8.json",
+   "script": "e2_r14_optionband_replay.py",
+   "declared_writers": [
+    "e2_r14_optionband_replay.py",
+    "r14_attribute_producer.py",
+    "e2b_r14_anchor_option_recovery.py",
+    "e2d_r14_production_replay_v4.py"
+   ],
+   "refused_unsafe": [
+    {
+     "script": "r14_attribute_producer.py",
+     "reason": "自我递归"
+    },
+    {
+     "script": "e2b_r14_anchor_option_recovery.py",
+     "reason": "不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）"
+    }
+   ],
+   "worktree_collateral": [
+    "evidence/R14E_REAL_PAGE_REPLAY_V8.json"
+   ],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [
+    "R14E_REAL_PAGE_REPLAY_V8.json"
+   ],
+   "own_declared_outputs_touched": [
+    "R14E_REAL_PAGE_REPLAY_V8.json"
+   ],
+   "status": "semantic_drift",
+   "diff_count": 22,
+   "diff_classes": {
+    "verdict_level": 7,
+    "annotation_only": 0,
+    "numeric_precision": 0,
+    "other": 15,
+    "other_examples": [
+     {
+      "path": "$.ft-mirror-04.chain",
+      "committed": "[\"declared_options:3\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-mirror-04.option_sha256",
+      "committed": "[\"b89eb0d5c84280c8\", \"59783c0d44a3f077\", \"73746abb55f83330\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-mirror-04.options_used",
+      "committed": "[\"A\", \"B\", \"C\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.chain",
+      "committed": "[\"declared_options:0\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.option_sha256",
+      "committed": "[\"d4e42d469bc8e0e4\", \"697c7f8fc3797461\", \"42fd9c879bc47f82\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.options_used",
+      "committed": "[]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-overlay-12.chain",
+      "committed": "[\"declared_options:4\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-overlay-12.option_sha256",
+      "committed": "[\"67c81cfa4aacc3b0\", \"2ff83e867c8d4444\", \"bd3f10377ef775ff\", \"c87be50da5dc3bc4\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-overlay-12.options_used",
+      "committed": "[\"A\", \"B\", \"C\", \"D\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-rot90-01.chain",
+      "committed": "[\"declared_options:4\"]",
+      "rerun": "<重跑未产出>"
+     }
+    ],
+    "verdict_paths": [
+     "$.ft-mirror-04--tight.consumed_crop_shas",
+     "$.ft-mirror-04--tight.label_association_verified[0]",
+     "$.ft-mirror-04--tight.label_association_verified[1]",
+     "$.ft-mirror-04--tight.label_association_verified[2]",
+     "$.ft-mirror-04--tight.provenance[0]",
+     "$.ft-mirror-04--tight.provenance[1]",
+     "$.ft-mirror-04--tight.provenance[2]"
+    ],
+    "verdict_examples": [
+     {
+      "path": "$.ft-mirror-04--tight.consumed_crop_shas",
+      "committed": "[\"b3ae9ada1cea8f2d\", \"419011ac3cad289a\", \"27ca966ec399486e\", \"52d63f2d238a963e\"]",
+      "rerun": "null"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.label_association_verified[0]",
+      "committed": "null",
+      "rerun": "true"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.label_association_verified[1]",
+      "committed": "null",
+      "rerun": "true"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.label_association_verified[2]",
+      "committed": "null",
+      "rerun": "true"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.provenance[0]",
+      "committed": "null",
+      "rerun": "unknown"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.provenance[1]",
+      "committed": "null",
+      "rerun": "unknown"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.provenance[2]",
+      "committed": "null",
+      "rerun": "unknown"
+     }
+    ]
+   },
+   "diffs": [
+    {
+     "path": "$.ft-mirror-04.chain",
+     "committed": "[\"declared_options:3\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-mirror-04.option_sha256",
+     "committed": "[\"b89eb0d5c84280c8\", \"59783c0d44a3f077\", \"73746abb55f83330\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-mirror-04.options_used",
+     "committed": "[\"A\", \"B\", \"C\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.chain",
+     "committed": "[\"declared_options:0\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.option_sha256",
+     "committed": "[\"d4e42d469bc8e0e4\", \"697c7f8fc3797461\", \"42fd9c879bc47f82\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.options_used",
+     "committed": "[]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.consumed_crop_shas",
+     "committed": "[\"b3ae9ada1cea8f2d\", \"419011ac3cad289a\", \"27ca966ec399486e\", \"52d63f2d238a963e\"]",
+     "rerun": "null"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.label_association_verified[0]",
+     "committed": "null",
+     "rerun": "true"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.label_association_verified[1]",
+     "committed": "null",
+     "rerun": "true"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.label_association_verified[2]",
+     "committed": "null",
+     "rerun": "true"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.provenance[0]",
+     "committed": "null",
+     "rerun": "unknown"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.provenance[1]",
+     "committed": "null",
+     "rerun": "unknown"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.provenance[2]",
+     "committed": "null",
+     "rerun": "unknown"
+    },
+    {
+     "path": "$.ft-overlay-12.chain",
+     "committed": "[\"declared_options:4\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-overlay-12.option_sha256",
+     "committed": "[\"67c81cfa4aacc3b0\", \"2ff83e867c8d4444\", \"bd3f10377ef775ff\", \"c87be50da5dc3bc4\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-overlay-12.options_used",
+     "committed": "[\"A\", \"B\", \"C\", \"D\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-rot90-01.chain",
+     "committed": "[\"declared_options:4\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-rot90-01.option_sha256",
+     "committed": "[\"52b3fc247734d4aa\", \"5896f34be920015d\", \"4a2f7db5ef4feed3\", \"f817c48b4889899d\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-rot90-01.options_used",
+     "committed": "[\"A\", \"B\", \"C\", \"D\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-trans-07.chain",
+     "committed": "[\"declared_options:3\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-trans-07.option_sha256",
+     "committed": "[\"2c8483b4af6ee1a8\", \"0fbfa086d45ef6a4\", \"b61c6c3fd7cf5d57\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-trans-07.options_used",
+     "committed": "[\"A\", \"B\", \"C\"]",
+     "rerun": "<重跑未产出>"
+    }
+   ],
+   "detail": "22 处差异：结论级 7 / 注解级 0 / 其他 15"
+  }
+ ],
  "identical_detector_selftest": {
   "fails": [],
   "cases": [
@@ -18,7 +271,9 @@
   "verdict_level": 10,
   "after_removal_status": "violated",
   "cross_artifact_notes": [],
-  "unexplained_verdict_drift": [],
+  "unexplained_verdict_drift": [
+   "R14E_REAL_PAGE_REPLAY_V8.json"
+  ],
   "note": "纯内存反证，不重跑、不改件",
   "budget": {
    "http_requests_made": 0
@@ -46,11 +301,17 @@
  "rows": [
   {
    "artifact": "R14_CLAIM_AUDIT.json",
-   "status": "covered_by_bundle",
+   "status": "refused_unsafe_candidates",
    "declared_writers": [
     "e2e_r14_claim_audit.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
+   "refused": [
+    {
+     "script": "e2e_r14_claim_audit.py",
+     "reason": "不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）"
+    }
+   ]
   },
   {
    "artifact": "R14_INDEX.json",
@@ -425,11 +686,20 @@
   },
   {
    "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.json",
-   "status": "covered_by_bundle",
+   "script": "e2f_r14_causal_delta.py",
    "declared_writers": [
     "e2f_r14_causal_delta.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "refused_unsafe": [],
+   "worktree_collateral": [],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [],
+   "own_declared_outputs_touched": [],
+   "status": "reproduced_identical",
+   "rerun_byte_identical": true
   },
   {
    "artifact": "R14C_PITCH_ABLATION_RERUN2.json",
@@ -445,27 +715,45 @@
   },
   {
    "artifact": "R14E_ANCHOR_SWEEP.json",
-   "status": "covered_by_bundle",
+   "status": "refused_unsafe_candidates",
    "declared_writers": [
     "e2e_r14_anchor_sweep.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
+   "refused": [
+    {
+     "script": "e2e_r14_anchor_sweep.py",
+     "reason": "不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）"
+    }
+   ]
   },
   {
    "artifact": "R14E_ARTIFACT_ATTRIBUTION.json",
-   "status": "covered_by_bundle",
+   "status": "refused_unsafe_candidates",
    "declared_writers": [
     "r14_attribute_producer.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
+   "refused": [
+    {
+     "script": "r14_attribute_producer.py",
+     "reason": "自我递归"
+    }
+   ]
   },
   {
    "artifact": "R14E_ATTRIBUTION_SELFTEST.json",
-   "status": "covered_by_bundle",
+   "status": "refused_unsafe_candidates",
    "declared_writers": [
     "r14_attribute_producer.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
+   "refused": [
+    {
+     "script": "r14_attribute_producer.py",
+     "reason": "自我递归"
+    }
+   ]
   },
   {
    "artifact": "R14E_HEAD_REVERIFY.json",
@@ -483,11 +771,17 @@
   },
   {
    "artifact": "R14E_LINEAGE_SIX_CONDITION.json",
-   "status": "covered_by_bundle",
+   "status": "refused_unsafe_candidates",
    "declared_writers": [
     "e2e_r14_six_condition_lineage.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
+   "refused": [
+    {
+     "script": "e2e_r14_six_condition_lineage.py",
+     "reason": "不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）"
+    }
+   ]
   },
   {
    "artifact": "R14E_NEWLAYOUT_REGRESSION_V2.json",
@@ -497,11 +791,20 @@
   },
   {
    "artifact": "R14E_NEWLAYOUT_REGRESSION_V3.json",
-   "status": "covered_by_bundle",
+   "script": "e2e_r14_newlayout_regression.py",
    "declared_writers": [
     "e2e_r14_newlayout_regression.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "refused_unsafe": [],
+   "worktree_collateral": [],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [],
+   "own_declared_outputs_touched": [],
+   "status": "reproduced_identical",
+   "rerun_byte_identical": true
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY.json",
@@ -535,14 +838,255 @@
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8.json",
-   "status": "covered_by_bundle",
+   "script": "e2_r14_optionband_replay.py",
    "declared_writers": [
     "e2_r14_optionband_replay.py",
     "r14_attribute_producer.py",
     "e2b_r14_anchor_option_recovery.py",
     "e2d_r14_production_replay_v4.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "refused_unsafe": [
+    {
+     "script": "r14_attribute_producer.py",
+     "reason": "自我递归"
+    },
+    {
+     "script": "e2b_r14_anchor_option_recovery.py",
+     "reason": "不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）"
+    }
+   ],
+   "worktree_collateral": [
+    "evidence/R14E_REAL_PAGE_REPLAY_V8.json"
+   ],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [
+    "R14E_REAL_PAGE_REPLAY_V8.json"
+   ],
+   "own_declared_outputs_touched": [
+    "R14E_REAL_PAGE_REPLAY_V8.json"
+   ],
+   "status": "semantic_drift",
+   "diff_count": 22,
+   "diff_classes": {
+    "verdict_level": 7,
+    "annotation_only": 0,
+    "numeric_precision": 0,
+    "other": 15,
+    "other_examples": [
+     {
+      "path": "$.ft-mirror-04.chain",
+      "committed": "[\"declared_options:3\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-mirror-04.option_sha256",
+      "committed": "[\"b89eb0d5c84280c8\", \"59783c0d44a3f077\", \"73746abb55f83330\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-mirror-04.options_used",
+      "committed": "[\"A\", \"B\", \"C\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.chain",
+      "committed": "[\"declared_options:0\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.option_sha256",
+      "committed": "[\"d4e42d469bc8e0e4\", \"697c7f8fc3797461\", \"42fd9c879bc47f82\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.options_used",
+      "committed": "[]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-overlay-12.chain",
+      "committed": "[\"declared_options:4\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-overlay-12.option_sha256",
+      "committed": "[\"67c81cfa4aacc3b0\", \"2ff83e867c8d4444\", \"bd3f10377ef775ff\", \"c87be50da5dc3bc4\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-overlay-12.options_used",
+      "committed": "[\"A\", \"B\", \"C\", \"D\"]",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.ft-rot90-01.chain",
+      "committed": "[\"declared_options:4\"]",
+      "rerun": "<重跑未产出>"
+     }
+    ],
+    "verdict_paths": [
+     "$.ft-mirror-04--tight.consumed_crop_shas",
+     "$.ft-mirror-04--tight.label_association_verified[0]",
+     "$.ft-mirror-04--tight.label_association_verified[1]",
+     "$.ft-mirror-04--tight.label_association_verified[2]",
+     "$.ft-mirror-04--tight.provenance[0]",
+     "$.ft-mirror-04--tight.provenance[1]",
+     "$.ft-mirror-04--tight.provenance[2]"
+    ],
+    "verdict_examples": [
+     {
+      "path": "$.ft-mirror-04--tight.consumed_crop_shas",
+      "committed": "[\"b3ae9ada1cea8f2d\", \"419011ac3cad289a\", \"27ca966ec399486e\", \"52d63f2d238a963e\"]",
+      "rerun": "null"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.label_association_verified[0]",
+      "committed": "null",
+      "rerun": "true"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.label_association_verified[1]",
+      "committed": "null",
+      "rerun": "true"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.label_association_verified[2]",
+      "committed": "null",
+      "rerun": "true"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.provenance[0]",
+      "committed": "null",
+      "rerun": "unknown"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.provenance[1]",
+      "committed": "null",
+      "rerun": "unknown"
+     },
+     {
+      "path": "$.ft-mirror-04--tight.provenance[2]",
+      "committed": "null",
+      "rerun": "unknown"
+     }
+    ]
+   },
+   "diffs": [
+    {
+     "path": "$.ft-mirror-04.chain",
+     "committed": "[\"declared_options:3\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-mirror-04.option_sha256",
+     "committed": "[\"b89eb0d5c84280c8\", \"59783c0d44a3f077\", \"73746abb55f83330\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-mirror-04.options_used",
+     "committed": "[\"A\", \"B\", \"C\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.chain",
+     "committed": "[\"declared_options:0\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.option_sha256",
+     "committed": "[\"d4e42d469bc8e0e4\", \"697c7f8fc3797461\", \"42fd9c879bc47f82\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.options_used",
+     "committed": "[]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.consumed_crop_shas",
+     "committed": "[\"b3ae9ada1cea8f2d\", \"419011ac3cad289a\", \"27ca966ec399486e\", \"52d63f2d238a963e\"]",
+     "rerun": "null"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.label_association_verified[0]",
+     "committed": "null",
+     "rerun": "true"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.label_association_verified[1]",
+     "committed": "null",
+     "rerun": "true"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.label_association_verified[2]",
+     "committed": "null",
+     "rerun": "true"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.provenance[0]",
+     "committed": "null",
+     "rerun": "unknown"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.provenance[1]",
+     "committed": "null",
+     "rerun": "unknown"
+    },
+    {
+     "path": "$.ft-mirror-04--tight.provenance[2]",
+     "committed": "null",
+     "rerun": "unknown"
+    },
+    {
+     "path": "$.ft-overlay-12.chain",
+     "committed": "[\"declared_options:4\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-overlay-12.option_sha256",
+     "committed": "[\"67c81cfa4aacc3b0\", \"2ff83e867c8d4444\", \"bd3f10377ef775ff\", \"c87be50da5dc3bc4\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-overlay-12.options_used",
+     "committed": "[\"A\", \"B\", \"C\", \"D\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-rot90-01.chain",
+     "committed": "[\"declared_options:4\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-rot90-01.option_sha256",
+     "committed": "[\"52b3fc247734d4aa\", \"5896f34be920015d\", \"4a2f7db5ef4feed3\", \"f817c48b4889899d\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-rot90-01.options_used",
+     "committed": "[\"A\", \"B\", \"C\", \"D\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-trans-07.chain",
+     "committed": "[\"declared_options:3\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-trans-07.option_sha256",
+     "committed": "[\"2c8483b4af6ee1a8\", \"0fbfa086d45ef6a4\", \"b61c6c3fd7cf5d57\"]",
+     "rerun": "<重跑未产出>"
+    },
+    {
+     "path": "$.ft-trans-07.options_used",
+     "committed": "[\"A\", \"B\", \"C\"]",
+     "rerun": "<重跑未产出>"
+    }
+   ],
+   "detail": "22 处差异：结论级 7 / 注解级 0 / 其他 15"
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
@@ -558,11 +1102,17 @@
   },
   {
    "artifact": "R14E_RERUN_SEMANTICS.json",
-   "status": "covered_by_bundle",
+   "status": "refused_unsafe_candidates",
    "declared_writers": [
     "r14_semantic_repro.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
+   "refused": [
+    {
+     "script": "r14_semantic_repro.py",
+     "reason": "自我编排器（名录）：动态核验它等于递归重跑整条链"
+    }
+   ]
   },
   {
    "artifact": "R14E_SIX_CONDITION.json",
@@ -572,9 +1122,10 @@
   },
   {
    "artifact": "R14E_SIX_CONDITION_V10.json",
-   "status": "covered_by_bundle",
+   "status": "no_producer_no_command",
    "declared_writers": [],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
+   "refused": []
   },
   {
    "artifact": "R14E_SIX_CONDITION_V2.json",
@@ -644,27 +1195,48 @@
   },
   {
    "artifact": "R14E_STAGE_E_ACCEPTANCE_V8.json",
-   "status": "covered_by_bundle",
+   "script": "e2e_r14_stage_e_acceptance.py",
    "declared_writers": [
     "e2e_r14_stage_e_acceptance.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "refused_unsafe": [],
+   "worktree_collateral": [],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [],
+   "own_declared_outputs_touched": [],
+   "status": "no_write_detected",
+   "detail": ""
   },
   {
    "artifact": "R14E_TIGHT_GAP_DIAGNOSIS.json",
-   "status": "covered_by_bundle",
+   "status": "refused_unsafe_candidates",
    "declared_writers": [
     "e2e_r14_tight_gap_diagnosis.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
+   "refused": [
+    {
+     "script": "e2e_r14_tight_gap_diagnosis.py",
+     "reason": "不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）"
+    }
+   ]
   },
   {
    "artifact": "R14F_PERTURB_RELEASE_AUDIT.json",
-   "status": "covered_by_bundle",
+   "status": "refused_unsafe_candidates",
    "declared_writers": [
     "f1_r14_perturb_release_audit.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
+   "refused": [
+    {
+     "script": "f1_r14_perturb_release_audit.py",
+     "reason": "不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）"
+    }
+   ]
   },
   {
    "artifact": "R14F_SIX_CONDITION.json",
@@ -674,44 +1246,94 @@
   },
   {
    "artifact": "R14G0_GATE_READINESS_V5.json",
-   "status": "covered_by_bundle",
+   "status": "refused_unsafe_candidates",
    "declared_writers": [
     "e2e_r14_stage_g_readiness.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
+   "refused": [
+    {
+     "script": "e2e_r14_stage_g_readiness.py",
+     "reason": "含网络标记 'OpenAI'：归属核验禁止触发任何真实请求路径"
+    }
+   ]
+  },
+  {
+   "artifact": "R14G0_GATE_READINESS_V5_RERUN.json",
+   "status": "no_producer_no_command",
+   "declared_writers": [],
+   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
+   "refused": []
   },
   {
    "artifact": "R14G_HISTORICAL_BYTES.json",
-   "status": "covered_by_bundle",
+   "script": "a9_r14_historical_bytes.py",
    "declared_writers": [
     "a9_r14_historical_bytes.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "refused_unsafe": [],
+   "worktree_collateral": [],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [],
+   "own_declared_outputs_touched": [],
+   "status": "reproduced_identical",
+   "rerun_byte_identical": true
   },
   {
    "artifact": "R14G_HISTORICAL_BYTES_SELFTEST.json",
-   "status": "covered_by_bundle",
+   "script": "a9_r14_historical_bytes.py",
    "declared_writers": [
     "a9_r14_historical_bytes.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "refused_unsafe": [],
+   "worktree_collateral": [],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [],
+   "own_declared_outputs_touched": [],
+   "status": "no_write_detected",
+   "detail": ""
   },
   {
    "artifact": "R14G_PLAN.json",
-   "status": "covered_by_bundle",
+   "status": "refused_unsafe_candidates",
    "declared_writers": [
     "d9_r14_stage_g_manifest.py",
     "d9b_r14_lock_manifest.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
+   "refused": [
+    {
+     "script": "d9_r14_stage_g_manifest.py",
+     "reason": "含网络标记 'ASSESSMENT_LLM'：归属核验禁止触发任何真实请求路径"
+    },
+    {
+     "script": "d9b_r14_lock_manifest.py",
+     "reason": "不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）"
+    }
+   ]
   },
   {
    "artifact": "R14H_KB_CHANNEL_AUDIT.json",
-   "status": "covered_by_bundle",
+   "script": "h1_r14_kb_channel_audit.py",
    "declared_writers": [
     "h1_r14_kb_channel_audit.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "refused_unsafe": [],
+   "worktree_collateral": [],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [],
+   "own_declared_outputs_touched": [],
+   "status": "reproduced_identical",
+   "rerun_byte_identical": true
   },
   {
    "artifact": "R14H_KB_CHANNEL_AUDIT_RERUN.json",
