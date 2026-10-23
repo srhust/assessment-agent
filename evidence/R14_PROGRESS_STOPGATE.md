@@ -134,9 +134,12 @@ G0 也**如实暴露了预算的脆弱面**（C1d）：计划 5 页 + 1 次余�
 地位一律取自登记表；当前 30 / 被取代 17 / **核对副产物 4** / 历史 2 /
 勘误保留 1 / 自指 2，`unregistered []`。
 
-一键复现清单现为 **18 步**（新两步 `e2f_r14_causal_delta.py`、
-`r14_semantic_repro.py` 由 `skip` 改为真 `fixed` 步，耗时 0.1s / 46.2s，
-总计 95.7s），`fails []`，`http_requests_made 0`、`tokens_used 0`。
+一键复现清单现为 **21 步**（`e2f_r14_causal_delta.py`、
+`r14_semantic_repro.py` 由 `skip` 改为真 `fixed` 步；其后又加入
+A9 字节基线、A9 触发反证、h1 漂移解释件三步），
+`fails []`，`http_requests_made 0`、`tokens_used 0`。
+**该步数自本起由 bundle 每轮回写**（`docs_step_count_synced`），
+我不再手写数字——手写就是再造一个会过期的计数。
 
 5. **注入案例自己静默失手**：审计自证里我一度把标签写成 C8、期望 ID 却写 C7，
    又把注入目标写成 `current 30 /`（文档实际换行成 `current 30 /
@@ -286,6 +289,48 @@ bundle 侧：V8 不再是 `skip`（不重跑）——改由**真作者**重跑�
     命令挂死 10 分钟以上两次。现在只有一个 `CHILD_ARGS` 常量（所有调用点共用），
     且 `main()` 对任何未知 `-flag` 打印 `fatal` 并**退出 2**。
     实测：`--selftest-child` 即时被拒，不再挂死。
+
+### 追加（R12 后半）：索引口径改动又挖出四个"检查自己不可信"的坑
+
+11. **读到陈旧产物（本轮最危险的一次）。**
+    我给索引加了 `att: dict | None = None`（PEP 604），本仓 Python 是 3.9
+    ⇒ **导入即 TypeError、脚本根本没跑**；而我下一步去读
+    `evidence/R14_INDEX.json`，读到的是**上一轮跑剩的件**，
+    于是把**旧结果当成新结果**报了出来——`exit=1` 我甚至没看 stdout 就跳过了。
+    ⇒ 新增 **A12 陈旧产物看守**：产物里写本次运行的 `run_mark`，
+    stdout 也报同一个 mark，**两者不一致或 stdout 缺 mark ⇒ 立即报错**；
+    并带**触发反证**（改掉件内 mark，差异必须可见）与**空转自证**
+    （没有任何步骤产出 mark ⇒ 显式记 `verified: false`，不算通过）。
+
+12. **A1b 反证把我自己的假豁免抓了出来。**
+    我给"人工撰写文档"建了 `HAND_WRITTEN` 清单，反证一跑：
+    `R14C_PITCH_ABLATION_HEAD_DELTA.md` **确实**被
+    `e2f_r14_causal_delta.py:177` `write_text` 写出 ⇒ 我的声明是**谎报**；
+    另外两件（`STOPGATE.md`、`R14G_HISTORICAL_BYTES.md`）只是被
+    **引用**（一句"需人工批准"的提示字符串 / 一个 `R14G_*` 前缀数组）。
+    ⇒ 清单删掉谎报件；生产形态判据要**同时承认**
+    字面写出与 `--out` 实参两种，且**负例必须判非生产**
+    （`mention ≠ production` 这条口径不能因为"想给自己开豁免"就丢）。
+
+13. **A1b 反证又挖出归属层的真错：`attribution_verified` 曾靠二手证言。**
+    `R14E_REAL_PAGE_REPLAY_V8.json` 挂着"作者 = `e2d_..._v4.py`"，
+    但那脚本的默认输出名是 `..._V5.json`；结论来自**下游 CHECK 件的自述**。
+    真作者 `e2_r14_optionband_replay.py` 用的是
+    `name = "X.json"` → `ROOT / "evidence" / name` → `write_text` 的**三跳写法**。
+    ⇒ 新增 **A1c**：归属必须**可回溯**到
+    ①默认输出名 / `--out` 实参 / 写出语句（**literal**），或
+    ②归属器**跑一遍比形状**得到的 `true_producers` **且**该脚本真实现 `--out`
+    （**behavioral_replay**）；两档都拿不到 ⇒ 报"归属是下游件的自述，不算作者"。
+
+14. **写出判据的闭包会把"引用"判成"作者"（正例反例同时被钉）。**
+    收紧种子时我先做成"只认字面路径"，结果**把 V8/V5/V3 三个真作者判没了**
+    （8 条 `EXPECTED_WRITERS` 漏判）；退回"提到过就算"又复活假作者。
+    ⇒ 最终口径：**种子按赋值形态取**（路径赋值 / 裸字符串赋值，
+    **容器字面量里的键与元素不算**），**扩散只沿路径语义**
+    （`a = x / "…"`、`Path(x)`、`join(x, …)`；`x.read_text(` 是**读**，不扩散），
+    argparse 形态要按**属性种子** `a.out` 匹配（旧写法只找 `out` 这个 dest 名，
+    找不到 `p.write_text`，注入的假作者就逃过了自检）。
+    **两组钉子必须同时过**——缺任何一组都不算修好。
 
 ## 需要人工裁决的点
 

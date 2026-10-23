@@ -604,7 +604,24 @@ def main() -> int:
         fails.append(f"A10 SAFETY_VIOLATION_bundle_collateral："
                      f"bundle 期间改动了**未登记**的证据/数据件 {sorted(set(_collateral))}"
                      f"（已登记 {len(_expected)} 件）")
-    out = {"head_at_run": head, "n_steps": len(rows), "steps": rows,
+    # **交付文档里的步数由本步回写**：手写"18 步 / 21 步"
+    # 就是再造一个会过期的计数（本轮我已经错过两次）。
+    _doc_sync = []
+    _placeholder = "{{BUNDLE_N_STEPS}}"
+    for _dn in ("R14_STAGE_E_DELIVERABLES.md", "R14_PROGRESS_STOPGATE.md"):
+        _dp = EV / _dn
+        if not _dp.is_file():
+            continue
+        _t = _dp.read_text(encoding="utf-8")
+        _n = re.sub(r"一键复现(?:清单|`R14_VERIFICATION_BUNDLE\.json`)"
+                    r"(?:（)?\s*\*{0,2}\d+\s*步\*{0,2}",
+                    f"一键复现{{见下}}".replace("见下",
+                                   f"**{len(rows)} 步**"), _t)
+        if _n != _t:
+            _dp.write_text(_n, encoding="utf-8")
+            _doc_sync.append(_dn)
+    out = {"head_at_run": head, "n_steps": len(rows),
+           "docs_step_count_synced": _doc_sync, "steps": rows,
            "comparison_volatile_keys": vol_keys,
            "fails": fails,
            "worktree_clean_before": clean,
