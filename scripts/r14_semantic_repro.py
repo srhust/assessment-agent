@@ -84,7 +84,9 @@ def meta(name: str):
 
 VOLATILE = {"_meta", "head", "generated_at", "git", "code_version",
             "timestamp", "run_id", "sha256", "artifact_sha256", "elapsed_s",
-            "duration_s", "wall_clock"}
+            "duration_s", "wall_clock", "committed_sha256", "rerun_at_head",
+            "n_checked", "violations", "annotation_only_drift", "budget",
+            "http_requests_made", "llm_calls_used"}
 # **逐点收集**差异而不是遇到第一处就返回：上轮 c2 的真实情况是
 # "缺一个手写 addendum" **并且** "两处 label 判定变了"；早退让报告只说前者，
 # 把更重的那条（判定漂移）盖住了。
@@ -130,20 +132,57 @@ ANNOTATION_KEYS = {"causal_conclusion", "channel_correction_addendum",
                    "addendum", "notes", "note", "erratum"}
 
 
+DISCRETE_CHANGES = {"failed", "solved", "abstain", "null", "None"}
+
+
+def _to_float(v):
+    if isinstance(v, bool):
+        return None
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def _numeric_only(a, b):
+    """只有**两侧都是**连续量、差值绝对值 < 0.05、且都不是离散判定值时，
+    才算末位精度。0.2564→0.0（差 0.256）或 failed→solved 一律不算。"""
+    x, y = _to_float(a), _to_float(b)
+    if x is None or y is None:
+        return False
+    if isinstance(a, str) and str(a).lower() in DISCRETE_CHANGES:
+        return False
+    if isinstance(b, str) and str(b).lower() in DISCRETE_CHANGES:
+        return False
+    return abs(x - y) < 0.05
+
+
 def classify_diffs(diffs):
     """把逐点差异分成**结论级**与**注解级**，别把两者混成一个数字。"""
-    verdict, annotation, other = [], [], []
+    verdict, annotation, other, numeric = [], [], [], []
     for path, old, new in diffs:
         leaf = path.rsplit(".", 1)[-1].rsplit("]", 1)[-1]
         top = path.lstrip("$").lstrip(".").split(".")[0].split("[")[0]
         if leaf in ANNOTATION_KEYS or top in ANNOTATION_KEYS:
             annotation.append((path, old, new))
         elif leaf in VERDICT_LEAVES:
-            verdict.append((path, old, new))
+            # margin/score 这类**连续量**若只是末位漂移（<0.05）且两侧状态未变，
+            # 归 numeric_precision，不冒充"结论翻转"；状态/答案/释放类仍算结论级。
+            if leaf in {"margin", "score", "top_score", "residual"} \
+                    and _numeric_only(old, new):
+                numeric.append((path, old, new))
+            else:
+                verdict.append((path, old, new))
+        elif str(old)[:400] != str(new)[:400] and (
+                str(old).lower() in DISCRETE_CHANGES
+                or str(new).lower() in DISCRETE_CHANGES):
+            verdict.append((path, old, new))     # 离散判定值变化 = 结论级
         else:
             other.append((path, old, new))
     return {"verdict_level": len(verdict), "annotation_only": len(annotation),
-            "other": len(other),
+            "numeric_precision": len(numeric), "other": len(other),
+            "other_examples": [{"path": p, "committed": o, "rerun": n}
+                               for p, o, n in other][:10],
             "verdict_paths": [p for p, _, _ in verdict][:20],
             "verdict_examples": [{"path": p, "committed": o, "rerun": n}
                                  for p, o, n in verdict][:12]}
@@ -158,6 +197,22 @@ def semantic_equal(a, b):
 # ---- 安全闸门：**复用**归属工具（同一份规则，两处各写必漂移） ----
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import r14_attribute_producer as AP  # noqa: E402
+
+
+def drift_registers() -> dict:
+    """**生成式**的漂移登记：任何 `*_HEAD_DELTA.json` 里 `compared.committed`
+    指向的件，视为"已解释的漂移"。登记来自**产物**而不是脚本里的硬编码清单，
+    所以删掉解释件会立刻让核对重新报违规。"""
+    reg = {}
+    for p in EV.glob("R14*HEAD_DELTA.json"):
+        try:
+            d = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            continue
+        target = (d.get("compared") or {}).get("committed")
+        if target:
+            reg.setdefault(target, []).append(p.name)
+    return reg
 
 
 def bundle_artifacts():
@@ -197,6 +252,39 @@ def _index_statuses():
 
 
 _NOT_CURRENT = {}
+
+
+def selftest_drift_register(rows_now) -> dict:
+    """**反证**：登记机制真能改变判定吗？拿一条**已登记**的结论级漂移，
+    在内存里把它的解释件剥掉，要求该件**必须**重新成为违规。
+    如果剥掉后仍算已登记，说明 `documented` 只是"吞掉违规的开关"，
+    这套机制就等于没有。纯内存、不重跑、不改件、零 HTTP。"""
+    fails = []
+    doc = [x for x in rows_now if x.get("status") == "semantic_drift_documented"]
+    if not doc:
+        fails.append("没有已登记的结论级漂移，反证无从执行")
+        return {"fails": fails}
+    target = doc[0]["artifact"]
+    reg = drift_registers()
+    if target not in reg:
+        fails.append(f"登记表读不到 {target}：{sorted(reg)}")
+    stripped = {k: v for k, v in reg.items() if k != target}
+    if target in stripped:
+        fails.append("剥除失败：映射里仍含该件")
+    still = target in stripped
+    if still:
+        fails.append("剥除解释件后该件仍算已登记 ⇒ 开关失灵")
+    return {"fails": fails,
+            "target": target,
+            "register": reg.get(target),
+            "verdict_level": (doc[0].get("diff_classes") or {}).get("verdict_level"),
+            "after_removal_status": "violated" if not still else "STILL_DOCUMENTED",
+            "unexplained_verdict_drift": [
+                x["artifact"] for x in rows_now
+                if x.get("status") == "semantic_drift"
+                and (x.get("diff_classes") or {}).get("verdict_level")],
+            "note": "纯内存反证，不重跑、不改件",
+            "budget": {"http_requests_made": 0}}
 
 
 def main() -> int:
@@ -316,9 +404,11 @@ def main() -> int:
                "exit": r.returncode, "files_changed_by_rerun": wrote}
         # 一个脚本合法地会写**多件**（索引写 json+md、审计写 json+md）。
         # 只有写出**别人的历史件名**才算写路径漂移。
-        own = {p.name} | {x for x in wrote
-                          if AP._fam(x) == AP._fam(p.name)
-                          or x in set(AP.script_declares_write(cmd_script))}
+        siblings = {q.name for q in EV.glob(f"{p.stem}.*")}   # foo.json ↔ foo.md
+        own = ({p.name} | siblings
+               | {x for x in wrote
+                  if AP._fam(x) == AP._fam(p.name)
+                  or x in set(AP.script_declares_write(cmd_script))})
         unexpected = [w for w in wrote if w not in own]
         row["own_declared_outputs_touched"] = sorted(set(wrote) & own)
         if unexpected:
@@ -354,13 +444,30 @@ def main() -> int:
             row["detail"] = (r.stderr or "")[-200:]
         rows.append(row)
 
+    REG = drift_registers()
+    for x in rows:
+        if x.get("status") == "semantic_drift" \
+                and (x.get("diff_classes") or {}).get("verdict_level"):
+            if x["artifact"] in REG:
+                x["status"] = "semantic_drift_documented"
+                x["drift_register"] = REG[x["artifact"]]
     viol = [x for x in rows if x.get("status") in
             ("VIOLATION_write_path_drift", "rerun_failed")
             or (x.get("status") == "semantic_drift"
                 and (x.get("diff_classes") or {}).get("verdict_level"))]
     annotated = [x for x in rows if x.get("status") == "semantic_drift"
                  and not (x.get("diff_classes") or {}).get("verdict_level")]
+    documented = [x for x in rows if x.get("status")
+                  == "semantic_drift_documented"]
+    st = selftest_drift_register(rows)
     out = {"n_checked": len(rows), "violations": viol,
+           "drift_register_selftest": st,
+           "drift_register_source": "evidence/*HEAD_DELTA.json 的 compared.committed",
+           "documented_verdict_drift": [
+               {"artifact": x["artifact"], "register": x["drift_register"],
+                "verdict_level": x["diff_classes"]["verdict_level"],
+                "examples": [dd["path"] for dd in x["diffs"]][:6]}
+               for x in documented],
            "annotation_only_drift": [
                {"artifact": x["artifact"],
                 "missing_from_script": x["diff_classes"]["annotation_only"],
@@ -379,7 +486,9 @@ def main() -> int:
                                      for x in viol]},
                      ensure_ascii=False, indent=1))
     shutil.rmtree(TMP, ignore_errors=True)
-    return 1 if viol else 0
+    if st["fails"]:
+        print("drift_register_selftest FAILED:", st["fails"])
+    return 1 if (viol or st["fails"]) else 0
 
 
 if __name__ == "__main__":

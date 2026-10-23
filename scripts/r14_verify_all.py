@@ -97,6 +97,14 @@ STEPS = [
     ("scripts/e2d_r14_production_replay_v4.py",
      "R14E_REAL_PAGE_REPLAY_V8_RERUN.json", None, "bare",
      "R14E_REAL_PAGE_REPLAY_V8_RERUN.json"),
+    # 因果实验在现行 HEAD 的复现差异（人工裁决项 2 的**生成式**材料）
+    ("scripts/e2f_r14_causal_delta.py", "R14C_PITCH_ABLATION_HEAD_DELTA.json",
+     ("verdict", "claims"), "skip", None),
+    # 补集复现核对：只跑 bundle 未覆盖的件；含**恒真比较缺陷的反证**
+    # （恢复原样必须发生在语义比较**之后**）与漂移登记机制的内存反证
+    ("scripts/r14_semantic_repro.py", "R14E_RERUN_SEMANTICS.json",
+     ("drift_register_selftest", "documented_verdict_drift"),
+     "skip", None),
     ("scripts/e2_r14_v8_reproducibility.py",
      "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
      {"verdict_identical_all": True, "v8_untouched": True,
@@ -288,6 +296,41 @@ def main() -> int:
                 fails.append(f"A6 自检未拒跑注入样本 {inj}")
             if inj in sd.get("executed", []):
                 fails.append(f"A6 **注入样本被执行过**：{inj}")
+
+    # ---- A7：复现差异必须被**解释件**登记，且解释机制本身有反证 ----
+    # 上轮把"重跑后先恢复原样再比较"这种**恒真比较**修掉之后，才浮出真实漂移。
+    # 一条被"documented"吞掉的漂移不等于没有漂移，所以这里三件事都要机器确认。
+    sem_p = EV / "R14E_RERUN_SEMANTICS.json"
+    if sem_p.is_file():
+        semd = json.loads(sem_p.read_text(encoding="utf-8"))
+        st = semd.get("drift_register_selftest") or {}
+        if st.get("fails"):
+            fails.append(f"A7 漂移登记**反证**失败：{st['fails'][:2]}")
+        if st and st.get("after_removal_status") != "violated":
+            fails.append("A7 剥掉解释件后仍算已登记 ⇒ documented 成了吞违规的开关")
+        for x in semd.get("documented_verdict_drift", []):
+            reg = EV / (x.get("register") or [""])[0]
+            if not reg.is_file():
+                fails.append(f"A7 {x['artifact']} 的解释件缺失：{reg.name}")
+                continue
+            rd = json.loads(reg.read_text(encoding="utf-8"))
+            tgt = (rd.get("compared") or {}).get("committed")
+            if tgt != x["artifact"]:
+                fails.append(f"A7 解释件 {reg.name} 的 compared.committed="
+                             f"{tgt!r} 与被解释件不符")
+            if not rd.get("claims"):
+                fails.append(f"A7 解释件 {reg.name} 未给出判据（claims）")
+        unexplained = semd.get("unexplained_verdict_drift", []) or \
+            [r["artifact"] for r in semd.get("rows", [])
+             if r.get("status") == "semantic_drift"
+             and (r.get("diff_classes") or {}).get("verdict_level")]
+        if unexplained:
+            fails.append(f"A7 有**未解释**的结论级漂移：{unexplained}")
+        if semd.get("violations"):
+            fails.append(f"A7 补集复现核对仍有违规："
+                         f"{[v['artifact'] for v in semd['violations']]}")
+    else:
+        fails.append("A7 缺 R14E_RERUN_SEMANTICS.json（补集复现核对未跑）")
 
     after_clean, after_dirty = worktree_clean()
     out = {"head_at_run": head, "n_steps": len(rows), "steps": rows,

@@ -1,294 +1,36 @@
 {
- "n_checked": 43,
- "violations": [
+ "n_checked": 44,
+ "violations": [],
+ "drift_register_selftest": {
+  "fails": [],
+  "target": "R14C_PITCH_ABLATION.json",
+  "register": [
+   "R14C_PITCH_ABLATION_HEAD_DELTA.json"
+  ],
+  "verdict_level": 10,
+  "after_removal_status": "violated",
+  "unexplained_verdict_drift": [],
+  "note": "纯内存反证，不重跑、不改件",
+  "budget": {
+   "http_requests_made": 0
+  }
+ },
+ "drift_register_source": "evidence/*HEAD_DELTA.json 的 compared.committed",
+ "documented_verdict_drift": [
   {
    "artifact": "R14C_PITCH_ABLATION.json",
-   "script": "c2_r14_pitch_ablation.py",
-   "declared_writers": [
-    "c2_r14_pitch_ablation.py"
+   "register": [
+    "R14C_PITCH_ABLATION_HEAD_DELTA.json"
    ],
-   "refused_unsafe": [],
-   "worktree_collateral": [
-    "evidence/R14C_PITCH_ABLATION.json"
-   ],
-   "collateral_removed": [],
-   "safety": "OK_ZERO_REQUESTS",
-   "offline": true,
-   "exit": 0,
-   "files_changed_by_rerun": [
-    "R14C_PITCH_ABLATION.json"
-   ],
-   "own_declared_outputs_touched": [
-    "R14C_PITCH_ABLATION.json"
-   ],
-   "status": "semantic_drift",
-   "diff_count": 40,
-   "diff_classes": {
-    "verdict_level": 9,
-    "annotation_only": 1,
-    "other": 30,
-    "verdict_paths": [
-     "$.items.ft-mirror-04.rows.A_old_maxink__legacy_scale.candidates[0].margin",
-     "$.items.ft-mirror-04.rows.B_center_pitch__legacy_scale.candidates[0].margin",
-     "$.items.ft-mirror-04.rows.C_gold__legacy_scale.candidates[0].margin",
-     "$.items.ft-mirror-04--tight.label",
-     "$.items.ft-mirror-04--tight.rows.C_gold.solver_status",
-     "$.items.ft-mirror-04--tight.rows.C_gold__legacy_scale.solver_status",
-     "$.items.ft-overlay-12.label",
-     "$.items.ft-rot90-01.rows.A_old_maxink.candidates[0].margin",
-     "$.items.ft-rot90-01.rows.A_old_maxink__legacy_scale.candidates[0].margin"
-    ],
-    "verdict_examples": [
-     {
-      "path": "$.items.ft-mirror-04.rows.A_old_maxink__legacy_scale.candidates[0].margin",
-      "committed": "0.0",
-      "rerun": "0.0153"
-     },
-     {
-      "path": "$.items.ft-mirror-04.rows.B_center_pitch__legacy_scale.candidates[0].margin",
-      "committed": "0.0",
-      "rerun": "0.0153"
-     },
-     {
-      "path": "$.items.ft-mirror-04.rows.C_gold__legacy_scale.candidates[0].margin",
-      "committed": "0.0",
-      "rerun": "0.0153"
-     },
-     {
-      "path": "$.items.ft-mirror-04--tight.label",
-      "committed": "rule_not_applicable",
-      "rerun": "rule_conflict"
-     },
-     {
-      "path": "$.items.ft-mirror-04--tight.rows.C_gold.solver_status",
-      "committed": "failed",
-      "rerun": "solved"
-     },
-     {
-      "path": "$.items.ft-mirror-04--tight.rows.C_gold__legacy_scale.solver_status",
-      "committed": "failed",
-      "rerun": "solved"
-     },
-     {
-      "path": "$.items.ft-overlay-12.label",
-      "committed": "option_crop_error",
-      "rerun": "rule_not_applicable"
-     },
-     {
-      "path": "$.items.ft-rot90-01.rows.A_old_maxink.candidates[0].margin",
-      "committed": "0.7546",
-      "rerun": "0.6566"
-     },
-     {
-      "path": "$.items.ft-rot90-01.rows.A_old_maxink__legacy_scale.candidates[0].margin",
-      "committed": "0.2564",
-      "rerun": "0.0"
-     }
-    ]
-   },
-   "diffs": [
-    {
-     "path": "$.causal_conclusion",
-     "committed": "{\"scale_protocol\": \"mirror-04/rot90-01：legacy 相对尺度惩罚下 A/B/C 三种画布**全部**饱和 1.0 失败；protocol-a",
-     "rerun": "<重跑未产出>"
-    },
-    {
-     "path": "$.items.ft-mirror-04.rows.A_old_maxink.candidates[0].scores.C",
-     "committed": "0.6674",
-     "rerun": "0.6959"
-    },
-    {
-     "path": "$.items.ft-mirror-04.rows.A_old_maxink__legacy_scale.candidates[0].margin",
-     "committed": "0.0",
-     "rerun": "0.0153"
-    },
-    {
-     "path": "$.items.ft-mirror-04.rows.A_old_maxink__legacy_scale.candidates[0].scores.C",
-     "committed": "1.0",
-     "rerun": "0.9847"
-    },
-    {
-     "path": "$.items.ft-mirror-04.rows.A_old_maxink__legacy_scale.solver_error",
-     "committed": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 1.0}}",
-     "rerun": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 0.984716}}"
-    },
-    {
-     "path": "$.items.ft-mirror-04.rows.B_center_pitch.candidates[0].scores.C",
-     "committed": "0.6674",
-     "rerun": "0.6959"
-    },
-    {
-     "path": "$.items.ft-mirror-04.rows.B_center_pitch__legacy_scale.candidates[0].margin",
-     "committed": "0.0",
-     "rerun": "0.0153"
-    },
-    {
-     "path": "$.items.ft-mirror-04.rows.B_center_pitch__legacy_scale.candidates[0].scores.C",
-     "committed": "1.0",
-     "rerun": "0.9847"
-    },
-    {
-     "path": "$.items.ft-mirror-04.rows.B_center_pitch__legacy_scale.solver_error",
-     "committed": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 1.0}}",
-     "rerun": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 0.984716}}"
-    },
-    {
-     "path": "$.items.ft-mirror-04.rows.C_gold.candidates[0].scores.C",
-     "committed": "0.6674",
-     "rerun": "0.6959"
-    },
-    {
-     "path": "$.items.ft-mirror-04.rows.C_gold__legacy_scale.candidates[0].margin",
-     "committed": "0.0",
-     "rerun": "0.0153"
-    },
-    {
-     "path": "$.items.ft-mirror-04.rows.C_gold__legacy_scale.candidates[0].scores.C",
-     "committed": "1.0",
-     "rerun": "0.9847"
-    },
-    {
-     "path": "$.items.ft-mirror-04.rows.C_gold__legacy_scale.solver_error",
-     "committed": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 1.0}}",
-     "rerun": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 0.984716}}"
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.label",
-     "committed": "rule_not_applicable",
-     "rerun": "rule_conflict"
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.rows.A_old_maxink.solver_error",
-     "committed": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）",
-     "rerun": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 0 个选项匹配; 对称性应为 垂直=True 水平=True，但有 0 "
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.rows.A_old_maxink__legacy_scale.solver_error",
-     "committed": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）",
-     "rerun": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 0 个选项匹配; 对称性应为 垂直=True 水平=True，但有 0 "
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.rows.B_center_pitch.solver_error",
-     "committed": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）",
-     "rerun": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 0 个选项匹配; 对称性应为 垂直=True 水平=True，但有 0 "
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.rows.B_center_pitch__legacy_scale.solver_error",
-     "committed": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）",
-     "rerun": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 0 个选项匹配; 对称性应为 垂直=True 水平=True，但有 0 "
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.rows.C_gold.candidates.len",
-     "committed": 0,
-     "rerun": 1
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.rows.C_gold.solver_answer",
-     "committed": "null",
-     "rerun": "A"
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.rows.C_gold.solver_error",
-     "committed": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）",
-     "rerun": ""
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.rows.C_gold.solver_status",
-     "committed": "failed",
-     "rerun": "solved"
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.rows.C_gold.verifier_action",
-     "committed": "null",
-     "rerun": "unverified"
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.rows.C_gold__legacy_scale.candidates.len",
-     "committed": 0,
-     "rerun": 1
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.rows.C_gold__legacy_scale.solver_answer",
-     "committed": "null",
-     "rerun": "A"
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.rows.C_gold__legacy_scale.solver_error",
-     "committed": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）",
-     "rerun": ""
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.rows.C_gold__legacy_scale.solver_status",
-     "committed": "failed",
-     "rerun": "solved"
-    },
-    {
-     "path": "$.items.ft-mirror-04--tight.rows.C_gold__legacy_scale.verifier_action",
-     "committed": "null",
-     "rerun": "unverified"
-    },
-    {
-     "path": "$.items.ft-overlay-12.label",
-     "committed": "option_crop_error",
-     "rerun": "rule_not_applicable"
-    },
-    {
-     "path": "$.items.ft-overlay-12.rows.A_old_maxink.solver_error",
-     "committed": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：变换规律不可唯一判定",
-     "rerun": "没有支持范围内的规律能解释已知图形（当前支持：个数、边数、面积、平移、对称性）；变换通道：变换规律不可唯一判定"
-    },
-    {
-     "path": "$.items.ft-overlay-12.rows.A_old_maxink__legacy_scale.solver_error",
-     "committed": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：变换规律不可唯一判定",
-     "rerun": "没有支持范围内的规律能解释已知图形（当前支持：个数、边数、面积、平移、对称性）；变换通道：变换规律不可唯一判定"
-    },
-    {
-     "path": "$.items.ft-overlay-12.rows.B_center_pitch.solver_error",
-     "committed": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：变换规律不可唯一判定",
-     "rerun": "没有支持范围内的规律能解释已知图形（当前支持：个数、边数、面积、平移、对称性）；变换通道：变换规律不可唯一判定"
-    },
-    {
-     "path": "$.items.ft-overlay-12.rows.B_center_pitch__legacy_scale.solver_error",
-     "committed": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：变换规律不可唯一判定",
-     "rerun": "没有支持范围内的规律能解释已知图形（当前支持：个数、边数、面积、平移、对称性）；变换通道：变换规律不可唯一判定"
-    },
-    {
-     "path": "$.items.ft-overlay-12.rows.C_gold.solver_error",
-     "committed": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：变换规律不可唯一判定",
-     "rerun": "没有支持范围内的规律能解释已知图形（当前支持：个数、边数、面积、平移、对称性）；变换通道：变换规律不可唯一判定"
-    },
-    {
-     "path": "$.items.ft-overlay-12.rows.C_gold__legacy_scale.solver_error",
-     "committed": "选项 C 的裁剪区域几乎空白，无法参与规律匹配（不猜测）；变换通道：变换规律不可唯一判定",
-     "rerun": "没有支持范围内的规律能解释已知图形（当前支持：个数、边数、面积、平移、对称性）；变换通道：变换规律不可唯一判定"
-    },
-    {
-     "path": "$.items.ft-rot90-01.rows.A_old_maxink.candidates[0].margin",
-     "committed": "0.7546",
-     "rerun": "0.6566"
-    },
-    {
-     "path": "$.items.ft-rot90-01.rows.A_old_maxink.candidates[0].scores.B",
-     "committed": "0.8002",
-     "rerun": "0.7022"
-    },
-    {
-     "path": "$.items.ft-rot90-01.rows.A_old_maxink.candidates[0].scores.C",
-     "committed": "1.0",
-     "rerun": "0.7562"
-    },
-    {
-     "path": "$.items.ft-rot90-01.rows.A_old_maxink.candidates[0].scores.D",
-     "committed": "1.0",
-     "rerun": "0.9262"
-    },
-    {
-     "path": "$.items.ft-rot90-01.rows.A_old_maxink__legacy_scale.candidates[0].margin",
-     "committed": "0.2564",
-     "rerun": "0.0"
-    }
-   ],
-   "detail": "40 处差异：结论级 9 / 注解级 1 / 其他 30"
+   "verdict_level": 10,
+   "examples": [
+    "$.causal_conclusion",
+    "$.items.ft-mirror-04.rows.A_old_maxink.candidates[0].scores.C",
+    "$.items.ft-mirror-04.rows.A_old_maxink__legacy_scale.candidates[0].margin",
+    "$.items.ft-mirror-04.rows.A_old_maxink__legacy_scale.candidates[0].scores.C",
+    "$.items.ft-mirror-04.rows.A_old_maxink__legacy_scale.solver_error",
+    "$.items.ft-mirror-04.rows.B_center_pitch.candidates[0].scores.C"
+   ]
   }
  ],
  "annotation_only_drift": [
@@ -296,9 +38,9 @@
    "artifact": "R14H_KB_CHANNEL_AUDIT.json",
    "missing_from_script": 1,
    "paths": [
-    "path",
-    "path",
-    "path"
+    "$.channel_correction_addendum",
+    "$.five_state.r10g-07.state_offline_replay",
+    "$.five_state.r10g-08.state_offline_replay"
    ]
   }
  ],
@@ -351,43 +93,87 @@
    "own_declared_outputs_touched": [
     "R14C_PITCH_ABLATION.json"
    ],
-   "status": "semantic_drift",
+   "status": "semantic_drift_documented",
    "diff_count": 40,
    "diff_classes": {
-    "verdict_level": 9,
+    "verdict_level": 10,
     "annotation_only": 1,
-    "other": 30,
+    "numeric_precision": 3,
+    "other": 26,
+    "other_examples": [
+     {
+      "path": "$.items.ft-mirror-04.rows.A_old_maxink.candidates[0].scores.C",
+      "committed": "0.6674",
+      "rerun": "0.6959"
+     },
+     {
+      "path": "$.items.ft-mirror-04.rows.A_old_maxink__legacy_scale.candidates[0].scores.C",
+      "committed": "1.0",
+      "rerun": "0.9847"
+     },
+     {
+      "path": "$.items.ft-mirror-04.rows.A_old_maxink__legacy_scale.solver_error",
+      "committed": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 1.0}}",
+      "rerun": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 0.984716}}"
+     },
+     {
+      "path": "$.items.ft-mirror-04.rows.B_center_pitch.candidates[0].scores.C",
+      "committed": "0.6674",
+      "rerun": "0.6959"
+     },
+     {
+      "path": "$.items.ft-mirror-04.rows.B_center_pitch__legacy_scale.candidates[0].scores.C",
+      "committed": "1.0",
+      "rerun": "0.9847"
+     },
+     {
+      "path": "$.items.ft-mirror-04.rows.B_center_pitch__legacy_scale.solver_error",
+      "committed": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 1.0}}",
+      "rerun": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 0.984716}}"
+     },
+     {
+      "path": "$.items.ft-mirror-04.rows.C_gold.candidates[0].scores.C",
+      "committed": "0.6674",
+      "rerun": "0.6959"
+     },
+     {
+      "path": "$.items.ft-mirror-04.rows.C_gold__legacy_scale.candidates[0].scores.C",
+      "committed": "1.0",
+      "rerun": "0.9847"
+     },
+     {
+      "path": "$.items.ft-mirror-04.rows.C_gold__legacy_scale.solver_error",
+      "committed": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 1.0}}",
+      "rerun": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：{'rotate_flip_seq': {'A': 1.0, 'B': 1.0, 'C': 0.984716}}"
+     },
+     {
+      "path": "$.items.ft-mirror-04--tight.rows.A_old_maxink.solver_error",
+      "committed": "图形区域证据不完整：带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：选项少于 2 个（不回退整图求解，避免在网页截图上产生假证据）",
+      "rerun": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 0 个选项匹配; 对称性应为 垂直=True 水平=True，但有 0 "
+     }
+    ],
     "verdict_paths": [
-     "$.items.ft-mirror-04.rows.A_old_maxink__legacy_scale.candidates[0].margin",
-     "$.items.ft-mirror-04.rows.B_center_pitch__legacy_scale.candidates[0].margin",
-     "$.items.ft-mirror-04.rows.C_gold__legacy_scale.candidates[0].margin",
      "$.items.ft-mirror-04--tight.label",
+     "$.items.ft-mirror-04--tight.rows.C_gold.solver_answer",
      "$.items.ft-mirror-04--tight.rows.C_gold.solver_status",
+     "$.items.ft-mirror-04--tight.rows.C_gold.verifier_action",
+     "$.items.ft-mirror-04--tight.rows.C_gold__legacy_scale.solver_answer",
      "$.items.ft-mirror-04--tight.rows.C_gold__legacy_scale.solver_status",
+     "$.items.ft-mirror-04--tight.rows.C_gold__legacy_scale.verifier_action",
      "$.items.ft-overlay-12.label",
      "$.items.ft-rot90-01.rows.A_old_maxink.candidates[0].margin",
      "$.items.ft-rot90-01.rows.A_old_maxink__legacy_scale.candidates[0].margin"
     ],
     "verdict_examples": [
      {
-      "path": "$.items.ft-mirror-04.rows.A_old_maxink__legacy_scale.candidates[0].margin",
-      "committed": "0.0",
-      "rerun": "0.0153"
-     },
-     {
-      "path": "$.items.ft-mirror-04.rows.B_center_pitch__legacy_scale.candidates[0].margin",
-      "committed": "0.0",
-      "rerun": "0.0153"
-     },
-     {
-      "path": "$.items.ft-mirror-04.rows.C_gold__legacy_scale.candidates[0].margin",
-      "committed": "0.0",
-      "rerun": "0.0153"
-     },
-     {
       "path": "$.items.ft-mirror-04--tight.label",
       "committed": "rule_not_applicable",
       "rerun": "rule_conflict"
+     },
+     {
+      "path": "$.items.ft-mirror-04--tight.rows.C_gold.solver_answer",
+      "committed": "null",
+      "rerun": "A"
      },
      {
       "path": "$.items.ft-mirror-04--tight.rows.C_gold.solver_status",
@@ -395,9 +181,24 @@
       "rerun": "solved"
      },
      {
+      "path": "$.items.ft-mirror-04--tight.rows.C_gold.verifier_action",
+      "committed": "null",
+      "rerun": "unverified"
+     },
+     {
+      "path": "$.items.ft-mirror-04--tight.rows.C_gold__legacy_scale.solver_answer",
+      "committed": "null",
+      "rerun": "A"
+     },
+     {
       "path": "$.items.ft-mirror-04--tight.rows.C_gold__legacy_scale.solver_status",
       "committed": "failed",
       "rerun": "solved"
+     },
+     {
+      "path": "$.items.ft-mirror-04--tight.rows.C_gold__legacy_scale.verifier_action",
+      "committed": "null",
+      "rerun": "unverified"
      },
      {
       "path": "$.items.ft-overlay-12.label",
@@ -618,14 +419,42 @@
      "rerun": "0.0"
     }
    ],
-   "detail": "40 处差异：结论级 9 / 注解级 1 / 其他 30"
+   "detail": "40 处差异：结论级 10 / 注解级 1 / 其他 26",
+   "drift_register": [
+    "R14C_PITCH_ABLATION_HEAD_DELTA.json"
+   ]
+  },
+  {
+   "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.json",
+   "script": "e2f_r14_causal_delta.py",
+   "declared_writers": [
+    "e2f_r14_causal_delta.py"
+   ],
+   "refused_unsafe": [],
+   "worktree_collateral": [
+    "evidence/R14C_PITCH_ABLATION_HEAD_DELTA.json",
+    "evidence/R14C_PITCH_ABLATION_HEAD_DELTA.md"
+   ],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [
+    "R14C_PITCH_ABLATION_HEAD_DELTA.json",
+    "R14C_PITCH_ABLATION_HEAD_DELTA.md"
+   ],
+   "own_declared_outputs_touched": [
+    "R14C_PITCH_ABLATION_HEAD_DELTA.json",
+    "R14C_PITCH_ABLATION_HEAD_DELTA.md"
+   ],
+   "status": "no_write_detected",
+   "detail": ""
   },
   {
    "artifact": "R14C_PITCH_ABLATION_RERUN2.json",
-   "status": "no_producer_no_command",
-   "declared_writers": [],
-   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
-   "refused": []
+   "status": "skipped_not_current",
+   "why": "写出者已前进到现行件名；对历史/被取代件重跑核对既无意义又接近“改历史 Test 结果”（目标②禁止）。地位真值取自 R14_INDEX.json",
+   "index_status": "verification_byproduct"
   },
   {
    "artifact": "R14C_REAL_PARSE_REPLAY.json",
@@ -736,17 +565,15 @@
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
-   "status": "covered_by_bundle",
-   "declared_writers": [
-    "e2_r14_v8_reproducibility.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "status": "skipped_not_current",
+   "why": "写出者已前进到现行件名；对历史/被取代件重跑核对既无意义又接近“改历史 Test 结果”（目标②禁止）。地位真值取自 R14_INDEX.json",
+   "index_status": "verification_byproduct"
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
-   "status": "covered_by_bundle",
-   "declared_writers": [],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "status": "skipped_not_current",
+   "why": "写出者已前进到现行件名；对历史/被取代件重跑核对既无意义又接近“改历史 Test 结果”（目标②禁止）。地位真值取自 R14_INDEX.json",
+   "index_status": "verification_byproduct"
   },
   {
    "artifact": "R14E_RERUN_SEMANTICS.json",
@@ -912,7 +739,20 @@
    "diff_classes": {
     "verdict_level": 0,
     "annotation_only": 1,
+    "numeric_precision": 0,
     "other": 2,
+    "other_examples": [
+     {
+      "path": "$.five_state.r10g-07.state_offline_replay",
+      "committed": "deterministic_python_math_main_chain",
+      "rerun": "<重跑未产出>"
+     },
+     {
+      "path": "$.five_state.r10g-08.state_offline_replay",
+      "committed": "other_path_succeeded_llm_planner_not_reproducible",
+      "rerun": "<重跑未产出>"
+     }
+    ],
     "verdict_paths": [],
     "verdict_examples": []
    },
@@ -937,10 +777,9 @@
   },
   {
    "artifact": "R14H_KB_CHANNEL_AUDIT_RERUN.json",
-   "status": "no_producer_no_command",
-   "declared_writers": [],
-   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
-   "refused": []
+   "status": "skipped_not_current",
+   "why": "写出者已前进到现行件名；对历史/被取代件重跑核对既无意义又接近“改历史 Test 结果”（目标②禁止）。地位真值取自 R14_INDEX.json",
+   "index_status": "verification_byproduct"
   }
  ],
  "note": "本脚本只做诊断并**恢复原样**，不落地重跑结果；恢复后仓库必须与运行前一致（由 git status 另证）",

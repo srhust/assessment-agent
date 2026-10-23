@@ -9,11 +9,11 @@
    "scripts/e2_r14_optionband_replay.py"
   ],
   "artifact_untouched": true,
-  "candidates_tried": 8,
+  "candidates_tried": 4,
   "attribution_stale": false,
-  "attribution_head": "44682d174d6ca27fa92a722a060c48a54a381a38"
+  "attribution_head": "f118cf9ee9f4c93808e7b1a0c36d15ddc702ca80"
  },
- "head": "44682d174d6ca27fa92a722a060c48a54a381a38",
+ "head": "f118cf9ee9f4c93808e7b1a0c36d15ddc702ca80",
  "verdict_fields_checked": [
   "solver_status",
   "solver_answer",

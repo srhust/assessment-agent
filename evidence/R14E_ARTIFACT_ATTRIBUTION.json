@@ -1,7 +1,7 @@
 {
  "purpose": "生产者归属：把'可复现'建立在**试过候选**上而不是试一个就下结论；候选范围由 mode 如实登记（full=全部 e2*/d1/f1*，一次约 20 条全量管线；fast=族名/富化键命中的少数脚本）",
  "mode": "fast",
- "head": "44682d174d6ca27fa92a722a060c48a54a381a38",
+ "head": "f118cf9ee9f4c93808e7b1a0c36d15ddc702ca80",
  "verdict_fields": [
   "solver_status",
   "solver_answer",
@@ -26,28 +26,12 @@
    "collateral_scope": "本次归属运行期间的新增/变化文件（不含归属工具自身输出）",
    "candidates_refused": [
     {
-     "script": "scripts/e2_r14_v8_reproducibility.py",
-     "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
-    },
-    {
      "script": "scripts/e2b_r14_anchor_option_recovery.py",
      "reason": "不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）"
     },
     {
-     "script": "scripts/e2e_r14_claim_audit.py",
-     "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
-    },
-    {
-     "script": "scripts/e2e_r14_index.py",
-     "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
-    },
-    {
      "script": "scripts/r14_attribute_producer.py",
      "reason": "自我递归"
-    },
-    {
-     "script": "scripts/r14_verify_all.py",
-     "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
     }
    ],
    "selection": "static write-target (deny-by-default on network/orchestrator scripts)",
@@ -59,14 +43,8 @@
    ],
    "reproducibility": "REPRODUCIBLE_FROM_HEAD",
    "artifact_untouched": true,
-   "candidates_tried": 8,
+   "candidates_tried": 4,
    "evidence": [
-    {
-     "safety_refused": {
-      "script": "scripts/e2_r14_v8_reproducibility.py",
-      "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
-     }
-    },
     {
      "safety_refused": {
       "script": "scripts/e2b_r14_anchor_option_recovery.py",
@@ -75,26 +53,8 @@
     },
     {
      "safety_refused": {
-      "script": "scripts/e2e_r14_claim_audit.py",
-      "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
-     }
-    },
-    {
-     "safety_refused": {
-      "script": "scripts/e2e_r14_index.py",
-      "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
-     }
-    },
-    {
-     "safety_refused": {
       "script": "scripts/r14_attribute_producer.py",
       "reason": "自我递归"
-     }
-    },
-    {
-     "safety_refused": {
-      "script": "scripts/r14_verify_all.py",
-      "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
      }
     },
     {

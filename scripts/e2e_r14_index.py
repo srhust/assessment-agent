@@ -47,6 +47,21 @@ CURRENT = {
     "R14G0_GATE_READINESS_V5.json": "G 闸门行为级就绪审计（真实请求 0）",
     "R14_CLAIM_AUDIT.json": "交付件一致性审计（含审计器自证）",
     "R14H_KB_CHANNEL_AUDIT.json": "H KB 通道审计",
+    # 交付文档（`.md`）同样**显式登记**：deny-by-default 之后，
+    # "默认 current" 会把任何核对副产物冒充成当前交付件（本轮实测）。
+    "R14_VERIFICATION_BUNDLE.json": "一键复现 bundle（16 步离线验证）",
+    "R14E_ARTIFACT_ATTRIBUTION.json": "证据件生产者归属（含安全闸门结论）",
+    "R14E_ATTRIBUTION_SELFTEST.json": "归属安全闸门的自证注入结果",
+    "R14E_RERUN_SEMANTICS.json": "补集复现核对（结论级/注解级差异分列）",
+    "R14C_PITCH_ABLATION_HEAD_DELTA.json": "因果实验在现行 HEAD 的复现差异",
+    "R14_PROGRESS_STOPGATE.md": "人工评审入口（本轮闸门文档）",
+    "R14_STAGE_E_DELIVERABLES.md": "Stage E 十项交付正文",
+    "R14E_NEWLAYOUT_REGRESSION.md": "新排版独立 Dev 回归说明",
+    "R14E_TIGHT_GAP_DIAGNOSIS.md": "tight 缺口逐页成因说明",
+    "R14G0_READINESS.md": "G 闸门零请求就绪说明",
+    "R14_CLAIM_AUDIT.md": "交付件一致性审计说明（含审计器自证）",
+    "R14C_PITCH_ABLATION_HEAD_DELTA.md":
+        "因果实验在现行 HEAD 的复现差异（人工裁决项 2 材料）",
 }
 HISTORICAL = {
     "R14E_SIX_CONDITION.json": "E 首跑件（C/D 候选口径与后续不同，逐条说明见血缘件）",
@@ -198,7 +213,10 @@ def main() -> int:
             pass
         first, last = commits(f"evidence/{name}")
         prod, via_out, ptier = producer(name)
-        status = "current"
+        # **deny-by-default**：未登记就是 unregistered，不再默认 current
+        #（`status = "current"` 起手让每个核对副产物都冒充当前交付件，
+        #  本轮 R14H_KB_CHANNEL_AUDIT_RERUN.json 就是这么把 A1 顶失败的）
+        status = "current" if name in CURRENT else "unregistered"
         why = CURRENT.get(name, "")
         if name in SELF_NAMES:
             status, why = "self", "索引自身：无法登记写出后的最终字节（自指），" \
@@ -209,6 +227,12 @@ def main() -> int:
             status, why = "erratum_kept", ERRATUM[name]
         elif any(re.match(pat, name) for pat in SUPERSEDED):
             status, why = "superseded", "同名高版本件为当前引用"
+        elif re.search(r"_(RERUN\d*|CHECK)\.json$", name):
+            status, why = "verification_byproduct", (
+                "动态核验产物：由归属/复现核对以 **新名** 重跑生成，"
+                "刻意不覆盖提交件；它证明可复现性，本身不是交付件")
+        if status == "current" and p.suffix == ".json" and not prod:
+            status, why = "unregistered", "登记为现行但**找不到写出它的脚本**"
         if p.suffix == ".md" and status == "current":
             status = "current" if name in {
                 "R14_PROGRESS_STOPGATE.md", "R14_STAGE_E_DELIVERABLES.md",
