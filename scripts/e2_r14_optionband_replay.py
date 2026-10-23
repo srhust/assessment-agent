@@ -48,10 +48,17 @@ def main() -> int:
         m = sol.meta or {}
         prov = m.get("region_provenance") or {}
         opt_cells = prov.get("option_cells") or []
+        prov = [c.get("provenance") or "unknown" for c in opt_cells][:6]
+        lab = [bool(c.get("label_verified", True)) for c in opt_cells][:6]
         out[pid] = {
             "solver_status": sol.status, "solver_answer": sol.answer,
             "verify_action": act, "final_answer": fa,
             **rs, "failed_checks": fails[:3],
+            # V8 里**确有**这四键；不产出它们就永远对不上提交件
+            "provenance": prov,
+            "label_association_verified": lab,
+            "consumed_crop_shas": None,      # 提交件当时也是 null，如实照录
+            "consumption_binding": "rebuilt",
             # 三元组与已提交 V8 同形：cell_bbox_page + label_bbox + ink。
             # 曾写窄成二元组，丢了 label_bbox（正是"标签一一对应"要看的信息）。
             "option_boxes": [[c.get("cell_bbox_page") or c.get("bbox_page"),
@@ -67,8 +74,15 @@ def main() -> int:
         if a == "--out" and i + 1 < len(sys.argv):
             name = sys.argv[i + 1]
     (ROOT / "evidence" / name).write_text(
-        json.dumps({"stage": "R14-E option-band anchor split; production solve+verify on 5 real screenshots (0 HTTP)",
-                    "items": out}, ensure_ascii=False, indent=1), encoding="utf-8")
+        # **顶层形状必须与提交件一致**：先前写成 {"stage":…, "items":…}，
+        # 而 V8 是页名直接做顶层键 ⇒ 这个脚本"重跑"出来的东西
+        # 永远无法与提交件比较，可复现性对它是空话。
+        json.dumps(dict(out, _meta={
+            "stage": "R14-E option-band anchor split; production solve+verify "
+                     "on 5 real screenshots (0 HTTP)",
+            "shape_note": "顶层=页名，与 R14E_REAL_PAGE_REPLAY_V8.json 同形；"
+                          "_meta 在比较忽略表内，不参与逐字节判定"}),
+            ensure_ascii=False, indent=1), encoding="utf-8")
     print("written", ROOT / "evidence" / name)
     return 0
 

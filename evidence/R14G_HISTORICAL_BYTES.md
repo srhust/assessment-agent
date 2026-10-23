@@ -16,6 +16,21 @@
 | `R12G_FREEZE.json` | 2914 B | `07c864e` | `b2ee4a7a6194772b…` | **一致** |
 | `R13G_REAL_PARSE_OFFLINE_REPLAY.json` | 1987 B | `f03670e` | `0638df7ffa3cc30b…` | **一致** |
 
+## 同类暴露面：未跟踪数据文件 git **无法**复原
+
+上表六件都能靠 git 复原，**因为它们被跟踪**。但同一批被拒脚本还会写
+`data/**`，其中一部分**根本不在版本控制里**，一旦误跑就是**不可逆**的：
+
+· `data/benchmark_figshots_perturb/` 整目录被 `.gitignore` 覆盖
+  （`git status --ignored` 显示 `!! data/benchmark_figshots_perturb/`），
+  30 张扰动图片 mtime 全为 **10-21 20:29**，本轮**未被改动**；
+· `data/benchmark_figshots/dev/figshots.jsonl` 等是**被跟踪**的，可复原。
+
+⇒ 结论：A9 只能保护**被跟踪**的历史件；对**未跟踪**数据，防线只能是
+**拒跑**（A6 的拒绝式候选），事后没有任何 git 恢复手段。
+本轮实测未跟踪件未被触碰，但这条边界必须写清楚，
+否则"A9 全绿"会被误读成"`data/` 也不可能被毁"。
+
 ## 事故记录（我造成的，不淡化）
 
 **是什么**：Stage E 归属工具（`scripts/r14_attribute_producer.py`）在做

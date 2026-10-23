@@ -142,6 +142,14 @@
  "five_state": {
   "r10g-01": {
    "state": "card_exists_not_retrieved",
+   "state_offline_replay": "deterministic_python_math_main_chain",
+   "state_offline_replay_source": "R13F_PLANNER_LAYERS.json",
+   "state_offline_replay_provenance": {
+    "source_artifact": "R13F_PLANNER_LAYERS.json",
+    "source_retrieval_state": "invoked_with_results",
+    "source_ast_expr_present": true,
+    "source_status": "solved"
+   },
    "gold_in_kb": [
     "da.growth-amount"
    ],
@@ -149,6 +157,14 @@
   },
   "r10g-02": {
    "state": "invoked_with_results",
+   "state_offline_replay": "deterministic_python_math_main_chain",
+   "state_offline_replay_source": "R13F_PLANNER_LAYERS.json",
+   "state_offline_replay_provenance": {
+    "source_artifact": "R13F_PLANNER_LAYERS.json",
+    "source_retrieval_state": "invoked_with_results",
+    "source_ast_expr_present": true,
+    "source_status": "solved"
+   },
    "gold_in_kb": [
     "nc.travel-meeting-pursuit"
    ],
@@ -156,6 +172,14 @@
   },
   "r10g-03": {
    "state": "invoked_with_results",
+   "state_offline_replay": "llm_planner_required_offline_not_reproducible",
+   "state_offline_replay_source": "R13F_PLANNER_LAYERS.json",
+   "state_offline_replay_provenance": {
+    "source_artifact": "R13F_PLANNER_LAYERS.json",
+    "source_retrieval_state": "invoked_with_results",
+    "source_ast_expr_present": false,
+    "source_status": "failed"
+   },
    "gold_in_kb": [],
    "gold_absent": [
     "nc.combinatorics-power"
@@ -163,6 +187,14 @@
   },
   "r10g-04": {
    "state": "card_exists_not_retrieved",
+   "state_offline_replay": "deterministic_python_math_main_chain",
+   "state_offline_replay_source": "R13F_PLANNER_LAYERS.json",
+   "state_offline_replay_provenance": {
+    "source_artifact": "R13F_PLANNER_LAYERS.json",
+    "source_retrieval_state": "invoked_with_results",
+    "source_ast_expr_present": true,
+    "source_status": "solved"
+   },
    "gold_in_kb": [
     "da.growth-amount"
    ],
@@ -170,6 +202,14 @@
   },
   "r10g-05": {
    "state": "invoked_with_results",
+   "state_offline_replay": "deterministic_python_math_main_chain",
+   "state_offline_replay_source": "R13F_PLANNER_LAYERS.json",
+   "state_offline_replay_provenance": {
+    "source_artifact": "R13F_PLANNER_LAYERS.json",
+    "source_retrieval_state": "invoked_with_results",
+    "source_ast_expr_present": true,
+    "source_status": "solved"
+   },
    "gold_in_kb": [],
    "gold_absent": [
     "nc.work-rate"
@@ -177,26 +217,80 @@
   },
   "r10g-07": {
    "state": "gold_card_absent",
+   "state_offline_replay": "deterministic_python_math_main_chain",
+   "state_offline_replay_source": "R13F_PLANNER_LAYERS.json",
+   "state_offline_replay_provenance": {
+    "source_artifact": "R13F_PLANNER_LAYERS.json",
+    "source_retrieval_state": "invoked_empty_direct_ast",
+    "source_ast_expr_present": true,
+    "source_status": "solved"
+   },
    "gold_in_kb": [],
    "gold_absent": [
     "nc.arithmetic-precedence"
-   ],
-   "state_offline_replay": "deterministic_python_math_main_chain"
+   ]
   },
   "r10g-08": {
    "state": "gold_card_absent",
+   "state_offline_replay": "llm_planner_required_offline_not_reproducible",
+   "state_offline_replay_source": "R13F_PLANNER_LAYERS.json",
+   "state_offline_replay_provenance": {
+    "source_artifact": "R13F_PLANNER_LAYERS.json",
+    "source_retrieval_state": "invoked_empty_direct_ast",
+    "source_ast_expr_present": false,
+    "source_status": "solved"
+   },
    "gold_in_kb": [],
    "gold_absent": [
     "jr.categorical-syllogism"
-   ],
-   "state_offline_replay": "other_path_succeeded_llm_planner_not_reproducible"
+   ]
   }
  },
- "note": "通道轨迹由运行时方法级插桩得出（调用次数+ solved 命中次数）；ast_expr 非空不能证明通道，插桩计数才能。问题文本取自 r10gen 金标源（answer=None 防止任何答案泄漏进求解）。",
  "channel_correction_addendum": {
-  "r10g-07": "复现成功（离线）：_solve_ast 调用返回 None，solved 来自 solve() 主链 python_math 字符串抽取（meta.expression=1+2*3**2-4/2, method=sympy_exact）。R13F note 所称 direct-AST **不准确**：R10-C 结构化 AST 通道（_solve_ast/ast_expr 字段）并未命中该题；历史上把主链确定性求值统称 direct-AST 掩盖了两条不同通道。",
-  "r10g-08": "离线复现 failed（planner 需 LLM；r10g-01..05/04 同理）。其历史 solved 属五态\"其他路径成功（LLM planner，离线不可复现）\"；R13F 的 ast_expr=null 本就**不能**证明 direct-AST——工单勘误成立，通道证明以插桩计数为准。",
-  "r10g-03": "R14 代码态下 _solve_ast 结构化通道离线 solved=C（ast_hit=1）。金标卡 nc.combinatorics-power 缺失，但确定性执行器（R14 态）已覆盖该题——归因从\"缺卡致败\"更新为\"缺卡但执行器覆盖（当前代码态）\"。",
-  "method": "方法级插桩：_solve_ast/_solve_planner/_solve_word_problem 调用与 solved 命中计数；Question 以 answer=None 重建，金标不进入求解。"
- }
+  "r10g-01": {
+   "verbatim_claim_from_source": "retr=[] 且 solved：检索**已调用但为空**，作答走 direct-AST；不是日志丢失（R10E 已存 expr 原文为证）",
+   "claim_is_supported_by_ast_expr": true,
+   "derived_channel": "deterministic_python_math_main_chain",
+   "derived_from": "R13F_PLANNER_LAYERS.json#rows[id=r10g-01].ast_expr"
+  },
+  "r10g-02": {
+   "verbatim_claim_from_source": "retr=[] 且 solved：检索**已调用但为空**，作答走 direct-AST；不是日志丢失（R10E 已存 expr 原文为证）",
+   "claim_is_supported_by_ast_expr": true,
+   "derived_channel": "deterministic_python_math_main_chain",
+   "derived_from": "R13F_PLANNER_LAYERS.json#rows[id=r10g-02].ast_expr"
+  },
+  "r10g-03": {
+   "verbatim_claim_from_source": "retr=[] 且 solved：检索**已调用但为空**，作答走 direct-AST；不是日志丢失（R10E 已存 expr 原文为证）",
+   "claim_is_supported_by_ast_expr": false,
+   "derived_channel": "llm_planner_required_offline_not_reproducible",
+   "derived_from": "R13F_PLANNER_LAYERS.json#rows[id=r10g-03].ast_expr"
+  },
+  "r10g-04": {
+   "verbatim_claim_from_source": "retr=[] 且 solved：检索**已调用但为空**，作答走 direct-AST；不是日志丢失（R10E 已存 expr 原文为证）",
+   "claim_is_supported_by_ast_expr": true,
+   "derived_channel": "deterministic_python_math_main_chain",
+   "derived_from": "R13F_PLANNER_LAYERS.json#rows[id=r10g-04].ast_expr"
+  },
+  "r10g-05": {
+   "verbatim_claim_from_source": "retr=[] 且 solved：检索**已调用但为空**，作答走 direct-AST；不是日志丢失（R10E 已存 expr 原文为证）",
+   "claim_is_supported_by_ast_expr": true,
+   "derived_channel": "deterministic_python_math_main_chain",
+   "derived_from": "R13F_PLANNER_LAYERS.json#rows[id=r10g-05].ast_expr"
+  },
+  "r10g-07": {
+   "verbatim_claim_from_source": "retr=[] 且 solved：检索**已调用但为空**，作答走 direct-AST；不是日志丢失（R10E 已存 expr 原文为证）",
+   "claim_is_supported_by_ast_expr": true,
+   "derived_channel": "deterministic_python_math_main_chain",
+   "derived_from": "R13F_PLANNER_LAYERS.json#rows[id=r10g-07].ast_expr"
+  },
+  "r10g-08": {
+   "verbatim_claim_from_source": "retr=[] 且 solved：检索**已调用但为空**，作答走 direct-AST；不是日志丢失（R10E 已存 expr 原文为证）",
+   "claim_is_supported_by_ast_expr": false,
+   "derived_channel": "llm_planner_required_offline_not_reproducible",
+   "derived_from": "R13F_PLANNER_LAYERS.json#rows[id=r10g-08].ast_expr"
+  },
+  "method": "由 rows[].ast_expr 现场导出；原 note_r10g_07_08 把 ast_expr=null 的题也统称 direct-AST，该措辞不成立"
+ },
+ "addendum_is_derived": true,
+ "note": "通道轨迹由运行时方法级插桩得出（调用次数+ solved 命中次数）；ast_expr 非空不能证明通道，插桩计数才能。问题文本取自 r10gen 金标源（answer=None 防止任何答案泄漏进求解）。"
 }

@@ -112,6 +112,11 @@ STEPS = [
      "R14G_HISTORICAL_BYTES_SELFTEST.json",
      {"fails": [], "restored_identical": True,
       "main_artifact_is_complete": True}, "fixed", None),
+    # A11：**漂移登记件必须由脚本现场生成**，且判定级为 0。
+    # h1 与提交件的差（注解改生成式 + r10g-08 取值改名）
+    # 只能靠**存在的解释件**降级为"已解释"，解释件缺失就是未解释。
+    ("scripts/h1_r14_kb_channel_audit.py", "R14H_KB_CHANNEL_AUDIT.json",
+     {"http_requests_made": 0, "llm_calls_used": 0}, "fixed", None),
     ("scripts/e2f_r14_causal_delta.py", "R14C_PITCH_ABLATION_HEAD_DELTA.json",
      {"verdict": "present", "claims": "present"}, "fixed",
      "evidence/R14C_PITCH_ABLATION_HEAD_DELTA.json"),
@@ -462,6 +467,52 @@ def main() -> int:
         fails.append("A7 缺 R14E_RERUN_SEMANTICS.json（补集复现核对未跑）")
 
     after_clean, after_dirty = worktree_clean()
+    # ---- A11：漂移登记（生成式，不靠脚本内硬编码清单）----
+    _a11 = {"registers": {}, "violated": []}
+    for p in sorted((ROOT / "evidence").glob("R14*HEAD_DELTA.json")):
+        try:
+            d = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            _a11["violated"].append(f"{p.name} 不可解析")
+            continue
+        tgt = (d.get("compared") or {}).get("committed")
+        if not tgt:
+            _a11["violated"].append(f"{p.name} **没有** compared.committed"
+                                    f" ⇒ 它登记不了任何漂移")
+            continue
+        _a11["registers"].setdefault(tgt, []).append(p.name)
+        nv = d.get("verdict_level")
+        if nv is None and "unexplained_verdict_diff" in d:
+            nv = d["unexplained_verdict_diff"]
+        if nv:
+            _a11["violated"].append(f"{p.name} 对 {tgt} 登记了**判定级**"
+                                    f"差异 {nv} ⇒ 不得自我豁免")
+    # **不写死件名**：由补集核对件（本 bundle 最后一步现场产出）决定
+    # 谁"必须"有登记件。硬编码清单会在下一个漂移件出现时**安静地放过它**。
+    sem_p = (ROOT / "evidence" / "R14E_RERUN_SEMANTICS.json")
+    _need = []
+    if sem_p.is_file():
+        try:
+            sem = json.loads(sem_p.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            sem = {}
+        for x in sem.get("rows") or []:
+            if x.get("status") == "semantic_drift" and \
+                    (x.get("diff_classes") or {}).get("verdict_level"):
+                _need.append(x["artifact"])
+        _a11["derived_from"] = sem_p.name
+        _a11["need_register"] = _need
+    else:
+        _a11["violated"].append("A11 读不到 R14E_RERUN_SEMANTICS.json"
+                                " ⇒ 无从判断谁需要登记")
+    for art in _need:
+        if art not in _a11["registers"]:
+            _a11["violated"].append(
+                f"{art} 与 HEAD 存在**结论级**差异，但没有任何登记件点名它 "
+                f"⇒ 差异未解释（登记件缺失就是未解释）")
+    if _a11["violated"]:
+        fails.append(f"A11 漂移登记不过：{_a11['violated'][:3]}")
+
     _a10_st = selftest_a10()
     if _a10_st["fails"]:
         fails.append(f"A10 **反证**失败：{_a10_st['fails'][:2]}")
@@ -487,6 +538,7 @@ def main() -> int:
            "worktree_clean_after": after_clean,
            "A10_expected_paths": len(_expected | _scripts),
            "A10_collateral": sorted(set(_collateral)),
+           "A11_drift_register": _a11,
            "A10_selftest": _a10_st,
            "dirty_after": after_dirty[:12],
            "budget": {"http_requests_made": 0, "tokens_used": 0,

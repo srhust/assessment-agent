@@ -1,7 +1,7 @@
 {
  "purpose": "生产者归属：把'可复现'建立在**试过候选**上而不是试一个就下结论；候选范围由 mode 如实登记（full=全部 e2*/d1/f1*，一次约 20 条全量管线；fast=族名/富化键命中的少数脚本）",
  "mode": "fast",
- "head": "c4016b64b1795b7a84122d9a3d9b54b2a93462f3",
+ "head": "e2f27a52f6c70bf1de0fab569696a8084f355950",
  "verdict_fields": [
   "solver_status",
   "solver_answer",
@@ -41,6 +41,14 @@
    "partial_producers": [
     "scripts/e2_r14_optionband_replay.py"
    ],
+   "shape_reconciliation": {
+    "committed_top_level": "flat_page_keys",
+    "incomparable_before": [],
+    "aligned_this_round": [
+     "scripts/e2_r14_optionband_replay.py"
+    ],
+    "note": "本轮为对齐形状改过这些脚本的写出结构（scripts/e2_r14_optionband_replay.py）；因此『可从 HEAD 复现』里的 HEAD **包含本轮改动**，不表示历史原样重跑就能对上"
+   },
    "reproducibility": "REPRODUCIBLE_FROM_HEAD",
    "artifact_untouched": true,
    "candidates_tried": 4,
@@ -66,48 +74,28 @@
      "missing_keys": {
       "ft-mirror-04": [
        "chain",
-       "consumed_crop_shas",
-       "consumption_binding",
-       "label_association_verified",
        "option_sha256",
-       "options_used",
-       "provenance"
+       "options_used"
       ],
       "ft-mirror-04--tight": [
        "chain",
-       "consumed_crop_shas",
-       "consumption_binding",
-       "label_association_verified",
        "option_sha256",
-       "options_used",
-       "provenance"
+       "options_used"
       ],
       "ft-overlay-12": [
        "chain",
-       "consumed_crop_shas",
-       "consumption_binding",
-       "label_association_verified",
        "option_sha256",
-       "options_used",
-       "provenance"
+       "options_used"
       ],
       "ft-rot90-01": [
        "chain",
-       "consumed_crop_shas",
-       "consumption_binding",
-       "label_association_verified",
        "option_sha256",
-       "options_used",
-       "provenance"
+       "options_used"
       ],
       "ft-trans-07": [
        "chain",
-       "consumed_crop_shas",
-       "consumption_binding",
-       "label_association_verified",
        "option_sha256",
-       "options_used",
-       "provenance"
+       "options_used"
       ]
      },
      "classification": "partial_verdict_only"

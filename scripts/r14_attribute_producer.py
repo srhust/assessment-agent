@@ -56,6 +56,57 @@ def brief(v):
     return t[:90]
 
 
+def shape_reconciliation(artifact, true, partial) -> dict:
+    """**形状核对**（与被归属件的顶层结构是否可比）+ 记录我为对齐做的改动。
+
+    上一步实测：`e2_r14_optionband_replay.py` 写的是
+    `{"stage":…, "items":{…}}`，而被归属件 V8 是**页名直接做顶层键**
+    ⇒ 它**产不出可比的东西**，把它登记成 `partial_producers`
+    （"能部分生产"）是**不准确的说法**。
+    本轮我把它改成 `dict(out, _meta=…)` 以对齐形状，
+    这件事**必须留在结论里**，不能靠"现在能复现了"把它抹掉。
+    """
+    p = EV / artifact
+    out = {"committed_top_level": None, "incomparable_before": [],
+           "aligned_this_round": [], "note": ""}
+    if not p.is_file():
+        out["note"] = "被归属件不在盘上"
+        return out
+    try:
+        committed = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        out["note"] = "被归属件不可解析"
+        return out
+    flat, why = top_level_shape(committed)
+    out["committed_top_level"] = "flat_page_keys" if flat else why
+    for script in sorted(set(true) | set(partial)):
+        src = script_text(script)
+        if re.search(r'"items"\s*:\s*out', src):
+            # 现行源码仍是包裹层 ⇒ 不可比
+            out["incomparable_before"].append(script)
+        elif "_meta=" in src and "dict(out" in src:
+            out["aligned_this_round"].append(script)
+    if out["aligned_this_round"]:
+        out["note"] = (
+            "本轮为对齐形状改过这些脚本的写出结构（"
+            + ", ".join(out["aligned_this_round"])
+            + "）；因此『可从 HEAD 复现』里的 HEAD **包含本轮改动**，"
+            "不表示历史原样重跑就能对上")
+    return out
+
+
+def top_level_shape(doc) -> tuple:
+    """(顶层键是否**全是**页名样式, 是否含包裹层)。
+    提交件 V8 用页名直接做顶层键；`e2_r14_optionband_replay.py` 曾写
+    `{"stage":…, "items":…}` ⇒ 形状不符 ⇒ 它的"重跑"根本无法与提交件比。
+    **形状与字节是两件事**，必须分列，不能用一个档位含糊带过。"""
+    if not isinstance(doc, dict):
+        return False, "not_a_dict"
+    wrap = [k for k in doc if k in ("items", "results", "data", "stage")
+            and isinstance(doc[k], dict)]
+    return (not wrap), ("wrapped_by:" + ",".join(wrap) if wrap else "flat")
+
+
 def cmp_paths(a, b, path="$", out=None, volatile=None):
     """逐点比较（忽略 `volatile` 键）。**忽略表集中定义在本模块**：
     上一轮我单独在 semantic_repro 里把忽略表越写越宽，
@@ -63,6 +114,9 @@ def cmp_paths(a, b, path="$", out=None, volatile=None):
     volatile = VOLATILE if volatile is None else volatile
     out = [] if out is None else out
     if len(out) >= 40:
+        # **截断必须可见**：否则差异多于 40 处时调用方会把"只报了 40 条"
+        # 读成"一共就 40 条"，进而把"差异很少"当成结论（本轮实测风险）。
+        out.append(("$.__TRUNCATED_AT_40__", "<标记>", "<差异未报全>"))
         return out
     if isinstance(a, dict) and isinstance(b, dict):
         ka = {k for k in a if k not in volatile}
@@ -235,6 +289,8 @@ def attribute(artifact: str, only=None):
                         "orchestrator scripts)",
             "true_producers": true,
             "partial_producers": partial,
+            "shape_reconciliation": shape_reconciliation(
+                artifact, true, partial),
             "reproducibility": ("REPRODUCIBLE_FROM_HEAD" if true else
                                 ("VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING"
                                  if partial else "NOT_REPRODUCIBLE_FROM_HEAD")),
@@ -264,7 +320,17 @@ REQUEST_ARTIFACTS = re.compile(r"^R14G[0-9]?_.*\.(json|md|png|jpg)$")
 
 
 def script_text(name: str) -> str:
-    return (ROOT / "scripts" / name).read_text(encoding="utf-8", errors="ignore")
+    # `true_producers` 里的元素是**相对 ROOT 的路径**（`scripts/x.py`），
+    # 而本函数又拼了一次 `scripts/` ⇒ `scripts/scripts/x.py` 直接抛
+    # FileNotFoundError（本轮实测把归属整跑打断）。两种写法都要能吃，
+    # 且**读不到就返回空串**：形状核对宁可标"未知"，不可让整件失败。
+    for cand in (ROOT / name, ROOT / "scripts" / name, Path(name)):
+        try:
+            if cand.is_file():
+                return cand.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+    return ""
 
 
 ASSIGN_RE = re.compile(r"^(\w+)\s*=\s*(.+)$")

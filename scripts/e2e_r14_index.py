@@ -49,6 +49,7 @@ CURRENT = {
     "R14H_KB_CHANNEL_AUDIT.json": "H KB 通道审计",
     # 交付文档（`.md`）同样**显式登记**：deny-by-default 之后，
     # "默认 current" 会把任何核对副产物冒充成当前交付件（本轮实测）。
+    "R14H_KB_CHANNEL_HEAD_DELTA.json": ("h1_r14_kb_channel_audit.py",),
     "R14_VERIFICATION_BUNDLE.json": "一键复现 bundle（18 步离线验证）",
     "R14E_ARTIFACT_ATTRIBUTION.json": "证据件生产者归属（含安全闸门结论）",
     "R14E_ATTRIBUTION_SELFTEST.json": "归属安全闸门的自证注入结果",

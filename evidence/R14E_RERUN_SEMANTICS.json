@@ -1,5 +1,5 @@
 {
- "n_checked": 46,
+ "n_checked": 47,
  "violations": [],
  "identical_detector_selftest": {
   "fails": [],
@@ -42,17 +42,7 @@
    ]
   }
  ],
- "annotation_only_drift": [
-  {
-   "artifact": "R14H_KB_CHANNEL_AUDIT.json",
-   "missing_from_script": 1,
-   "paths": [
-    "$.channel_correction_addendum",
-    "$.five_state.r10g-07.state_offline_replay",
-    "$.five_state.r10g-08.state_offline_replay"
-   ]
-  }
- ],
+ "annotation_only_drift": [],
  "rows": [
   {
    "artifact": "R14_CLAIM_AUDIT.json",
@@ -103,12 +93,12 @@
     "R14C_PITCH_ABLATION.json"
    ],
    "status": "semantic_drift_documented",
-   "diff_count": 40,
+   "diff_count": 54,
    "diff_classes": {
     "verdict_level": 10,
     "annotation_only": 1,
     "numeric_precision": 3,
-    "other": 26,
+    "other": 40,
     "other_examples": [
      {
       "path": "$.items.ft-mirror-04.rows.A_old_maxink.candidates[0].scores.C",
@@ -428,7 +418,7 @@
      "rerun": "0.0"
     }
    ],
-   "detail": "40 处差异：结论级 10 / 注解级 1 / 其他 26",
+   "detail": "54 处差异：结论级 10 / 注解级 1 / 其他 40",
    "drift_register": [
     "R14C_PITCH_ABLATION_HEAD_DELTA.json"
    ]
@@ -724,65 +714,38 @@
     "h1_r14_kb_channel_audit.py"
    ],
    "refused_unsafe": [],
-   "worktree_collateral": [
-    "evidence/R14H_KB_CHANNEL_AUDIT.json"
-   ],
+   "worktree_collateral": [],
    "collateral_removed": [],
    "safety": "OK_ZERO_REQUESTS",
    "offline": true,
    "exit": 0,
-   "files_changed_by_rerun": [
-    "R14H_KB_CHANNEL_AUDIT.json"
-   ],
-   "own_declared_outputs_touched": [
-    "R14H_KB_CHANNEL_AUDIT.json"
-   ],
-   "status": "semantic_drift",
-   "diff_count": 3,
-   "diff_classes": {
-    "verdict_level": 0,
-    "annotation_only": 1,
-    "numeric_precision": 0,
-    "other": 2,
-    "other_examples": [
-     {
-      "path": "$.five_state.r10g-07.state_offline_replay",
-      "committed": "deterministic_python_math_main_chain",
-      "rerun": "<重跑未产出>"
-     },
-     {
-      "path": "$.five_state.r10g-08.state_offline_replay",
-      "committed": "other_path_succeeded_llm_planner_not_reproducible",
-      "rerun": "<重跑未产出>"
-     }
-    ],
-    "verdict_paths": [],
-    "verdict_examples": []
-   },
-   "diffs": [
-    {
-     "path": "$.channel_correction_addendum",
-     "committed": "{\"r10g-07\": \"复现成功（离线）：_solve_ast 调用返回 None，solved 来自 solve() 主链 python_math 字符串抽取（meta.exp",
-     "rerun": "<重跑未产出>"
-    },
-    {
-     "path": "$.five_state.r10g-07.state_offline_replay",
-     "committed": "deterministic_python_math_main_chain",
-     "rerun": "<重跑未产出>"
-    },
-    {
-     "path": "$.five_state.r10g-08.state_offline_replay",
-     "committed": "other_path_succeeded_llm_planner_not_reproducible",
-     "rerun": "<重跑未产出>"
-    }
-   ],
-   "detail": "3 处差异：结论级 0 / 注解级 1 / 其他 2"
+   "files_changed_by_rerun": [],
+   "own_declared_outputs_touched": [],
+   "status": "reproduced_identical",
+   "rerun_byte_identical": true
   },
   {
    "artifact": "R14H_KB_CHANNEL_AUDIT_RERUN.json",
    "status": "skipped_not_current",
    "why": "写出者已前进到现行件名；对历史/被取代件重跑核对既无意义又接近“改历史 Test 结果”（目标②禁止）。地位真值取自 R14_INDEX.json",
    "index_status": "verification_byproduct"
+  },
+  {
+   "artifact": "R14H_KB_CHANNEL_HEAD_DELTA.json",
+   "script": "h1_r14_kb_channel_audit.py",
+   "declared_writers": [
+    "h1_r14_kb_channel_audit.py"
+   ],
+   "refused_unsafe": [],
+   "worktree_collateral": [],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [],
+   "own_declared_outputs_touched": [],
+   "status": "reproduced_identical",
+   "rerun_byte_identical": true
   }
  ],
  "note": "本脚本只做诊断并**恢复原样**，不落地重跑结果；恢复后仓库必须与运行前一致（由 git status 另证）",
