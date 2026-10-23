@@ -1260,10 +1260,9 @@
   },
   {
    "artifact": "R14G0_GATE_READINESS_V5_RERUN.json",
-   "status": "no_producer_no_command",
-   "declared_writers": [],
-   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
-   "refused": []
+   "status": "skipped_not_current",
+   "why": "写出者已前进到现行件名；对历史/被取代件重跑核对既无意义又接近“改历史 Test 结果”（目标②禁止）。地位真值取自 R14_INDEX.json",
+   "index_status": "verification_byproduct"
   },
   {
    "artifact": "R14G_HISTORICAL_BYTES.json",

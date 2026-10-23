@@ -680,7 +680,6 @@ def main() -> int:
         if not _dp.is_file():
             continue
         _rewrite_targets.append(_dn)
-        _n_before_lines = _t.count("\n")
         _t = _dp.read_text(encoding="utf-8")
         # **全篇统一**：凡"N 步"（真跑/清单/一键复现）都按本次
         # `n_steps` 校正。上一版只替两个位置，结果同一篇文档里

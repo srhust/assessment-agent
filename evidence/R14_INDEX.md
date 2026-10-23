@@ -2,7 +2,7 @@
 
 注：本轮**改了** STOPGATE / DELIVERABLES / NEWLAYOUT_REGRESSION 三份文档的措辞，也**重跑**了回归脚本（产物字节逐字一致），因此下表 commit 列是**入库时点**、与工作区未提交内容不同属**已知且如实**，不是漏记。
 
-HEAD `1b2443f955e04e4feaa8d6efa18efe002363c0b9` · 件数 **57** · 自检失败 **0** 项 · 真实请求 **0**
+HEAD `58bf7cddd12f41190cf658c957f1d489a2df69e7` · 件数 **57** · 自检失败 **0** 项 · 真实请求 **0**
 
 ## 当前件（可复现性 = 是否登记生产脚本）
 
@@ -10,36 +10,36 @@ HEAD `1b2443f955e04e4feaa8d6efa18efe002363c0b9` · 件数 **57** · 自检失败
 
 | 件 | 地位 | 生产脚本 | 首入库 | 最近改动 | sha256(12) |
 |---|---|---|---|---|---|
-| `R14_CLAIM_AUDIT.json` | 交付件一致性审计（含审计器自证） | e2e_r14_claim_audit.py | aa81b50 | 9dff5ee | `c3ea0b0dc2ed` |
+| `R14_CLAIM_AUDIT.json` | 交付件一致性审计（含审计器自证） | e2e_r14_claim_audit.py | aa81b50 | 9dff5ee | `34de79463775` |
 | `R14_CLAIM_AUDIT.md` | 交付件一致性审计说明（含审计器自证） | **无** | aa81b50 | bf49734 | `030a7557e10e` |
 | `R14_PROGRESS_STOPGATE.md` | 人工评审入口（本轮闸门文档） | d9_r14_stage_g_manifest.py, e2e_r14_stage_g_batc | 5ab91dd | 4852e0c | `7b0416635b2c` |
 | `R14_STAGE_E_DELIVERABLES.md` | Stage E 十项交付正文 | r14_verify_all.py | de14d1e | 4852e0c | `3968a9b083e8` |
 | `R14_VERIFICATION_BUNDLE.json` | 一键复现 bundle（18 步离线验证） | r14_verify_all.py | f9a2fc8 | 1b2443f | `3313bdbcec4a` |
 | `R14C_PITCH_ABLATION.json` | pitch 双轴消融（因果上限依据） | c2_r14_pitch_ablation.py | 59a244f | 59a244f | `df83fb21b136` |
-| `R14C_PITCH_ABLATION_HEAD_DELTA.json` | 因果实验在现行 HEAD 的复现差异 | e2f_r14_causal_delta.py | f118cf9 | 1b2443f | `4b2a9bb07a05` |
-| `R14C_PITCH_ABLATION_HEAD_DELTA.md` | 因果实验在现行 HEAD 的复现差异（人工裁决项 2 材料） | e2f_r14_causal_delta.py | f118cf9 | 1b2443f | `8fa11a4b9d36` |
+| `R14C_PITCH_ABLATION_HEAD_DELTA.json` | 因果实验在现行 HEAD 的复现差异 | e2f_r14_causal_delta.py | f118cf9 | 58bf7cd | `0e1f376ba450` |
+| `R14C_PITCH_ABLATION_HEAD_DELTA.md` | 因果实验在现行 HEAD 的复现差异（人工裁决项 2 材料） | e2f_r14_causal_delta.py | f118cf9 | 58bf7cd | `9902287fdc13` |
 | `R14E_ANCHOR_SWEEP.json` | 独立排版锚点普查 59 页 | e2e_r14_anchor_sweep.py | d715369 | 4fd5dc8 | `b96827fe92f9` |
-| `R14E_ARTIFACT_ATTRIBUTION.json` | 证据件生产者归属（含安全闸门结论） | r14_attribute_producer.py | d48d97e | 1b2443f | `d64dca3015da` |
+| `R14E_ARTIFACT_ATTRIBUTION.json` | 证据件生产者归属（含安全闸门结论） | r14_attribute_producer.py | d48d97e | 58bf7cd | `53dec99f24ae` |
 | `R14E_ATTRIBUTION_SELFTEST.json` | 归属安全闸门的自证注入结果 | r14_attribute_producer.py | d48d97e | f118cf9 | `8812f2b72e12` |
 | `R14E_HEAD_REVERIFY.json` | 三项离线基线 HEAD 复验（零漂移） | e2e_r14_head_reverify.py | b94041e | d48d97e | `905091829838` |
 | `R14E_LINEAGE_SIX_CONDITION.json` | 六条件跨轮血缘（旧协议件分列不混比） | e2e_r14_six_condition_lineage.py | 8f4ca49 | 8f4ca49 | `51c6deb05227` |
 | `R14E_NEWLAYOUT_REGRESSION.md` | 新排版独立 Dev 回归说明 | **无** | 32829d3 | c2b28ea | `c8fccf626af0` |
 | `R14E_NEWLAYOUT_REGRESSION_V3.json` | 新排版独立 Dev 回归（含 V2 口径勘误） | e2e_r14_newlayout_regression.py | c2b28ea | c2b28ea | `9a6a48a7e9ad` |
 | `R14E_REAL_PAGE_REPLAY_V8.json` | 真实截图解析件端到端复放 | e2d_r14_production_replay_v4.py | eb47076 | eb47076 | `89be0925dcbf` |
-| `R14E_RERUN_SEMANTICS.json` | 补集复现核对（结论级/注解级差异分列） | r14_semantic_repro.py | f118cf9 | 24210ee | `3195ef361e78` |
+| `R14E_RERUN_SEMANTICS.json` | 补集复现核对（结论级/注解级差异分列） | r14_semantic_repro.py | f118cf9 | 58bf7cd | `40c683aeedd8` |
 | `R14E_SIX_CONDITION_V10.json` | 现行协议六条件（HEAD 复验重跑） | e2e_r14_head_reverify.py, e2e_r14_six_condition_ | b94041e | b94041e | `86dc65890f4e` |
 | `R14E_STAGE_E_ACCEPTANCE_V8.json` | Stage E 验收 | e2e_r14_stage_e_acceptance.py | b94041e | b94041e | `d27ba4087d5c` |
 | `R14E_TIGHT_GAP_DIAGNOSIS.json` | tight 覆盖缺口逐页成因 | e2e_r14_tight_gap_diagnosis.py | c2b28ea | c2b28ea | `13b771de58f9` |
 | `R14E_TIGHT_GAP_DIAGNOSIS.md` | tight 缺口逐页成因说明 | **无** | c2b28ea | c2b28ea | `da8eaedf0a9e` |
 | `R14F_PERTURB_RELEASE_AUDIT.json` | 扰动 30 页释放审计（f1 固定件） | f1_r14_perturb_release_audit.py | 4712825 | d715369 | `da176b1a274b` |
-| `R14G0_GATE_READINESS_V5.json` | G 闸门行为级就绪审计（真实请求 0） | e2e_r14_stage_g_readiness.py | ce44cc7 | 1b2443f | `0e8d0e983d23` |
+| `R14G0_GATE_READINESS_V5.json` | G 闸门行为级就绪审计（真实请求 0） | e2e_r14_stage_g_readiness.py | ce44cc7 | 58bf7cd | `a3d7d8262294` |
 | `R14G0_READINESS.md` | G 闸门零请求就绪说明 | **无** | ce44cc7 | ce44cc7 | `8c9049ac89f2` |
-| `R14G_HISTORICAL_BYTES.json` | 历史 Test 件逐字节对引入 commit 的完整性核验（含本轮误覆写事故 | a9_r14_historical_bytes.py | e2ae3ed | 1b2443f | `fa47717be266` |
+| `R14G_HISTORICAL_BYTES.json` | 历史 Test 件逐字节对引入 commit 的完整性核验（含本轮误覆写事故 | a9_r14_historical_bytes.py | e2ae3ed | 58bf7cd | `9e976c1722f1` |
 | `R14G_HISTORICAL_BYTES.md` | 历史 Test 件字节完整性核验正文（含本轮误覆写事故记录与自我撤回） | e2e_r14_stage_g_readiness.py | e2ae3ed | f23482a | `93d7044ad462` |
 | `R14G_HISTORICAL_BYTES_SELFTEST.json` | A9 字节基线检查的触发反证 | a9_r14_historical_bytes.py | e2ae3ed | 337dfd7 | `0f8a026f9b49` |
-| `R14G_PLAN.json` | G 批 manifest（PLANNED_NOT_EXECUTED） | d9_r14_stage_g_manifest.py, d9b_r14_lock_manifes | ce44cc7 | 1b2443f | `c9738c585d37` |
+| `R14G_PLAN.json` | G 批 manifest（PLANNED_NOT_EXECUTED） | d9_r14_stage_g_manifest.py, d9b_r14_lock_manifes | ce44cc7 | 58bf7cd | `9853850d554d` |
 | `R14H_KB_CHANNEL_AUDIT.json` | H KB 通道审计 | h1_r14_kb_channel_audit.py | 5ab91dd | acc4c1d | `9fd286b67089` |
-| `R14H_KB_CHANNEL_HEAD_DELTA.json` | ('h1_r14_kb_channel_audit.py',) | h1_r14_kb_channel_audit.py | f23482a | 1b2443f | `7e1315dc9e6e` |
+| `R14H_KB_CHANNEL_HEAD_DELTA.json` | ('h1_r14_kb_channel_audit.py',) | h1_r14_kb_channel_audit.py | f23482a | 58bf7cd | `691844bcfa2a` |
 
 **自指说明**：本索引写完后其自身的最终字节无法被自己登记，因此 `R14_INDEX.json` / `R14_INDEX.md` 地位标为 `self` 并**排除**哈希自检（A3）——这是诚实边界，不是漏检。
 
