@@ -222,6 +222,24 @@ def refuse_and_record(reason: str, detail, rc: int = 2) -> int:
     return rc
 
 
+STEP_CTX = ("离线验证器", "一键复现", "清单")
+
+
+def is_step_count(mm, text) -> bool:
+    """"N 步"只有处在**步数语境**里才是可核对的步数。
+
+    `第 19/20 步 = A9 …` 这类**序号**不是步数 ⇒ 误伤会把文档改成假话
+    （本轮 A13 第一次跑就把 `第 19/20 步` 当成"20 步"报陈旧）。
+    判据放**模块级**：原先它是 for 循环里的闭包，
+    只要那份文档不存在、循环一次没进，第二个循环就 `NameError`。
+    """
+    pre = text[max(0, mm.start() - 6):mm.start()]
+    if re.search(r"第\s*$|/\s*$|第\s*\d+\s*/\s*$", pre):
+        return False
+    win = text[max(0, mm.start() - 40):mm.end() + 12]
+    return any(c in win for c in STEP_CTX)
+
+
 def sha(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
@@ -685,20 +703,9 @@ def main() -> int:
         # `n_steps` 校正。上一版只替两个位置，结果同一篇文档里
         # `:87` 真跑 16 步、`:198` 真跑 15 步、`:312` 21 步**自相矛盾**，
         # 而我口头上说的是"步数由 bundle 回写、不再手写"。
-        STEP_CTX = ("离线验证器", "一键复现", "清单")
-
-        def _is_step_count(mm, text):
-            """"N 步"只有处在**步数语境**里才是可核对的步数；
-            `第 19/20 步 = …` 这类**序号**不是（误伤会把文档改成假话）。"""
-            pre = text[max(0, mm.start() - 6):mm.start()]
-            if re.search(r"第\s*$|/\s*$|第\s*\d+\s*/\s*$", pre):
-                return False
-            win = text[max(0, mm.start() - 40):mm.end() + 12]
-            return any(c in win for c in STEP_CTX)
-
         _n = re.sub(r"(?<!\d)(\d+)\s*步",
                     lambda m: (m.group(0).replace(m.group(1), str(len(rows)))
-                               if _is_step_count(m, _t) else m.group(0)), _t)
+                               if is_step_count(m, _t) else m.group(0)), _t)
         # 修掉上一版留下的**坏排版**：`一键复现{**21 步**}` → `一键复现 **21 步**`
         _n = re.sub(r"一键复现\{\*\*(\d+) 步\*\*", r"一键复现 **\1 步**", _n)
         if _n != _t:
@@ -713,19 +720,24 @@ def main() -> int:
                     f"回写只许改步数，不许改判断句")
             _dp.write_text(_n, encoding="utf-8")
             _doc_sync.append([_dn, _diff_lines])
-    # （`_a13_seen` 在下面的残留断言循环里收集，收集的是**回写后**的
-    #  盘上真值 ⇒ 与 A13 的判定同一口径，不拿改前文本自证）
     # **A13 残留断言**：改完必须真的没有过期步数，
     # 而不是"我写了替换逻辑"就算完。
+    # （`_a13_seen` 必须在**使用前**初始化：我上一版把初始化
+    #   写在注释里、没有实际赋值 ⇒ `NameError` 把 bundle 崩在半路，
+    #   而磁盘上留下的是**上一轮**的结论件。
+    #   判据也**提到模块级**：原先它是循环里的闭包，
+    #   若某个文档不存在、循环一次都没进 ⇒ 第二个循环直接
+    #   `NameError`——"定义在使用它的块里"就是这种雷。）
+    _a13_seen = []
     for _dn in ("R14_STAGE_E_DELIVERABLES.md", "R14_PROGRESS_STOPGATE.md"):
         _dp = EV / _dn
         if not _dp.is_file():
             continue
         _t = _dp.read_text(encoding="utf-8")
         for _m in re.finditer(r"(?<![\d{])(\d+)\s*步", _t):
-            if _is_step_count(_m, _t):
+            if is_step_count(_m, _t):
                 _a13_seen.append([_dn, int(_m.group(1))])
-            if _is_step_count(_m, _t) and int(_m.group(1)) != len(rows):
+            if is_step_count(_m, _t) and int(_m.group(1)) != len(rows):
                 _ctx = _t[max(0, _m.start() - 26):_m.end() + 8]
                 fails.append(
                     "A13 陈旧步数：" + _dn + " 仍写 " + _m.group(1) +
