@@ -94,6 +94,21 @@ mirror-04→rot90-01→trans-07→overlay-12→余量新排版、`text=None`、`
 模型/Prompt/版本/原图 SHA 固定、错误接受即停（R14-A 逻辑）、异常全计入分母、
 证据 `evidence/R14G_*`。
 
+**G0 零请求就绪审计（新增，真实请求 0）**：上面每一条约束已从"声称"变成
+**可执行证明**——用 `httpx.MockTransport` 驱动真实 `OpenAICompatibleClient` /
+`VisionParser`，`evidence/R14G0_GATE_READINESS_V5.json` 13 项 `ready:true /
+failing:[]`（C2a/C2b 硬顶发前拒 + 在途入账、C1/C1b/C1c 重试同扣额不穿透、
+C5 wrong_accept 触发位、C3/C3b `text=None`+裁剪落盘+解析器不补造、
+C4 五件原图 SHA 复算 + Prompt/代码版本锁、C7 命名隔离、**C9 G 批入口子进程
+实跑：无批准 exit 2、伪造批准仍被 model_lock 拦下、不生成结果件**）。
+发批入口 `scripts/e2e_r14_stage_g_batch.py`，manifest
+`evidence/R14G_PLAN.json`，说明 `R14G0_READINESS.md`。
+
+G0 也**如实暴露了预算的脆弱面**（C1d）：计划 5 页 + 1 次余量 = 6，
+一旦发生**两页**重试，第 6 次之后被原子闸拒绝 → 那 1 页只能记
+`BudgetExhausted` 并计入端到端分母（实测 `sent=6 / succ=4 / tok=4080`、
+`{429:2, 200:4}`）。届时**不得**用降低页数、放松闸或"只除成功件"来抹掉。
+
 ## 需要人工裁决的点
 
 1. 接受"尺度协议是主因、pitch 非因果必需"这一**弱于预设**的结论
@@ -109,6 +124,11 @@ mirror-04→rot90-01→trans-07→overlay-12→余量新排版、`text=None`、`
    现状是"安全地不产出证据"，不是错放；若要覆盖它们，需要新的排版规则
    （放松现有门将触碰禁止项），建议留待人工定优先级而**不是**在本轮内
    自行加规则。
+6. 若批准 G：还须给出**模型名**。本地配置 `vision_model=null` 且无 key，
+   manifest 的 `model_lock.status = UNRESOLVED_MUST_BE_CONFIRMED_BY_HUMAN`；
+   发批入口在模型名未锁定时**拒绝发起**（G0 C9 已实跑验证），脚本不会
+   自选模型。批准凭据经 `--approve` 传入，人工需同时把
+   `model_lock.status` 改为 `CONFIRMED_BY_HUMAN` 并填 `fixed.vision_model`。
 
 ## 盲评（blind eval）准入结论
 

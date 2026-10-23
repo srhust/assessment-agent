@@ -1,0 +1,133 @@
+{
+ "stage": "G",
+ "status": "PLANNED_NOT_EXECUTED",
+ "approval_required": "evidence/R14_PROGRESS_STOPGATE.md 人工批准后方可发起",
+ "planned_calls": [
+  {
+   "seq": 1,
+   "pid": "ft-mirror-04",
+   "image_path": "E:\\assessment-agent\\runs\\r13g-ft-mirror-04\\image\\original.png",
+   "original_sha256": "092496aac4e638c8fdd042c433dfce1f416f023778b5752d6e8a3b4e2f88a252",
+   "question_sha256": "974c958b2dd9d21d31fc02d2d347b4f2d9164ff302f5ae5d0b69bceec3e0f762",
+   "declared_options": 3,
+   "localizer_option_cells": 3,
+   "mask_hw": [
+    208,
+    348
+   ],
+   "page_ink": 2628,
+   "text": null,
+   "save": true,
+   "retry_policy": "最多 1 次重试，重试同样扣请求预算"
+  },
+  {
+   "seq": 2,
+   "pid": "ft-rot90-01",
+   "image_path": "E:\\assessment-agent\\runs\\r13g-ft-rot90-01\\image\\original.png",
+   "original_sha256": "91bda3d1cfbb9788e1d1cf91db0563bad9f4e68f54ed77660b6627fec9329d61",
+   "question_sha256": "a4774f1a159faff4258aa55c0047b8f92fe41be4dc76e3a606d7ae6c0290e87a",
+   "declared_options": 4,
+   "localizer_option_cells": 4,
+   "mask_hw": [
+    208,
+    380
+   ],
+   "page_ink": 3142,
+   "text": null,
+   "save": true,
+   "retry_policy": "最多 1 次重试，重试同样扣请求预算"
+  },
+  {
+   "seq": 3,
+   "pid": "ft-trans-07",
+   "image_path": "E:\\assessment-agent\\runs\\r13g-ft-trans-07\\image\\original.png",
+   "original_sha256": "b526f4dd7eef54059a298b3f265b8441da769b730d7b9d67d769de81e0321da7",
+   "question_sha256": "83bbd94d1ff5d3e1394944c99cb43c3772aad654e55feb6383dc4b0a18ce966a",
+   "declared_options": 3,
+   "localizer_option_cells": 3,
+   "mask_hw": [
+    208,
+    348
+   ],
+   "page_ink": 2741,
+   "text": null,
+   "save": true,
+   "retry_policy": "最多 1 次重试，重试同样扣请求预算"
+  },
+  {
+   "seq": 4,
+   "pid": "ft-overlay-12",
+   "image_path": "E:\\assessment-agent\\runs\\r13g-ft-overlay-12\\image\\original.png",
+   "original_sha256": "00a2649ecc70855b443ba2b5bc2c7c91754707d8750cea056741aa48188f985b",
+   "question_sha256": "d1d5eccd3fc411458b4eaa3690036e047f3be5ae125bbcf98e096e1f02094132",
+   "declared_options": 4,
+   "localizer_option_cells": 4,
+   "mask_hw": [
+    304,
+    380
+   ],
+   "page_ink": 4382,
+   "text": null,
+   "save": true,
+   "retry_policy": "最多 1 次重试，重试同样扣请求预算"
+  },
+  {
+   "seq": 5,
+   "pid": "ft-mirror-04--tight",
+   "image_path": "E:\\assessment-agent\\runs\\r13g-ft-mirror-04--tight\\image\\original.png",
+   "original_sha256": "8a201b3d90468fe1c7906b6b2b56350fac7e79bb933fde2bd3d7f522de263a30",
+   "question_sha256": "2206bf81f2685fb33a7fbaa102c9b306674681133c57e2b0b8af071980d24d40",
+   "declared_options": 0,
+   "localizer_option_cells": 2,
+   "mask_hw": [
+    240,
+    264
+   ],
+   "page_ink": 840,
+   "text": null,
+   "save": true,
+   "retry_policy": "最多 1 次重试，重试同样扣请求预算"
+  }
+ ],
+ "budget": {
+  "max_requests_including_retry": 6,
+  "planned_requests": 5,
+  "headroom_for_retry": 1,
+  "max_tokens": 100000,
+  "env": "ASSESSMENT_LLM_MAX_TOKENS=100000",
+  "spent_so_far": {
+   "requests": 0,
+   "tokens": 0
+  },
+  "max_pages_planned": 5,
+  "retry_headroom_note": "计划 5 页 + 余量 1 次请求 = 上限 6；一旦发生 **2 页**重试即触顶，第 6 次之后的请求会被原子闸拒绝——缺的那一页必须记为 BudgetExhausted 并计入端到端分母，不得降低页数或放松闸来抹掉。（G0 C1d 已实测该行为）"
+ },
+ "fixed": {
+  "code_version": "32829d3dca33b80d243b88b0e7f5eaf6ae946c42",
+  "worktree_dirty": true,
+  "prompt_file": null,
+  "prompt_sha256": "7c9dc3c847da45d4db5938c9696e43991b0892070280b8e1d751a4887b18eb19",
+  "request_params": {
+   "text": null,
+   "save": true
+  },
+  "model": "见 model_note（不使用本地记录，须与人工确认一致）",
+  "prompt_source": "src/assessment_agent/prompts.py",
+  "vision_model_in_config": null,
+  "api_key_present_locally": false
+ },
+ "model_note": "模型名必须与工单/人工确认一致后写入本 manifest 再发起；G0 就绪审计会因该字段未锁而判 failing——这是**刻意的**，禁止未经确认自动选模型。",
+ "stop_rules": [
+  "错误接受即停（release_status 判定 wrong_accept → abort）",
+  "全部异常（超时/HTTP 错/解析失败）计入端到端分母",
+  "token 达硬顶后拒绝发起后续请求，已花如实入账"
+ ],
+ "evidence_prefix": "evidence/R14G_*",
+ "llm_calls_used": 0,
+ "http_requests_made": 0,
+ "model_lock": {
+  "status": "UNRESOLVED_MUST_BE_CONFIRMED_BY_HUMAN",
+  "rule": "G 批发起前模型名必须与工单/人工确认一致并写回本 manifest；本地无配置时**禁止**由脚本自选模型。",
+  "vision_model": null
+ }
+}
