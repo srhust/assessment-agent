@@ -75,13 +75,22 @@ def dig(obj, dotted):
     return cur
 
 
+# 一次性运行日志（非证据件）不该挡住"工作区干净"闸门；证据件仍逐哈希核对
+SCRATCH = re.compile(r"^(t_|tmp_|\.DS_Store)")
+
+
 def worktree_clean():
     r = subprocess.run(["git", "status", "--porcelain"], cwd=ROOT,
                        capture_output=True, text=True)
     lines = [x for x in (r.stdout or "").splitlines() if x.strip()]
-    # bundle 自己的产物允许未跟踪/已改动（否则永远无法自我记录）
-    lines = [x for x in lines if "R14_VERIFICATION_BUNDLE" not in x]
-    return (not lines), lines
+    keep = []
+    for x in lines:
+        path = x[3:].strip().replace("\\", "/")
+        base = path.rsplit("/", 1)[-1]
+        if "R14_VERIFICATION_BUNDLE" in path or SCRATCH.match(base):
+            continue
+        keep.append(x)
+    return (not keep), keep
 
 
 def main() -> int:
