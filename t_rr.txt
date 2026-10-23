@@ -1,6 +1,0 @@
-ft-mirror-04 -> solved A | accept A | released True ok | 
-ft-rot90-01 -> solved A | accept A | released True ok | 
-ft-trans-07 -> failed None | None None | released False ok | 已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对
-ft-overlay-12 -> failed None | None None | released False ok | 没有支持范围内的规律能解释已知图形（当前支持：个数、边数、面积、平移、对称性）；变换通道：变换规律不可唯一判定
-ft-mirror-04--tight -> failed None | None None | released False ok | 九宫格的目标空格不在行末，当前不支持该布局；变换通道：布局非单行/三行九宫格
-written E:\assessment-agent\evidence\t_rerun_replay.json

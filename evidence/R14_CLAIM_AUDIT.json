@@ -6,9 +6,7 @@
   "R14E_TIGHT_GAP_DIAGNOSIS.md",
   "R14G0_READINESS.md"
  ],
- "fails": [
-  "C3 数字对账不过：G0 ready true / failing []"
- ],
+ "fails": [],
  "notes": {
   "C1_citations_checked": 42,
   "C1_missing_but_erratum_context": [
@@ -103,7 +101,7 @@
     "exit": 1,
     "child_output_parseable": true,
     "caught_expected_check": true,
-    "sample_fail": "C3 数字对账不过：G0 ready true / failing []",
+    "sample_fail": "C5 R14_PROGRESS_STOPGATE.md 出现禁止措辞「真实截图已突破」",
     "stderr_tail": ""
    },
    {
@@ -112,7 +110,7 @@
     "exit": 1,
     "child_output_parseable": true,
     "caught_expected_check": true,
-    "sample_fail": "C3 数字对账不过：G0 ready true / failing []",
+    "sample_fail": "C3 R14E_NEWLAYOUT_REGRESSION.md 抄录 17 != 件内 16（('layers', 'candidates_solved')）",
     "stderr_tail": ""
    },
    {
@@ -121,7 +119,7 @@
     "exit": 1,
     "child_output_parseable": true,
     "caught_expected_check": true,
-    "sample_fail": "C3 数字对账不过：G0 ready true / failing []",
+    "sample_fail": "C6 不应存在 G 结果件（未获人工批准）：['R14G_RESULT.json']",
     "stderr_tail": ""
    }
   ],

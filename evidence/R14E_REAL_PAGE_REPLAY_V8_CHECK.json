@@ -1,6 +1,6 @@
 {
  "purpose": "V8 复现性核验：判定层可复现、证据层不可复现，二者分开登记",
- "head": "c3aadf24307d0a25e972c5c0fcc2419862244ce6",
+ "head": "92103ecd74990557e86c8bd884c73c46b9cb30c6",
  "verdict_fields_checked": [
   "solver_status",
   "solver_answer",
@@ -104,7 +104,7 @@
  },
  "v8_untouched": true,
  "v8_sha256": "89be0925dcbf",
- "rerun_artifact": "R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
+ "rerun_artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
  "llm_calls_used": 0,
  "http_requests_made": 0
 }

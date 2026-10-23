@@ -41,3 +41,7 @@ data/**/*.jpg
 !data/screens/regions/**/*.png
 
 !data/benchmark_xingce_dev/**/*.png
+
+# 一次性运行日志与补丁草稿：绝不入库（本轮曾被 git add -A 误收 14 个）
+t_*
+*.tmp
