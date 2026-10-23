@@ -144,6 +144,20 @@ V2 件保留不删，但**不得**再作当前引用。
 是否投入新规则属 STOPGATE 裁决点 5；本轮未加规则、未动
 tol=0.15 / margin_min=0.05 / MIN_CELL_PX=10。
 
+### E. 交付件一致性审计（`R14_CLAIM_AUDIT.json` / `R14_CLAIM_AUDIT.md`）
+机器复核我对文档写下的每一条可核事实，六类检查 **`fails []`**（40 条引用）：
+C1 引用存在性（3 条"声明该件不存在/被取代"的**勘误语境**如实豁免并记行号）、
+C2 被取代件不得当当前引用、C3 文档抄录数字与件内实际值逐条对账
+（V3 层计数、扰动 contract 15/15 与 perturb_loc 23/30、血缘 F 5/5/5 且
+`v10_equals_v9 true`、HEAD 复验 `drift []`、缺口四成因）、
+C4 三层键独立不代称、C5 禁止措辞与因果上限、C6 **G 未执行**
+（无 `R14G_RESULT*`，PLAN `spent_so_far {requests:0, tokens:0}`）。
+审计器**先自证有效**：临时副本内注入 5 类违规，父进程要求子进程 JSON 里
+出现**对应检查类别**才算抓住（5/5）。此处的自纠也记入件：首版子进程在
+`--no-selftest` 分支不 print，父进程把"无法解析"塞进 fails 造成**假 caught**；
+已改为必须可解析 + 命中期望类别。C2 首跑就抓到 STOPGATE 仍在把 V2 当
+当前件并保留"4 页消费 0 单元"旧句，已按 V3 口径改写。
+
 
 ### C. G0 零请求闸门就绪审计（`R14G0_GATE_READINESS_V5.json` / `R14G0_READINESS.md`）
 用 `httpx.MockTransport` 驱动**真实** `OpenAICompatibleClient` / `VisionParser`

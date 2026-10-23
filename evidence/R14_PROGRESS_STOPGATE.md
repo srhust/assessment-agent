@@ -49,19 +49,21 @@ tight-ink 集合逐像素对账（相等或墨超集）；陈旧/缺失 → 用*
 screens 9）锚点 **18**（真实 4/5、dev15 14/15、扰动 0/30、screens 0/9）。
 扰动族 0 锚点是**设计结果**：那些页没有字母带，锚点判据必须拒绝。
 
-**新排版独立回归（生产入口题面）**：`R14E_NEWLAYOUT_REGRESSION_V2.json`
+**新排版独立回归（生产入口题面）**：`R14E_NEWLAYOUT_REGRESSION_V3.json`
 50 页（真实 5 + dev15 + 扰动 30）三层分列 **候选 16 / 接受 7 / 释放 7**、
 `wrong_releases []`、`checks_failed []`、`near_blank_consumed []`、
-`band20_flagged []`；逐页另做**独立重推同源复核**（消费单元 bbox+ink 与
-页面重解全等，50/50）。tight 族 7 页按 `声明/消费/页面末带列段` 三元组
-逐页入账：**3 页拿到真实完整选项证据**（含 1 页真实截图 tight：3 单元
-168×3）、**4 页仍消费 0 单元**（`ft-grid-10--tight`、
-`ft-overlay-13--tight`、`ft-scale-09--tight`、`ft-trans-07--tight`——
-选项带被裁成无字母且版面非一致排布，锚点判据按设计拒绝、聚类候选被
-"单行非末带"消费门拒绝，结果是**如实缺证据不释放**，与 HEAD 一致）。
-这 4 页是 E 之后仍开着的**排版覆盖缺口**，不得表述成"已修好"；
+`band20_flagged []`；逐页另做**独立重推同源复核**（证据链单元 bbox+ink 与
+页面重解全等，50/50）。tight 族 7 页按 `声明 / 证据链单元 / 落盘裁剪 /
+页面末带列段` 四量分列入账：**3 页拿到真实完整选项证据**（含 1 页真实截图
+tight：3 单元 168×3）。**此处曾有一句我自己的过强表述**（"4 页仍消费 0
+单元"）已在 V3 与 `R14E_TIGHT_GAP_DIAGNOSIS.md` 更正：真实构成是
+`ft-scale-09--tight`、`ft-trans-07--tight` **确为 0 份裁剪**，而
+`ft-grid-10--tight`、`ft-overlay-13--tight` **已落盘 4 份裁剪**、但同一次
+运行随后在**题干**侧弃权（`stem_evidence_ambiguous_layout`）使证据链为空，
+且落盘格含并图（ink 296 / 349）与劈图（一个 w33 图形被劈成 80+227）。
+这 4 页仍是 E 之后开着的**排版覆盖缺口**，不得表述成"已修好"；
 列段数也**不是**选项数的代理（overlay-13--tight 末带 7 段 vs 声明 4），
-只作对照。详见 `R14E_NEWLAYOUT_REGRESSION.md`。
+只作对照。详见 `R14E_NEWLAYOUT_REGRESSION.md` 与 `R14E_TIGHT_GAP_DIAGNOSIS.md`。
 
 ## 为达到"零回归"付出的诚实代价（被否决的方案，全部留档在代码注释）
 

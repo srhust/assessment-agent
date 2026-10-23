@@ -1,0 +1,129 @@
+{
+ "docs": [
+  "R14_PROGRESS_STOPGATE.md",
+  "R14_STAGE_E_DELIVERABLES.md",
+  "R14E_NEWLAYOUT_REGRESSION.md",
+  "R14E_TIGHT_GAP_DIAGNOSIS.md",
+  "R14G0_READINESS.md"
+ ],
+ "fails": [],
+ "notes": {
+  "C1_citations_checked": 42,
+  "C1_missing_but_erratum_context": [
+   {
+    "doc": "R14G0_READINESS.md",
+    "artifact": "R14G_RESULT.json",
+    "lines": [
+     25
+    ],
+    "why": "该句本身声明此件不存在/被取代，属勘误语境"
+   },
+   {
+    "doc": "R14_PROGRESS_STOPGATE.md",
+    "artifact": "R14E_PERTURB_RELEASE_AUDIT_V5.json",
+    "lines": [
+     16
+    ],
+    "why": "该句本身声明此件不存在/被取代，属勘误语境"
+   },
+   {
+    "doc": "R14_STAGE_E_DELIVERABLES.md",
+    "artifact": "R14E_PERTURB_RELEASE_AUDIT_V5.json",
+    "lines": [
+     53,
+     106
+    ],
+    "why": "该句本身声明此件不存在/被取代，属勘误语境"
+   }
+  ],
+  "C6_g_result_files": [],
+  "budget": {
+   "max_requests": 6,
+   "max_tokens": 100000,
+   "spent": {
+    "requests": 0,
+    "tokens": 0
+   }
+  }
+ },
+ "citations": [
+  "R14C_PITCH_ABLATION.json",
+  "R14C_REAL_PARSE_REPLAY.json",
+  "R14E_ANCHOR_SWEEP.json",
+  "R14E_HEAD_REVERIFY.json",
+  "R14E_LINEAGE_SIX_CONDITION.json",
+  "R14E_NEWLAYOUT_REGRESSION.md",
+  "R14E_NEWLAYOUT_REGRESSION_V3.json",
+  "R14E_PERTURB_RELEASE_AUDIT_V5.json",
+  "R14E_REAL_PAGE_REPLAY_V8.json",
+  "R14E_SIX_CONDITION_V10.json",
+  "R14E_SIX_CONDITION_V8.json",
+  "R14E_SIX_CONDITION_V9.json",
+  "R14E_STAGE_E_ACCEPTANCE_V7.json",
+  "R14E_STAGE_E_ACCEPTANCE_V8.json",
+  "R14E_TIGHT_GAP_DIAGNOSIS.json",
+  "R14E_TIGHT_GAP_DIAGNOSIS.md",
+  "R14F_PERTURB_RELEASE_AUDIT.json",
+  "R14G0_GATE_READINESS_V5.json",
+  "R14G0_READINESS.md",
+  "R14G_PLAN.json",
+  "R14G_RESULT.json",
+  "R14H_KB_CHANNEL_AUDIT.json",
+  "R14_CLAIM_AUDIT.json",
+  "R14_CLAIM_AUDIT.md",
+  "R14_PROGRESS_STOPGATE.md"
+ ],
+ "llm_calls_used": 0,
+ "http_requests_made": 0,
+ "auditor_effectiveness": {
+  "all_injected_violations_caught": true,
+  "cases": [
+   {
+    "case": "C1 引用不存在的件（非勘误语境）",
+    "expect_check_id": "C1",
+    "exit": 1,
+    "child_output_parseable": true,
+    "caught_expected_check": true,
+    "sample_fail": "C1 R14E_NEWLAYOUT_REGRESSION.md:[80] 引用了不存在的件（且非勘误语境）：R14E_NOT_A_REAL_ARTIFACT.json",
+    "stderr_tail": ""
+   },
+   {
+    "case": "C2 把被取代件当当前引用",
+    "expect_check_id": "C2",
+    "exit": 1,
+    "child_output_parseable": true,
+    "caught_expected_check": true,
+    "sample_fail": "C2 R14_PROGRESS_STOPGATE.md:156 把被取代件 R14E_NEWLAYOUT_REGRESSION_V2.json 当作当前引用（该句无勘误语境）",
+    "stderr_tail": ""
+   },
+   {
+    "case": "C5 禁止措辞（真实截图突破）",
+    "expect_check_id": "C5",
+    "exit": 1,
+    "child_output_parseable": true,
+    "caught_expected_check": true,
+    "sample_fail": "C5 R14_PROGRESS_STOPGATE.md 出现禁止措辞「真实截图已突破」",
+    "stderr_tail": ""
+   },
+   {
+    "case": "C3 抄录数字与件内不一致",
+    "expect_check_id": "C3",
+    "exit": 1,
+    "child_output_parseable": true,
+    "caught_expected_check": true,
+    "sample_fail": "C3 R14E_NEWLAYOUT_REGRESSION.md 抄录 17 != 件内 16（('layers', 'candidates_solved')）",
+    "stderr_tail": ""
+   },
+   {
+    "case": "C6 G 结果件存在（未获批准却执行）",
+    "expect_check_id": "C6",
+    "exit": 1,
+    "child_output_parseable": true,
+    "caught_expected_check": true,
+    "sample_fail": "C6 不应存在 G 结果件（未获人工批准）：['R14G_RESULT.json']",
+    "stderr_tail": ""
+   }
+  ],
+  "why": "恒真的检查器比没有检查器更糟：先证明本审计能抓住 5 类注入违规，其 fails [] 才有信息量"
+ }
+}
