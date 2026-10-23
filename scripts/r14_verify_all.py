@@ -84,6 +84,16 @@ STEPS = [
     # e2d_r14_production_replay_v4.py 重跑到 `_RERUN` 新件来证明。
     # 上轮此步标 skip、理由"不可复现"是**误判**（只试了引用 V8 件名却
     # 不产出它的脚本）——勘误见 R14E_ARTIFACT_ATTRIBUTION.correction_recorded。
+    # 归属**必须**在 V8_CHECK 之前重算：V8_CHECK 消费归属件并检查其 head
+    # 是否等于当前 HEAD（陈旧即如实失败）。上轮我是手动重跑归属来消这类
+    # staleness，现并入清单，由构造消除。
+    ("scripts/r14_attribute_producer.py",
+     "R14E_ARTIFACT_ATTRIBUTION.json",
+     {"llm_calls_used": 0, "http_requests_made": 0}, "fixed", None),
+    ("scripts/r14_attribute_producer.py --selftest",
+     "R14E_ATTRIBUTION_SELFTEST.json",
+     {"fails": [], "llm_calls_used": 0, "http_requests_made": 0},
+     "fixed", None),
     ("scripts/e2d_r14_production_replay_v4.py",
      "R14E_REAL_PAGE_REPLAY_V8_RERUN.json", None, "bare",
      "R14E_REAL_PAGE_REPLAY_V8_RERUN.json"),
@@ -165,7 +175,8 @@ def main() -> int:
     before = {p.name: sha(p) for p in EV.glob("R14*") if p.is_file()}
     rows, fails = [], []
     for script, art, must, out_mode, out_val in STEPS:
-        argv = [sys.executable, "-X", "utf8", str(ROOT / script)]
+        parts = script.split()
+        argv = [sys.executable, "-X", "utf8", str(ROOT / parts[0])] + parts[1:]
         if out_val:
             argv += ["--out", out_val]
         # ---- A4 预检：这步**将会**写到哪个绝对路径，必须就是现行件本身
@@ -247,6 +258,31 @@ def main() -> int:
         if now != before[key]:
             fails.append("f1 固定件重跑后哈希变化 → 扰动审计判定发生漂移，"
                          f"{before[key][:12]} → {now[:12]}")
+    # ---- A6：归属工具的**安全条件**是一键复现的准入条件 ----
+    ap = EV / "R14E_ARTIFACT_ATTRIBUTION.json"
+    if ap.is_file():
+        ad = json.loads(ap.read_text(encoding="utf-8"))
+        for x in ad.get("results", []):
+            if x.get("safety") != "OK_ZERO_REQUESTS":
+                fails.append(f"A6 归属步 safety={x.get('safety')}"
+                             f"（{x.get('artifact')}）：归属核验不得产生任何"
+                             f"请求或附带改动")
+            if x.get("worktree_collateral"):
+                fails.append(f"A6 归属步出现附带改动："
+                             f"{x['worktree_collateral'][:6]}")
+            if not x.get("artifact_untouched"):
+                fails.append(f"A6 归属步改动了被归属件 {x.get('artifact')}")
+    sp = EV / "R14E_ATTRIBUTION_SELFTEST.json"
+    if sp.is_file():
+        sd = json.loads(sp.read_text(encoding="utf-8"))
+        if sd.get("fails"):
+            fails.append(f"A6 安全闸门自检未过：{sd['fails'][:3]}")
+        for inj in ("zfake_net.py", "zfake_orch.py"):
+            if inj not in " ".join(sd.get("refused", [])):
+                fails.append(f"A6 自检未拒跑注入样本 {inj}")
+            if inj in sd.get("executed", []):
+                fails.append(f"A6 **注入样本被执行过**：{inj}")
+
     after_clean, after_dirty = worktree_clean()
     out = {"head_at_run": head, "n_steps": len(rows), "steps": rows,
            "fails": fails,

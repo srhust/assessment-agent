@@ -1,5 +1,5 @@
 {
- "head_at_run": "92103ecd74990557e86c8bd884c73c46b9cb30c6",
+ "head_at_run": "d48d97ece081fe1f26a44d81bea7a6e603207b67",
  "n_steps": 14,
  "steps": [
   {
@@ -9,7 +9,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "b2e9ebe45d26",
+   "artifact_sha256_short": "f898f568c6a6",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -22,7 +22,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.3,
-   "artifact_sha256_short": "3fa61b7da4f2",
+   "artifact_sha256_short": "ffd98509914c",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -34,7 +34,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.1,
+   "seconds": 1.2,
    "artifact_sha256_short": "d27ba4087d5c",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -47,7 +47,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.7,
+   "seconds": 6.0,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -100,23 +100,23 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.8,
-   "artifact_sha256_short": "e7e6d05b3720",
-   "artifact_rewritten": false,
+   "artifact_sha256_short": "b96827fe92f9",
+   "artifact_rewritten": true,
    "stdout_tail": [
     "}"
    ]
   },
   {
-   "step": "(no-rerun) scripts/e2_r14_optionband_replay.py",
-   "artifact": "R14E_REAL_PAGE_REPLAY_V8.json",
-   "out_mode": "skip",
+   "step": "scripts/e2d_r14_production_replay_v4.py",
+   "artifact": "R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
+   "out_mode": "bare",
+   "expected_to_change": false,
    "exit": 0,
-   "seconds": 0.0,
+   "seconds": 1.1,
    "artifact_sha256_short": "89be0925dcbf",
-   "artifact_rewritten": false,
-   "not_rerunnable": true,
+   "artifact_rewritten": true,
    "stdout_tail": [
-    "未重跑：该件不可从 HEAD 复现，重跑写回等于修改历史结果"
+    "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_RERUN.json"
    ]
   },
   {
@@ -124,9 +124,9 @@
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
    "out_mode": "bare",
    "expected_to_change": false,
-   "exit": 0,
+   "exit": 1,
    "seconds": 1.2,
-   "artifact_sha256_short": "322e4e198e24",
+   "artifact_sha256_short": "91d57351d209",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -151,8 +151,8 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 4.5,
-   "artifact_sha256_short": "4e2a08779f25",
+   "seconds": 4.6,
+   "artifact_sha256_short": "455ea14c6c39",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -164,9 +164,9 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.4,
-   "artifact_sha256_short": "a1a92637d1af",
-   "artifact_rewritten": true,
+   "seconds": 2.5,
+   "artifact_sha256_short": "871113fb68cb",
+   "artifact_rewritten": false,
    "stdout_tail": [
     "}"
    ]
@@ -177,22 +177,24 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 4.3,
-   "artifact_sha256_short": "9207ee0bb368",
+   "seconds": 4.6,
+   "artifact_sha256_short": "b431a3b92868",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14_INDEX.json"
    ]
   }
  ],
- "fails": [],
+ "fails": [
+  "scripts/e2_r14_v8_reproducibility.py 退出码 1："
+ ],
  "worktree_clean_before": true,
  "worktree_clean_after": false,
  "dirty_after": [
+  " M evidence/R14E_ANCHOR_SWEEP.json",
   " M evidence/R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
   " M evidence/R14G0_GATE_READINESS_V5.json",
   " M evidence/R14G_PLAN.json",
-  " M evidence/R14_CLAIM_AUDIT.json",
   " M evidence/R14_INDEX.json",
   " M evidence/R14_INDEX.md"
  ],

@@ -202,9 +202,9 @@
    "evidence": {
     "planned": 5,
     "sha_mismatches": [],
-    "code_version": "92103ecd74990557e86c8bd884c73c46b9cb30c6",
+    "code_version": "d48d97ece081fe1f26a44d81bea7a6e603207b67",
     "code_version_matches_manifest": true,
-    "worktree_dirty_at_plan_time": true,
+    "worktree_dirty_at_plan_time": false,
     "worktree_dirty_now": true,
     "prompt_source": "src/assessment_agent/prompts.py",
     "prompt_sha256": "7c9dc3c847da45d4db5938c9696e43991b0892070280b8e1d751a4887b18eb19",

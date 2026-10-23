@@ -10,10 +10,10 @@
   ],
   "artifact_untouched": true,
   "candidates_tried": 8,
-  "attribution_stale": false,
+  "attribution_stale": true,
   "attribution_head": "f8a6540610fec0542fc939c1d1431b3132bee518"
  },
- "head": "f8a6540610fec0542fc939c1d1431b3132bee518",
+ "head": "d48d97ece081fe1f26a44d81bea7a6e603207b67",
  "verdict_fields_checked": [
   "solver_status",
   "solver_answer",
@@ -122,7 +122,7 @@
  },
  "v8_untouched": true,
  "v8_sha256": "89be0925dcbf",
- "rerun_artifact": "R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
+ "rerun_artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
  "llm_calls_used": 0,
  "http_requests_made": 0
 }

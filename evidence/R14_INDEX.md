@@ -2,7 +2,7 @@
 
 注：本轮**改了** STOPGATE / DELIVERABLES / NEWLAYOUT_REGRESSION 三份文档的措辞，也**重跑**了回归脚本（产物字节逐字一致），因此下表 commit 列是**入库时点**、与工作区未提交内容不同属**已知且如实**，不是漏记。
 
-HEAD `f8a6540610fec0542fc939c1d1431b3132bee518` · 件数 **47** · 自检失败 **0** 项 · 真实请求 **0**
+HEAD `d48d97ece081fe1f26a44d81bea7a6e603207b67` · 件数 **47** · 自检失败 **0** 项 · 真实请求 **0**
 
 ## 当前件（可复现性 = 是否登记生产脚本）
 
@@ -10,30 +10,30 @@ HEAD `f8a6540610fec0542fc939c1d1431b3132bee518` · 件数 **47** · 自检失败
 
 | 件 | 地位 | 生产脚本 | 首入库 | 最近改动 | sha256(12) |
 |---|---|---|---|---|---|
-| `R14_CLAIM_AUDIT.json` | 交付件一致性审计（含审计器自证） | e2e_r14_claim_audit.py, r14_verify_all.py | aa81b50 | f8a6540 | `871113fb68cb` |
+| `R14_CLAIM_AUDIT.json` | 交付件一致性审计（含审计器自证） | e2e_r14_claim_audit.py, r14_verify_all.py | aa81b50 | d48d97e | `871113fb68cb` |
 | `R14_CLAIM_AUDIT.md` | — | **无** | aa81b50 | aa81b50 | `2a2ea404c904` |
-| `R14_PROGRESS_STOPGATE.md` | — | d9_r14_stage_g_manifest.py, e2e_r14_stage_g_batc | 5ab91dd | f8a6540 | `942ac9afdd5f` |
+| `R14_PROGRESS_STOPGATE.md` | — | d9_r14_stage_g_manifest.py, e2e_r14_stage_g_batc | 5ab91dd | d48d97e | `942ac9afdd5f` |
 | `R14_STAGE_E_DELIVERABLES.md` | — | **无** | de14d1e | f8a6540 | `40af2cf7dcba` |
 | `R14_VERIFICATION_BUNDLE.json` | — | r14_verify_all.py | f9a2fc8 | 7179844 | `02fbadb91ec0` |
 | `R14C_PITCH_ABLATION.json` | pitch 双轴消融（因果上限依据） | c2_r14_pitch_ablation.py | 59a244f | 59a244f | `df83fb21b136` |
-| `R14E_ANCHOR_SWEEP.json` | 独立排版锚点普查 59 页 | e2e_r14_anchor_sweep.py, r14_verify_all.py | d715369 | d715369 | `e7e6d05b3720` |
-| `R14E_ARTIFACT_ATTRIBUTION.json` | — | e2_r14_v8_reproducibility.py, r14_attribute_prod | 未入库 | 未入库 | `cc57f39be1f7` |
-| `R14E_ATTRIBUTION_SELFTEST.json` | — | r14_attribute_producer.py | 未入库 | 未入库 | `24e26d7052a0` |
-| `R14E_HEAD_REVERIFY.json` | 三项离线基线 HEAD 复验（零漂移） | e2e_r14_head_reverify.py | b94041e | b94041e | `905091829838` |
+| `R14E_ANCHOR_SWEEP.json` | 独立排版锚点普查 59 页 | e2e_r14_anchor_sweep.py, r14_verify_all.py | d715369 | d715369 | `b96827fe92f9` |
+| `R14E_ARTIFACT_ATTRIBUTION.json` | — | e2_r14_v8_reproducibility.py, r14_attribute_prod | d48d97e | d48d97e | `cc57f39be1f7` |
+| `R14E_ATTRIBUTION_SELFTEST.json` | — | r14_attribute_producer.py | d48d97e | d48d97e | `24e26d7052a0` |
+| `R14E_HEAD_REVERIFY.json` | 三项离线基线 HEAD 复验（零漂移） | e2e_r14_head_reverify.py | b94041e | d48d97e | `905091829838` |
 | `R14E_LINEAGE_SIX_CONDITION.json` | 六条件跨轮血缘（旧协议件分列不混比） | e2e_r14_six_condition_lineage.py, r14_verify_all | 8f4ca49 | 8f4ca49 | `51c6deb05227` |
 | `R14E_NEWLAYOUT_REGRESSION.md` | — | **无** | 32829d3 | c2b28ea | `c8fccf626af0` |
 | `R14E_NEWLAYOUT_REGRESSION_V3.json` | 新排版独立 Dev 回归（含 V2 口径勘误） | e2e_r14_newlayout_regression.py, r14_verify_all. | c2b28ea | c2b28ea | `9a6a48a7e9ad` |
 | `R14E_REAL_PAGE_REPLAY_V8.json` | 真实截图解析件端到端复放 | e2d_r14_production_replay_v4.py | eb47076 | eb47076 | `89be0925dcbf` |
-| `R14E_REAL_PAGE_REPLAY_V8_CHECK.json` | — | e2_r14_v8_reproducibility.py, r14_verify_all.py | 92103ec | 7179844 | `2314b3620b50` |
-| `R14E_REAL_PAGE_REPLAY_V8_RERUN.json` | — | e2_r14_v8_reproducibility.py, r14_verify_all.py | 92103ec | 92103ec | `81b0bdd08dfd` |
+| `R14E_REAL_PAGE_REPLAY_V8_CHECK.json` | — | e2_r14_v8_reproducibility.py, r14_verify_all.py | 92103ec | d48d97e | `91d57351d209` |
+| `R14E_REAL_PAGE_REPLAY_V8_RERUN.json` | — | e2_r14_v8_reproducibility.py, r14_verify_all.py | 92103ec | 92103ec | `89be0925dcbf` |
 | `R14E_SIX_CONDITION_V10.json` | 现行协议六条件（HEAD 复验重跑） | e2e_r14_head_reverify.py, e2e_r14_six_condition_ | b94041e | b94041e | `86dc65890f4e` |
 | `R14E_STAGE_E_ACCEPTANCE_V8.json` | Stage E 验收 | e2e_r14_head_reverify.py, e2e_r14_stage_e_accept | b94041e | b94041e | `d27ba4087d5c` |
 | `R14E_TIGHT_GAP_DIAGNOSIS.json` | tight 覆盖缺口逐页成因 | e2e_r14_tight_gap_diagnosis.py, r14_verify_all.p | c2b28ea | c2b28ea | `13b771de58f9` |
 | `R14E_TIGHT_GAP_DIAGNOSIS.md` | — | **无** | c2b28ea | c2b28ea | `da8eaedf0a9e` |
 | `R14F_PERTURB_RELEASE_AUDIT.json` | 扰动 30 页释放审计（f1 固定件） | e2e_r14_head_reverify.py, f1_r14_perturb_release | 4712825 | d715369 | `da176b1a274b` |
-| `R14G0_GATE_READINESS_V5.json` | G 闸门行为级就绪审计（真实请求 0） | e2e_r14_stage_g_readiness.py, r14_verify_all.py | ce44cc7 | 7179844 | `4e2a08779f25` |
+| `R14G0_GATE_READINESS_V5.json` | G 闸门行为级就绪审计（真实请求 0） | e2e_r14_stage_g_readiness.py, r14_verify_all.py | ce44cc7 | 7179844 | `455ea14c6c39` |
 | `R14G0_READINESS.md` | — | **无** | ce44cc7 | ce44cc7 | `8c9049ac89f2` |
-| `R14G_PLAN.json` | G 批 manifest（PLANNED_NOT_EXECUTED） | d9_r14_stage_g_manifest.py, d9b_r14_lock_manifes | ce44cc7 | 7179844 | `3fa61b7da4f2` |
+| `R14G_PLAN.json` | G 批 manifest（PLANNED_NOT_EXECUTED） | d9_r14_stage_g_manifest.py, d9b_r14_lock_manifes | ce44cc7 | 7179844 | `ffd98509914c` |
 | `R14H_KB_CHANNEL_AUDIT.json` | H KB 通道审计 | h1_r14_kb_channel_audit.py | 5ab91dd | 5ab91dd | `7ba6dcb133bc` |
 
 **自指说明**：本索引写完后其自身的最终字节无法被自己登记，因此 `R14_INDEX.json` / `R14_INDEX.md` 地位标为 `self` 并**排除**哈希自检（A3）——这是诚实边界，不是漏检。
