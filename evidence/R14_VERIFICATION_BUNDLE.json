@@ -1,6 +1,6 @@
 {
- "head_at_run": "c4016b64b1795b7a84122d9a3d9b54b2a93462f3",
- "n_steps": 20,
+ "head_at_run": "f23482a2854232e52f682401b61d4d68d9a6641e",
+ "n_steps": 21,
  "steps": [
   {
    "step": "scripts/d9_r14_stage_g_manifest.py",
@@ -8,8 +8,8 @@
    "out_mode": "fixed",
    "expected_to_change": true,
    "exit": 0,
-   "seconds": 0.9,
-   "artifact_sha256_short": "5cfacc6adf87",
+   "seconds": 0.7,
+   "artifact_sha256_short": "066f44e46320",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -22,7 +22,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.3,
-   "artifact_sha256_short": "122b6d059576",
+   "artifact_sha256_short": "d83905c46007",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -34,7 +34,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.3,
+   "seconds": 1.2,
    "artifact_sha256_short": "d27ba4087d5c",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -47,7 +47,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 7.1,
+   "seconds": 5.9,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -60,7 +60,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.8,
+   "seconds": 1.6,
    "artifact_sha256_short": "da176b1a274b",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -73,7 +73,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.7,
+   "seconds": 2.5,
    "artifact_sha256_short": "9a6a48a7e9ad",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -86,7 +86,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.4,
+   "seconds": 1.3,
    "artifact_sha256_short": "13b771de58f9",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -99,7 +99,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 0.9,
+   "seconds": 0.8,
    "artifact_sha256_short": "b96827fe92f9",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -112,8 +112,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 10.1,
-   "artifact_sha256_short": "28dde34d5e75",
+   "seconds": 4.4,
+   "artifact_sha256_short": "059e0b1fd955",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -125,7 +125,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 8.7,
+   "seconds": 9.4,
    "artifact_sha256_short": "8812f2b72e12",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -152,7 +152,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "7bc69ac0e39a",
+   "artifact_sha256_short": "5efb4ad00a1d",
    "artifact_rewritten": true,
    "stdout_tail": [
     "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
@@ -172,13 +172,26 @@
    ]
   },
   {
+   "step": "scripts/h1_r14_kb_channel_audit.py",
+   "artifact": "R14H_KB_CHANNEL_AUDIT.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 1.3,
+   "artifact_sha256_short": "02b10e889753",
+   "artifact_rewritten": false,
+   "stdout_tail": [
+    "{\"missing\": {\"jr.categorical-syllogism\": \"缺卡（三段论属逻辑判断族，numeric\", \"nc.arithmetic-precedence\": \"确定性执行器已覆盖（Direct-AST\", \"nc.combinatorics-power\": \"缺卡（排列组合/幂集计数族 KB 无任何\", \"nc.work-rate\": \"异名等价卡（效率最小公倍数法即工程问题通\"}, \"channel_rows\": 7}"
+   ]
+  },
+  {
    "step": "scripts/e2f_r14_causal_delta.py",
    "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.json",
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.1,
-   "artifact_sha256_short": "d9a0ef16d80f",
+   "artifact_sha256_short": "1928bd7fcadb",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -190,8 +203,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 65.2,
-   "artifact_sha256_short": "10fce6023ae5",
+   "seconds": 108.4,
+   "artifact_sha256_short": "b1cceb308c54",
    "artifact_rewritten": false,
    "stdout_tail": [
     "}"
@@ -203,8 +216,8 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.3,
-   "artifact_sha256_short": "2d4d4b43996d",
+   "seconds": 1.2,
+   "artifact_sha256_short": "1591230c6bd2",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -229,8 +242,8 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.6,
-   "artifact_sha256_short": "4c5286c3b46e",
+   "seconds": 4.8,
+   "artifact_sha256_short": "2fdaf7497625",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -241,10 +254,10 @@
    "artifact": "R14_CLAIM_AUDIT.json",
    "out_mode": "fixed",
    "expected_to_change": false,
-   "exit": 0,
-   "seconds": 8.2,
-   "artifact_sha256_short": "93f7c242ca87",
-   "artifact_rewritten": false,
+   "exit": 1,
+   "seconds": 7.1,
+   "artifact_sha256_short": "bd8bb8bf1b67",
+   "artifact_rewritten": true,
    "stdout_tail": [
     "}"
    ]
@@ -255,8 +268,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 9.1,
-   "artifact_sha256_short": "dbd9b3d15793",
+   "seconds": 8.8,
+   "artifact_sha256_short": "a959cd8b91eb",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14_INDEX.json"
@@ -291,11 +304,39 @@
    "rerun_by"
   ]
  },
- "fails": [],
+ "fails": [
+  "scripts/h1_r14_kb_channel_audit.py → R14H_KB_CHANNEL_AUDIT.json 的 http_requests_made = None，应为 0",
+  "scripts/h1_r14_kb_channel_audit.py → R14H_KB_CHANNEL_AUDIT.json 的 llm_calls_used = None，应为 0",
+  "scripts/e2e_r14_claim_audit.py 退出码 1：",
+  "scripts/e2e_r14_claim_audit.py → R14_CLAIM_AUDIT.json 的 fails = ['C8 R14_PROGRESS_STOPGATE.md 写 current=29，索引真值 30 ⇒ 计数过期', 'C8 R14_PROGRESS_STOPGATE.md 写 current=29，索引真值 30 ⇒ 计数过期', 'C8 R14_PROGRESS_STOPGATE.md 写 当前=29，索引真值 30 ⇒ 计数过期', 'C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=55 件，索引真值是 56 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步', 'C8 R14_STAGE_E_DELIVERABLES.md 写 current=29，索引真值 30 ⇒ 计数过期']，应为 []"
+ ],
  "worktree_clean_before": true,
  "worktree_clean_after": false,
- "A10_expected_paths": 37,
+ "A10_expected_paths": 39,
  "A10_collateral": [],
+ "A11_drift_register": {
+  "registers": {
+   "R14C_PITCH_ABLATION.json": [
+    "R14C_PITCH_ABLATION_HEAD_DELTA.json"
+   ],
+   "R14H_KB_CHANNEL_AUDIT.json": [
+    "R14H_KB_CHANNEL_HEAD_DELTA.json"
+   ]
+  },
+  "violated": [],
+  "derived_from": "R14E_RERUN_SEMANTICS.json",
+  "need_register": []
+ },
+ "A10_selftest": {
+  "fails": [],
+  "collateral_detected": [
+   "data/_a10_selftest_probe.txt"
+  ],
+  "restored": true,
+  "budget": {
+   "http_requests_made": 0
+  }
+ },
  "dirty_after": [
   " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.json",
   " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.md",
@@ -304,6 +345,8 @@
   " M evidence/R14G0_GATE_READINESS_V5.json",
   " M evidence/R14G_HISTORICAL_BYTES.json",
   " M evidence/R14G_PLAN.json",
+  " M evidence/R14H_KB_CHANNEL_HEAD_DELTA.json",
+  " M evidence/R14_CLAIM_AUDIT.json",
   " M evidence/R14_INDEX.json",
   " M evidence/R14_INDEX.md"
  ],

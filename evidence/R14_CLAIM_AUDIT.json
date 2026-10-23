@@ -15,27 +15,27 @@
    {
     "doc": "R14_PROGRESS_STOPGATE.md",
     "kind": "current",
-    "cited": 29,
-    "truth": 29
+    "cited": 30,
+    "truth": 30
    },
    {
     "doc": "R14_PROGRESS_STOPGATE.md",
     "kind": "current",
-    "cited": 29,
-    "truth": 29
+    "cited": 30,
+    "truth": 30
    },
    {
     "doc": "R14_PROGRESS_STOPGATE.md",
     "kind": "current",
     "cited": 25,
-    "truth": 29,
+    "truth": 30,
     "context": "example_or_old_value_skipped"
    },
    {
     "doc": "R14_PROGRESS_STOPGATE.md",
     "kind": "current",
-    "cited": 29,
-    "truth": 29
+    "cited": 30,
+    "truth": 30
    },
    {
     "doc": "R14_PROGRESS_STOPGATE.md",
@@ -70,14 +70,14 @@
    {
     "doc": "R14_STAGE_E_DELIVERABLES.md",
     "kind": "artifact_total",
-    "cited": 55,
-    "truth": 55
+    "cited": 56,
+    "truth": 56
    },
    {
     "doc": "R14_STAGE_E_DELIVERABLES.md",
     "kind": "current",
-    "cited": 29,
-    "truth": 29
+    "cited": 30,
+    "truth": 30
    },
    {
     "doc": "R14_STAGE_E_DELIVERABLES.md",
@@ -279,7 +279,7 @@
     "injection_applied": "yes",
     "caught_expected_check": true,
     "note": "",
-    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=40 件，索引真值是 55 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步",
+    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=67 件，索引真值是 56 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步",
     "stderr_tail": ""
    },
    {
@@ -290,7 +290,7 @@
     "injection_applied": "yes",
     "caught_expected_check": true,
     "note": "",
-    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 current=12，索引真值 29 ⇒ 计数过期",
+    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 current=47，索引真值 30 ⇒ 计数过期",
     "stderr_tail": ""
    },
    {
@@ -314,6 +314,18 @@
     "exit": 0,
     "child_output_parseable": true,
     "stderr_tail": ""
+   },
+   {
+    "case": "注入锚点缺失（必须记案例失效，不得冒充检查失效）",
+    "expect_check_id": "C8",
+    "injection_applied": "yes_anchor_removed",
+    "exit": 0,
+    "caught_expected_check": true,
+    "note": "锚点被抹掉后，母进程必须记 NO_anchor_missing 而不是把子进程退出 0 当作『C8 抓不住』；此处验证**子进程确实退出 0**（说明不能靠它判定）",
+    "sample_fail": "",
+    "child_output_parseable": true,
+    "stderr_tail": "",
+    "anchor_present_after_removal": false
    }
   ],
   "why": "恒真的检查器比没有检查器更糟：先证明本审计能抓住 5 类注入违规，其 fails [] 才有信息量"

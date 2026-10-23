@@ -298,6 +298,8 @@ def main() -> int:
            "missing_gold_card_classification": audit_missing,
            "channel_trace": rows,
            "five_state": five_state,
+        # **顶层**预算键：bundle 的 `dig` 按顶层取值
+        "http_requests_made": 0, "llm_calls_used": 0,
         # **生成式**注解：原句从 R13F 原样引用、分类由 ast_expr 导出
         "channel_correction_addendum": _ADDENDUM,
         "addendum_is_derived": True,

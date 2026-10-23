@@ -103,6 +103,11 @@ def selftest() -> tuple:
          "c3_bad_key", None),
         ("C3 键名含点号但真实存在（不得假阳性）", "C3",
          "c3_dotted_ok", None),
+        # "锚点缺失"这条纪律本身也要被测：先把文档里的锚点抹掉，
+        # 要求流程记 `NO_anchor_missing`、**不进子进程**、
+        # 且**不得**被读成"C8 抓不住"。
+        ("注入锚点缺失（必须记案例失效，不得冒充检查失效）", "C8",
+         "c8_anchor_missing", None),
     ]
     results = []
     for label, expect_id, mode, payload in cases:
@@ -143,19 +148,94 @@ def selftest() -> tuple:
                 "sample_fail": "", "exit": 0,
                 "child_output_parseable": True, "stderr_tail": ""})
             continue
+        elif mode == "c8_anchor_missing":
+            p = fake / "evidence" / "R14_STAGE_E_DELIVERABLES.md"
+            t = p.read_text(encoding="utf-8")
+            # 抹掉**所有** C8 会读的计数锚点，模拟"文档改版、锚点失效"
+            t2 = re.sub(r"\d+ 件逐件登记", "N 件逐件登记", t)
+            t2 = re.sub(r"current \d+", "current N", t2)
+            p.write_text(t2, encoding="utf-8")
+            r = subprocess.run(
+                [sys.executable, "-X", "utf8", str(fake / "scripts" /
+                                                   Path(__file__).name),
+                 *CHILD_ARGS],
+                capture_output=True, text=True, encoding="utf-8",
+                errors="ignore", cwd=str(fake))
+            # **子进程参数绝不允许手打**：本轮我把这里写成不存在的
+            # `--selftest-child`，脚本不报错、而是**又跑一整套自测**，
+            # 自测再 fork 子进程 ⇒ 指数递归、两次把会话卡死（>10 分钟）。
+            entry = {
+                "case": label, "expect_check_id": expect_id,
+                "injection_applied": "yes_anchor_removed",
+                "exit": r.returncode,
+                "caught_expected_check": True,
+                "note": "锚点被抹掉后，母进程必须记 NO_anchor_missing "
+                        "而不是把子进程退出 0 当作『C8 抓不住』；"
+                        "此处验证**子进程确实退出 0**（说明不能靠它判定）",
+                "sample_fail": "", "child_output_parseable": True,
+                "stderr_tail": ""}
+            # 真正的判定发生在**母进程**：用同一份逻辑再跑一次 c8_total
+            m_tot = re.search(r"(\d+)\s*件逐件登记",
+                                  p.read_text(encoding="utf-8"))
+            entry["anchor_present_after_removal"] = m_tot is not None
+            if m_tot is not None or r.returncode != 0:
+                entry["caught_expected_check"] = False
+                entry["note"] = (f"锚点删除不干净（{m_tot is not None}）或"
+                                 f"子进程非零（{r.returncode}）⇒ 前提未成立")
+            results.append(entry)
+            shutil.rmtree(tmp, ignore_errors=True)
+            continue
         elif mode in ("c8_total", "c8_current"):
             # 只改**文档**里的数字，索引真值保持不动 ⇒ C8 必须发现不符
             p = fake / "evidence" / "R14_STAGE_E_DELIVERABLES.md"
             t = p.read_text(encoding="utf-8")
-            want = ("55 件逐件登记" if mode == "c8_total" else "current 29 /")
-            after = ("40 件逐件登记" if mode == "c8_total" else "current 12 /")
-            t = t.replace(want, after)
-            p.write_text(t, encoding="utf-8")
+            # **注入的锚点必须来自真值，不能是我记着的旧数字。**
+            # 本轮实测：我把 "55 件逐件登记" / "current 29 /" 写死在注入里，
+            # 而上一小步我刚把文档同步成 56 / current 30 ⇒ 锚点不存在 ⇒
+            # 替换静默失手 ⇒ 子进程**退出 0** ⇒ 案例判"未抓住"。
+            # 也就是说：**我的自测被自己的改动打断了**，而它诚实地报了。
+            # 现在锚点从盘上文档现场取，数字仍由索引真值推出。
+            import re as _re
+            m_tot = _re.search(r"(\d+)\s*件逐件登记", t)
+            m_cur = _re.search(r"current\s+(\d+)", t)
+            if mode == "c8_total":
+                if not m_tot:
+                    applied_anchor = None
+                else:
+                    want = m_tot.group(0)
+                    after = f"{int(m_tot.group(1)) + 11} 件逐件登记"
+                    applied_anchor = (want, after)
+            else:
+                if not m_cur:
+                    applied_anchor = None
+                else:
+                    want = m_cur.group(0)
+                    after = f"current {int(m_cur.group(1)) + 17}"
+                    applied_anchor = (want, after)
+            if applied_anchor is None:
+                # **不许把"没落地的注入"交给子进程**：那会让它退出 0，
+                # 于是"我的锚点找错了"被误报成"检查抓不住"——
+                # 冤枉检查、还永远测不到它。本轮就靠这条路判死过两个案例。
+                shutil.rmtree(tmp, ignore_errors=True)
+                results.append({
+                    "case": label, "expect_check_id": expect_id,
+                    "injection_applied": "NO_anchor_missing",
+                    "caught_expected_check": False,
+                    "note": "注入锚点在盘上文档中不存在 ⇒ 这是**案例自身**"
+                            "失效（锚点须现场取），不进入子进程，"
+                            "不得被读成『C8 抓不住』",
+                    "sample_fail": "", "exit": None,
+                    "child_output_parseable": False, "stderr_tail": ""})
+                continue
+            else:
+                want, after = applied_anchor
+                t = t.replace(want, after)
+                p.write_text(t, encoding="utf-8")
             # **每个注入案例都必须可证生效**。本轮实测踩到两次"注入静默失手"
             # （先标签写 C8/期望 ID 写 C7，后是 `current 29` 因文档换行根本没被
             #  替换）：失手的注入会让子进程**退出 0**，于是把"我的注入没落地"
             # 误报成"检查失效"——既冤枉检查，也永远测不到它。
-            applied = after in t
+            applied = after in p.read_text(encoding="utf-8")
             (fake / "evidence" / "_INJECTION_APPLIED").write_text(
                 ("yes" if applied else "NO"), encoding="utf-8")
             if not applied:
@@ -181,7 +261,7 @@ def selftest() -> tuple:
                        if applied.is_file() else "n/a")
         r = subprocess.run([sys.executable, "-X", "utf8",
                             str(fake / "scripts" / Path(__file__).name),
-                            "--no-selftest"],
+                            *CHILD_ARGS],
                            cwd=fake, capture_output=True, text=True,
                            encoding="utf-8")
         try:
@@ -589,8 +669,23 @@ def check_c8(docs, index):
     return fails, cited
 
 
+CHILD_ARGS = ["--no-selftest"]     # 自测里唯一的子进程参数（禁止手打）
+
+
 def main() -> int:
     """先自证审计器**有效**（注入违规必须被抓），再跑真实检查。"""
+    # **未知参数必须拒绝**：上一步我把子进程参数手打成不存在的标志，
+    # 脚本没报错、而是**又跑了一整套自测**，自测再 fork 子进程 ⇒
+    # 指数级递归、两次把会话卡死 10 分钟以上。
+    # 在这里"静默接受未知参数"的代价是递归爆炸，所以宁严不宽。
+    _known = set(CHILD_ARGS) | {"--selftest"}
+    _unknown = [a for a in sys.argv[1:] if a.startswith("-")
+                and a not in _known]
+    if _unknown:
+        print(json.dumps({"fatal": "未知参数，拒绝运行（防自测递归爆炸）",
+                          "unknown": _unknown, "known": sorted(_known)},
+                         ensure_ascii=False))
+        return 2
     if "--no-selftest" in sys.argv:
         return run_checks(write_audit=False)
     eff, results = selftest()

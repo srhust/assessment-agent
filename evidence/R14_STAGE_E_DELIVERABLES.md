@@ -127,8 +127,8 @@ bundle 不再用 `skip`，改由真作者重跑到 `_RERUN` 证明复现，同�
 
 ## 交付**索引**（`R14_INDEX.json` / `R14_INDEX.md`）
 
-55 件逐件登记 **sha256、生产脚本与**作者档位**、首次入库与最近改动 commit、
-地位（current 29 / superseded 17 / verification_byproduct 4 / historical 2 /
+56 件逐件登记 **sha256、生产脚本与**作者档位**、首次入库与最近改动 commit、
+地位（current 30 / superseded 17 / verification_byproduct 4 / historical 2 /
 erratum_kept 1 / self 2）**，
 并给出一条**人工阅读顺序**。自检 `self_checks_failed []`：
 · **A1** 每个当前件都必须追溯到"**会写出**它的脚本"。档位

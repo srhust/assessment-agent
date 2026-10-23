@@ -11,9 +11,9 @@
   "artifact_untouched": true,
   "candidates_tried": 4,
   "attribution_stale": false,
-  "attribution_head": "c4016b64b1795b7a84122d9a3d9b54b2a93462f3"
+  "attribution_head": "f23482a2854232e52f682401b61d4d68d9a6641e"
  },
- "head": "c4016b64b1795b7a84122d9a3d9b54b2a93462f3",
+ "head": "f23482a2854232e52f682401b61d4d68d9a6641e",
  "verdict_fields_checked": [
   "solver_status",
   "solver_answer",
@@ -34,12 +34,8 @@
    "wrong_accept": false,
    "extra_keys_only_in_committed": [
     "chain",
-    "consumed_crop_shas",
-    "consumption_binding",
-    "label_association_verified",
     "option_sha256",
-    "options_used",
-    "provenance"
+    "options_used"
    ],
    "extra_keys_only_in_rerun": []
   },
@@ -50,12 +46,8 @@
    "wrong_accept": false,
    "extra_keys_only_in_committed": [
     "chain",
-    "consumed_crop_shas",
-    "consumption_binding",
-    "label_association_verified",
     "option_sha256",
-    "options_used",
-    "provenance"
+    "options_used"
    ],
    "extra_keys_only_in_rerun": []
   },
@@ -66,12 +58,8 @@
    "wrong_accept": false,
    "extra_keys_only_in_committed": [
     "chain",
-    "consumed_crop_shas",
-    "consumption_binding",
-    "label_association_verified",
     "option_sha256",
-    "options_used",
-    "provenance"
+    "options_used"
    ],
    "extra_keys_only_in_rerun": []
   },
@@ -82,12 +70,8 @@
    "wrong_accept": false,
    "extra_keys_only_in_committed": [
     "chain",
-    "consumed_crop_shas",
-    "consumption_binding",
-    "label_association_verified",
     "option_sha256",
-    "options_used",
-    "provenance"
+    "options_used"
    ],
    "extra_keys_only_in_rerun": []
   },
@@ -98,12 +82,8 @@
    "wrong_accept": false,
    "extra_keys_only_in_committed": [
     "chain",
-    "consumed_crop_shas",
-    "consumption_binding",
-    "label_association_verified",
     "option_sha256",
-    "options_used",
-    "provenance"
+    "options_used"
    ],
    "extra_keys_only_in_rerun": []
   }
