@@ -205,13 +205,22 @@ def bundle_artifacts():
         _head = None
     try:
         d = json.loads(p.read_text(encoding="utf-8"))
-        if d.get("status") not in (None, "RAN") or (
-                d.get("head_at_run") and _head
-                and d["head_at_run"] != _head):
-            # REFUSED / 跨 HEAD ⇒ **不可信**，返回 None 让上层拒跑
-            return None
+        if d.get("status") not in (None, "RAN"):
+            return None                  # REFUSED 件 ⇒ 不可信
         if not d.get("steps"):
             return None
+        # **新鲜度**：bundle 自己就是会改证据件的步骤，
+        # 它跑完后 HEAD 必然**落后于**产物 ⇒ 不能要求严格相等
+        # （上版那么写导致单跑时 22 件全部 refused，等于自断核验）。
+        # 认可：同一 HEAD，**或** bundle 的 head 是本 HEAD 的祖先
+        # （即"这一轮跑完还没提交"的常态）。
+        _h = d.get("head_at_run")
+        if _h and _head and _h != _head:
+            anc = subprocess.run(
+                ["git", "merge-base", "--is-ancestor", _h, _head],
+                cwd=ROOT, capture_output=True)
+            if anc.returncode != 0:
+                return None              # 真的跨到别的线了 ⇒ 不信
         got = {x["artifact"] for x in d.get("steps", []) if x.get("artifact")}
         # bundle 里以 `_RERUN` / `_CHECK` 新名重跑的件，其**母件**也算已覆盖：
         # V8 的权威复现核对是 bundle 步（用真作者 e2d 重跑到 V8_RERUN 并比
