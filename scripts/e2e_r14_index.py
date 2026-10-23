@@ -642,13 +642,15 @@ f"{r['commit_added'] or '未入库'} | "
     if fails:
         lines += ["## 自检失败", ""] + [f"- {f}" for f in fails]
     (EV / "R14_INDEX.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(json.dumps({"run_mark": run_mark,
-                      "n_artifacts": out["n_artifacts"],
-                      "by_status_count": {k: len(v) for k, v in
-                                          out["by_status"].items()},
-                      "self_checks_failed": fails},
-                     ensure_ascii=False, indent=1))
     print("written", dst)
+    # **stdout 末尾必须是单行紧凑 JSON**：
+    # bundle 的 stdout 解析是**逐行**找 `startswith("{")` 的那一行，
+    # 而我这里打的是 `indent=1` 的**多行** JSON ⇒ 只有第一行 `{`
+    # 被当成一个 JSON 去解析 ⇒ 必然失败 ⇒ `run_mark` 取不到，
+    # A12 就把这一步判成"无法证明件是本次运行写的"。
+    # （本轮实测：A12 报 `stdout 没有报告 run_mark`，根因在此。）
+    print(json.dumps({"run_mark": run_mark, "n_artifacts": out["n_artifacts"],
+                      "self_checks_failed": fails}, ensure_ascii=False))
     return 1 if fails else 0
 
 

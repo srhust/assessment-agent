@@ -1,5 +1,5 @@
 {
- "head_at_run": "f830e4784880237f189d2cff0c503da549a1b47a",
+ "head_at_run": "aaa14c6b130be0096bd833d233690ffeb34a0cc0",
  "n_steps": 21,
  "steps": [
   {
@@ -9,7 +9,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "26bf04ee378d",
+   "artifact_sha256_short": "488d8af50ba0",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -24,7 +24,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.3,
-   "artifact_sha256_short": "f9673a4c316b",
+   "artifact_sha256_short": "224947e43f87",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -38,7 +38,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.1,
+   "seconds": 1.2,
    "artifact_sha256_short": "d27ba4087d5c",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -53,7 +53,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.8,
+   "seconds": 5.7,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -98,7 +98,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.4,
+   "seconds": 1.3,
    "artifact_sha256_short": "13b771de58f9",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -128,8 +128,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.7,
-   "artifact_sha256_short": "9abd7e5d6088",
+   "seconds": 3.0,
+   "artifact_sha256_short": "e1441e276819",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -142,10 +142,10 @@
    "artifact": "R14E_ATTRIBUTION_SELFTEST.json",
    "out_mode": "fixed",
    "expected_to_change": false,
-   "exit": 1,
-   "seconds": 15.6,
-   "artifact_sha256_short": "7ed7f4070b19",
-   "artifact_rewritten": true,
+   "exit": 0,
+   "seconds": 4.1,
+   "artifact_sha256_short": "8812f2b72e12",
+   "artifact_rewritten": false,
    "stdout_tail": [
     "}"
    ],
@@ -174,7 +174,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "db33b742331e",
+   "artifact_sha256_short": "2730c9485dbb",
    "artifact_rewritten": true,
    "stdout_tail": [
     "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
@@ -203,7 +203,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.2,
+   "seconds": 1.3,
    "artifact_sha256_short": "9fd286b67089",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -219,7 +219,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.1,
-   "artifact_sha256_short": "df3431354231",
+   "artifact_sha256_short": "f2b4e50ba833",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -232,9 +232,9 @@
    "artifact": "R14E_RERUN_SEMANTICS.json",
    "out_mode": "fixed",
    "expected_to_change": false,
-   "exit": 1,
-   "seconds": 109.7,
-   "artifact_sha256_short": "dc6d21420e24",
+   "exit": 0,
+   "seconds": 21.6,
+   "artifact_sha256_short": "866bf00417dd",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -249,7 +249,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 1.3,
-   "artifact_sha256_short": "355d3bee31ec",
+   "artifact_sha256_short": "e7a09b229922",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -278,8 +278,8 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 4.6,
-   "artifact_sha256_short": "a54ca397260b",
+   "seconds": 4.7,
+   "artifact_sha256_short": "43fb5502caf7",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -308,13 +308,13 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 10.7,
-   "artifact_sha256_short": "6f74e7a76dcc",
+   "seconds": 6.7,
+   "artifact_sha256_short": "31dcec3a5377",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14_INDEX.json"
    ],
-   "run_mark_artifact": "fc54e04eb962",
+   "run_mark_artifact": "03145cc6ae44",
    "run_mark_stdout": null
   }
  ],
@@ -347,13 +347,7 @@
   ]
  },
  "fails": [
-  "scripts/r14_attribute_producer.py --selftest 退出码 1：",
-  "scripts/r14_attribute_producer.py --selftest → R14E_ATTRIBUTION_SELFTEST.json 的 fails = ['写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者']，应为 []",
-  "scripts/r14_semantic_repro.py 退出码 1：",
-  "scripts/r14_semantic_repro.py → R14E_RERUN_SEMANTICS.json 的 violations = [{'artifact': 'R14_VERIFICATION_BUNDLE.json', 'script': 'e2e_r14_index.py', 'declared_writers': ['e2e_r14_index.py', 'r14_verify_all.py'], 'refused_unsafe': [{'script': 'r14_verify_all.py', 'reason': '自我编排器（名录）：动态核验它等于递归重跑整条链'}], 'worktree_collateral': ['evidence/R14_INDEX.json', 'evidence/R14_INDEX.md'], 'collateral_removed': [], 'safety': 'OK_ZERO_REQUESTS', 'offline': True, 'exit': 0, 'files_changed_by_rerun': ['R14_INDEX.json', 'R14_INDEX.md'], 'own_declared_outputs_touched': ['R14_INDEX.json'], 'status': 'VIOLATION_write_path_drift', 'detail': \"重跑 scripts/e2e_r14_index.py 除本件外还改动了非自指件 ['R14_INDEX.md']\"}]，应为 []",
-  "A12 R14_INDEX.json 件里有 run_mark=fc54e04eb962，但该步 stdout **没有**报告 run_mark ⇒ 无法证明这个件是本次运行写的（可能读到陈旧产物）",
-  "A6 安全闸门自检未过：['写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者']",
-  "A7 补集复现核对仍有违规：['R14_VERIFICATION_BUNDLE.json']",
+  "A12 R14_INDEX.json 件里有 run_mark=03145cc6ae44，但该步 stdout **没有**报告 run_mark ⇒ 无法证明这个件是本次运行写的（可能读到陈旧产物）",
   "A12 陈旧产物：1 步的件内 run_mark 与 stdout 不符"
  ],
  "worktree_clean_before": true,
@@ -394,7 +388,6 @@
   " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.json",
   " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.md",
   " M evidence/R14E_ARTIFACT_ATTRIBUTION.json",
-  " M evidence/R14E_ATTRIBUTION_SELFTEST.json",
   " M evidence/R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
   " M evidence/R14E_RERUN_SEMANTICS.json",
   " M evidence/R14G0_GATE_READINESS_V5.json",

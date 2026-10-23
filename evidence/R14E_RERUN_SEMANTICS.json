@@ -1,38 +1,6 @@
 {
  "n_checked": 47,
- "violations": [
-  {
-   "artifact": "R14_VERIFICATION_BUNDLE.json",
-   "script": "e2e_r14_index.py",
-   "declared_writers": [
-    "e2e_r14_index.py",
-    "r14_verify_all.py"
-   ],
-   "refused_unsafe": [
-    {
-     "script": "r14_verify_all.py",
-     "reason": "自我编排器（名录）：动态核验它等于递归重跑整条链"
-    }
-   ],
-   "worktree_collateral": [
-    "evidence/R14_INDEX.json",
-    "evidence/R14_INDEX.md"
-   ],
-   "collateral_removed": [],
-   "safety": "OK_ZERO_REQUESTS",
-   "offline": true,
-   "exit": 0,
-   "files_changed_by_rerun": [
-    "R14_INDEX.json",
-    "R14_INDEX.md"
-   ],
-   "own_declared_outputs_touched": [
-    "R14_INDEX.json"
-   ],
-   "status": "VIOLATION_write_path_drift",
-   "detail": "重跑 scripts/e2e_r14_index.py 除本件外还改动了非自指件 ['R14_INDEX.md']"
-  }
- ],
+ "violations": [],
  "identical_detector_selftest": {
   "fails": [],
   "cases": [
@@ -92,34 +60,17 @@
   },
   {
    "artifact": "R14_VERIFICATION_BUNDLE.json",
-   "script": "e2e_r14_index.py",
+   "status": "refused_unsafe_candidates",
    "declared_writers": [
-    "e2e_r14_index.py",
     "r14_verify_all.py"
    ],
-   "refused_unsafe": [
+   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
+   "refused": [
     {
      "script": "r14_verify_all.py",
      "reason": "自我编排器（名录）：动态核验它等于递归重跑整条链"
     }
-   ],
-   "worktree_collateral": [
-    "evidence/R14_INDEX.json",
-    "evidence/R14_INDEX.md"
-   ],
-   "collateral_removed": [],
-   "safety": "OK_ZERO_REQUESTS",
-   "offline": true,
-   "exit": 0,
-   "files_changed_by_rerun": [
-    "R14_INDEX.json",
-    "R14_INDEX.md"
-   ],
-   "own_declared_outputs_touched": [
-    "R14_INDEX.json"
-   ],
-   "status": "VIOLATION_write_path_drift",
-   "detail": "重跑 scripts/e2e_r14_index.py 除本件外还改动了非自指件 ['R14_INDEX.md']"
+   ]
   },
   {
    "artifact": "R14C_PITCH_ABLATION.json",
@@ -504,7 +455,6 @@
    "artifact": "R14E_ARTIFACT_ATTRIBUTION.json",
    "status": "covered_by_bundle",
    "declared_writers": [
-    "e2e_r14_index.py",
     "r14_attribute_producer.py"
    ],
    "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
@@ -549,7 +499,6 @@
    "artifact": "R14E_NEWLAYOUT_REGRESSION_V3.json",
    "status": "covered_by_bundle",
    "declared_writers": [
-    "e2e_r14_claim_audit.py",
     "e2e_r14_newlayout_regression.py"
    ],
    "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
@@ -752,8 +701,7 @@
    "status": "covered_by_bundle",
    "declared_writers": [
     "d9_r14_stage_g_manifest.py",
-    "d9b_r14_lock_manifest.py",
-    "e2e_r14_claim_audit.py"
+    "d9b_r14_lock_manifest.py"
    ],
    "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
   },
