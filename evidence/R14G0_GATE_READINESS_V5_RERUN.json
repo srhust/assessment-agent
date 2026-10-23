@@ -1,0 +1,267 @@
+{
+ "checks": [
+  {
+   "id": "C2a",
+   "name": "token 硬顶达顶后在发出前拒绝（第 3 次请求被拒）",
+   "ok": true,
+   "evidence": {
+    "http_attempts": 2,
+    "usage_totals": {
+     "prompt_tokens": 2000,
+     "completion_tokens": 100,
+     "total_tokens": 2100
+    },
+    "max_tokens": 2100,
+    "error": "token 硬顶 2100 已达（total_tokens=2100）；本次请求（含重试）在发出前被拒绝，评测停止"
+   }
+  },
+  {
+   "id": "C2b",
+   "name": "在途 token 如实计入（1050>500 仍入账并拒后续，无免单）",
+   "ok": true,
+   "evidence": {
+    "total_tokens_after_first": 1050,
+    "http_attempts": 1,
+    "error": "token 硬顶 500 已达（total_tokens=1050）；本次请求（含重试）在发出前被拒绝，评测停止"
+   }
+  },
+  {
+   "id": "C1",
+   "name": "原子请求预算：429 重试同扣额，达 cap 后后续调用被拒（闸为**逐请求**）",
+   "ok": true,
+   "evidence": {
+    "requests_sent": 2,
+    "attempts_reached_socket": 2,
+    "max_requests": 2,
+    "call1_succeeded": true,
+    "call1_exception": null,
+    "call2_exception": "LLMRequestBudgetExhausted",
+    "status_counts": {
+     "429 (error)": 1,
+     "200": 1
+    },
+    "gate_semantics": "per-request（源码注释：逐题检查会被重试穿透超发）"
+   }
+  },
+  {
+   "id": "C1b",
+   "name": "重试不穿透预算：max_requests=1 且持续 5xx 时第 2 次尝试被闸拒绝",
+   "ok": true,
+   "evidence": {
+    "attempts_reached_socket": 1,
+    "requests_sent": 1,
+    "max_retries": 2,
+    "max_requests": 1,
+    "exception": "LLMRequestBudgetExhausted",
+    "note": "闸在 socket 之前：R13-G 曾因此超发（计划 5、实发 6）。"
+   }
+  },
+  {
+   "id": "C1c",
+   "name": "预算耗尽留痕：requests_sent 达 cap、succeeded<sent、错误分类入账",
+   "ok": true,
+   "evidence": {
+    "requests_sent": 1,
+    "requests_succeeded": 0,
+    "status_counts": {
+     "500 (error)": 1
+    },
+    "error_types": {
+     "server_5xx": 1
+    },
+    "note": "已花的请求/token **不因失败而退还**，G 批据此如实报分母。"
+   }
+  },
+  {
+   "id": "C1d",
+   "name": "G 批布局实测：cap6/5 页/1 次重试 → 1 页重试仍成功 5/5；若发生 2 页重试则第 6 次后如实拒发（末记 BudgetExhausted，不伪装成功）",
+   "ok": true,
+   "evidence": {
+    "socket_attempts": 6,
+    "requests_sent": 6,
+    "requests_succeeded": 4,
+    "status_counts": {
+     "429 (error)": 2,
+     "200": 4
+    },
+    "token_total": 4080,
+    "pages_answered": 4,
+    "pages_budget_exhausted": 1,
+    "per_page": [
+     {
+      "page": 0,
+      "answered": true,
+      "error": null
+     },
+     {
+      "page": 1,
+      "answered": true,
+      "error": null
+     },
+     {
+      "page": 2,
+      "answered": true,
+      "error": null
+     },
+     {
+      "page": 3,
+      "answered": true,
+      "error": null
+     },
+     {
+      "page": 4,
+      "answered": false,
+      "error": "BudgetExhausted"
+     }
+    ],
+    "note": "0 次 429 时 5/5 全答；本场景 2 页首发失败但 cap 只够 1 次重试，缺的那 1 页**必须**留为 BudgetExhausted 并计入端到端分母——G 批禁止用调低页数或放松闸来抹掉它。"
+   }
+  },
+  {
+   "id": "C6",
+   "name": "异常全计入分母（5xx 留痕 requests_sent / status_counts / error_types）",
+   "ok": true,
+   "evidence": {
+    "requests_sent": 2,
+    "attempts": 2,
+    "status_counts": {
+     "500 (error)": 2
+    },
+    "error_types": {
+     "server_5xx": 2
+    },
+    "exception": "LLMError",
+    "denominator_rule": "端到端分母 = 计划件数（含失败件），不得只除成功件"
+   }
+  },
+  {
+   "id": "C5",
+   "name": "错误接受即停：(accept,错答) 必给 wrong_accept=True（abort 触发位）",
+   "ok": true,
+   "evidence": {
+    "wrong_accept": {
+     "released": true,
+     "wrong_accept": true,
+     "release_anomaly_missing_final": false
+    },
+    "correct_accept": {
+     "released": true,
+     "wrong_accept": false,
+     "release_anomaly_missing_final": false
+    },
+    "abstain": {
+     "released": false,
+     "wrong_accept": false,
+     "release_anomaly_missing_final": false
+    },
+    "repair_correct": {
+     "released": true,
+     "wrong_accept": false,
+     "release_anomaly_missing_final": false
+    }
+   }
+  },
+  {
+   "id": "C3",
+   "name": "text=None / save=True 连通真实 VisionParser（选项文本为空、裁剪落盘、payload 含 max_tokens）",
+   "ok": true,
+   "evidence": {
+    "declared_options": 3,
+    "all_option_text_empty": true,
+    "option_texts": [
+     "",
+     "",
+     ""
+    ],
+    "saved_crops": [
+     "diagram_d1.png"
+    ],
+    "payload_has_max_tokens": true,
+    "payload_keys": [
+     "max_tokens",
+     "messages",
+     "model",
+     "temperature"
+    ],
+    "note": "G 批题面选项一律 text=None（图选项），裁剪必须落盘；此处用真实解析类跑通，不发真实请求。"
+   }
+  },
+  {
+   "id": "C3b",
+   "name": "解析器不补造：空内容 payload 抛 VisionParseError",
+   "ok": true,
+   "evidence": {
+    "exception": "VisionParseError",
+    "requests_used": 1
+   }
+  },
+  {
+   "id": "C4",
+   "name": "manifest 5 件原图 SHA 复算一致 + 代码版本==HEAD + Prompt 源锁定",
+   "ok": true,
+   "evidence": {
+    "planned": 5,
+    "sha_mismatches": [],
+    "code_version": "39d17683ee2ceddb4a764d6868093008d1af7871",
+    "code_version_matches_manifest": true,
+    "worktree_dirty_at_plan_time": false,
+    "worktree_dirty_now": true,
+    "prompt_source": "src/assessment_agent/prompts.py",
+    "prompt_sha256": "7c9dc3c847da45d4db5938c9696e43991b0892070280b8e1d751a4887b18eb19",
+    "model_note": "模型名必须与工单/人工确认一致后写入本 manifest 再发起；G0 就绪审计会因该字段未锁而判 failing——这是**刻意的**，禁止未经确认自动选模型。"
+   }
+  },
+  {
+   "id": "C9",
+   "name": "G 批入口零请求自证：无 --approve 直接退出；伪造批准仍被 model_lock 拦下（模型名未经人工确认禁止发起）",
+   "ok": true,
+   "evidence": {
+    "no_approve_exit": 2,
+    "no_approve_reason": "闸门未开：需要 --approve 传入人工批准凭据。本次运行**未发起任何 HTTP 请求**。",
+    "fake_approve_exit": 2,
+    "fake_approve_reason": "模型名未经人工确认锁定（model_lock.status=UNRESOLVED_MUST_BE_CONFIRMED_BY_HUMAN）；禁止脚本自选模型。",
+    "result_file_written": false,
+    "note": "校验顺序即防线：闸门 → 预算 → **模型锁** → 代码版本 → Prompt SHA → 原图 SHA → 配置存在；任一不过都在 socket 之前退出。"
+   }
+  },
+  {
+   "id": "C7",
+   "name": "证据命名隔离：除 PLAN 与**离线核验件白名单**外，不得存在任何 R14G_* 结果件",
+   "ok": true,
+   "evidence": {
+    "R14G_files": [
+     "R14G_HISTORICAL_BYTES.json",
+     "R14G_HISTORICAL_BYTES.md",
+     "R14G_HISTORICAL_BYTES_SELFTEST.json",
+     "R14G_PLAN.json"
+    ],
+    "stray_result_files": [],
+    "allowed_nonresult": [
+     "R14G_PLAN.json",
+     "R14G_HISTORICAL_BYTES.json",
+     "R14G_HISTORICAL_BYTES.md",
+     "R14G_HISTORICAL_BYTES_SELFTEST.json"
+    ],
+    "why_allowlist": "白名单只放零 HTTP 的核验/计划产物；R14G_RESULT* 等真结果件不在其中，一旦出现立刻失败",
+    "R13G_files_count": 3
+   }
+  }
+ ],
+ "ready_for_G_after_human_approval": true,
+ "failing": [],
+ "real_http_requests_made": 0,
+ "budget": {
+  "max_requests_including_retry": 6,
+  "planned_requests": 5,
+  "headroom_for_retry": 1,
+  "max_tokens": 100000,
+  "env": "ASSESSMENT_LLM_MAX_TOKENS=100000",
+  "spent_so_far": {
+   "requests": 0,
+   "tokens": 0
+  },
+  "max_pages_planned": 5,
+  "retry_headroom_note": "计划 5 页 + 余量 1 次请求 = 上限 6；一旦发生 **2 页**重试即触顶，第 6 次之后的请求会被原子闸拒绝——缺的那一页必须记为 BudgetExhausted 并计入端到端分母，不得降低页数或放松闸来抹掉。（G0 C1d 已实测该行为）"
+ },
+ "note": "全部行为级检查由**假 transport**（httpx.MockTransport，域名 mock.invalid）驱动真实客户端代码；真实网络请求 0 次。闸门未开时唯一诚实的推进是把每条 G 约束变成可执行证明。"
+}

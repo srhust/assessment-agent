@@ -154,6 +154,74 @@ EXPECTED_CHANGE = {"R14G_PLAN.json"}
 SCRATCH = re.compile(r"^(t_|tmp_|\.DS_Store)")
 
 
+def strip_py_comments(src: str) -> str:
+    """剥除 Python 源码里的 `#` 注释（**按引号状态**，字符串里的 `#`
+    不算注释）。
+
+    需要它的原因（本轮 A10b 假阳性根因）：`_hw` 用 `re.findall`
+    从 `HAND_WRITTEN = {…}` **整块**里抓件名，**注释里提到的文件名**
+    也一起被抓 ⇒ 我已删掉的 `R14_PROGRESS_STOPGATE.md`
+    又被报成"人工撰写"。说明性文字不该进入判据。
+    """
+    out = []
+    q = None
+    i, n = 0, len(src)
+    while i < n:
+        c = src[i]
+        if q:
+            out.append(c)
+            if c == "\\" and i + 1 < n:
+                out.append(src[i + 1])
+                i += 2
+                continue
+            if c == q:
+                q = None
+            i += 1
+            continue
+        if c in "\"'":
+            q = c
+            out.append(c)
+            i += 1
+            continue
+        if c == "#":
+            j = src.find("\n", i)
+            i = n if j < 0 else j
+            continue
+        out.append(c)
+        i += 1
+    return "".join(out)
+
+
+def refuse_and_record(reason: str, detail, rc: int = 2) -> int:
+    """**拒绝也要落盘**：把上一轮的结论件改写成"本轮拒绝"的事实。
+
+    本轮实测：bundle 在门口 `return 2`（工作区不干净），
+    `R14_VERIFICATION_BUNDLE.json` 里**仍是上一轮**的内容
+    （`head_at_run` 旧值、`fails` 旧结论），
+    我据此**连报两轮同一个"新错"**，而那错其实早已修好。
+    ⇒ 结论件的新鲜度必须由**件自身**保证，不能靠我记得比对 head。
+    """
+    import uuid as _u
+    head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
+                          capture_output=True,
+                          text=True).stdout.strip() or None
+    mark = _u.uuid4().hex[:12]
+    doc = {"status": "REFUSED", "reason": reason, "detail": detail,
+           "head_at_run": head, "run_mark": mark,
+           "n_steps": 0, "steps": [], "fails": ["FATAL " + reason],
+           "budget": {"http_requests_made": 0, "tokens_used": 0},
+           "http_requests_made": 0, "llm_calls_used": 0,
+           "note": "本轮**未执行**任何核对步骤；本件是拒绝记录，"
+                   "上一轮的判定已失效"}
+    (EV / "R14_VERIFICATION_BUNDLE.json").write_text(
+        json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(json.dumps({"status": "REFUSED", "reason": reason,
+                      "run_mark": mark,
+                      "recorded": "R14_VERIFICATION_BUNDLE.json",
+                      "detail": detail}, ensure_ascii=False, indent=1))
+    return rc
+
+
 def sha(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
@@ -256,18 +324,17 @@ def worktree_clean():
 def main() -> int:
     clean, dirty = worktree_clean()
     if not clean:
-        print(json.dumps({"fatal": "工作区不干净：bundle 要求先提交再复现"
-                                   "（不自动 stash）",
-                          "dirty": dirty[:12]}, ensure_ascii=False, indent=1))
-        return 2
+        return refuse_and_record(
+            "dirty_worktree",
+            {"note": "bundle 要求先提交再复现（不自动 stash）",
+             "dirty": dirty[:12]})
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
                           capture_output=True, text=True).stdout.strip()
     # 缺件先失败：bundle 的意义是"能重跑并复现判定"，不是"先把空槽写进账"
     missing = [step[1] for step in STEPS if not (EV / step[1]).is_file()]
     if missing:
-        print(json.dumps({"fatal": "以下现行件不存在，无法核对",
-                          "missing": missing}, ensure_ascii=False))
-        return 2
+        return refuse_and_record("missing_artifacts",
+                                 {"missing": missing})
     before = {p.name: sha(p) for p in EV.glob("R14*") if p.is_file()}
     rows, fails = [], []
     for script, art, must, out_mode, out_val in STEPS:
@@ -684,7 +751,8 @@ def main() -> int:
     _hw = set()
     if _hw_path.is_file():
         _mt = re.search(r"HAND_WRITTEN = \{([^}]*)\}",
-                        _hw_path.read_text(encoding="utf-8"), re.S)
+                        strip_py_comments(
+                            _hw_path.read_text(encoding="utf-8")), re.S)
         if _mt:
             _hw = set(re.findall(r"\"([^\"]+\.md)\"", _mt.group(1)))
     _by_step = {x["artifact"] for x in rows if x.get("artifact") in _hw}
@@ -697,7 +765,10 @@ def main() -> int:
             "（本轮改写 ∪ **声明的回写目标**）："
             "要么删掉 HAND_WRITTEN 里的声明，要么别在 bundle 里写它")
 
-    out = {"head_at_run": head, "n_steps": len(rows),
+    import uuid as _uuid
+    _run_mark = _uuid.uuid4().hex[:12]
+    out = {"status": "RAN", "run_mark": _run_mark,
+           "head_at_run": head, "n_steps": len(rows),
            "docs_step_count_synced": _doc_sync,
            "A13_step_count_guard": a13, "steps": rows,
            "comparison_volatile_keys": vol_keys,

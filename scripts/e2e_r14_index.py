@@ -329,6 +329,44 @@ def really_written_by(script: str, artifact: str):
     return None
 
 
+def strip_py_comments(src: str) -> str:
+    """剥除 Python 源码里的 `#` 注释（**按引号状态**，字符串里的 `#`
+    不算注释）。
+
+    需要它的原因（本轮 A10b 假阳性根因）：`_hw` 用 `re.findall`
+    从 `HAND_WRITTEN = {…}` **整块**里抓件名，**注释里提到的文件名**
+    也一起被抓 ⇒ 我已删掉的 `R14_PROGRESS_STOPGATE.md`
+    又被报成"人工撰写"。说明性文字不该进入判据。
+    """
+    out = []
+    q = None
+    i, n = 0, len(src)
+    while i < n:
+        c = src[i]
+        if q:
+            out.append(c)
+            if c == "\\" and i + 1 < n:
+                out.append(src[i + 1])
+                i += 2
+                continue
+            if c == q:
+                q = None
+            i += 1
+            continue
+        if c in "\"'":
+            q = c
+            out.append(c)
+            i += 1
+            continue
+        if c == "#":
+            j = src.find("\n", i)
+            i = n if j < 0 else j
+            continue
+        out.append(c)
+        i += 1
+    return "".join(out)
+
+
 def producer(name: str):
     """作者脚本 = 会**写出**该件的脚本。分两档，避免两个首版错误：
 
