@@ -396,11 +396,37 @@ def main() -> int:
         fails.append("A7 缺 R14E_RERUN_SEMANTICS.json（补集复现核对未跑）")
 
     after_clean, after_dirty = worktree_clean()
+
+    # ---- A10：bundle 的附带改动必须为空集之外=登记集 ----
+    # `dirty_after` 不能只是"列出来给人看"：那等于把判定权交回人眼，
+    # 而本清单的结论 `fails []` 会被误读成"没有多余改动"。
+    _expected = set()
+    for x in rows:
+        if x.get("artifact"):
+            _expected.add(f"evidence/{x['artifact']}")
+    _scripts = {f"scripts/{Path(x['step'].split()[0]).name}"
+                for x in rows if x.get("step", "").startswith("scripts/")}
+    _collateral = []
+    for ln in after_dirty:
+        f = ln.strip()
+        # `git status --porcelain` 行首两列是状态码 + 空格
+        path = f[3:] if len(f) > 3 and f[2] == " " else f
+        path = path.split(" -> ")[0].strip('" ')
+        if path in _expected or path in _scripts:
+            continue
+        if path.startswith("evidence/") or path.startswith("data/"):
+            _collateral.append(path)
+    if _collateral:
+        fails.append(f"A10 SAFETY_VIOLATION_bundle_collateral："
+                     f"bundle 期间改动了**未登记**的证据/数据件 {sorted(set(_collateral))}"
+                     f"（已登记 {len(_expected)} 件）")
     out = {"head_at_run": head, "n_steps": len(rows), "steps": rows,
            "comparison_volatile_keys": vol_keys,
            "fails": fails,
            "worktree_clean_before": clean,
            "worktree_clean_after": after_clean,
+           "A10_expected_paths": len(_expected | _scripts),
+           "A10_collateral": sorted(set(_collateral)),
            "dirty_after": after_dirty[:12],
            "budget": {"http_requests_made": 0, "tokens_used": 0,
                       "max_requests": 6, "max_tokens": 100000,
