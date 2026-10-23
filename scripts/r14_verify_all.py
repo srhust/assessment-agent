@@ -1,4 +1,4 @@
-"""R14 **一键复现**（零 API）：按固定顺序重跑全部离线验证器，把每次运行的
+"R14 **一键复现**（零 API）：按固定顺序重跑全部离线验证器，把每次运行的
 退出码、耗时、产物 sha256、件内关键数字与 stdout 摘要合成**一个 bundle**。
 
 与 `R14_INDEX` 的分工：索引登记**身份**（谁写的、哈希多少），本 bundle 证明
@@ -13,7 +13,7 @@
     再跑（不干净就直接 fail，绝不悄悄 stash）；
   · 任何子件 nonzero 退出 → bundle 非零退出，并把 stdout/stderr 尾巴入账；
   · 全程 **0 HTTP / 0 token**，Stage G 不在本清单内（须人工批准）。
-"""
+"
 import hashlib
 import json
 import os
@@ -27,39 +27,51 @@ ROOT = Path(__file__).resolve().parents[1]
 EV = ROOT / "evidence"
 
 # (脚本, 该步要核对的现行件, 该件里必须保持的关键事实路径)
+# (脚本, 现行件, 该件里必须保持的关键事实, --out 形态, --out 值)
+#   out 形态：bare = 脚本自己拼 evidence/；cwd_relative = 按 cwd 相对路径写；
+#             fixed = 脚本忽略 --out（SNAPSHOT_MODE），不许传。
 STEPS = [
     ("scripts/e2e_r14_stage_e_acceptance.py",
      "R14E_STAGE_E_ACCEPTANCE_V8.json",
      {"checks_failed": [], "wrong_releases": [], "llm_calls_used": 0},
-     "evidence/R14E_STAGE_E_ACCEPTANCE_V8.json"),
+     "bare", "R14E_STAGE_E_ACCEPTANCE_V8.json"),
     ("scripts/d1_r11_six_condition.py",
      "R14E_SIX_CONDITION_V10.json", None,
-     "evidence/R14E_SIX_CONDITION_V10.json"),
+     "cwd_relative", "evidence/R14E_SIX_CONDITION_V10.json"),
     ("scripts/f1_r14_perturb_release_audit.py",
      "R14F_PERTURB_RELEASE_AUDIT.json",
-     {"perturbation_regression.wrong_grid_releasable": []}, None),
+     {"perturbation_regression.wrong_grid_releasable": []},
+     "fixed", None),
     ("scripts/e2e_r14_newlayout_regression.py",
      "R14E_NEWLAYOUT_REGRESSION_V3.json",
      {"checks_failed": [], "wrong_releases": [], "llm_calls_used": 0,
       "layers": {"candidates_solved": 16, "accepted": 7, "released": 7}},
-     "evidence/R14E_NEWLAYOUT_REGRESSION_V3.json"),
+     "bare", "R14E_NEWLAYOUT_REGRESSION_V3.json"),
     ("scripts/e2e_r14_tight_gap_diagnosis.py",
-     "R14E_TIGHT_GAP_DIAGNOSIS.json", None, None),
-    ("scripts/e2e_r14_anchor_sweep.py",
-     "R14E_ANCHOR_SWEEP.json", None, None),
+     "R14E_TIGHT_GAP_DIAGNOSIS.json", None, "fixed", None),
+    ("scripts/e2_r14_anchor_sweep.py",
+     "R14E_ANCHOR_SWEEP.json", None, "fixed", None),
+    # 本轮修：该脚本原先**固定写** `R14E_REAL_PAGE_REPLAY.json`（无后缀，
+    # 且是**已被取代的历史件**）——照原样跑就会覆盖历史，违反目标②。
+    # 现在默认写现行 V8 并支持 --out（同一 newlayout 的处理方式）。
     ("scripts/e2_r14_optionband_replay.py",
-     "R14E_REAL_PAGE_REPLAY_V8.json", None, None),
+     "R14E_REAL_PAGE_REPLAY_V8.json", None, "bare",
+     "R14E_REAL_PAGE_REPLAY_V8.json"),
     ("scripts/e2e_r14_six_condition_lineage.py",
-     "R14E_LINEAGE_SIX_CONDITION.json", {"v10_equals_v9": True}, None),
+     "R14E_LINEAGE_SIX_CONDITION.json", {"v10_equals_v9": True},
+     "fixed", None),
     ("scripts/e2e_r14_stage_g_readiness.py",
      "R14G0_GATE_READINESS_V5.json",
-     {"real_http_requests_made": 0, "failing": []}, None),
+     {"real_http_requests_made": 0, "failing": []},
+     "bare", "R14G0_GATE_READINESS_V5.json"),
     ("scripts/e2e_r14_claim_audit.py", "R14_CLAIM_AUDIT.json",
-     {"fails": []}, None),
+     {"fails": []}, "fixed", None),
     ("scripts/e2e_r14_index.py", "R14_INDEX.json",
-     {"self_checks_failed": []}, None),
+     {"self_checks_failed": []}, "fixed", None),
 ]
-SNAPSHOT_MODE = {"scripts/f1_r14_perturb_release_audit.py"}
+
+
+
 
 
 def sha(p: Path) -> str:
@@ -82,7 +94,7 @@ SCRATCH = re.compile(r"^(t_|tmp_|\.DS_Store)")
 def worktree_clean():
     r = subprocess.run(["git", "status", "--porcelain"], cwd=ROOT,
                        capture_output=True, text=True)
-    lines = [x for x in (r.stdout or "").splitlines() if x.strip()]
+    lines = [x for x in (r.stdout or ).splitlines() if x.strip()]
     keep = []
     for x in lines:
         path = x[3:].strip().replace("\\", "/")
@@ -103,18 +115,33 @@ def main() -> int:
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
                           capture_output=True, text=True).stdout.strip()
     # 缺件先失败：bundle 的意义是"能重跑并复现判定"，不是"先把空槽写进账"
-    missing = [art for _, art, _, _ in STEPS
-               if not (EV / art).is_file()]
+    missing = [step[1] for step in STEPS
+               if not (EV / step[1]).is_file()]
     if missing:
         print(json.dumps({"fatal": "以下现行件不存在，无法核对", "missing": missing},
                          ensure_ascii=False))
         return 2
     before = {p.name: sha(p) for p in EV.glob("R14*") if p.is_file()}
     rows, fails = [], []
-    for script, art, must, out_flag in STEPS:
+    for script, art, must, out_mode, out_val in STEPS:
         argv = [sys.executable, "-X", "utf8", str(ROOT / script)]
-        if out_flag:
-            argv += ["--out", out_flag]
+        if out_val:
+            argv += ["--out", out_val]
+        # ---- A4 预检：这步**将会**写到哪个绝对路径，必须就是现行件本身
+        will_write = {
+            "bare": str(EV / out_val) if out_val else None,
+            "cwd_relative": str(ROOT / out_val) if out_val else None,
+            "fixed": str(EV / art),          # 脚本固定写该件名
+            "unknown": None,
+        }[out_mode]
+        if will_write is None:
+            fails.append(f"A4 {script} 的写出路径**未知**（需先把脚本改成"
+                         f"支持 --out 或确认其固定件名），不能盲跑")
+            continue
+        if Path(will_write).name != art:
+            fails.append(f"A4 {script} --out 形态 {out_mode} → 将写 "
+                         f"{Path(will_write).name}，与现行件 {art} 不符")
+            continue
         env = {**os.environ, "PYTHONPATH": str(ROOT / "src"),
                "PYTHONIOENCODING": "utf-8"}
         t0 = time.time()
@@ -127,7 +154,7 @@ def main() -> int:
                "artifact_sha256_short": sha(p)[:12] if p.is_file() else None,
                "artifact_rewritten": (p.is_file() and
                                       before.get(art) != sha(p)),
-               "stdout_tail": (r.stdout or "").strip().splitlines()[-1:]}
+               "stdout_tail": (r.stdout or ).strip().splitlines()[-1:]}
         if r.returncode != 0:
             fails.append(f"{script} 退出码 {r.returncode}："
                          f"{(r.stderr or '').strip()[-200:]}")

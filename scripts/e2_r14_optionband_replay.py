@@ -59,9 +59,14 @@ def main() -> int:
               "| released", rs["released"],
               "WRONG!" if rs["wrong_accept"] else "ok",
               "|", (sol.error or "")[:64])
-    (ROOT / "evidence" / "R14E_REAL_PAGE_REPLAY.json").write_text(
+    name = "R14E_REAL_PAGE_REPLAY_V8.json"
+    for i, a in enumerate(sys.argv):
+        if a == "--out" and i + 1 < len(sys.argv):
+            name = sys.argv[i + 1]
+    (ROOT / "evidence" / name).write_text(
         json.dumps({"stage": "R14-E option-band anchor split; production solve+verify on 5 real screenshots (0 HTTP)",
                     "items": out}, ensure_ascii=False, indent=1), encoding="utf-8")
+    print("written", ROOT / "evidence" / name)
     return 0
 
 
