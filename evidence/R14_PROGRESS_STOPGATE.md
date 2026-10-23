@@ -10,7 +10,7 @@
 |---|---|---|
 | A P0 停机逻辑 | ✅ 已提交 | `9040337` + `test_r14a_stop_logic.py` |
 | B CellGeometry 契约 | ✅ | `diagram_layout.py`：pitch 槽/边界/置信度三档；两已知格 ⇒ 单间距样本=medium，"规律唯一性由下游规则通道独立证明"写入 note |
-| C pitch 因果消融 | ✅ | `evidence/R14C_PITCH_ABLATION.json`（双轴×3 画布×5 件全数字）+ `R14C_REAL_PARSE_REPLAY.json` |
+| C pitch 因果消融 | ✅ | `evidence/R14C_PITCH_ABLATION.json`（双轴×3 画布×5 件全数字）+ 真实截图件端到端复放现行件 `R14E_REAL_PAGE_REPLAY_V8.json`（早期 `R14C_REAL_PARSE_REPLAY.json` 已被取代，只作历史，不作当前引用） |
 | D 求解/验证强化 | ✅ 核心 | 绝对面积跨协议尺度、验证器复用坐标契约、节距槽统一、**退化常数序列弃权** |
 | **E 选项证据完整性** | ✅ **根修完成**（本版）+ 回归**勘误 V3** | `R14E_STAGE_E_ACCEPTANCE_V8.json`（== V7，`checks_failed []`、`wrong_releases []`、`llm_calls_used 0`）、**新排版独立 Dev 回归 `R14E_NEWLAYOUT_REGRESSION_V3.json` + `R14E_NEWLAYOUT_REGRESSION.md`**（50 页三层计数 16/7/7、排版四不变量 50/50；V3 把"证据链单元"与"落盘裁剪份数"分列——V2 曾混同，使"4 页 tight 选项 0 份"表述过强，已在件内 `erratum_v3` 与两份文档更正，判定数字一字未变）、**缺口逐页成因 `R14E_TIGHT_GAP_DIAGNOSIS.json` + `.md`**（A 尺寸悬殊 / B 8px 真图形遇 10px 最小边门 / C 末带混合内容不可安全恢复 / D 对照）、`R14E_ANCHOR_SWEEP.json`、`R14E_REAL_PAGE_REPLAY_V8.json`、`tests/test_r14e_option_binding.py`（6 例） |
 | F 六条件+扰动配对 | ✅（E 回归后**重跑**，并在 HEAD `b913813` 二次复验零漂移） | `R14E_SIX_CONDITION_V10.json` == `V9.json`（逐项 `identical_verdict_numbers true`、`differing_keys []`）：A 11 cand/10 rel、C 5/3、E **5/13**、F **5/13**，各层 wrong_releases `[]`。**血缘已件化** `R14E_LINEAGE_SIX_CONDITION.json`：现行协议四件（R14F=E 前基线 / R14E 首跑 / V9 / V10）F 恒为 5/5/5（5/13）且全层零错放；R12A/R13A 属**旧协议**件（E 1/13、F 0/13–1/13），差异源于协议，不得同列比较声称退化或进步。扰动审计的**实际件**是 `R14F_PERTURB_RELEASE_AUDIT.json`（`f1` 脚本忽略 `--out`、固定写该文件；此处此前写的 `R14E_PERTURB_RELEASE_AUDIT_V5.json` 并不存在，属**引用名错误**，已更正）：wrong_grid_releasable **[]**、wrong_accept_pert **[]**、contract **15/15**、perturb_loc 23/30——复验以 git HEAD 快照比对后**原样还原**，历史件未被本轮改动。汇总证据 `R14E_HEAD_REVERIFY.json`（`drift []`、`llm_calls_used 0`）。 |
@@ -148,7 +148,7 @@ G0 也**如实暴露了预算的脆弱面**（C1d）：计划 5 页 + 1 次余�
 ## 盲评（blind eval）准入结论
 
 **仍 NOT READY**。支持该结论的当前证据：离线 F 链 5/13 全对零错放
-（`R14E_SIX_CONDITION_V9.json`），真实截图解析件仅 **2/5** 端到端正确释放
+（`R14E_SIX_CONDITION_V10.json`，HEAD 复验与 `V9.json` 逐项相同），真实截图解析件仅 **2/5** 端到端正确释放
 （`R14E_REAL_PAGE_REPLAY_V8.json`，0 错误接受），扰动 30 页释放审计
 `wrong_grid_releasable []`。**不得**把 F 5/13 或 dev15 数字表述成"真实
 截图端到端已突破"。解锁需 G 批实测达到人工设定门槛。

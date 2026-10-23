@@ -16,7 +16,8 @@
 锚点单元携 `label_bbox=[cell_x0, band_y0, 字母域宽, 带高]` +
 `provenance="localizer+label_anchor"`，消费前按该框**确定性置零**剥字母。
 验收逐格 `label_association_verified=True`：mirror-04 3/3、rot90-01 4/4、
-trans-07 3/3、overlay-12 4/4（`R14E_STAGE_E_ACCEPTANCE_V7.json`）。
+trans-07 3/3、overlay-12 4/4（现行件 `R14E_STAGE_E_ACCEPTANCE_V8.json`；
+V7 与其逐项相同，只作历史）。
 
 ## 3. overlay-12「optC 近空白」
 消费裁剪 ink **16 → 64**；四格 ink 现 **256 / 320 / 64 / 160**，逐格等于页面
@@ -54,7 +55,8 @@ ink 160×3 与页面真值逐像素对账通过（旧行为：merge_gap 数量�
 - 验收 `checks_failed []`、`wrong_releases []`、`llm_calls_used 0`。
 
 ## 8. E 回归后 F 六条件复评（与 E 前基线逐项相同）
-`R14E_SIX_CONDITION_V8.json` 与 `V9.json` 数字一致：
+现行件 `R14E_SIX_CONDITION_V10.json`（HEAD 复验重跑）与 `V9.json`、`V8.json`
+数字一致：
 A 11 候选 / 10 释放、B 0、C 5 / 3、D 1 / 0、**E 5/13**、**F 5/13**，
 各层 `wrong_releases []`；F 释放集 rot90-01 / rot270-03 / mirror-04 /
 comp-06 / grid-10。`gated_unverified [ft-trans-08]`、
@@ -79,6 +81,23 @@ of_effective_answerable` 与逐层 `wrong_releases`，并写明四条读法—�
 扰动 **0/30**、screens **0/9**。扰动/screens 为 0 是**设计结果**
 （那些页没有可验证的字母带，锚点判据必须拒绝）；真实 5 页中唯一未锚定者
 即 tight 页（无字母）。
+
+## 交付**索引**（本轮新增，人工评审入口）
+`R14_INDEX.json` / `R14_INDEX.md`：42 件逐件登记 **sha256、生产脚本、首次入库
+与最近改动 commit、地位（current 20 / superseded 17 / historical 2 /
+erratum_kept 1 / self 2）**，并给出一条**人工阅读顺序**。三条自检
+`self_checks_failed []`：
+· **A1** 每个当前件都必须能追溯到"会写出它的脚本"——检测时分**精确命中**与
+  **同族命中**两档，且**排除审计器/索引等读取方**（首版把检查器误标成作者，
+  已纠）；`R14_CLAIM_AUDIT.json` 确由审计器自写，作为唯一例外。
+  A1 首跑还抓到 V3 只能靠 `--out` 复现：回归脚本默认名仍是 V2 → 已把默认名
+  改为 V3 并重跑，产物字节逐字一致（sha `9a6a48a7e9ad` 不变）。
+· **A2** 非当前件不得被当作当前引用 —— **首跑抓到 4 处我自己留下的陈旧引用**，
+  已全部改指现行件：STOPGATE 两处（旧真实截图复放件、六条件 V9）、
+  DELIVERABLES 两处（验收 V7、六条件 V8）。
+· **A3** 索引内哈希现场复算必须一致（防"改了件没改账"）。
+诚实边界：索引**无法登记自己写出后的最终字节**，故两个自指件标 `self` 并
+排除 A3；`sha256` 对 `.md` 只证明身份、不证明内容正确。
 
 ## 10. 被否决方案留档（诚实成本）
 候选集一度扩为"自下而上逐带试"，实测**它本身即缺陷**：扰动反例页因此把

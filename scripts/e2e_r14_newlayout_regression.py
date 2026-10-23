@@ -36,7 +36,8 @@
     band20_flagged 列出内容带高或宽 <20 的页，供人工复核而非自动否决。
 
 运行：python -X utf8 scripts/e2e_r14_newlayout_regression.py [--out 文件名]
-产物：evidence/R14E_NEWLAYOUT_REGRESSION_V2.json
+产物：evidence/R14E_NEWLAYOUT_REGRESSION_V3.json（默认名即现行件；V2 是含
+口径混同的早期版，保留不删但不再作当前引用，见件内 erratum_v3）
 """
 import json
 import sys
@@ -361,7 +362,7 @@ def main() -> int:
                    "金标只用于事后打分。真实截图件与 dev 母版同 id 时行键加 "
                    "[real-screenshot] 后缀，绝不合并计数。",
            "rows": rows}
-    name = "R14E_NEWLAYOUT_REGRESSION_V2.json"
+    name = "R14E_NEWLAYOUT_REGRESSION_V3.json"
     for i, a in enumerate(sys.argv):
         if a == "--out" and i + 1 < len(sys.argv):
             name = sys.argv[i + 1]

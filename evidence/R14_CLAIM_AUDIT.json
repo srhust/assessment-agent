@@ -30,8 +30,8 @@
     "doc": "R14_STAGE_E_DELIVERABLES.md",
     "artifact": "R14E_PERTURB_RELEASE_AUDIT_V5.json",
     "lines": [
-     53,
-     106
+     54,
+     125
     ],
     "why": "该句本身声明此件不存在/被取代，属勘误语境"
    }
@@ -57,9 +57,6 @@
   "R14E_PERTURB_RELEASE_AUDIT_V5.json",
   "R14E_REAL_PAGE_REPLAY_V8.json",
   "R14E_SIX_CONDITION_V10.json",
-  "R14E_SIX_CONDITION_V8.json",
-  "R14E_SIX_CONDITION_V9.json",
-  "R14E_STAGE_E_ACCEPTANCE_V7.json",
   "R14E_STAGE_E_ACCEPTANCE_V8.json",
   "R14E_TIGHT_GAP_DIAGNOSIS.json",
   "R14E_TIGHT_GAP_DIAGNOSIS.md",
@@ -71,6 +68,8 @@
   "R14H_KB_CHANNEL_AUDIT.json",
   "R14_CLAIM_AUDIT.json",
   "R14_CLAIM_AUDIT.md",
+  "R14_INDEX.json",
+  "R14_INDEX.md",
   "R14_PROGRESS_STOPGATE.md"
  ],
  "llm_calls_used": 0,
