@@ -12,7 +12,7 @@
 | B CellGeometry 契约 | ✅ | `diagram_layout.py`：pitch 槽/边界/置信度三档；两已知格 ⇒ 单间距样本=medium，"规律唯一性由下游规则通道独立证明"写入 note |
 | C pitch 因果消融 | ✅ | `evidence/R14C_PITCH_ABLATION.json`（双轴×3 画布×5 件全数字）+ `R14C_REAL_PARSE_REPLAY.json` |
 | D 求解/验证强化 | ✅ 核心 | 绝对面积跨协议尺度、验证器复用坐标契约、节距槽统一、**退化常数序列弃权** |
-| **E 选项证据完整性** | ✅ **根修完成**（本版） | `R14E_STAGE_E_ACCEPTANCE_V6.json`（checks_failed `[]`、wrong_releases `[]`、`llm_calls_used 0`）、`R14E_ANCHOR_SWEEP.json`、`R14E_REAL_PAGE_REPLAY_V8.json`、`tests/test_r14e_option_binding.py`（6 例） |
+| **E 选项证据完整性** | ✅ **根修完成**（本版） | `R14E_STAGE_E_ACCEPTANCE_V7.json`（checks_failed `[]`、wrong_releases `[]`、`llm_calls_used 0`）、**新排版独立 Dev 回归 `R14E_NEWLAYOUT_REGRESSION_V2.json` + `R14E_NEWLAYOUT_REGRESSION.md`**（50 页三层计数 16/7/7、排版四不变量 50/50、`tight` 族三元组逐页入账）、`R14E_ANCHOR_SWEEP.json`、`R14E_REAL_PAGE_REPLAY_V8.json`、`tests/test_r14e_option_binding.py`（6 例） |
 | F 六条件+扰动配对 | ✅（E 回归后**重跑**） | `R14E_SIX_CONDITION_V8.json` == `V9.json`：A 11 cand/10 rel、C 5/3、E **5/13**、F **5/13**，各层 wrong_releases `[]`；`R14E_PERTURB_RELEASE_AUDIT_V5.json`：wrong_grid_releasable **[]**、wrong_accept_pert **[]**、contract **15/15**（与 E 前基线逐项相同，无漂移） |
 | G 小批 HTTP | ⛔ **门停，等人工批准** | 见下 |
 | H KB 审计 | ✅ | `R14H_KB_CHANNEL_AUDIT.json`（插桩通道证据 + 五态 + 4 卡归因 + 勘误附录） |
@@ -48,6 +48,20 @@ tight-ink 集合逐像素对账（相等或墨超集）；陈旧/缺失 → 用*
 **独立 Dev 回归**：`R14E_ANCHOR_SWEEP.json` 59 页（真实 5 / dev15 / 扰动 30 /
 screens 9）锚点 **18**（真实 4/5、dev15 14/15、扰动 0/30、screens 0/9）。
 扰动族 0 锚点是**设计结果**：那些页没有字母带，锚点判据必须拒绝。
+
+**新排版独立回归（生产入口题面）**：`R14E_NEWLAYOUT_REGRESSION_V2.json`
+50 页（真实 5 + dev15 + 扰动 30）三层分列 **候选 16 / 接受 7 / 释放 7**、
+`wrong_releases []`、`checks_failed []`、`near_blank_consumed []`、
+`band20_flagged []`；逐页另做**独立重推同源复核**（消费单元 bbox+ink 与
+页面重解全等，50/50）。tight 族 7 页按 `声明/消费/页面末带列段` 三元组
+逐页入账：**3 页拿到真实完整选项证据**（含 1 页真实截图 tight：3 单元
+168×3）、**4 页仍消费 0 单元**（`ft-grid-10--tight`、
+`ft-overlay-13--tight`、`ft-scale-09--tight`、`ft-trans-07--tight`——
+选项带被裁成无字母且版面非一致排布，锚点判据按设计拒绝、聚类候选被
+"单行非末带"消费门拒绝，结果是**如实缺证据不释放**，与 HEAD 一致）。
+这 4 页是 E 之后仍开着的**排版覆盖缺口**，不得表述成"已修好"；
+列段数也**不是**选项数的代理（overlay-13--tight 末带 7 段 vs 声明 4），
+只作对照。详见 `R14E_NEWLAYOUT_REGRESSION.md`。
 
 ## 为达到"零回归"付出的诚实代价（被否决的方案，全部留档在代码注释）
 
@@ -90,6 +104,11 @@ mirror-04→rot90-01→trans-07→overlay-12→余量新排版、`text=None`、`
 4. tight 页的诚实边界请确认：证据已完整（3 份真裁剪）但**标签不可验证
    → 不释放**。若人工认为"行序标签 + 无字母证据"应可进入释放候选，
    需要的是**新规则**而非放松现有 label-association 门（后者属禁止项）。
+5. 新排版回归暴露的**排版覆盖缺口**请裁决是否纳入 R14 范围：4 张 tight
+   变体（grid-10/overlay-13/scale-09/trans-07）消费 0 单元、如实不释放。
+   现状是"安全地不产出证据"，不是错放；若要覆盖它们，需要新的排版规则
+   （放松现有门将触碰禁止项），建议留待人工定优先级而**不是**在本轮内
+   自行加规则。
 
 ## 盲评（blind eval）准入结论
 
