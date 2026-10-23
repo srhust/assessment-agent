@@ -97,14 +97,19 @@ STEPS = [
     ("scripts/e2d_r14_production_replay_v4.py",
      "R14E_REAL_PAGE_REPLAY_V8_RERUN.json", None, "bare",
      "R14E_REAL_PAGE_REPLAY_V8_RERUN.json"),
-    # 因果实验在现行 HEAD 的复现差异（人工裁决项 2 的**生成式**材料）
+    # 因果实验在现行 HEAD 的复现差异（人工裁决项 2 的**生成式**材料）。
+    # 两步原先被我登记成 `skip`（`not_rerunnable: true`、seconds 0.0）——
+    # 那是错的：它们**确定性地**产出现行件、且不覆盖任何历史 Test 件。
     ("scripts/e2f_r14_causal_delta.py", "R14C_PITCH_ABLATION_HEAD_DELTA.json",
-     ("verdict", "claims"), "skip", None),
+     {"verdict": "present", "claims": "present"}, "fixed",
+     "evidence/R14C_PITCH_ABLATION_HEAD_DELTA.json"),
     # 补集复现核对：只跑 bundle 未覆盖的件；含**恒真比较缺陷的反证**
     # （恢复原样必须发生在语义比较**之后**）与漂移登记机制的内存反证
     ("scripts/r14_semantic_repro.py", "R14E_RERUN_SEMANTICS.json",
-     ("drift_register_selftest", "documented_verdict_drift"),
-     "skip", None),
+     {"drift_register_selftest": "present",
+      "identical_detector_selftest": "present",
+      "violations": []},
+     "fixed", "evidence/R14E_RERUN_SEMANTICS.json"),
     ("scripts/e2_r14_v8_reproducibility.py",
      "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
      {"verdict_identical_all": True, "v8_untouched": True,
@@ -243,6 +248,13 @@ def main() -> int:
                                      f"{ {wk: got.get(wk) for wk in want} }"
                                      f" ≠ {want}")
                     continue
+                if want == "present":
+                    # **存在性断言也必须可核对**：空壳（None/空列表/空 dict）
+                    # 不算存在，否则"键在但没内容"会蒙过检查
+                    if got is None or got == [] or got == {}:
+                        fails.append(f"{script} → {art} 的 {k} 缺失或为空："
+                                     f"{got!r}")
+                    continue
                 if got != want:
                     fails.append(f"{script} → {art} 的 {k} = {got!r}，"
                                  f"应为 {want!r}")
@@ -297,6 +309,24 @@ def main() -> int:
             if inj in sd.get("executed", []):
                 fails.append(f"A6 **注入样本被执行过**：{inj}")
 
+    # ---- A8：**比较忽略表本身**要被审 ----
+    # 本轮实测：为消一条假阳性，我在核对脚本里把私有忽略表一路写宽，
+    # 宽到会把 `committed_sha256 / rerun_at_head / violations / budget` 都吞掉
+    # ——那正是"把真差异一起吃掉"。忽略表现集中在
+    # `r14_attribute_producer.VOLATILE`，此处断言它**不含** MUST_SEE 键：
+    # 代码基线（head / code_version）与被核对件身份必须始终可见。
+    try:
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import r14_attribute_producer as _AP  # noqa: PLC0415
+        vol, must = _AP.cmp_ignore_keys()
+        hidden = sorted(set(must) & set(vol))
+        if hidden:
+            fails.append(f"A8 忽略表吃掉了**必须可见**的键：{hidden}")
+        vol_keys = {"volatile_keys": vol, "must_see": must}
+    except Exception as e:  # noqa: BLE001
+        fails.append(f"A8 读不到集中忽略表：{e}")
+        vol_keys = {}
+
     # ---- A7：复现差异必须被**解释件**登记，且解释机制本身有反证 ----
     # 上轮把"重跑后先恢复原样再比较"这种**恒真比较**修掉之后，才浮出真实漂移。
     # 一条被"documented"吞掉的漂移不等于没有漂移，所以这里三件事都要机器确认。
@@ -326,6 +356,11 @@ def main() -> int:
              and (r.get("diff_classes") or {}).get("verdict_level")]
         if unexplained:
             fails.append(f"A7 有**未解释**的结论级漂移：{unexplained}")
+        idst = semd.get("identical_detector_selftest") or {}
+        if not idst:
+            fails.append("A7 缺比较器反证（自检没跑或没落进件里）")
+        elif idst.get("fails"):
+            fails.append(f"A7 比较器**反证**失败：{idst['fails'][:2]}")
         if semd.get("violations"):
             fails.append(f"A7 补集复现核对仍有违规："
                          f"{[v['artifact'] for v in semd['violations']]}")
@@ -334,6 +369,7 @@ def main() -> int:
 
     after_clean, after_dirty = worktree_clean()
     out = {"head_at_run": head, "n_steps": len(rows), "steps": rows,
+           "comparison_volatile_keys": vol_keys,
            "fails": fails,
            "worktree_clean_before": clean,
            "worktree_clean_after": after_clean,
