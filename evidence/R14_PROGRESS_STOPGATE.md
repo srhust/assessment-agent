@@ -114,25 +114,52 @@ G0 也**如实暴露了预算的脆弱面**（C1d）：计划 5 页 + 1 次余�
 ## 一键复现与**复现边界**（本轮新增，必读）
 
 `scripts/r14_verify_all.py` → `evidence/R14_VERIFICATION_BUNDLE.json`：
-从**干净工作区**按固定顺序**真跑** 14 步离线验证器（子进程、`PYTHONPATH=src`），
+从**干净工作区**按固定顺序**真跑** 15 步离线验证器（子进程、`PYTHONPATH=src`），
 登记每步退出码/耗时/产物 sha256 与件内关键事实。当前 **`fails []`、
 `all_steps_exit_zero true`**。附带两条强检查：**A4 预检**（跑之前就按 `--out`
 形态算出"将写到哪个绝对路径"，不等于现行件即拒绝——这条抓出了会**覆盖历史件**
 的写路径）与 **f1 固定件重跑后哈希不变**（漂移检查，不是重跑仪式）。
 
-**必须如实的复现边界（不得说成"离线基线全部可复现"）**：
-真实截图复放件 `R14E_REAL_PAGE_REPLAY_V8.json` 属 **NOT reproducible from HEAD**
-——它含富化键（`chain / consumed_crop_shas / consumption_binding /
-label_association_verified / option_sha256 / options_used / provenance`），
-当前 HEAD 的重放脚本产不出，且其题面 `question.json` 已被就地重写。
-分层结论见 `R14E_REAL_PAGE_REPLAY_V8_CHECK.json`：
-· **判定层可复现**：9 个判定字段（含 `option_boxes`）与 V8 **逐字一致 5/5**
-  ⇒ "真实截图端到端 2/5 正确释放"这一结论**未变**；
-· **证据层不可复现**：可核对性退化（不是数字变化）。
-bundle 对此的处理是 **skip 形态**：不重跑该件，并断言其在运行期间**未被改动**
-（`v8_untouched true`，前后哈希相同）——把重跑产物写回 V8 就是目标②禁止的
-"改历史 Test 结果"。若要恢复完整复现，需要把富化步骤纳入可重跑脚本，
-**属新脚本、须人工批准，本轮未做**。
+**复现边界（含上一版本此段的勘误）**
+
+上一版本本段写："V8 属 NOT reproducible from HEAD，因为当前 HEAD 的重放脚本
+产不出富化键"。**该结论是误判，现予撤回**：我当时**只试了一个脚本**
+（`e2_r14_optionband_replay.py`，它只是**引用** V8 件名用于核对，并不产出它），
+而 `R14_INDEX` 的 A1 又按"名字出现在脚本里"把它登记成 V8 的作者，于是我顺着
+错登记找作者、试错对象、下了错结论。**引用≠产出。**
+
+穷尽归属（`scripts/r14_attribute_producer.py` → `R14E_ARTIFACT_ATTRIBUTION.json`）
+的结果：V8 的**真作者**是 `e2d_r14_production_replay_v4.py`——重跑到
+`R14E_REAL_PAGE_REPLAY_V8_RERUN.json` 后 **5/5 页判定字段逐字一致** 且
+**不缺任何键** ⇒ `REPRODUCIBLE_FROM_HEAD`。`e2_r14_optionband_replay.py`
+登记为 `partial`（判定相同、缺 7 个富化键）。V8 历史字节全程未动
+（`artifact_untouched true`，前后哈希相同）。
+
+索引侧已把作者判定改为**同源规则**（复用归属工具的 `script_declares_write`），
+分三档 `attribution_verified > declared_writer > mention_only`，并新增 **A5
+反向检查**：归属结论为不可复现的件**不得**登记 `reproducible: true`。
+现行件里"不可复现"的登记现为 **0**（此前该修正则漏掉**带目录前缀的写出声明**
+（引号里是 `evidence/` 目录加件名，而不是裸件名），把 `c2`/`h1` 两件**反向冤枉**过——同一错因的乐观与
+悲观两个方向本轮都犯过并都修了）。
+
+**安全记录（必须看）**：我一度把归属做成"启发式候选、挨个重跑"，实测它挑中了
+`g1_r11_real_vision.py` / `g2_r12_real_vision.py` / `g3_r13_real_batch.py` /
+`run_real_vlm_experiment.py`（**会发真实 VLM 请求**）以及
+`r14_verify_all.py` / 归属工具自身（**递归编排器**，20 多分钟跑不完，已终止）。
+**实际零请求**：`R14G_PLAN.budget.spent_so_far` 仍是 `requests 0 / tokens 0`，
+`http_requests_made 0`，无新增请求类产物——但那是**因为本地无 key 的运气**，
+不是设计挡住了。已改为**静态优先 + 拒绝式候选**：只有"源码声明会写该件族名"
+的脚本进动态核验；含网络标记（`OpenAI|httpx|requests\.|urlopen|chat/completions|
+_call_llm|ASSESSMENT_LLM`）者**一律拒跑**；`subprocess` 再跑 scripts/ 的编排器
+一律拒跑；核验一律 `ASSESSMENT_OFFLINE=1`；跑完**后置断言**预算仍为 0/0 且无
+请求类产物，否则本件标 `SAFETY_VIOLATION` 并非零退出。
+自检（`--selftest`）注入"含 OpenAI 字样的假作者"与"假编排器"，断言二者
+**进入拒跑清单且从未被执行**——当前 `fails []`。教训：一个"为了证明可复现
+而遍历 scripts/"的工具，本身就在逼近人工闸门，必须结构性禁止而非依赖运气。
+
+bundle 侧：V8 不再是 `skip`（不重跑）——改由**真作者**重跑到 `_RERUN` 新件
+证明复现，同时 **A5 禁改历史件**（任何触碰 `R14E_REAL_PAGE_REPLAY_V8.json`
+的改动直接失败）。"把重跑产物写回 V8"仍是目标②禁止的行为，这条没松动。
 
 ## 需要人工裁决的点
 

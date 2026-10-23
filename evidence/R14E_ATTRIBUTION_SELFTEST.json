@@ -1,0 +1,30 @@
+{
+ "purpose": "安全闸门自检：注入必拒脚本，断言被拒且未执行（无自检的检查不算检查）",
+ "injected": [
+  "zfake_net.py（含 OpenAI 网络标记）",
+  "zfake_orch.py（subprocess 编排器）"
+ ],
+ "rule": "静态写目标优先；含网络标记或编排器一律拒跑；枚举每次现取（防导入后落地的脚本不可见）",
+ "llm_calls_used": 0,
+ "http_requests_made": 0,
+ "fails": [],
+ "refused": [
+  "e2_r14_v8_reproducibility.py",
+  "e2b_r14_anchor_option_recovery.py",
+  "e2e_r14_claim_audit.py",
+  "e2e_r14_index.py",
+  "r14_attribute_producer.py",
+  "r14_verify_all.py",
+  "zfake_net.py",
+  "zfake_orch.py"
+ ],
+ "executed": [
+  "e2_r14_optionband_replay.py",
+  "e2d_r14_production_replay_v4.py"
+ ],
+ "safety": "OK_ZERO_REQUESTS",
+ "budget_after": {
+  "requests": 0,
+  "tokens": 0
+ }
+}

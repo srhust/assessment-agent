@@ -1,0 +1,174 @@
+{
+ "purpose": "生产者归属：把'可复现'建立在**试过候选**上而不是试一个就下结论；候选范围由 mode 如实登记（full=全部 e2*/d1/f1*，一次约 20 条全量管线；fast=族名/富化键命中的少数脚本）",
+ "mode": "fast",
+ "head": "f8a6540610fec0542fc939c1d1431b3132bee518",
+ "verdict_fields": [
+  "solver_status",
+  "solver_answer",
+  "verify_action",
+  "final_answer",
+  "released",
+  "wrong_accept",
+  "failed_checks",
+  "solver_error",
+  "option_boxes"
+ ],
+ "results": [
+  {
+   "artifact": "R14E_REAL_PAGE_REPLAY_V8.json",
+   "safety": "OK_ZERO_REQUESTS",
+   "budget_after": {
+    "requests": 0,
+    "tokens": 0
+   },
+   "request_artifacts_seen": [],
+   "worktree_collateral": [],
+   "collateral_scope": "本次归属运行期间的新增/变化文件（不含归属工具自身输出）",
+   "candidates_refused": [
+    {
+     "script": "scripts/e2_r14_v8_reproducibility.py",
+     "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
+    },
+    {
+     "script": "scripts/e2b_r14_anchor_option_recovery.py",
+     "reason": "不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）"
+    },
+    {
+     "script": "scripts/e2e_r14_claim_audit.py",
+     "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
+    },
+    {
+     "script": "scripts/e2e_r14_index.py",
+     "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
+    },
+    {
+     "script": "scripts/r14_attribute_producer.py",
+     "reason": "自我递归"
+    },
+    {
+     "script": "scripts/r14_verify_all.py",
+     "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
+    }
+   ],
+   "selection": "static write-target (deny-by-default on network/orchestrator scripts)",
+   "true_producers": [
+    "scripts/e2d_r14_production_replay_v4.py"
+   ],
+   "partial_producers": [
+    "scripts/e2_r14_optionband_replay.py"
+   ],
+   "reproducibility": "REPRODUCIBLE_FROM_HEAD",
+   "artifact_untouched": true,
+   "candidates_tried": 8,
+   "evidence": [
+    {
+     "safety_refused": {
+      "script": "scripts/e2_r14_v8_reproducibility.py",
+      "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
+     }
+    },
+    {
+     "safety_refused": {
+      "script": "scripts/e2b_r14_anchor_option_recovery.py",
+      "reason": "不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）"
+     }
+    },
+    {
+     "safety_refused": {
+      "script": "scripts/e2e_r14_claim_audit.py",
+      "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
+     }
+    },
+    {
+     "safety_refused": {
+      "script": "scripts/e2e_r14_index.py",
+      "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
+     }
+    },
+    {
+     "safety_refused": {
+      "script": "scripts/r14_attribute_producer.py",
+      "reason": "自我递归"
+     }
+    },
+    {
+     "safety_refused": {
+      "script": "scripts/r14_verify_all.py",
+      "reason": "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
+     }
+    },
+    {
+     "script": "scripts/e2_r14_optionband_replay.py",
+     "exit": 0,
+     "wrote": true,
+     "pids_covered": "5/5",
+     "verdict_identical_pids": 5,
+     "missing_keys": {
+      "ft-mirror-04": [
+       "chain",
+       "consumed_crop_shas",
+       "consumption_binding",
+       "label_association_verified",
+       "option_sha256",
+       "options_used",
+       "provenance"
+      ],
+      "ft-mirror-04--tight": [
+       "chain",
+       "consumed_crop_shas",
+       "consumption_binding",
+       "label_association_verified",
+       "option_sha256",
+       "options_used",
+       "provenance"
+      ],
+      "ft-overlay-12": [
+       "chain",
+       "consumed_crop_shas",
+       "consumption_binding",
+       "label_association_verified",
+       "option_sha256",
+       "options_used",
+       "provenance"
+      ],
+      "ft-rot90-01": [
+       "chain",
+       "consumed_crop_shas",
+       "consumption_binding",
+       "label_association_verified",
+       "option_sha256",
+       "options_used",
+       "provenance"
+      ],
+      "ft-trans-07": [
+       "chain",
+       "consumed_crop_shas",
+       "consumption_binding",
+       "label_association_verified",
+       "option_sha256",
+       "options_used",
+       "provenance"
+      ]
+     },
+     "classification": "partial_verdict_only"
+    },
+    {
+     "script": "scripts/e2d_r14_production_replay_v4.py",
+     "exit": 0,
+     "wrote": true,
+     "pids_covered": "5/5",
+     "verdict_identical_pids": 5,
+     "missing_keys": {},
+     "classification": "true_producer"
+    }
+   ]
+  }
+ ],
+ "correction_recorded": {
+  "previous_wrong_claim": "上轮把 V8 判为 NOT_REPRODUCIBLE_FROM_HEAD",
+  "root_cause": "只试了 e2_r14_optionband_replay.py（它**引用** V8 件名但不产出）；R14_INDEX 的 A1 '生产脚本'列同因为'名字出现在脚本里'而把作者归错",
+  "rule_now": "true_producer 需同时满足：覆盖全部页 + 判定字段全同 + **不缺任何键**；只有都失败才允许写不可复现"
+ },
+ "llm_calls_used": 0,
+ "http_requests_made": 0
+}

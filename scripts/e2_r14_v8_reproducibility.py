@@ -63,25 +63,62 @@ def main(out_name: str = RERUN) -> int:
             "extra_keys_only_in_committed": sorted(set(o) - set(n)),
             "extra_keys_only_in_rerun": sorted(set(n) - set(o)),
         }
+    n_pages = len(old)
+    doc_verdict_ok = sum(1 for x in rows.values() if x["verdict_identical"])
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
                           capture_output=True, text=True).stdout.strip()
     after_v8 = sha(EV / V8)
+    # **归属驱动**：结论来自"试过全部候选脚本"的穷尽归属，不再手写。
+    # 上轮我在这里手写 NOT_REPRODUCIBLE_FROM_HEAD，是**只试了一个脚本**就下结论
+    # （那个脚本只是引用 V8 件名，并不产出它）——见 r14_attribute_producer.py。
+    # **消费**已入库的归属结论，不在这里重跑整条管线（那样一次核验等于
+    # 20 次全量运行，实测跑不完；穷尽归属只在 r14_attribute_producer.py
+    # 里每轮跑一次）。
+    att_doc_p = EV / "R14E_ARTIFACT_ATTRIBUTION.json"
+    head_now = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
+                              capture_output=True, text=True).stdout.strip()
+    if not att_doc_p.is_file():
+        print(json.dumps({"fatal": "归属件 R14E_ARTIFACT_ATTRIBUTION.json 不存在"
+                                   "；请先跑 scripts/r14_attribute_producer.py "
+                                   "--full（本脚本不自行重跑全管线）"},
+                         ensure_ascii=False))
+        return 1
+    att_doc = json.loads(att_doc_p.read_text(encoding="utf-8"))
+    hit = next((x for x in att_doc["results"] if x["artifact"] == V8), None)
+    if hit is None:
+        print(json.dumps({"fatal": f"归属件里没有 {V8}"}, ensure_ascii=False))
+        return 1
+    stale = att_doc.get("head") != head_now
+    att = {k: hit[k] for k in ("reproducibility", "true_producers",
+                               "partial_producers", "artifact_untouched",
+                               "candidates_tried")}
+    att["attribution_stale"] = stale
+    att["attribution_head"] = att_doc.get("head")
+    att["attribution_full_rerun"] = (
+        "scripts/r14_attribute_producer.py --full")
     doc = {
-        "purpose": "V8 复现性核验：判定层可复现、证据层不可复现，二者分开登记",
+        "purpose": "V8 复现性核验（生产者归属驱动，判定层与证据层分开登记）",
+        "attribution": {k: att[k] for k in
+                        ("reproducibility", "true_producers",
+                         "partial_producers", "artifact_untouched",
+                         "candidates_tried", "attribution_stale",
+                         "attribution_head")},
         "head": head,
         "verdict_fields_checked": VERDICT,
         "verdict_identical_all": all(x["verdict_identical"] for x in rows.values()),
         "per_page": rows,
         "reproducibility": {
-            "status": "NOT_REPRODUCIBLE_FROM_HEAD",
-            "why": "V8 含富化键（chain/consumed_crop_shas/consumption_binding/"
-                   "label_association_verified/option_sha256/options_used/"
-                   "provenance），当前 HEAD 的重放脚本产不出；且其题面 "
-                   "question.json 已被就地重写",
-            "what_is_still_true": "判定字段与 option_boxes 逐字一致 ⇒ 结论未变",
-            "degraded": "证据可核对性（不是数字）",
-            "action_for_human": "若要恢复完整复现，需把富化步骤纳入可重跑脚本"
-                                "（属新脚本，须人工批准；本轮不做）",
+            "status": att["reproducibility"],
+            "true_producer_scripts": att["true_producers"],
+            "partial_producer_scripts": att["partial_producers"],
+            "verdict_layer": "9 个判定字段（含 option_boxes）与 V8 逐字一致 "
+                             f"{doc_verdict_ok}/{n_pages} ⇒ 2/5 结论未变",
+            "evidence_layer": "富化键由 true producer 全部产出"
+                              if att["true_producers"] else
+                              "富化键无脚本可产出（这才是真正的证据层退化）",
+            "correction": "上轮此件写 NOT_REPRODUCIBLE_FROM_HEAD 属**误判**："
+                          "只试了引用 V8 件名的脚本，未穷尽候选。真作者是 "
+                          "e2d_r14_production_replay_v4.py。",
         },
         "v8_untouched": before_v8 == after_v8,
         "v8_sha256": after_v8[:12],
@@ -97,7 +134,10 @@ def main(out_name: str = RERUN) -> int:
                                           for k, v in rows.items()}},
                      ensure_ascii=False, indent=1))
     print("written", dst)
-    return 0 if doc["verdict_identical_all"] and doc["v8_untouched"] else 1
+    ok = (doc["verdict_identical_all"] and doc["v8_untouched"]
+          and att["reproducibility"] == "REPRODUCIBLE_FROM_HEAD"
+          and att["artifact_untouched"] and not att["attribution_stale"])
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":

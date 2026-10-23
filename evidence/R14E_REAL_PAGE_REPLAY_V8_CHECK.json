@@ -1,6 +1,19 @@
 {
- "purpose": "V8 复现性核验：判定层可复现、证据层不可复现，二者分开登记",
- "head": "92103ecd74990557e86c8bd884c73c46b9cb30c6",
+ "purpose": "V8 复现性核验（生产者归属驱动，判定层与证据层分开登记）",
+ "attribution": {
+  "reproducibility": "REPRODUCIBLE_FROM_HEAD",
+  "true_producers": [
+   "scripts/e2d_r14_production_replay_v4.py"
+  ],
+  "partial_producers": [
+   "scripts/e2_r14_optionband_replay.py"
+  ],
+  "artifact_untouched": true,
+  "candidates_tried": 8,
+  "attribution_stale": false,
+  "attribution_head": "f8a6540610fec0542fc939c1d1431b3132bee518"
+ },
+ "head": "f8a6540610fec0542fc939c1d1431b3132bee518",
  "verdict_fields_checked": [
   "solver_status",
   "solver_answer",
@@ -96,15 +109,20 @@
   }
  },
  "reproducibility": {
-  "status": "NOT_REPRODUCIBLE_FROM_HEAD",
-  "why": "V8 含富化键（chain/consumed_crop_shas/consumption_binding/label_association_verified/option_sha256/options_used/provenance），当前 HEAD 的重放脚本产不出；且其题面 question.json 已被就地重写",
-  "what_is_still_true": "判定字段与 option_boxes 逐字一致 ⇒ 结论未变",
-  "degraded": "证据可核对性（不是数字）",
-  "action_for_human": "若要恢复完整复现，需把富化步骤纳入可重跑脚本（属新脚本，须人工批准；本轮不做）"
+  "status": "REPRODUCIBLE_FROM_HEAD",
+  "true_producer_scripts": [
+   "scripts/e2d_r14_production_replay_v4.py"
+  ],
+  "partial_producer_scripts": [
+   "scripts/e2_r14_optionband_replay.py"
+  ],
+  "verdict_layer": "9 个判定字段（含 option_boxes）与 V8 逐字一致 5/5 ⇒ 2/5 结论未变",
+  "evidence_layer": "富化键由 true producer 全部产出",
+  "correction": "上轮此件写 NOT_REPRODUCIBLE_FROM_HEAD 属**误判**：只试了引用 V8 件名的脚本，未穷尽候选。真作者是 e2d_r14_production_replay_v4.py。"
  },
  "v8_untouched": true,
  "v8_sha256": "89be0925dcbf",
- "rerun_artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
+ "rerun_artifact": "R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
  "llm_calls_used": 0,
  "http_requests_made": 0
 }

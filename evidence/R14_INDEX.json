@@ -1,10 +1,12 @@
 {
- "generated_at_head": "7179844b05a0167fe74cd1d9ad295fa25722d61c",
- "n_artifacts": 45,
+ "generated_at_head": "f8a6540610fec0542fc939c1d1431b3132bee518",
+ "n_artifacts": 47,
  "by_status": {
   "current": [
    "R14C_PITCH_ABLATION.json",
    "R14E_ANCHOR_SWEEP.json",
+   "R14E_ARTIFACT_ATTRIBUTION.json",
+   "R14E_ATTRIBUTION_SELFTEST.json",
    "R14E_HEAD_REVERIFY.json",
    "R14E_LINEAGE_SIX_CONDITION.json",
    "R14E_NEWLAYOUT_REGRESSION.md",
@@ -61,21 +63,23 @@
  "artifacts": [
   {
    "artifact": "R14_CLAIM_AUDIT.json",
-   "bytes": 3873,
-   "sha256": "f4b3b1aa296cfcfd6d639fb2533850f1ee86fbbb54a23dd54c08ab0cd9880c67",
-   "sha_short": "f4b3b1aa296c",
+   "bytes": 3952,
+   "sha256": "871113fb68cb55a0177ec88fcdb2b145450847bc5254a460eb129e2661dc721e",
+   "sha_short": "871113fb68cb",
    "status": "current",
    "status_note": "交付件一致性审计（含审计器自证）",
    "producer_scripts": [
     "e2e_r14_claim_audit.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "aa81b50",
-   "commit_last_touched": "7179844"
+   "commit_last_touched": "f8a6540"
   },
   {
    "artifact": "R14_CLAIM_AUDIT.md",
@@ -85,50 +89,56 @@
    "status": "current",
    "status_note": "",
    "producer_scripts": [],
+   "producer_tier": "mention_family_only",
    "written_via_out_override": false,
    "producer_note": "未在任何脚本中找到写出处",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "aa81b50",
    "commit_last_touched": "aa81b50"
   },
   {
    "artifact": "R14_INDEX.json",
-   "bytes": 30832,
-   "sha256": "9207ee0bb368e498a5558a160a4d014db516f8d1b231a2d532ee6a926549c520",
-   "sha_short": "9207ee0bb368",
+   "bytes": 37769,
+   "sha256": "61806d234961ac683d3b52589842f027939390858039ea8d59c4a70c112a7b28",
+   "sha_short": "61806d234961",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "7179844"
+   "commit_last_touched": "f8a6540"
   },
   {
    "artifact": "R14_INDEX.md",
-   "bytes": 7659,
-   "sha256": "dd92947cc45b049c536c0ff419b8986093a45f566cdd083cbdcc9ef9ce0cd327",
-   "sha_short": "dd92947cc45b",
+   "bytes": 8758,
+   "sha256": "f32a03ab8597cbbf9403aa90340cd5907f0db16e43d4c336cd6b9c0b8f4120be",
+   "sha_short": "f32a03ab8597",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [],
+   "producer_tier": "mention_family_only",
    "written_via_out_override": false,
    "producer_note": "未在任何脚本中找到写出处",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "7179844"
+   "commit_last_touched": "f8a6540"
   },
   {
    "artifact": "R14_PROGRESS_STOPGATE.md",
-   "bytes": 15422,
-   "sha256": "c5354ce904e471a01ef8146d134a348382c95e0bd312dd19b59222b5027e8538",
-   "sha_short": "c5354ce904e4",
+   "bytes": 17582,
+   "sha256": "942ac9afdd5fbaa32c8ab1cad4ff19324c0bebfb45bc7c498b5420adc611a140",
+   "sha_short": "942ac9afdd5f",
    "status": "current",
    "status_note": "",
    "producer_scripts": [
@@ -136,12 +146,14 @@
     "e2e_r14_stage_g_batch.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "mention_exact_only",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "仅提及、未声明写出：**引用≠产出**",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "5ab91dd",
-   "commit_last_touched": "4917457"
+   "commit_last_touched": "f8a6540"
   },
   {
    "artifact": "R14_STAGE_E_DELIVERABLES.md",
@@ -151,12 +163,14 @@
    "status": "current",
    "status_note": "",
    "producer_scripts": [],
+   "producer_tier": "mention_family_only",
    "written_via_out_override": false,
    "producer_note": "未在任何脚本中找到写出处",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "de14d1e",
-   "commit_last_touched": "4917457"
+   "commit_last_touched": "f8a6540"
   },
   {
    "artifact": "R14_VERIFICATION_BUNDLE.json",
@@ -168,9 +182,11 @@
    "producer_scripts": [
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f9a2fc8",
    "commit_last_touched": "7179844"
@@ -185,9 +201,11 @@
    "producer_scripts": [
     "c2_r14_pitch_ablation.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "59a244f",
    "commit_last_touched": "59a244f"
@@ -200,9 +218,11 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [],
+   "producer_tier": "mention_family_only",
    "written_via_out_override": false,
    "producer_note": "未在任何脚本中找到写出处",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": false,
    "commit_added": "4712825",
    "commit_last_touched": "4712825"
@@ -218,26 +238,69 @@
     "e2e_r14_anchor_sweep.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
   },
   {
+   "artifact": "R14E_ARTIFACT_ATTRIBUTION.json",
+   "bytes": 5563,
+   "sha256": "cc57f39be1f7555804df845fd86b9beca448c1e403d1c5c06fc05fa76b64b97d",
+   "sha_short": "cc57f39be1f7",
+   "status": "current",
+   "status_note": "",
+   "producer_scripts": [
+    "e2_r14_v8_reproducibility.py",
+    "r14_attribute_producer.py"
+   ],
+   "producer_tier": "declared_writer",
+   "written_via_out_override": false,
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
+   "git_tracked": false,
+   "reproduced_by_bundle": false,
+   "reproducible": true,
+   "commit_added": null,
+   "commit_last_touched": null
+  },
+  {
+   "artifact": "R14E_ATTRIBUTION_SELFTEST.json",
+   "bytes": 864,
+   "sha256": "24e26d7052a001696cf3d767c73418c1c21f34ec7feb14d1b45d4ed0c504919a",
+   "sha_short": "24e26d7052a0",
+   "status": "current",
+   "status_note": "",
+   "producer_scripts": [
+    "r14_attribute_producer.py"
+   ],
+   "producer_tier": "declared_writer",
+   "written_via_out_override": false,
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
+   "git_tracked": false,
+   "reproduced_by_bundle": false,
+   "reproducible": true,
+   "commit_added": null,
+   "commit_last_touched": null
+  },
+  {
    "artifact": "R14E_HEAD_REVERIFY.json",
    "bytes": 1163,
-   "sha256": "7e2744699d17acb6b648787cde6e76da5ba7430158df5754fd2f3370b3a1895d",
-   "sha_short": "7e2744699d17",
+   "sha256": "905091829838de2838b662f16723dde10e18a521a2b38c6919be293eccdd63ee",
+   "sha_short": "905091829838",
    "status": "current",
    "status_note": "三项离线基线 HEAD 复验（零漂移）",
    "producer_scripts": [
     "e2e_r14_head_reverify.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "b94041e",
    "commit_last_touched": "b94041e"
@@ -253,9 +316,11 @@
     "e2e_r14_six_condition_lineage.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "8f4ca49",
    "commit_last_touched": "8f4ca49"
@@ -268,9 +333,11 @@
    "status": "current",
    "status_note": "",
    "producer_scripts": [],
+   "producer_tier": "mention_family_only",
    "written_via_out_override": false,
    "producer_note": "未在任何脚本中找到写出处",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "32829d3",
    "commit_last_touched": "c2b28ea"
@@ -282,11 +349,16 @@
    "sha_short": "93bb63c61882",
    "status": "erratum_kept",
    "status_note": "把证据链单元数标为消费单元，与落盘裁剪份数混同（V3 已勘误，保留不删）",
-   "producer_scripts": [],
+   "producer_scripts": [
+    "e2e_r14_newlayout_regression.py",
+    "r14_verify_all.py"
+   ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "未在任何脚本中找到写出处",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproducible": false,
+   "reproduced_by_bundle": false,
+   "reproducible": true,
    "commit_added": "32829d3",
    "commit_last_touched": "32829d3"
   },
@@ -301,9 +373,11 @@
     "e2e_r14_newlayout_regression.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "c2b28ea",
    "commit_last_touched": "c2b28ea"
@@ -316,12 +390,18 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "r14_semantic_repro.py",
+    "e2_r14_optionband_replay.py",
+    "e2_r14_v8_reproducibility.py",
+    "e2b_r14_anchor_option_recovery.py",
+    "e2d_r14_production_replay_v4.py",
+    "r14_attribute_producer.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
@@ -334,12 +414,18 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "r14_semantic_repro.py",
+    "e2_r14_optionband_replay.py",
+    "e2_r14_v8_reproducibility.py",
+    "e2b_r14_anchor_option_recovery.py",
+    "e2d_r14_production_replay_v4.py",
+    "r14_attribute_producer.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
@@ -352,11 +438,18 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2d_r14_production_replay_v4.py"
+    "e2_r14_optionband_replay.py",
+    "e2_r14_v8_reproducibility.py",
+    "e2b_r14_anchor_option_recovery.py",
+    "e2d_r14_production_replay_v4.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
@@ -369,12 +462,18 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "r14_semantic_repro.py",
+    "e2_r14_optionband_replay.py",
+    "e2_r14_v8_reproducibility.py",
+    "e2b_r14_anchor_option_recovery.py",
+    "e2d_r14_production_replay_v4.py",
+    "r14_attribute_producer.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
@@ -387,12 +486,18 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "r14_semantic_repro.py",
+    "e2_r14_optionband_replay.py",
+    "e2_r14_v8_reproducibility.py",
+    "e2b_r14_anchor_option_recovery.py",
+    "e2d_r14_production_replay_v4.py",
+    "r14_attribute_producer.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
@@ -405,31 +510,33 @@
    "status": "current",
    "status_note": "真实截图解析件端到端复放",
    "producer_scripts": [
-    "e2_r14_optionband_replay.py",
-    "e2_r14_v8_reproducibility.py",
-    "r14_verify_all.py"
+    "e2d_r14_production_replay_v4.py"
    ],
+   "producer_tier": "attribution_verified",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "动态归属验证的真作者",
    "git_tracked": true,
+   "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "eb47076",
    "commit_last_touched": "eb47076"
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
-   "bytes": 3056,
-   "sha256": "322e4e198e24e129e3b15cf235535da5d8b611d655257933caf7ad5af1e8ad9b",
-   "sha_short": "322e4e198e24",
+   "bytes": 3423,
+   "sha256": "2314b3620b50c19b89eadf4eadf7ff8911d2c3ad19d093af82e354c576b3be72",
+   "sha_short": "2314b3620b50",
    "status": "current",
    "status_note": "",
    "producer_scripts": [
     "e2_r14_v8_reproducibility.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "92103ec",
    "commit_last_touched": "7179844"
@@ -442,11 +549,14 @@
    "status": "current",
    "status_note": "",
    "producer_scripts": [
-    "e2_r14_v8_reproducibility.py"
+    "e2_r14_v8_reproducibility.py",
+    "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "92103ec",
    "commit_last_touched": "92103ec"
@@ -459,11 +569,15 @@
    "status": "historical",
    "status_note": "E 首跑件（C/D 候选口径与后续不同，逐条说明见血缘件）",
    "producer_scripts": [
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_six_condition_lineage.py",
+    "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
@@ -480,9 +594,11 @@
     "e2e_r14_six_condition_lineage.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "b94041e",
    "commit_last_touched": "b94041e"
@@ -495,11 +611,15 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_six_condition_lineage.py",
+    "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
@@ -512,11 +632,15 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_six_condition_lineage.py",
+    "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
@@ -529,11 +653,15 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_six_condition_lineage.py",
+    "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
@@ -546,11 +674,15 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_six_condition_lineage.py",
+    "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
@@ -563,11 +695,15 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_six_condition_lineage.py",
+    "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "eb47076",
    "commit_last_touched": "eb47076"
@@ -581,11 +717,14 @@
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
     "e2e_r14_head_reverify.py",
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_six_condition_lineage.py",
+    "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "eb47076",
    "commit_last_touched": "eb47076"
@@ -598,11 +737,15 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_stage_e_acceptance.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_stage_e_acceptance.py",
+    "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
@@ -615,11 +758,15 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_stage_e_acceptance.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_stage_e_acceptance.py",
+    "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
@@ -632,11 +779,15 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_stage_e_acceptance.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_stage_e_acceptance.py",
+    "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "eb47076",
    "commit_last_touched": "eb47076"
@@ -649,11 +800,15 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_stage_e_acceptance.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_stage_e_acceptance.py",
+    "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "eb47076",
    "commit_last_touched": "eb47076"
@@ -666,11 +821,15 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_head_reverify.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_stage_e_acceptance.py",
+    "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d6cbfe0",
    "commit_last_touched": "d6cbfe0"
@@ -684,11 +843,14 @@
    "status_note": "Stage E 验收",
    "producer_scripts": [
     "e2e_r14_head_reverify.py",
+    "e2e_r14_stage_e_acceptance.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "b94041e",
    "commit_last_touched": "b94041e"
@@ -704,9 +866,11 @@
     "e2e_r14_tight_gap_diagnosis.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "c2b28ea",
    "commit_last_touched": "c2b28ea"
@@ -719,9 +883,11 @@
    "status": "current",
    "status_note": "",
    "producer_scripts": [],
+   "producer_tier": "mention_family_only",
    "written_via_out_override": false,
    "producer_note": "未在任何脚本中找到写出处",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "c2b28ea",
    "commit_last_touched": "c2b28ea"
@@ -738,9 +904,11 @@
     "f1_r14_perturb_release_audit.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "4712825",
    "commit_last_touched": "d715369"
@@ -756,9 +924,11 @@
     "e2e_r14_six_condition_lineage.py",
     "f1_r14_perturb_release_audit.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "4712825",
    "commit_last_touched": "4712825"
@@ -774,9 +944,11 @@
     "e2e_r14_stage_g_readiness.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "ce44cc7",
    "commit_last_touched": "7179844"
@@ -789,9 +961,11 @@
    "status": "current",
    "status_note": "",
    "producer_scripts": [],
+   "producer_tier": "mention_family_only",
    "written_via_out_override": false,
    "producer_note": "未在任何脚本中找到写出处",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "ce44cc7",
    "commit_last_touched": "ce44cc7"
@@ -808,11 +982,14 @@
     "d9b_r14_lock_manifest.py",
     "e2e_r14_stage_g_batch.py",
     "e2e_r14_stage_g_readiness.py",
+    "r14_attribute_producer.py",
     "r14_verify_all.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "ce44cc7",
    "commit_last_touched": "7179844"
@@ -827,9 +1004,11 @@
    "producer_scripts": [
     "h1_r14_kb_channel_audit.py"
    ],
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "审计器/索引等读取方已排除，本列只登记会写出该件的脚本",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "5ab91dd",
    "commit_last_touched": "5ab91dd"
@@ -837,17 +1016,17 @@
  ],
  "self_checks_failed": [],
  "reproduce_needs_out_override": [
-  "R14E_REAL_PAGE_REPLAY_V4.json ← r14_semantic_repro.py, r14_verify_all.py（需 --out 复现）",
-  "R14E_REAL_PAGE_REPLAY_V6.json ← r14_semantic_repro.py, r14_verify_all.py（需 --out 复现）",
-  "R14E_REAL_PAGE_REPLAY_V7.json ← r14_semantic_repro.py, r14_verify_all.py（需 --out 复现）",
-  "R14E_SIX_CONDITION_V2.json ← e2e_r14_six_condition_lineage.py（需 --out 复现）",
-  "R14E_SIX_CONDITION_V3.json ← e2e_r14_six_condition_lineage.py（需 --out 复现）",
-  "R14E_SIX_CONDITION_V6.json ← e2e_r14_six_condition_lineage.py（需 --out 复现）",
-  "R14E_SIX_CONDITION_V7.json ← e2e_r14_six_condition_lineage.py（需 --out 复现）",
-  "R14E_SIX_CONDITION_V8.json ← e2e_r14_six_condition_lineage.py（需 --out 复现）",
-  "R14E_STAGE_E_ACCEPTANCE_V4.json ← e2e_r14_stage_e_acceptance.py（需 --out 复现）",
-  "R14E_STAGE_E_ACCEPTANCE_V5.json ← e2e_r14_stage_e_acceptance.py（需 --out 复现）",
-  "R14E_STAGE_E_ACCEPTANCE_V6.json ← e2e_r14_stage_e_acceptance.py（需 --out 复现）"
+  "R14E_REAL_PAGE_REPLAY_V4.json ← e2_r14_optionband_replay.py, e2_r14_v8_reproducibility.py, e2b_r14_anchor_option_recovery.py, e2d_r14_production_replay_v4.py, r14_attribute_producer.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_REAL_PAGE_REPLAY_V6.json ← e2_r14_optionband_replay.py, e2_r14_v8_reproducibility.py, e2b_r14_anchor_option_recovery.py, e2d_r14_production_replay_v4.py, r14_attribute_producer.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_REAL_PAGE_REPLAY_V7.json ← e2_r14_optionband_replay.py, e2_r14_v8_reproducibility.py, e2b_r14_anchor_option_recovery.py, e2d_r14_production_replay_v4.py, r14_attribute_producer.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_SIX_CONDITION_V2.json ← e2e_r14_head_reverify.py, e2e_r14_six_condition_lineage.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_SIX_CONDITION_V3.json ← e2e_r14_head_reverify.py, e2e_r14_six_condition_lineage.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_SIX_CONDITION_V6.json ← e2e_r14_head_reverify.py, e2e_r14_six_condition_lineage.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_SIX_CONDITION_V7.json ← e2e_r14_head_reverify.py, e2e_r14_six_condition_lineage.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_SIX_CONDITION_V8.json ← e2e_r14_head_reverify.py, e2e_r14_six_condition_lineage.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_STAGE_E_ACCEPTANCE_V4.json ← e2e_r14_head_reverify.py, e2e_r14_stage_e_acceptance.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_STAGE_E_ACCEPTANCE_V5.json ← e2e_r14_head_reverify.py, e2e_r14_stage_e_acceptance.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_STAGE_E_ACCEPTANCE_V6.json ← e2e_r14_head_reverify.py, e2e_r14_stage_e_acceptance.py, r14_verify_all.py（需 --out 复现）"
  ],
  "reading_order_for_human": [
   "1. R14_PROGRESS_STOPGATE.md（进度 + 6 个待裁决点）",

@@ -79,6 +79,67 @@ def commits(rel: str):
     return (added[-1] if added else None), (last[0] if last else None)
 
 
+_ATTR_MAP: dict = {}
+_DECLARED: dict = {}
+
+
+def _fam(n: str) -> str:
+    return re.sub(r"_V\d+(?=\.json$)", "", n)
+
+
+def _declared_map():
+    """**复用归属工具的同一判定**：脚本源码里出现的全部 R14*.json 字面量
+    （且该脚本确有写出）。自己再写一份"必须挨着 write_text"的正则会把
+    `name = "X.json"` → `dst.write_text()` 这种正常写法误判为"不可复现"
+    ——本轮实测犯过（15 个可复现件被标假）。"""
+    if _DECLARED:
+        return _DECLARED
+    try:
+        import sys
+        if str(SCRIPTS) not in sys.path:
+            sys.path.insert(0, str(SCRIPTS))
+        import r14_attribute_producer as AP
+        for sp in sorted(SCRIPTS.glob("*.py")):
+            _DECLARED[sp.name] = {_fam(w)
+                                  for w in AP.script_declares_write(sp.name)}
+    except Exception:  # noqa: BLE001
+        for sp in sorted(SCRIPTS.glob("*.py")):
+            t = sp.read_text(encoding="utf-8", errors="ignore")
+            if "write_text" not in t:
+                continue
+            _DECLARED[sp.name] = {_fam(w) for w in re.findall(
+                r'"(R14[A-Za-z0-9_\-]*\.json)"', t)}
+    return _DECLARED
+
+
+def _attribution():
+    """动态归属结论（跑过归属工具才有条目；没跑则不影响档位判定）。"""
+    if _ATTR_MAP:
+        return _ATTR_MAP
+    p = EV / "R14E_ARTIFACT_ATTRIBUTION.json"
+    if p.is_file():
+        try:
+            d = json.loads(p.read_text(encoding="utf-8"))
+            for r in d.get("results", []):
+                _ATTR_MAP[r["artifact"]] = r
+        except Exception:  # noqa: BLE001
+            pass
+    return _ATTR_MAP
+
+
+def _bundle_steps():
+    """一键复现 bundle **真跑过**的件 → 本身就是动态可复现证据。"""
+    p = EV / "R14_VERIFICATION_BUNDLE.json"
+    if not p.is_file():
+        return {}
+    try:
+        d = json.loads(p.read_text(encoding="utf-8"))
+        return {x["artifact"]: x for x in d.get("steps", [])
+                if x.get("exit") == 0}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
 def producer(name: str):
     """作者脚本 = 会**写出**该件的脚本。分两档，避免两个首版错误：
 
@@ -93,6 +154,7 @@ def producer(name: str):
     """
     stem = re.sub(r"_V\d+(?=\.json$)", "", name)
     exact, family = [], []
+    declared = []
     for sp in sorted(SCRIPTS.glob("*.py")):
         if sp.name in PRODUCER_EXCLUDE and not (
                 name == "R14_CLAIM_AUDIT.json"
@@ -102,12 +164,27 @@ def producer(name: str):
             t = sp.read_text(encoding="utf-8")
         except Exception:  # noqa: BLE001
             continue
+        # **声明写出**才算作者：只看 write_text/open( 附近的件名字面量。
+        # "名字出现在脚本里"不等于产出（V8 误判的根因）。
+        dm = _declared_map().get(sp.name, set())
+        if _fam(name) in dm:
+            declared.append(sp.name)
         if name in t:
             exact.append(sp.name)
         elif stem != name and stem in t:
             family.append(sp.name)
-    hits = exact or family
-    return hits, bool(family and not exact)
+    # **优先级**：声明写出 > 精确提及 > 同族提及。只有"提及"的必须标
+    # mention_only——"脚本里出现件名"不等于"该脚本产出该件"（V8 误判根因）。
+    hits = declared or exact or family
+    att = _attribution().get(name)
+    if att and att.get("true_producers"):
+        tier = "attribution_verified"
+        hits = [str(x).rsplit("/", 1)[-1] for x in att["true_producers"]]
+    elif declared:
+        tier = "declared_writer"
+    else:
+        tier = ("mention_exact_only" if exact else "mention_family_only")
+    return hits, bool(family and not exact), tier
 
 
 def main() -> int:
@@ -120,7 +197,7 @@ def main() -> int:
         except Exception:  # noqa: BLE001
             pass
         first, last = commits(f"evidence/{name}")
-        prod, via_out = producer(name)
+        prod, via_out, ptier = producer(name)
         status = "current"
         why = CURRENT.get(name, "")
         if name in SELF_NAMES:
@@ -141,13 +218,23 @@ def main() -> int:
                      "sha256": sha(p), "sha_short": sha(p)[:12],
                      "status": status, "status_note": why,
                      "producer_scripts": prod,
-                     "written_via_out_override": via_out,
-                     "producer_note": ("审计器/索引等读取方已排除，本列只登记"
-                                       "会写出该件的脚本" if prod else
-                                       "未在任何脚本中找到写出处"),
-                     "git_tracked": bool(first),
-                     "reproducible": bool(prod) or p.suffix == ".md",
-                     "commit_added": first, "commit_last_touched": last})
+                      "producer_tier": ptier,
+                      "written_via_out_override": via_out,
+                      "producer_note": (
+                          "动态归属验证的真作者" if ptier
+                          == "attribution_verified" else
+                          "声明写出（确有写出且出现该件/族名）" if ptier
+                          == "declared_writer" else
+                          "仅提及、未声明写出：**引用≠产出**"
+                          if prod else "未在任何脚本中找到写出处"),
+                      "git_tracked": bool(first),
+                      "reproduced_by_bundle": name in _bundle_steps(),
+                      "reproducible": (
+                          ptier in ("attribution_verified",
+                                    "declared_writer")
+                          or name in _bundle_steps()
+                          or p.suffix == ".md"),
+                      "commit_added": first, "commit_last_touched": last})
 
     docs = {p.name: p.read_text(encoding="utf-8") for p in EV.glob("R14*.md")
             # 索引自身**就是**用来逐条列出非当前件的，扫它会自我误报
@@ -155,6 +242,11 @@ def main() -> int:
     fails = []
     unregistered = []      # 透明登记：靠 --out 才落到现行文件名的件
     for r in rows:
+        att = _attribution().get(r["artifact"])
+        if (att and att.get("reproducibility") == "NOT_REPRODUCIBLE_FROM_HEAD"
+                and r.get("reproducible")):
+            fails.append(f"A5 {r['artifact']} 归属结论为不可复现，索引却登记"
+                         f" reproducible=true（乐观误判，禁止）")
         if r["status"] == "self":
             continue                     # 自指件不入 A1/A3
         if r["status"] == "current" and r["artifact"].endswith(".json") \

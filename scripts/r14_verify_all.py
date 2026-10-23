@@ -80,12 +80,18 @@ STEPS = [
     # 结果**（目标②禁止），故此步**不重跑**，只核对"该件没被动过"；
     # 判定层复现由独立脚本 e2_r14_v8_reproducibility.py 负责（它写 **_RERUN**
     # 新文件，绝不覆盖 V8）。
-    ("(no-rerun) scripts/e2_r14_optionband_replay.py",
-     "R14E_REAL_PAGE_REPLAY_V8.json", None, "skip", None),
+    # V8 的历史字节**永不重写**（A5 禁改证据件）；可复现性由**真作者**
+    # e2d_r14_production_replay_v4.py 重跑到 `_RERUN` 新件来证明。
+    # 上轮此步标 skip、理由"不可复现"是**误判**（只试了引用 V8 件名却
+    # 不产出它的脚本）——勘误见 R14E_ARTIFACT_ATTRIBUTION.correction_recorded。
+    ("scripts/e2d_r14_production_replay_v4.py",
+     "R14E_REAL_PAGE_REPLAY_V8_RERUN.json", None, "bare",
+     "R14E_REAL_PAGE_REPLAY_V8_RERUN.json"),
     ("scripts/e2_r14_v8_reproducibility.py",
      "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
      {"verdict_identical_all": True, "v8_untouched": True,
-      "reproducibility": {"status": "NOT_REPRODUCIBLE_FROM_HEAD"}},
+      "attribution": {"reproducibility": "REPRODUCIBLE_FROM_HEAD",
+                      "artifact_untouched": True}},
      "bare", "R14E_REAL_PAGE_REPLAY_V8_CHECK.json"),
     ("scripts/e2e_r14_six_condition_lineage.py",
      "R14E_LINEAGE_SIX_CONDITION.json", {"v10_equals_v9": True},
@@ -134,7 +140,7 @@ def worktree_clean():
             continue
         if path.startswith("evidence/R14E_REAL_PAGE_REPLAY_V8_RERUN"):
             continue          # 比对用的重跑新件，允许未跟踪
-        if path.startswith("evidence/R14E_REAL_PAGE_REPLAY_V8.") :
+        if path.endswith("R14E_REAL_PAGE_REPLAY_V8.json"):
             fails.append(f"A5 禁止改动历史件：{x}")
             continue
         keep.append(x)
