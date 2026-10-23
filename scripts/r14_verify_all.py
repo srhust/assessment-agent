@@ -607,21 +607,51 @@ def main() -> int:
     # **交付文档里的步数由本步回写**：手写"18 步 / 21 步"
     # 就是再造一个会过期的计数（本轮我已经错过两次）。
     _doc_sync = []
-    _placeholder = "{{BUNDLE_N_STEPS}}"
     for _dn in ("R14_STAGE_E_DELIVERABLES.md", "R14_PROGRESS_STOPGATE.md"):
         _dp = EV / _dn
         if not _dp.is_file():
             continue
         _t = _dp.read_text(encoding="utf-8")
-        _n = re.sub(r"一键复现(?:清单|`R14_VERIFICATION_BUNDLE\.json`)"
-                    r"(?:（)?\s*\*{0,2}\d+\s*步\*{0,2}",
-                    f"一键复现{{见下}}".replace("见下",
-                                   f"**{len(rows)} 步**"), _t)
+        # **全篇统一**：凡"N 步"（真跑/清单/一键复现）都按本次
+        # `n_steps` 校正。上一版只替两个位置，结果同一篇文档里
+        # `:87` 真跑 16 步、`:198` 真跑 15 步、`:312` 21 步**自相矛盾**，
+        # 而我口头上说的是"步数由 bundle 回写、不再手写"。
+        _n = re.sub(r"(?<!\d)(\d+)\s*步",
+                    lambda m: m.group(0).replace(m.group(1), str(len(rows)))
+                    if "离线验证器" in _t[max(0, m.start() - 40):m.end() + 40]
+                    or "一键复现" in _t[max(0, m.start() - 30):m.end() + 10]
+                    or "清单" in _t[max(0, m.start() - 12):m.end()]
+                    else m.group(0), _t)
+        # 修掉上一版留下的**坏排版**：`一键复现{**21 步**}` → `一键复现 **21 步**`
+        _n = re.sub(r"一键复现\{\*\*(\d+) 步\*\*", r"一键复现 **\1 步**", _n)
         if _n != _t:
             _dp.write_text(_n, encoding="utf-8")
             _doc_sync.append(_dn)
+    # **A13 残留断言**：改完必须真的没有过期步数，
+    # 而不是"我写了替换逻辑"就算完。
+    for _dn in ("R14_STAGE_E_DELIVERABLES.md", "R14_PROGRESS_STOPGATE.md"):
+        _dp = EV / _dn
+        if not _dp.is_file():
+            continue
+        _t = _dp.read_text(encoding="utf-8")
+        for _m in re.finditer(r"(?<![\d{])(\d+)\s*步", _t):
+            if int(_m.group(1)) != len(rows):
+                _ctx = _t[max(0, _m.start() - 26):_m.end() + 8]
+                fails.append(
+                    "A13 陈旧步数：" + _dn + " 仍写 " + _m.group(1) +
+                    " 步，本次 bundle 是 " + str(len(rows)) +
+                    " 步（上下文 " + _ctx + "）")
+        _brace = re.findall("一键复现" + "[{][^}]*[}]", _t)
+        if _brace:
+            fails.append("A13 排版破坏：" + _dn +
+                         " 的 `一键复现` 后面残留花括号 " + str(_brace[:2]))
+    a13 = {"checked_docs": 2, "required_steps": len(rows),
+           "synced": _doc_sync,
+           "note": "交付文档里的步数由本步统一回写并断言无残留；"
+                   "上一版只替两个位置 ⇒ 同一篇文档出现 15/16/21 步自相矛盾"}
     out = {"head_at_run": head, "n_steps": len(rows),
-           "docs_step_count_synced": _doc_sync, "steps": rows,
+           "docs_step_count_synced": _doc_sync,
+           "A13_step_count_guard": a13, "steps": rows,
            "comparison_volatile_keys": vol_keys,
            "fails": fails,
            "worktree_clean_before": clean,
