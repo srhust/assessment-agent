@@ -22,6 +22,7 @@
      spent_so_far 仍是 0/0。
 任何一条不过 → 退出码 1 并列出位置，绝不"顺手解释过去"。
 """
+import collections
 import json
 import re
 import subprocess
@@ -31,6 +32,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 EV = ROOT / "evidence"
 DOCS = ["R14_PROGRESS_STOPGATE.md", "R14_STAGE_E_DELIVERABLES.md",
+        "R14G_HISTORICAL_BYTES.md",
         "R14E_NEWLAYOUT_REGRESSION.md", "R14E_TIGHT_GAP_DIAGNOSIS.md",
         "R14G0_READINESS.md",
         # 本轮新增：因果实验在现行 HEAD 的复现差异（人工裁决项 2 的直接材料）
@@ -90,6 +92,12 @@ def selftest() -> tuple:
         ("C7 已撤回的可复现性结论留在交付文档里", "C7",
          "append", "\n真实截图复放件 `R14E_REAL_PAGE_REPLAY_V8.json` 属 "
          "NOT_REPRODUCIBLE_FROM_HEAD。\n"),
+        # **C8 的注入案例**：改文档里的件数与地位计数 ⇒ 必须报 C8。
+        # 上一步我漏了它（标签写 C8、期望 ID 却写 C7，等于从未测过 C8）。
+        ("C8 文档总件数与索引真值不符", "C8",
+         "c8_total", None),
+        ("C8 文档地位计数（current）与索引真值不符", "C8",
+         "c8_current", None),
     ]
     results = []
     for label, expect_id, mode, payload in cases:
@@ -101,6 +109,29 @@ def selftest() -> tuple:
         if mode == "ghost_g_result":
             (fake / "evidence" / "R14G_RESULT.json").write_text(
                 "{}", encoding="utf-8")
+        elif mode in ("c8_total", "c8_current"):
+            # 只改**文档**里的数字，索引真值保持不动 ⇒ C8 必须发现不符
+            p = fake / "evidence" / "R14_STAGE_E_DELIVERABLES.md"
+            t = p.read_text(encoding="utf-8")
+            want = ("55 件逐件登记" if mode == "c8_total" else "current 29 /")
+            after = ("40 件逐件登记" if mode == "c8_total" else "current 12 /")
+            t = t.replace(want, after)
+            p.write_text(t, encoding="utf-8")
+            # **每个注入案例都必须可证生效**。本轮实测踩到两次"注入静默失手"
+            # （先标签写 C8/期望 ID 写 C7，后是 `current 29` 因文档换行根本没被
+            #  替换）：失手的注入会让子进程**退出 0**，于是把"我的注入没落地"
+            # 误报成"检查失效"——既冤枉检查，也永远测不到它。
+            applied = after in t
+            (fake / "evidence" / "_INJECTION_APPLIED").write_text(
+                ("yes" if applied else "NO"), encoding="utf-8")
+            if not applied:
+                shutil.rmtree(tmp, ignore_errors=True)
+                results.append({"case": label, "expect_check_id": expect_id,
+                                "injection_applied": "NO",
+                                "caught_expected_check": False,
+                                "note": "injection silently no-op ⇒ "
+                                        "该案例**未真正测试**对应检查"})
+                continue
         else:
             for name in ("R14_PROGRESS_STOPGATE.md",
                          "R14E_NEWLAYOUT_REGRESSION.md"):
@@ -111,6 +142,9 @@ def selftest() -> tuple:
                          t.replace("候选 candidates_solved | **16**",
                                    "候选 candidates_solved | **17**"))
                     p.write_text(t, encoding="utf-8")
+        applied = fake / "evidence" / "_INJECTION_APPLIED"
+        inj_applied = (applied.read_text(encoding="utf-8")
+                       if applied.is_file() else "n/a")
         r = subprocess.run([sys.executable, "-X", "utf8",
                             str(fake / "scripts" / Path(__file__).name),
                             "--no-selftest"],
@@ -126,9 +160,18 @@ def selftest() -> tuple:
                    or True}
         hit = any(str(f).startswith(expect_id) for f in out.get("fails", []))
         caught = bool(parseable and r.returncode != 0 and hit)
+        if inj_applied == "NO":
+            # 注入没落进文本 ⇒ 这次"抓不到"是**我的注入失手**，
+            # 不是 C8 失效；必须单列出来而不是混成"检查不灵"
+            caught = False
+            inj_note = "injection silently no-op"
+        else:
+            inj_note = ""
         results.append({"case": label, "expect_check_id": expect_id,
                         "exit": r.returncode, "child_output_parseable": parseable,
+                        "injection_applied": inj_applied,
                         "caught_expected_check": caught,
+                        "note": inj_note,
                         "sample_fail": (out.get("fails") or [""])[0][:150],
                         "stderr_tail": "" if parseable else r.stderr[-200:]})
         shutil.rmtree(tmp, ignore_errors=True)
@@ -139,6 +182,13 @@ def run_checks(write_audit):
     """核心检查。write_audit=False（自测子进程）时**不覆盖**真审计件。"""
     fails, notes = [], {}
     docs = {d: (EV / d).read_text(encoding="utf-8") for d in DOCS if (EV / d).is_file()}
+    idx_p = EV / "R14_INDEX.json"
+    index = json.loads(idx_p.read_text(encoding="utf-8")) if idx_p.is_file() else {}
+    if not index:
+        fails.append("C8 读不到 R14_INDEX.json，计数无从核对")
+    c8f, c8c = check_c8(docs, index)
+    fails += c8f
+    _C8_CITED = c8c                     # 稍后并入 notes/审计件
     missing_docs = [d for d in DOCS if d not in docs]
     if missing_docs:
         fails.append(f"C0 缺交付文档：{missing_docs}")
@@ -165,6 +215,8 @@ def run_checks(write_audit):
             continue
         genuinely_bad.append((d, n, [ln for ln, _ in hits]))
     notes["C1_citations_checked"] = len(cited)
+    notes["C8_count_citations"] = _C8_CITED
+    notes["C8_counts_checked"] = len(_C8_CITED)
     notes["C1_missing_but_erratum_context"] = exempted
     for d, n, lns in genuinely_bad:
         fails.append(f"C1 {d}:{lns} 引用了不存在的件（且非勘误语境）：{n}")
@@ -346,6 +398,65 @@ def run_checks(write_audit):
     print(json.dumps({"fails": fails, "citations": len(cited),
                       "budget": notes["budget"]}, ensure_ascii=False, indent=1))
     return 1 if fails else 0
+
+
+
+def check_c8(docs, index):
+    """**计数一致性**：交付文档凡写"N 件"或"current k / superseded m …"，
+    必须与 `R14_INDEX.json` 的真值相等。
+    本轮实测：文档还写 **47 件**，索引真值已是 **52 件**（deny-by-default
+    之后新增核对副产物与 A9 件）。C1/C2/C3/C5/C7 都只核对逐字引用与判定字段，
+    **看不见计数过期**；而计数正是人工裁决用来判断覆盖面的东西。
+    """
+    fails, cited = [], []
+    counts = collections.Counter(r["status"] for r in index.get("artifacts", []))
+    total = len(index.get("artifacts", []))
+    for name, text in docs.items():
+        for m in re.finditer(r"(\d+)\s*件逐件登记", text):
+            cited.append({"doc": name, "kind": "artifact_total",
+                          "cited": int(m.group(1)), "truth": total})
+            if int(m.group(1)) != total:
+                fails.append(
+                    f"C8 {name} 写 artifact_total={m.group(1)} 件，"
+                    f"索引真值是 {total} 件 ⇒ 计数过期，请重跑 "
+                    f"scripts/e2e_r14_index.py 后同步")
+        for m in re.finditer(
+                r"(?<![A-Za-z_])(current|superseded|historical|"
+                r"erratum_kept|self|verification_byproduct)\s+(\d+)", text):
+            # **直接扫 `状态 数字` 对**，不靠"某个中文词后面的一段"。
+            # 先前写法要求 `）` 收尾，于是括号后第一个状态（恰是最要紧的
+            # `current`）被静默漏检——本轮注入 `current 12` 后 C8 仍报
+            # "没问题"，就是这漏检暴露出来的。
+            k, v = m.group(1), int(m.group(2))
+            ctx = text[max(0, m.start() - 60):m.end() + 60]
+            # **结构判据，不用模糊词表**：被反引号或括号包围的计数是
+            # **样例/旧值引用**（讲检查器怎么工作），不是对登记册的当前引用。
+            # 上一版用"前文含审计/必须/后"——词距不可控，实测豁免**永不触发**。
+            in_code = ctx.count("`") >= 2 and "`" in ctx[:30]
+            in_paren = ("（" in ctx[:30] or "(" in ctx[:30])
+            if in_code or in_paren:
+                cited.append({"doc": name, "kind": k, "cited": v,
+                              "truth": counts.get(k, 0),
+                              "context": "example_or_old_value_skipped"})
+                continue
+            cited.append({"doc": name, "kind": k, "cited": v,
+                          "truth": counts.get(k, 0)})
+            if v != counts.get(k, 0):
+                fails.append(f"C8 {name} 写 {k}={v}，索引真值 "
+                             f"{counts.get(k, 0)} ⇒ 计数过期")
+        # 中文写法"当前 25 / 被取代 18 / 核对副产物 4 / 历史 2 / 勘误保留 1 / 自指 2"
+        ZH = {"当前": "current", "被取代": "superseded",
+              "核对副产物": "verification_byproduct", "历史": "historical",
+              "勘误保留": "erratum_kept", "自指": "self"}
+        for m in re.finditer(
+                r"(当前|被取代|核对副产物|历史|勘误保留|自指)\s*(\d+)", text):
+            k = ZH[m.group(1)]
+            cited.append({"doc": name, "kind": k, "cited": int(m.group(2)),
+                          "truth": counts.get(k, 0)})
+            if int(m.group(2)) != counts.get(k, 0):
+                fails.append(f"C8 {name} 写 {m.group(1)}={m.group(2)}，"
+                             f"索引真值 {counts.get(k, 0)} ⇒ 计数过期")
+    return fails, cited
 
 
 def main() -> int:

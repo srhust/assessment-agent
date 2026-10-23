@@ -131,12 +131,23 @@ G0 也**如实暴露了预算的脆弱面**（C1d）：计划 5 页 + 1 次余�
 
 索引侧同轮改为 **deny-by-default**：不再 `status = "current"` 起手
 （那会让核对副产物 `*_RERUN.json` 冒充当前交付件并把 A1 顶失败），
-地位一律取自登记表；当前 25 / 被取代 18 / **核对副产物 4** / 历史 2 /
+地位一律取自登记表；当前 29 / 被取代 17 / **核对副产物 4** / 历史 2 /
 勘误保留 1 / 自指 2，`unregistered []`。
 
 一键复现清单现为 **18 步**（新两步 `e2f_r14_causal_delta.py`、
 `r14_semantic_repro.py` 由 `skip` 改为真 `fixed` 步，耗时 0.1s / 46.2s，
 总计 95.7s），`fails []`，`http_requests_made 0`、`tokens_used 0`。
+
+5. **注入案例自己静默失手**：审计自证里我一度把标签写成 C8、期望 ID 却写 C7，
+   又把注入目标写成 `current 29 /`（文档实际换行成 `current 29 /
+ superseded`
+   之外的形态）⇒ 子进程退出 0，看起来像"**C8 抓不到**"，其实
+   **C8 当场已经抓到 52≠55 的真违规**。⇒ 每个注入案例现在都必须落一个
+   `injection_applied: yes` 的可证标记，失手就单列"未真正测试"而非冤枉检查。
+6. **检查的覆盖面本身要核**：`C8` 第一版只扫"中文别名 + 括号内片段"，
+   于是最要紧的 `current` 计数正好在括号后被漏掉。⇒ 改为**直接扫
+   `状态名 数字` 对**；并做**真实还原反证**：把两份文档退回旧计数
+   （47 件 / current 25）后审计**必须**报 4 条 C8 并退出 1 —— 实测如此。
 
 ## 因果实验在现行 HEAD 的复现差异（人工裁决项 2 的直接材料）
 
@@ -213,6 +224,14 @@ G0 也**如实暴露了预算的脆弱面**（C1d）：计划 5 页 + 1 次余�
 `g1_r11_real_vision.py` / `g2_r12_real_vision.py` / `g3_r13_real_batch.py` /
 `run_real_vlm_experiment.py`（**会发真实 VLM 请求**）以及
 `r14_verify_all.py` / 归属工具自身（**递归编排器**，20 多分钟跑不完，已终止）。
+**实际后果（不淡化）**：那次误跑**确实重写了**三件历史 Test 证据
+`evidence/R11G_REAL_VISION.json` / `R12G_` / `R13G_`（mtime 10-23 17:20）；
+我发现 `git status` 出现 `M` 后用 `git checkout --` 复原，并由
+`scripts/a9_r14_historical_bytes.py` 逐字节确认三者与**引入 commit 的 git blob**
+一致（详见 [R14G_HISTORICAL_BYTES.md](R14G_HISTORICAL_BYTES.md)）。
+**同时撤回我自己的一条记录**：早先笔记称同批还覆写了
+`data/vlm_responses.jsonl` 并从 `backup_r14_apikey/` 恢复——实测该文件、
+它的写出者、该备份目录**均不存在**，`data/` 亦无本轮改动 ⇒ 该说法**不成立**。
 **实际零请求**：`R14G_PLAN.budget.spent_so_far` 仍是 `requests 0 / tokens 0`，
 `http_requests_made 0`，无新增请求类产物——但那是**因为本地无 key 的运气**，
 不是设计挡住了。已改为**静态优先 + 拒绝式候选**：只有"源码声明会写该件族名"

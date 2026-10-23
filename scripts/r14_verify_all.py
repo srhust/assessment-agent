@@ -100,6 +100,18 @@ STEPS = [
     # 因果实验在现行 HEAD 的复现差异（人工裁决项 2 的**生成式**材料）。
     # 两步原先被我登记成 `skip`（`not_rerunnable: true`、seconds 0.0）——
     # 那是错的：它们**确定性地**产出现行件、且不覆盖任何历史 Test 件。
+    # A9：**历史 Test 件字节基线**——目标②"禁止改历史 Test 结果"的机器看守。
+    # 基线取"引入该件的 commit 的 git blob"，不是 HEAD（当前提交本身可能已被改坏）。
+    ("scripts/a9_r14_historical_bytes.py", "R14G_HISTORICAL_BYTES.json",
+     {"all_identical_true": True, "llm_calls_used": 0,
+      "http_requests_made": 0}, "fixed", None),
+    # A9 的**触发反证**：改一字节必须让检查非零并点名该件，复原后必须重新通过；
+    # 反证只写独立件并把主核验件重算回完整形态（上一步它覆盖了主件，
+    # 把 A8 要求"必须可见"的那些键抹掉了）。
+    ("scripts/a9_r14_historical_bytes.py --selftest",
+     "R14G_HISTORICAL_BYTES_SELFTEST.json",
+     {"fails": [], "restored_identical": True,
+      "main_artifact_is_complete": True}, "fixed", None),
     ("scripts/e2f_r14_causal_delta.py", "R14C_PITCH_ABLATION_HEAD_DELTA.json",
      {"verdict": "present", "claims": "present"}, "fixed",
      "evidence/R14C_PITCH_ABLATION_HEAD_DELTA.json"),
@@ -234,6 +246,14 @@ def main() -> int:
         if r.returncode != 0:
             fails.append(f"{script} 退出码 {r.returncode}："
                          f"{(r.stderr or '').strip()[-200:]}")
+        if must and "all_identical_true" in must and p.is_file():
+            ad = json.loads(p.read_text(encoding="utf-8"))
+            bad = [r["artifact"] for r in ad.get("rows", [])
+                   if not r.get("identical")]
+            if bad or ad.get("fails"):
+                fails.append(f"A9 步：历史件字节与引入 commit 不符 {bad} "
+                             f"/ {ad.get('fails')}")
+            must = {k: v for k, v in must.items() if k != "all_identical_true"}
         if must and p.is_file():
             try:
                 d = json.loads(p.read_text(encoding="utf-8"))
@@ -247,6 +267,14 @@ def main() -> int:
                         fails.append(f"{script} → {art} 的 {k} 子集不符："
                                      f"{ {wk: got.get(wk) for wk in want} }"
                                      f" ≠ {want}")
+                    continue
+                if want == "main_artifact_is_complete":
+                    keys = dig(d, "main_artifact_keys") or []
+                    need = {"checks", "rows", "fails", "incident_record",
+                            "data_worktree_entries", "budget"}
+                    if set(keys) != need or d.get("missing_keys"):
+                        fails.append(f"A9 自检后主核验件不完整：{keys} "
+                                     f"/ {d.get('missing_keys')}")
                     continue
                 if want == "present":
                     # **存在性断言也必须可核对**：空壳（None/空列表/空 dict）

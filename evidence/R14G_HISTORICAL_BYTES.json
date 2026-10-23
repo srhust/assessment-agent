@@ -1,0 +1,73 @@
+{
+ "checks": "A9",
+ "rows": [
+  {
+   "artifact": "R11G_REAL_VISION.json",
+   "introduced_by": "c1f33c4",
+   "sha256_now": "dabea7a9298ce104c1c086daf8c28bedb877524c4c35b76fd843d9317e487865",
+   "sha256_at_introduction": "dabea7a9298ce104c1c086daf8c28bedb877524c4c35b76fd843d9317e487865",
+   "identical": true,
+   "mtime": "2026-10-23 23:24",
+   "bytes": 7239
+  },
+  {
+   "artifact": "R12G_REAL_VISION.json",
+   "introduced_by": "07c864e",
+   "sha256_now": "061b06c1a80a206d709cc02f9098b8668a6c5e45ff6968efd7dc5e67f3d5553b",
+   "sha256_at_introduction": "061b06c1a80a206d709cc02f9098b8668a6c5e45ff6968efd7dc5e67f3d5553b",
+   "identical": true,
+   "mtime": "2026-10-23 17:20",
+   "bytes": 10397
+  },
+  {
+   "artifact": "R13G_REAL_VISION.json",
+   "introduced_by": "f03670e",
+   "sha256_now": "d4978e04ae9b5d45d0382685865e19a08c737bf99b7c804b1c551a5cf40e2f59",
+   "sha256_at_introduction": "d4978e04ae9b5d45d0382685865e19a08c737bf99b7c804b1c551a5cf40e2f59",
+   "identical": true,
+   "mtime": "2026-10-23 17:20",
+   "bytes": 3861
+  },
+  {
+   "artifact": "R11G_FREEZE.json",
+   "introduced_by": "c1f33c4",
+   "sha256_now": "3bc6e6a17505c45e3f40bf0300155e7069af4885fc44d91919b425aae8e927d5",
+   "sha256_at_introduction": "3bc6e6a17505c45e3f40bf0300155e7069af4885fc44d91919b425aae8e927d5",
+   "identical": true,
+   "mtime": "2026-10-22 01:00",
+   "bytes": 1668
+  },
+  {
+   "artifact": "R12G_FREEZE.json",
+   "introduced_by": "07c864e",
+   "sha256_now": "b2ee4a7a6194772b27f9b4abf2136f268fee4085e45544cebeee20be349199d7",
+   "sha256_at_introduction": "b2ee4a7a6194772b27f9b4abf2136f268fee4085e45544cebeee20be349199d7",
+   "identical": true,
+   "mtime": "2026-10-22 12:18",
+   "bytes": 2914
+  },
+  {
+   "artifact": "R13G_REAL_PARSE_OFFLINE_REPLAY.json",
+   "introduced_by": "f03670e",
+   "sha256_now": "0638df7ffa3cc30b17cea6063d8b9785025e301c65acfed4387023fec6122dce",
+   "sha256_at_introduction": "0638df7ffa3cc30b17cea6063d8b9785025e301c65acfed4387023fec6122dce",
+   "identical": true,
+   "mtime": "2026-10-22 15:54",
+   "bytes": 1987
+  }
+ ],
+ "fails": [],
+ "data_worktree_entries": [
+  "!! data/benchmark_figshots_perturb/"
+ ],
+ "incident_record": {
+  "what": "归属工具动态核验误挑中三个会发真实 VLM 请求的历史批脚本（g1_r11 / g2_r12 / g3_r13），重写了 evidence/R11G_REAL_VISION.json / R12G_ / R13G_ 三件；已用 git checkout -- 复原，本检查逐字节确认等于引入 commit。",
+  "detected_by": "git status 出现 M（人工核对时发现）",
+  "prevention": "r14_attribute_producer.unsafe_to_run 拒绝式候选（网络标记 / 编排器 / 无 --out）+ A6 附带改动检测 + 本 A9 字节基线",
+  "claim_retracted": "会话早先笔记称同一事故还覆写了 data/vlm_responses.jsonl 并从 backup_r14_apikey/ 恢复；本轮实测该文件与其写出者、该备份目录**均不存在**，data/ 亦无本轮改动 ⇒ 该说法**不成立**，已按事实收缩。"
+ },
+ "budget": {
+  "http_requests_made": 0,
+  "tokens_used": 0
+ }
+}

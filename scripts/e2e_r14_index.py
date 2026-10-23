@@ -49,11 +49,16 @@ CURRENT = {
     "R14H_KB_CHANNEL_AUDIT.json": "H KB 通道审计",
     # 交付文档（`.md`）同样**显式登记**：deny-by-default 之后，
     # "默认 current" 会把任何核对副产物冒充成当前交付件（本轮实测）。
-    "R14_VERIFICATION_BUNDLE.json": "一键复现 bundle（16 步离线验证）",
+    "R14_VERIFICATION_BUNDLE.json": "一键复现 bundle（18 步离线验证）",
     "R14E_ARTIFACT_ATTRIBUTION.json": "证据件生产者归属（含安全闸门结论）",
     "R14E_ATTRIBUTION_SELFTEST.json": "归属安全闸门的自证注入结果",
     "R14E_RERUN_SEMANTICS.json": "补集复现核对（结论级/注解级差异分列）",
     "R14C_PITCH_ABLATION_HEAD_DELTA.json": "因果实验在现行 HEAD 的复现差异",
+    "R14G_HISTORICAL_BYTES.json": "历史 Test 件逐字节对引入 commit 的完整性核验"
+                                  "（含本轮误覆写事故记录）",
+    "R14G_HISTORICAL_BYTES_SELFTEST.json": "A9 字节基线检查的触发反证",
+    "R14G_HISTORICAL_BYTES.md": "历史 Test 件字节完整性核验正文（含本轮"
+                                "误覆写事故记录与自我撤回）",
     "R14_PROGRESS_STOPGATE.md": "人工评审入口（本轮闸门文档）",
     "R14_STAGE_E_DELIVERABLES.md": "Stage E 十项交付正文",
     "R14E_NEWLAYOUT_REGRESSION.md": "新排版独立 Dev 回归说明",
@@ -234,10 +239,14 @@ def main() -> int:
         if status == "current" and p.suffix == ".json" and not prod:
             status, why = "unregistered", "登记为现行但**找不到写出它的脚本**"
         if p.suffix == ".md" and status == "current":
-            status = "current" if name in {
-                "R14_PROGRESS_STOPGATE.md", "R14_STAGE_E_DELIVERABLES.md",
-                "R14E_NEWLAYOUT_REGRESSION.md", "R14E_TIGHT_GAP_DIAGNOSIS.md",
-                "R14G0_READINESS.md", "R14_CLAIM_AUDIT.md"} else "superseded"
+            # **两处清单必须同源**：上面 `CURRENT` 里已登记的文档，
+            # 这里**绝不允许**再被降级成 superseded。前几轮这个内联集合
+            # 与 `CURRENT` 各写一份，导致"登记了却被自己判过期"的自相矛盾
+            # （本轮实测：A9 文档 `R14G_HISTORICAL_BYTES.md` 一落盘，
+            #  索引先给 current、下一句又因它不在内联集合里改判 superseded，
+            #  计数随即与文档不符 —— C8 抓到的是**索引自己的双重清单**）。
+            # 内联集合**删掉**：`.md` 的地位只由 `CURRENT` 决定。
+            pass
         rows.append({"artifact": name, "bytes": p.stat().st_size,
                      "sha256": sha(p), "sha_short": sha(p)[:12],
                      "status": status, "status_note": why,

@@ -109,10 +109,27 @@ bundle 不再用 `skip`，改由真作者重跑到 `_RERUN` 证明复现，同�
 重放脚本的 `option_boxes` 曾被写窄成 `[bbox, ink]` 而丢 `label_bbox`；
 恢复为三元组 `[cell_bbox_page, label_bbox, ink]` 后与提交版**逐字相同**。
 
+## 历史 Test 件字节完整性（A9，人工必读）
+
+`scripts/a9_r14_historical_bytes.py` →
+[R14G_HISTORICAL_BYTES.json](R14G_HISTORICAL_BYTES.json) /
+[R14G_HISTORICAL_BYTES.md](R14G_HISTORICAL_BYTES.md)：六件历史 Test / 冻结件的
+当前字节与**把它们写进仓库的那个 commit 的 git blob 逐字节一致**
+（基线不用 HEAD——"当前提交"本身可能已被我改坏）。
+同文档如实记录本轮**误覆写事故**：归属工具的动态核验按启发式挑中了
+`g1_r11 / g2_r12 / g3_r13` 三个**会发真实 VLM 请求**的历史批脚本，
+重写了三件 `R?G_REAL_VISION.json`；**未产生真实请求的原因是当时无 key，
+属运气而非设计挡住**。防复发三层：拒绝式候选、附带改动检测、本字节基线。
+文档还**撤回**我先前一条查无实据的说法（所谓 `data/vlm_responses.jsonl`
+覆写与 `backup_r14_apikey/` 恢复：文件、写出者、目录均不存在）。
+反证件 `R14G_HISTORICAL_BYTES_SELFTEST.json`：追加一字节必须让 A9 非零退出
+并点名该件，复原后必须重新通过。
+
 ## 交付**索引**（`R14_INDEX.json` / `R14_INDEX.md`）
 
-47 件逐件登记 **sha256、生产脚本与**作者档位**、首次入库与最近改动 commit、
-地位（current 25 / superseded 18 / historical 2 / erratum_kept 1 / self 2）**，
+55 件逐件登记 **sha256、生产脚本与**作者档位**、首次入库与最近改动 commit、
+地位（current 29 / superseded 17 / verification_byproduct 4 / historical 2 /
+erratum_kept 1 / self 2）**，
 并给出一条**人工阅读顺序**。自检 `self_checks_failed []`：
 · **A1** 每个当前件都必须追溯到"**会写出**它的脚本"。档位
   `attribution_verified > declared_writer > mention_only`——

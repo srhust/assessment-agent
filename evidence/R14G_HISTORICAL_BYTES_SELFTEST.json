@@ -1,0 +1,8 @@
+{
+ "fails": [],
+ "artifact": "R11G_REAL_VISION.json",
+ "restored_identical": true,
+ "budget": {
+  "http_requests_made": 0
+ }
+}

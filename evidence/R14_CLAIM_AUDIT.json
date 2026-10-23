@@ -2,6 +2,7 @@
  "docs": [
   "R14_PROGRESS_STOPGATE.md",
   "R14_STAGE_E_DELIVERABLES.md",
+  "R14G_HISTORICAL_BYTES.md",
   "R14E_NEWLAYOUT_REGRESSION.md",
   "R14E_TIGHT_GAP_DIAGNOSIS.md",
   "R14G0_READINESS.md",
@@ -9,7 +10,108 @@
  ],
  "fails": [],
  "notes": {
-  "C1_citations_checked": 53,
+  "C1_citations_checked": 57,
+  "C8_count_citations": [
+   {
+    "doc": "R14_PROGRESS_STOPGATE.md",
+    "kind": "current",
+    "cited": 29,
+    "truth": 29
+   },
+   {
+    "doc": "R14_PROGRESS_STOPGATE.md",
+    "kind": "current",
+    "cited": 29,
+    "truth": 29
+   },
+   {
+    "doc": "R14_PROGRESS_STOPGATE.md",
+    "kind": "current",
+    "cited": 25,
+    "truth": 29,
+    "context": "example_or_old_value_skipped"
+   },
+   {
+    "doc": "R14_PROGRESS_STOPGATE.md",
+    "kind": "current",
+    "cited": 29,
+    "truth": 29
+   },
+   {
+    "doc": "R14_PROGRESS_STOPGATE.md",
+    "kind": "superseded",
+    "cited": 17,
+    "truth": 17
+   },
+   {
+    "doc": "R14_PROGRESS_STOPGATE.md",
+    "kind": "verification_byproduct",
+    "cited": 4,
+    "truth": 4
+   },
+   {
+    "doc": "R14_PROGRESS_STOPGATE.md",
+    "kind": "historical",
+    "cited": 2,
+    "truth": 2
+   },
+   {
+    "doc": "R14_PROGRESS_STOPGATE.md",
+    "kind": "erratum_kept",
+    "cited": 1,
+    "truth": 1
+   },
+   {
+    "doc": "R14_PROGRESS_STOPGATE.md",
+    "kind": "self",
+    "cited": 2,
+    "truth": 2
+   },
+   {
+    "doc": "R14_STAGE_E_DELIVERABLES.md",
+    "kind": "artifact_total",
+    "cited": 55,
+    "truth": 55
+   },
+   {
+    "doc": "R14_STAGE_E_DELIVERABLES.md",
+    "kind": "current",
+    "cited": 29,
+    "truth": 29
+   },
+   {
+    "doc": "R14_STAGE_E_DELIVERABLES.md",
+    "kind": "superseded",
+    "cited": 17,
+    "truth": 17
+   },
+   {
+    "doc": "R14_STAGE_E_DELIVERABLES.md",
+    "kind": "verification_byproduct",
+    "cited": 4,
+    "truth": 4
+   },
+   {
+    "doc": "R14_STAGE_E_DELIVERABLES.md",
+    "kind": "historical",
+    "cited": 2,
+    "truth": 2,
+    "context": "example_or_old_value_skipped"
+   },
+   {
+    "doc": "R14_STAGE_E_DELIVERABLES.md",
+    "kind": "erratum_kept",
+    "cited": 1,
+    "truth": 1
+   },
+   {
+    "doc": "R14_STAGE_E_DELIVERABLES.md",
+    "kind": "self",
+    "cited": 2,
+    "truth": 2
+   }
+  ],
+  "C8_counts_checked": 16,
   "C1_missing_but_erratum_context": [
    {
     "doc": "R14G0_READINESS.md",
@@ -32,7 +134,7 @@
     "artifact": "R14E_PERTURB_RELEASE_AUDIT_V5.json",
     "lines": [
      54,
-     153
+     170
     ],
     "why": "该句本身声明此件不存在/被取代，属勘误语境"
    }
@@ -84,6 +186,9 @@
   "R14F_PERTURB_RELEASE_AUDIT.json",
   "R14G0_GATE_READINESS_V5.json",
   "R14G0_READINESS.md",
+  "R14G_HISTORICAL_BYTES.json",
+  "R14G_HISTORICAL_BYTES.md",
+  "R14G_HISTORICAL_BYTES_SELFTEST.json",
   "R14G_PLAN.json",
   "R14G_RESULT.json",
   "R14H_KB_CHANNEL_AUDIT.json",
@@ -104,7 +209,9 @@
     "expect_check_id": "C1",
     "exit": 1,
     "child_output_parseable": true,
+    "injection_applied": "n/a",
     "caught_expected_check": true,
+    "note": "",
     "sample_fail": "C1 R14E_NEWLAYOUT_REGRESSION.md:[80] 引用了不存在的件（且非勘误语境）：R14E_NOT_A_REAL_ARTIFACT.json",
     "stderr_tail": ""
    },
@@ -113,8 +220,10 @@
     "expect_check_id": "C2",
     "exit": 1,
     "child_output_parseable": true,
+    "injection_applied": "n/a",
     "caught_expected_check": true,
-    "sample_fail": "C2 R14_PROGRESS_STOPGATE.md:273 把被取代件 R14E_NEWLAYOUT_REGRESSION_V2.json 当作当前引用（该句无勘误语境）",
+    "note": "",
+    "sample_fail": "C2 R14_PROGRESS_STOPGATE.md:292 把被取代件 R14E_NEWLAYOUT_REGRESSION_V2.json 当作当前引用（该句无勘误语境）",
     "stderr_tail": ""
    },
    {
@@ -122,7 +231,9 @@
     "expect_check_id": "C5",
     "exit": 1,
     "child_output_parseable": true,
+    "injection_applied": "n/a",
     "caught_expected_check": true,
+    "note": "",
     "sample_fail": "C5 R14_PROGRESS_STOPGATE.md 出现禁止措辞「真实截图已突破」",
     "stderr_tail": ""
    },
@@ -131,7 +242,9 @@
     "expect_check_id": "C3",
     "exit": 1,
     "child_output_parseable": true,
+    "injection_applied": "n/a",
     "caught_expected_check": true,
+    "note": "",
     "sample_fail": "C3 R14E_NEWLAYOUT_REGRESSION.md 抄录 17 != 件内 16（('layers', 'candidates_solved')）",
     "stderr_tail": ""
    },
@@ -140,7 +253,9 @@
     "expect_check_id": "C6",
     "exit": 1,
     "child_output_parseable": true,
+    "injection_applied": "n/a",
     "caught_expected_check": true,
+    "note": "",
     "sample_fail": "C6 不应存在 G 结果件（未获人工批准）：['R14G_RESULT.json']",
     "stderr_tail": ""
    },
@@ -149,8 +264,32 @@
     "expect_check_id": "C7",
     "exit": 1,
     "child_output_parseable": true,
+    "injection_applied": "n/a",
     "caught_expected_check": true,
+    "note": "",
     "sample_fail": "C7 R14E_NEWLAYOUT_REGRESSION.md:80 对 R14E_REAL_PAGE_REPLAY_V8.json 断言 ['NOT_REPRODUCIBLE_FROM_HEAD', 'REPRODUCIBLE_FROM_HEAD']，但归属真值是 REPRODUCIBLE_FRO",
+    "stderr_tail": ""
+   },
+   {
+    "case": "C8 文档总件数与索引真值不符",
+    "expect_check_id": "C8",
+    "exit": 1,
+    "child_output_parseable": true,
+    "injection_applied": "yes",
+    "caught_expected_check": true,
+    "note": "",
+    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=40 件，索引真值是 55 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步",
+    "stderr_tail": ""
+   },
+   {
+    "case": "C8 文档地位计数（current）与索引真值不符",
+    "expect_check_id": "C8",
+    "exit": 1,
+    "child_output_parseable": true,
+    "injection_applied": "yes",
+    "caught_expected_check": true,
+    "note": "",
+    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 current=12，索引真值 29 ⇒ 计数过期",
     "stderr_tail": ""
    }
   ],
