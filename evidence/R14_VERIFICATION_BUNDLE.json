@@ -1,11 +1,33 @@
 {
- "head_at_run": "4852e0cfb728304ab368726d9ec7be3a432930d8",
+ "head_at_run": "d21fbd8683dfe8507dffcfac4d1cd9b3494e9ed9",
  "n_steps": 21,
  "docs_step_count_synced": [],
  "A13_step_count_guard": {
   "checked_docs": 2,
   "required_steps": 21,
   "synced": [],
+  "rewrite_targets": [
+   "R14_STAGE_E_DELIVERABLES.md",
+   "R14_PROGRESS_STOPGATE.md"
+  ],
+  "step_count_lines": [
+   [
+    "R14_STAGE_E_DELIVERABLES.md",
+    21
+   ],
+   [
+    "R14_STAGE_E_DELIVERABLES.md",
+    21
+   ],
+   [
+    "R14_PROGRESS_STOPGATE.md",
+    21
+   ],
+   [
+    "R14_PROGRESS_STOPGATE.md",
+    21
+   ]
+  ],
   "note": "交付文档里的步数由本步统一回写并断言无残留；上一版只替两个位置 ⇒ 同一篇文档出现 15/16/21 步自相矛盾"
  },
  "steps": [
@@ -16,7 +38,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "8521ab4e7d39",
+   "artifact_sha256_short": "94aebbdfd1ba",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -31,7 +53,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.3,
-   "artifact_sha256_short": "28ef3425709b",
+   "artifact_sha256_short": "8898a552e2b8",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -60,7 +82,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.7,
+   "seconds": 5.6,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -90,7 +112,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.4,
+   "seconds": 2.3,
    "artifact_sha256_short": "9a6a48a7e9ad",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -135,8 +157,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 3.1,
-   "artifact_sha256_short": "62b9b75673a7",
+   "seconds": 3.0,
+   "artifact_sha256_short": "935493022d8e",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -150,7 +172,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 4.2,
+   "seconds": 4.5,
    "artifact_sha256_short": "8812f2b72e12",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -181,7 +203,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "1abc8372259d",
+   "artifact_sha256_short": "42ba113e482d",
    "artifact_rewritten": true,
    "stdout_tail": [
     "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
@@ -195,7 +217,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.1,
+   "seconds": 2.0,
    "artifact_sha256_short": "0f8a026f9b49",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -226,7 +248,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.1,
-   "artifact_sha256_short": "b403d8c79b14",
+   "artifact_sha256_short": "f8e4c26eea2e",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -240,7 +262,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 20.1,
+   "seconds": 23.6,
    "artifact_sha256_short": "866bf00417dd",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -256,7 +278,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 1.2,
-   "artifact_sha256_short": "a2ee9cd69a83",
+   "artifact_sha256_short": "cf7507b033cf",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -285,8 +307,8 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 4.6,
-   "artifact_sha256_short": "b989c306d24b",
+   "seconds": 4.7,
+   "artifact_sha256_short": "845c5e4c26b2",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -300,7 +322,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 9.9,
+   "seconds": 9.7,
    "artifact_sha256_short": "c3ea0b0dc2ed",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -316,13 +338,13 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 7.2,
-   "artifact_sha256_short": "4baff57e710c",
+   "artifact_sha256_short": "4243a93c97db",
    "artifact_rewritten": true,
    "stdout_tail": [
-    "{\"run_mark\": \"d0eca4188471\", \"n_artifacts\": 56, \"self_checks_failed\": []}"
+    "{\"run_mark\": \"bbd2a0b4aa17\", \"n_artifacts\": 56, \"self_checks_failed\": []}"
    ],
-   "run_mark_artifact": "d0eca4188471",
-   "run_mark_stdout": "d0eca4188471"
+   "run_mark_artifact": "bbd2a0b4aa17",
+   "run_mark_stdout": "bbd2a0b4aa17"
   }
  ],
  "comparison_volatile_keys": {
@@ -353,7 +375,9 @@
    "rerun_by"
   ]
  },
- "fails": [],
+ "fails": [
+  "A10b bundle 写出了**声明人工撰写**的件 ['R14_PROGRESS_STOPGATE.md']（本轮改写 ∪ **声明的回写目标**）：要么删掉 HAND_WRITTEN 里的声明，要么别在 bundle 里写它"
+ ],
  "worktree_clean_before": true,
  "worktree_clean_after": false,
  "A10_expected_paths": 39,

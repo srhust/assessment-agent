@@ -164,15 +164,15 @@ def _bundle_steps():
 # **人工撰写**的交付文档：没有生产脚本是**正确**的，
 # 但必须逐件显式声明，且被**反向核验**（见 A1b）。
 HAND_WRITTEN = {
-    "R14_PROGRESS_STOPGATE.md",
     "R14_CLAIM_AUDIT.md", "R14E_NEWLAYOUT_REGRESSION.md",
     "R14E_TIGHT_GAP_DIAGNOSIS.md", "R14G0_READINESS.md",
     "R14G_HISTORICAL_BYTES.md",
     # **被我删掉的假豁免（A1b/A10 两轮各抓一个）**：
     # · `R14C_PITCH_ABLATION_HEAD_DELTA.md` 由 `e2f_r14_causal_delta.py`
     #   现场写出；
-    # · `R14_STAGE_E_DELIVERABLES.md` 由 bundle 的 A13 回写步**每轮**写出
-    #   ⇒ 再说"人工撰写"就是谎报。
+    # · `R14_STAGE_E_DELIVERABLES.md` 与 `R14_PROGRESS_STOPGATE.md`
+    #   由 bundle 的 A13 回写步**每轮**写出 ⇒ 再说"人工撰写"就是谎报
+    #   （A10b 于本轮第二次抓到同一形态的谎：我删了前者却忘了后者）。
 }
 
 # 只有这两档才算"真的有生产者"；`mention_only` 是**读到/引用**该件名，

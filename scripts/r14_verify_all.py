@@ -613,6 +613,7 @@ def main() -> int:
         if not _dp.is_file():
             continue
         _rewrite_targets.append(_dn)
+        _n_before_lines = _t.count("\n")
         _t = _dp.read_text(encoding="utf-8")
         # **全篇统一**：凡"N 步"（真跑/清单/一键复现）都按本次
         # `n_steps` 校正。上一版只替两个位置，结果同一篇文档里
@@ -635,9 +636,19 @@ def main() -> int:
         # 修掉上一版留下的**坏排版**：`一键复现{**21 步**}` → `一键复现 **21 步**`
         _n = re.sub(r"一键复现\{\*\*(\d+) 步\*\*", r"一键复现 **\1 步**", _n)
         if _n != _t:
+            # **回写只许动"计数语境"**：改动行数明显超过计数行 ⇒ 越界，
+            # 我不能借"自动同步"之名改人工裁决件的判断句。
+            _diff_lines = sum(1 for x, y in zip(_t.splitlines(),
+                                                 _n.splitlines()) if x != y)
+            if _diff_lines > max(2, len(_a13_seen) + 1):
+                fails.append(
+                    f"A13 越界回写：{_dn} 本次改动 {_diff_lines} 行，"
+                    f"而计数语境命中只有 {len(_a13_seen)} 处 ⇒ "
+                    f"回写只许改步数，不许改判断句")
             _dp.write_text(_n, encoding="utf-8")
-            _doc_sync.append(_dn)
-    _a13_seen = []
+            _doc_sync.append([_dn, _diff_lines])
+    # （`_a13_seen` 在下面的残留断言循环里收集，收集的是**回写后**的
+    #  盘上真值 ⇒ 与 A13 的判定同一口径，不拿改前文本自证）
     # **A13 残留断言**：改完必须真的没有过期步数，
     # 而不是"我写了替换逻辑"就算完。
     for _dn in ("R14_STAGE_E_DELIVERABLES.md", "R14_PROGRESS_STOPGATE.md"):
@@ -660,6 +671,8 @@ def main() -> int:
                          " 的 `一键复现` 后面残留花括号 " + str(_brace[:2]))
     a13 = {"checked_docs": 2, "required_steps": len(rows),
            "synced": _doc_sync, "rewrite_targets": _rewrite_targets,
+           "rewrite_scope": "仅**步数语境**（真跑 N 步 / 一键复现 N 步 / "
+                            "清单 N 步）；序号与判断句不动，越界自报",
            "step_count_lines": _a13_seen,
            "note": "交付文档里的步数由本步统一回写并断言无残留；"
                    "上一版只替两个位置 ⇒ 同一篇文档出现 15/16/21 步自相矛盾"}
