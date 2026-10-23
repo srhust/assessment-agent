@@ -221,7 +221,11 @@ def main() -> int:
                   "| A:", a.get("solver_status"), a.get("final_answer"),
                   "| B:", b.get("solver_status"), b.get("final_answer"),
                   "| gold:", rows.get("C_gold", {}).get("solver_status"))
-    (ROOT / "evidence/R14C_PITCH_ABLATION.json").write_text(
+    name = "R14C_PITCH_ABLATION.json"
+    if "--out" in sys.argv:                      # 重跑一律落**新名**，绝不覆盖历史件
+        name = sys.argv[sys.argv.index("--out") + 1]
+    dst = ROOT / "evidence" / name
+    dst.write_text(
         json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     return 0
 

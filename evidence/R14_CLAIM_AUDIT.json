@@ -4,11 +4,12 @@
   "R14_STAGE_E_DELIVERABLES.md",
   "R14E_NEWLAYOUT_REGRESSION.md",
   "R14E_TIGHT_GAP_DIAGNOSIS.md",
-  "R14G0_READINESS.md"
+  "R14G0_READINESS.md",
+  "R14C_PITCH_ABLATION_HEAD_DELTA.md"
  ],
  "fails": [],
  "notes": {
-  "C1_citations_checked": 48,
+  "C1_citations_checked": 53,
   "C1_missing_but_erratum_context": [
    {
     "doc": "R14G0_READINESS.md",
@@ -63,6 +64,8 @@
  },
  "citations": [
   "R14C_PITCH_ABLATION.json",
+  "R14C_PITCH_ABLATION_HEAD_DELTA.json",
+  "R14C_PITCH_ABLATION_RERUN2.json",
   "R14C_REAL_PARSE_REPLAY.json",
   "R14E_ANCHOR_SWEEP.json",
   "R14E_ARTIFACT_ATTRIBUTION.json",
@@ -73,6 +76,7 @@
   "R14E_PERTURB_RELEASE_AUDIT_V5.json",
   "R14E_REAL_PAGE_REPLAY_V8.json",
   "R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
+  "R14E_RERUN_SEMANTICS.json",
   "R14E_SIX_CONDITION_V10.json",
   "R14E_STAGE_E_ACCEPTANCE_V8.json",
   "R14E_TIGHT_GAP_DIAGNOSIS.json",
@@ -110,7 +114,7 @@
     "exit": 1,
     "child_output_parseable": true,
     "caught_expected_check": true,
-    "sample_fail": "C2 R14_PROGRESS_STOPGATE.md:206 把被取代件 R14E_NEWLAYOUT_REGRESSION_V2.json 当作当前引用（该句无勘误语境）",
+    "sample_fail": "C2 R14_PROGRESS_STOPGATE.md:246 把被取代件 R14E_NEWLAYOUT_REGRESSION_V2.json 当作当前引用（该句无勘误语境）",
     "stderr_tail": ""
    },
    {

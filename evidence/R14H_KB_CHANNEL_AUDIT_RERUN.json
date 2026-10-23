@@ -1,0 +1,194 @@
+{
+ "stage": "R14-H planner KB audit (0 HTTP)",
+ "missing_gold_card_classification": {
+  "jr.categorical-syllogism": {
+   "equivalent_present": null,
+   "class": "缺卡（三段论属逻辑判断族，numeric KB 无对应；执行器亦未覆盖）"
+  },
+  "nc.arithmetic-precedence": {
+   "equivalent_present": null,
+   "class": "确定性执行器已覆盖（Direct-AST 按 Python 语义天然处理运算次序）"
+  },
+  "nc.combinatorics-power": {
+   "equivalent_present": null,
+   "class": "缺卡（排列组合/幂集计数族 KB 无任何同族卡）"
+  },
+  "nc.work-rate": {
+   "equivalent_present": "nc.work-rate-lcm",
+   "class": "异名等价卡（效率最小公倍数法即工程问题通用解法）"
+  }
+ },
+ "channel_trace": [
+  {
+   "id": "r10g-01",
+   "status": "failed",
+   "answer": null,
+   "channel_delta": {
+    "ast": 1,
+    "planner": 1,
+    "word_problem": 1,
+    "ast_hit": 0,
+    "planner_hit": 0,
+    "word_hit": 0
+   },
+   "gold_refs": [
+    "da.growth-amount"
+   ],
+   "prior_retrieval_state": "invoked_with_results"
+  },
+  {
+   "id": "r10g-02",
+   "status": "failed",
+   "answer": null,
+   "channel_delta": {
+    "ast": 1,
+    "planner": 1,
+    "word_problem": 1,
+    "ast_hit": 0,
+    "planner_hit": 0,
+    "word_hit": 0
+   },
+   "gold_refs": [
+    "nc.travel-meeting-pursuit"
+   ],
+   "prior_retrieval_state": "invoked_with_results"
+  },
+  {
+   "id": "r10g-03",
+   "status": "solved",
+   "answer": "C",
+   "channel_delta": {
+    "ast": 1,
+    "planner": 0,
+    "word_problem": 0,
+    "ast_hit": 1,
+    "planner_hit": 0,
+    "word_hit": 0
+   },
+   "gold_refs": [
+    "nc.combinatorics-power"
+   ],
+   "prior_retrieval_state": "invoked_with_results"
+  },
+  {
+   "id": "r10g-04",
+   "status": "failed",
+   "answer": null,
+   "channel_delta": {
+    "ast": 1,
+    "planner": 1,
+    "word_problem": 1,
+    "ast_hit": 0,
+    "planner_hit": 0,
+    "word_hit": 0
+   },
+   "gold_refs": [
+    "da.growth-amount"
+   ],
+   "prior_retrieval_state": "invoked_with_results"
+  },
+  {
+   "id": "r10g-05",
+   "status": "failed",
+   "answer": null,
+   "channel_delta": {
+    "ast": 1,
+    "planner": 1,
+    "word_problem": 1,
+    "ast_hit": 0,
+    "planner_hit": 0,
+    "word_hit": 0
+   },
+   "gold_refs": [
+    "nc.work-rate"
+   ],
+   "prior_retrieval_state": "invoked_with_results"
+  },
+  {
+   "id": "r10g-07",
+   "status": "solved",
+   "answer": "A",
+   "channel_delta": {
+    "ast": 1,
+    "planner": 0,
+    "word_problem": 1,
+    "ast_hit": 0,
+    "planner_hit": 0,
+    "word_hit": 0
+   },
+   "gold_refs": [
+    "nc.arithmetic-precedence"
+   ],
+   "prior_retrieval_state": "invoked_empty_direct_ast"
+  },
+  {
+   "id": "r10g-08",
+   "status": "failed",
+   "answer": null,
+   "channel_delta": {
+    "ast": 1,
+    "planner": 1,
+    "word_problem": 1,
+    "ast_hit": 0,
+    "planner_hit": 0,
+    "word_hit": 0
+   },
+   "gold_refs": [
+    "jr.categorical-syllogism"
+   ],
+   "prior_retrieval_state": "invoked_empty_direct_ast"
+  }
+ ],
+ "five_state": {
+  "r10g-01": {
+   "state": "card_exists_not_retrieved",
+   "gold_in_kb": [
+    "da.growth-amount"
+   ],
+   "gold_absent": []
+  },
+  "r10g-02": {
+   "state": "invoked_with_results",
+   "gold_in_kb": [
+    "nc.travel-meeting-pursuit"
+   ],
+   "gold_absent": []
+  },
+  "r10g-03": {
+   "state": "invoked_with_results",
+   "gold_in_kb": [],
+   "gold_absent": [
+    "nc.combinatorics-power"
+   ]
+  },
+  "r10g-04": {
+   "state": "card_exists_not_retrieved",
+   "gold_in_kb": [
+    "da.growth-amount"
+   ],
+   "gold_absent": []
+  },
+  "r10g-05": {
+   "state": "invoked_with_results",
+   "gold_in_kb": [],
+   "gold_absent": [
+    "nc.work-rate"
+   ]
+  },
+  "r10g-07": {
+   "state": "gold_card_absent",
+   "gold_in_kb": [],
+   "gold_absent": [
+    "nc.arithmetic-precedence"
+   ]
+  },
+  "r10g-08": {
+   "state": "gold_card_absent",
+   "gold_in_kb": [],
+   "gold_absent": [
+    "jr.categorical-syllogism"
+   ]
+  }
+ },
+ "note": "通道轨迹由运行时方法级插桩得出（调用次数+ solved 命中次数）；ast_expr 非空不能证明通道，插桩计数才能。问题文本取自 r10gen 金标源（answer=None 防止任何答案泄漏进求解）。"
+}

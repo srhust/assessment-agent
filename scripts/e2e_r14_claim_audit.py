@@ -32,7 +32,9 @@ ROOT = Path(__file__).resolve().parents[1]
 EV = ROOT / "evidence"
 DOCS = ["R14_PROGRESS_STOPGATE.md", "R14_STAGE_E_DELIVERABLES.md",
         "R14E_NEWLAYOUT_REGRESSION.md", "R14E_TIGHT_GAP_DIAGNOSIS.md",
-        "R14G0_READINESS.md"]
+        "R14G0_READINESS.md",
+        # 本轮新增：因果实验在现行 HEAD 的复现差异（人工裁决项 2 的直接材料）
+        "R14C_PITCH_ABLATION_HEAD_DELTA.md"]
 
 SUPERSEDED_AS_CURRENT = {        # 只允许在"勘误/更正/历史"语境出现
     "R14E_NEWLAYOUT_REGRESSION_V2.json": ("勘误", "V2 ", "V2 的", "V2→V3",

@@ -64,6 +64,11 @@ def _collateral(snap_before):
     return sorted(changed)
 
 
+def _fam(n: str) -> str:
+    """族名 = 去掉版本后缀的文件名基。与索引/复现核对**共用同一规则**。"""
+    return re.sub(r"_V\d+(?=\.json$)", "", n)
+
+
 def all_scripts():
     """**每次调用现取**：模块级缓存会让归属进程启动后才落地的脚本
     变成"看不见"——自检实测就是这个漏检（安全闸门的拒跑清单不完整）。"""
@@ -186,7 +191,20 @@ def attribute(artifact: str, only=None):
 NETWORK_MARKERS = re.compile(
     r"OpenAI|AsyncOpenAI|httpx|requests\.(get|post)|urlopen|chat/completions"
     r"|_call_llm|ASSESSMENT_LLM|llm\.chat")
+# 编排器 = **用 subprocess 再跑别的 .py 脚本**（只是 subprocess 跑 git 不算）。
+# 上轮判据过宽：`subprocess` + 源码里出现过 "scripts" 字样就拒，
+# 于是把大量只调用 git 的脚本一律拒跑 → 核验覆盖被悄悄砍掉（过宽等于没检查）。
+# 已知的**自我编排器**：跑它们等于递归跑整条链（bundle 会重跑 16 步，
+# 归属/复现核对又会再跑候选）。名录 + 字面量**两条都要**：
+# 名录挡"拼 argv 的编排器"，字面量挡"将来新增且未登记的编排器"。
+ORCHESTRATOR_NAMES = {
+    "r14_verify_all.py", "r14_semantic_repro.py", "r14_attribute_producer.py",
+    "e2_r14_v8_reproducibility.py",
+}
 ORCHESTRATOR = re.compile(r"subprocess\.(run|Popen|check_output|call)")
+# 字面量判据：源码里出现 "scripts/<name>.py" 形态（不是 subprocess 调用的
+# **紧跟**参数——bundle 是从 STEPS 表拼 argv 的，正则那种窄匹配会放它过去）
+SCRIPT_LITERAL = re.compile(r"""["']scripts[/\\][A-Za-z0-9_\-]+\.py["']""")
 REQUEST_ARTIFACTS = re.compile(r"^R14G[0-9]?_.*\.(json|md|png|jpg)$")
 
 
@@ -194,15 +212,105 @@ def script_text(name: str) -> str:
     return (ROOT / "scripts" / name).read_text(encoding="utf-8", errors="ignore")
 
 
+ASSIGN_RE = re.compile(r"^(\w+)\s*=\s*(.+)$")
+
+
+# **钉住的已知作者对**：判据若退化为漏判，`--selftest` 直接不过，
+# 而不是"少一个作者、结论照发"。左：脚本；右：该脚本必须被识别为写出者。
+EXPECTED_WRITERS = {
+    "d9_r14_stage_g_manifest.py": "R14G_PLAN.json",
+    "e2e_r14_index.py": "R14_INDEX.json",
+    "r14_verify_all.py": "R14_VERIFICATION_BUNDLE.json",
+    "e2_r14_optionband_replay.py": "R14E_REAL_PAGE_REPLAY_V8.json",
+    "e2d_r14_production_replay_v4.py": "R14E_REAL_PAGE_REPLAY_V5.json",
+    "e2e_r14_newlayout_regression.py": "R14E_NEWLAYOUT_REGRESSION_V3.json",
+    "f1_r14_perturb_release_audit.py": "R14F_PERTURB_RELEASE_AUDIT.json",
+    "e2e_r14_anchor_sweep.py": "R14E_ANCHOR_SWEEP.json",
+    "c2_r14_pitch_ablation.py": "R14C_PITCH_ABLATION.json",
+    "h1_r14_kb_channel_audit.py": "R14H_KB_CHANNEL_AUDIT.json",
+    "e2e_r14_claim_audit.py": "R14_CLAIM_AUDIT.json",
+    "e2_r14_v8_reproducibility.py": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
+    "e2e_r14_head_reverify.py": "R14E_HEAD_REVERIFY.json",
+    "e2e_r14_six_condition_lineage.py": "R14E_LINEAGE_SIX_CONDITION.json",
+    "e2e_r14_tight_gap_diagnosis.py": "R14E_TIGHT_GAP_DIAGNOSIS.json",
+    "e2e_r14_stage_g_readiness.py": "R14G0_GATE_READINESS_V5.json",
+}
+# **反向钉**：读取方**不得**被判成写出者（v3 的错就是这样让索引"生产"了 bundle 件）
+EXPECTED_NOT_WRITERS = {
+    "e2e_r14_index.py": "R14_VERIFICATION_BUNDLE.json",
+    "e2e_r14_claim_audit.py": "R14E_STAGE_E_ACCEPTANCE_V8.json",
+    "e2_r14_v8_reproducibility.py": "R14E_REAL_PAGE_REPLAY_V8.json",
+}
+
+def _writer_closure(src: str, lit: str) -> bool:
+    """字面量 `lit` 的**写出变量闭包**里是否出现写操作。
+
+    `name = "X.json"` → `out = EV / name` → `out.write_text(...)` 这种
+    二跳/三跳写法必须判成写出（V8/V5/V3 三个关键件都是这种写法）。
+    """
+    seeds = set(re.findall(r"(\w+)\s*=\s*[^\n]{0,80}" + re.escape(lit), src))
+    # argparse 形态：`add_argument("--out", default="X.json")` → dest = out，
+    # 真正的使用点是 `args.out` / `/ a.out`。上轮假脚本用这种形态，
+    # 静态判据认不出来，于是"注入的假作者没被认出"= 自检失去意义。
+    for m in re.finditer(r'add_argument\(\s*"--([a-z0-9_\-]+)"[^)]{0,120}'
+                         + re.escape(lit), src):
+        seeds.add(m.group(1).replace("-", "_"))
+    if not seeds:
+        return False
+    vars_ = set(seeds)
+    for _ in range(4):                      # 闭包迭代（够深且必然终止）
+        grew = False
+        for line in src.splitlines():
+            mm = ASSIGN_RE.match(line.strip().split("#")[0].strip())
+            if not mm:
+                continue
+            v, rhs = mm.group(1), mm.group(2)
+            if any(re.search(rf"\b{re.escape(s)}\b", rhs) for s in vars_):
+                if v not in vars_:
+                    vars_.add(v)
+                    grew = True
+        if not grew:
+            break
+    for v in vars_:
+        if re.search(rf"\.\s*{re.escape(v)}\s*\)\s*\.write_text\s*\(", src) \
+                or re.search(rf"\.\s*{re.escape(v)}\s*[,)]\s*[^\n]{{0,40}}"
+                             rf"write_text\s*\(", src) \
+                or re.search(rf"{re.escape(v)}\s*\.write_text\s*\(", src) \
+                or re.search(rf"[^\n]{{0,60}}[/,]\s*{re.escape(v)}\s*\)\s*"
+                             rf"\.write_text\s*\(", src) \
+                or re.search(rf"open\(\s*{re.escape(v)}\b[^)]*,\s*[\'\"]w", src) \
+                or re.search(rf"open\(\s*{re.escape(v)}\b\)\.write", src):
+            return True
+    return False
+
+
 def script_declares_write(name: str):
-    """从**源码字面量**里取该脚本声明要写的证据件名（不执行脚本）。"""
+    """从**源码**判断该脚本声明会写出的证据件（**不执行脚本**）。
+
+    三条判据（任一成立即算写出）：
+      · **直接**：字面量自身就是写目标（`("evidence/X.json").write_text(`、
+        `"X.json")` 后同语句内 `write_text`）；
+      · **闭包**：字面量绑定的变量（含 `out = EV / name` 等二跳）最终被写；
+      · **排除**：登记/引用语境 `"X.json": "current"`（索引的 CURRENT 表、
+        审计器的期望表）一律不算——v3 就是在这里把**读取方**认成作者，
+        实测产生了"索引改了 bundle 件"的假阳性漂移。
+    """
     src = script_text(name)
     if "write_text" not in src and "open(" not in src:
         return []
-    # 允许目录前缀：`"evidence/R14X.json"` 与 `"R14X.json"` 都是写出声明；
-    # 只取文件名部分。**上轮漏掉前缀写法**导致 c2/h1 被系统性冤枉成"不可复现"。
-    raw = re.findall(r'"([^"\n]{0,60}?R14[A-Za-z0-9_\-]*\.json)"', src)
-    return sorted({x.replace("\\", "/").rsplit("/", 1)[-1] for x in raw})
+    out = set()
+    for m in re.finditer(r'"([^"\n]{0,60}?R14[A-Za-z0-9_\-]*\.json)"', src):
+        lit = m.group(0)
+        base = m.group(1).replace("\\", "/").rsplit("/", 1)[-1]
+        after = src[m.end(): m.end() + 300]
+        if re.match(r"\s*:", after):        # 字典键 = 登记，不是写出目标
+            continue
+        direct = bool(re.search(r"^\s*\)\s*\.write_text\s*\(", after)
+                      or re.search(r"^[^\n]{0,40}write_text", after)
+                      or re.search(r"^[^\n]{0,40}open\s*\(", after))
+        if direct or _writer_closure(src, lit):
+            out.add(base)
+    return sorted(out)
 
 
 def unsafe_to_run(name: str):
@@ -213,8 +321,10 @@ def unsafe_to_run(name: str):
     m = NETWORK_MARKERS.search(src)
     if m:
         return f"含网络标记 {m.group(0)!r}：归属核验禁止触发任何真实请求路径"
-    if ORCHESTRATOR.search(src) and "scripts" in src:
-        return "编排器（会用 subprocess 再跑 scripts/）：禁止递归/全链重跑"
+    if name in ORCHESTRATOR_NAMES:
+        return "自我编排器（名录）：动态核验它等于递归重跑整条链"
+    if ORCHESTRATOR.search(src) and SCRIPT_LITERAL.search(src):
+        return "编排器（subprocess + scripts/*.py 字面量）：禁止递归/全链重跑"
     if "--out" not in src:
         return ("不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，"
                 "会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）")
@@ -250,16 +360,24 @@ def fast_candidates(artifact: str):
     return cands or None
 
 
-SELFTEST_NET = """import pathlib
-p = pathlib.Path("x")
-# 会发真实请求的形态：OpenAI 客户端
-p.write_text("R14E_REAL_PAGE_REPLAY_V8.json")
+# 假作者一：普通赋值形态（对齐 e2_r14_optionband_replay.py 的真实写法）
+SELFTEST_NET = """import pathlib, sys
+from openai import OpenAI            # 网络标记：必须被拒
+name = "R14E_REAL_PAGE_REPLAY_V8.json"
+if "--out" in sys.argv:
+    name = sys.argv[sys.argv.index("--out") + 1]
+p = pathlib.Path("evidence") / name
+p.write_text('{"ok": 1}', encoding="utf-8")
 """
 
-SELFTEST_ORCH = """import pathlib, subprocess
-p = pathlib.Path("x")
-p.write_text("R14E_REAL_PAGE_REPLAY_V8.json")
-subprocess.run(["python", "scripts/e2e_r14_index.py"])
+# 假作者二：argparse dest 形态（真实脚本里也有这种写法）
+SELFTEST_ORCH = """import argparse, pathlib, subprocess, sys
+ap = argparse.ArgumentParser()
+ap.add_argument("--out", default="R14E_REAL_PAGE_REPLAY_V8.json")
+a = ap.parse_args()
+subprocess.run([sys.executable, "scripts/e2e_r14_index.py"])   # 编排器：必须被拒
+p = pathlib.Path("evidence") / a.out
+p.write_text('{"ok": 1}', encoding="utf-8")
 """
 
 
@@ -268,8 +386,10 @@ COLLATERAL_PROBE = "data/_r14_attr_selftest_probe.txt"
 # 一个**合法通过全部前置闸门**（有 --out、无网络标记、非编排器）但
 # **越界写 data/** 的假脚本，用来证明 worktree_collateral 检测器会真的触发。
 SELFTEST_COLLATERAL = (
-    "import pathlib, sys\n"
-    'name = sys.argv[sys.argv.index("--out") + 1]\n'
+    "import argparse, pathlib, sys\n"
+    'ap = argparse.ArgumentParser()\n'
+    'ap.add_argument("--out", default="R14E_REAL_PAGE_REPLAY_V8.json")\n'
+    'name = ap.parse_args().out\n'
     'pathlib.Path("evidence", name).write_text(\'{"ok": 1}\', '
     'encoding="utf-8")\n'
     "# 故意越界：写 data/ 下探针（归属本该零附带改动）\n"
@@ -335,6 +455,12 @@ def selftest(artifact: str = "R14E_REAL_PAGE_REPLAY_V8.json"):
     现在枚举改为每次调用现取（`all_scripts()`）。
     """
     fails = []
+    for scr, art in EXPECTED_WRITERS.items():
+        if art not in script_declares_write(scr):
+            fails.append(f"写出判据**漏判**：{scr} 应声明写出 {art}")
+    for scr, art in EXPECTED_NOT_WRITERS.items():
+        if art in script_declares_write(scr):
+            fails.append(f"写出判据**误判**：{scr} 只是读取 {art}，不得算作者")
     fakes = (("zfake_net.py", SELFTEST_NET), ("zfake_orch.py", SELFTEST_ORCH))
     for name, body in fakes:
         (ROOT / "scripts" / name).write_text(body, encoding="utf-8")

@@ -132,7 +132,11 @@ def main() -> int:
            "channel_trace": rows,
            "five_state": five_state,
            "note": "通道轨迹由运行时方法级插桩得出（调用次数+ solved 命中次数）；ast_expr 非空不能证明通道，插桩计数才能。问题文本取自 r10gen 金标源（answer=None 防止任何答案泄漏进求解）。"}
-    (ROOT / "evidence/R14H_KB_CHANNEL_AUDIT.json").write_text(
+    name = "R14H_KB_CHANNEL_AUDIT.json"
+    if "--out" in sys.argv:                      # 同上：动态核验只写新名
+        name = sys.argv[sys.argv.index("--out") + 1]
+    dst = ROOT / "evidence" / name
+    dst.write_text(
         json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     print(json.dumps({"missing": {k: v["class"][:20] for k, v in audit_missing.items()},
                       "channel_rows": len(rows)}, ensure_ascii=False))

@@ -1,0 +1,192 @@
+{
+ "stage": "R14-C 因果实验在现行 HEAD 的复现差异（0 HTTP；提交件未改动）",
+ "head": "bf49734d5",
+ "compared": {
+  "committed": "R14C_PITCH_ABLATION.json",
+  "committed_sha256": "df83fb21b1362156",
+  "rerun_at_head": "R14C_PITCH_ABLATION_RERUN2.json",
+  "rerun_by": "c2_r14_pitch_ablation.py --out（新名，不覆盖提交件）"
+ },
+ "why_this_exists": "补集复现核对修好'比较发生在恢复之后'的恒真缺陷后，报出本件 9 处结论级差异；本件逐条判明差异落在**数值**还是**结论**",
+ "claims": {
+  "J1_pitch_invariant": {
+   "definition": "同页 A/B/C 三臂 solver_status 一致 ⇒ pitch 非该页因果变量",
+   "holds_committed": [
+    "ft-mirror-04",
+    "ft-mirror-04--tight",
+    "ft-overlay-12",
+    "ft-rot90-01",
+    "ft-trans-07"
+   ],
+   "holds_head": [
+    "ft-mirror-04",
+    "ft-overlay-12",
+    "ft-rot90-01",
+    "ft-trans-07"
+   ]
+  },
+  "J2_scale_protocol_sufficient": {
+   "definition": "同页三臂 protocol 全 solved 且 legacy_scale 全 failed ⇒ 尺度协议单独致败（充分原因）",
+   "holds_committed": [
+    "ft-mirror-04",
+    "ft-rot90-01"
+   ],
+   "holds_head": [
+    "ft-mirror-04",
+    "ft-rot90-01"
+   ]
+  }
+ },
+ "per_item": [
+  {
+   "item": "ft-mirror-04",
+   "label_committed": "unchanged",
+   "label_head": "unchanged",
+   "J1_pitch_invariant_committed": true,
+   "J1_pitch_invariant_head": true,
+   "J2_scale_sufficient_committed": true,
+   "J2_scale_sufficient_head": true,
+   "status_changed_arms": [],
+   "margin_committed_vs_head": {
+    "A_old_maxink": [
+     0.538,
+     0.538
+    ],
+    "B_center_pitch": [
+     0.538,
+     0.538
+    ],
+    "C_gold": [
+     0.538,
+     0.538
+    ]
+   }
+  },
+  {
+   "item": "ft-mirror-04--tight",
+   "label_committed": "rule_not_applicable",
+   "label_head": "rule_conflict",
+   "J1_pitch_invariant_committed": true,
+   "J1_pitch_invariant_head": false,
+   "J2_scale_sufficient_committed": false,
+   "J2_scale_sufficient_head": false,
+   "status_changed_arms": [
+    "C_gold"
+   ],
+   "margin_committed_vs_head": {
+    "A_old_maxink": [
+     null,
+     null
+    ],
+    "B_center_pitch": [
+     null,
+     null
+    ],
+    "C_gold": [
+     null,
+     0.538
+    ]
+   }
+  },
+  {
+   "item": "ft-overlay-12",
+   "label_committed": "option_crop_error",
+   "label_head": "rule_not_applicable",
+   "J1_pitch_invariant_committed": true,
+   "J1_pitch_invariant_head": true,
+   "J2_scale_sufficient_committed": false,
+   "J2_scale_sufficient_head": false,
+   "status_changed_arms": [],
+   "margin_committed_vs_head": {
+    "A_old_maxink": [
+     null,
+     null
+    ],
+    "B_center_pitch": [
+     null,
+     null
+    ],
+    "C_gold": [
+     null,
+     null
+    ]
+   }
+  },
+  {
+   "item": "ft-rot90-01",
+   "label_committed": "unchanged",
+   "label_head": "unchanged",
+   "J1_pitch_invariant_committed": true,
+   "J1_pitch_invariant_head": true,
+   "J2_scale_sufficient_committed": true,
+   "J2_scale_sufficient_head": true,
+   "status_changed_arms": [],
+   "margin_committed_vs_head": {
+    "A_old_maxink": [
+     0.7546,
+     0.6566
+    ],
+    "B_center_pitch": [
+     0.7546,
+     0.6566
+    ],
+    "C_gold": [
+     0.7546,
+     0.6566
+    ]
+   }
+  },
+  {
+   "item": "ft-trans-07",
+   "label_committed": "rule_conflict",
+   "label_head": "rule_conflict",
+   "J1_pitch_invariant_committed": true,
+   "J1_pitch_invariant_head": true,
+   "J2_scale_sufficient_committed": false,
+   "J2_scale_sufficient_head": false,
+   "status_changed_arms": [],
+   "margin_committed_vs_head": {
+    "A_old_maxink": [
+     null,
+     null
+    ],
+    "B_center_pitch": [
+     null,
+     null
+    ],
+    "C_gold": [
+     null,
+     null
+    ]
+   }
+  }
+ ],
+ "verdict": {
+  "byte_identical": false,
+  "conclusion_direction_preserved_on": [
+   "ft-mirror-04",
+   "ft-overlay-12",
+   "ft-rot90-01",
+   "ft-trans-07"
+  ],
+  "changed_items": [
+   "ft-mirror-04--tight"
+  ],
+  "numeric_only_items": [
+   "ft-rot90-01"
+  ]
+ },
+ "budget": {
+  "http_requests_made": 0,
+  "llm_calls_used": 0
+ },
+ "wording_qualification": {
+  "saturated_1_0": "提交件字面「legacy 三臂全部饱和 1.0 失败」在现行 HEAD 应读作「近饱和」（mirror-04: margin 0.0153 / 顶分 0.9847）；结论方向（legacy 全 failed、protocol 全 solved）不变",
+  "scope": "人工锁定结论仅就 mirror-04/rot90-01 的 R13-G live 失败而言；tight 反例页在现行 HEAD 上 J1 不再成立（C_gold 单独变 solved），故不得把结论推广为『pitch 对任何页都无关』"
+ },
+ "boundary_found": {
+  "item": "ft-mirror-04--tight",
+  "change": "C_gold failed -> solved（protocol 与 legacy_scale 两臂同）",
+  "effect_on_locked_conclusion": "不构成反驳（该页不在结论适用范围内），但限制其外推"
+ }
+}

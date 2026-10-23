@@ -111,6 +111,46 @@ G0 也**如实暴露了预算的脆弱面**（C1d）：计划 5 页 + 1 次余�
 `BudgetExhausted` 并计入端到端分母（实测 `sent=6 / succ=4 / tok=4080`、
 `{429:2, 200:4}`）。届时**不得**用降低页数、放松闸或"只除成功件"来抹掉。
 
+## 因果实验在现行 HEAD 的复现差异（人工裁决项 2 的直接材料）
+
+补集复现核对（`scripts/r14_semantic_repro.py` → `R14E_RERUN_SEMANTICS.json`）
+在修好一个**恒真比较**缺陷后，暴露出本实验的复现差异。
+
+**那个缺陷本身**：脚本先"恢复原样"再做语义比较，于是比的是「原件 vs 原件」，
+**永远报 reproduced**。这等于没比较。修法是把重跑产物**先取出**再恢复。
+修完立刻出现 3 件真差异，其中 1 件是**结论级**。
+
+`e2f_r14_causal_delta.py` → `R14C_PITCH_ABLATION_HEAD_DELTA.json` / `.md`
+（提交件与重跑件都保持原字节，重跑走 `--out` 新名）：
+
+| 判据 | 定义 | 提交件成立页 | 现行 HEAD 成立页 |
+|---|---|---|---|
+| **J2 尺度协议充分** | 同页三臂 protocol 全 solved 且 legacy_scale 全 failed | mirror-04, rot90-01 | **mirror-04, rot90-01（不变）** |
+| **J1 pitch 不变性** | 同页 A/B/C 三臂 solver_status 一致 | 全部 5 页 | 4 页（**tight 页不再成立**） |
+
+· **结论方向保持**：人工锁定的「尺度协议修复是充分原因、pitch 非因果必需」
+  所指的 mirror-04 / rot90-01 两页，J2 在两边同为 True，legacy 三臂仍**全部 failed**、
+  protocol 三臂仍**全部 solved**。
+· **字面需要限定**（不改动提交件，勘误记在 delta 文档）：提交件手写附注写
+  「legacy 三臂**全部饱和 1.0** 失败」；现行 HEAD 上 mirror-04 的 legacy 是
+  **顶分 0.9847 / margin 0.0153**，应读作「**近饱和**」。rot90-01 的 protocol
+  margin 由 0.7546 → **0.6566**。方向不变、量级变。
+· **新边界**：扰动反例页 `ft-mirror-04--tight` 在现行 HEAD 上
+  `C_gold` 由 failed → **solved**（A/B 仍 failed）⇒ 该页三臂不再一致，
+  **J1 在该页不成立**。该页**不在**人工结论的适用范围内，故这不构成反驳，
+  但**禁止**把结论外推成「pitch 对任何页都无关」——交付表述维持原上限。
+· 另一件 `R14H_KB_CHANNEL_AUDIT.json` 只报**注解级**差异：脚本不产出手写
+  `channel_correction_addendum` 与两个 `state_offline_replay` 字段，
+  判定主体一致 ⇒ 分类登记为 `annotation_only_drift`，**不**与结论级混计。
+
+同轮把 `c2_r14_pitch_ablation.py` / `h1_r14_kb_channel_audit.py` 补上 `--out`：
+此前它们**不支持重定向**，动态核验就等于"在固定历史名下落盘"（正是本轮已发生过
+的覆写事故的入口），所以闸门一直拒跑它们、这两件长期**无人核验**。
+
+写出者识别（`script_declares_write`）本轮改到第 9 版，并把
+**16 对"脚本→应声明写出该件"与 3 对"读取方不得算作者"**钉进 `--selftest`：
+判据退化会让自检**直接失败**，而不是悄悄少一个作者、结论照发。
+
 ## 一键复现与**复现边界**（本轮新增，必读）
 
 `scripts/r14_verify_all.py` → `evidence/R14_VERIFICATION_BUNDLE.json`：

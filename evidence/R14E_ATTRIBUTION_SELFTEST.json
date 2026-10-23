@@ -9,12 +9,8 @@
  "http_requests_made": 0,
  "fails": [],
  "refused": [
-  "e2_r14_v8_reproducibility.py",
   "e2b_r14_anchor_option_recovery.py",
-  "e2e_r14_claim_audit.py",
-  "e2e_r14_index.py",
   "r14_attribute_producer.py",
-  "r14_verify_all.py",
   "zfake_net.py",
   "zfake_orch.py"
  ],
