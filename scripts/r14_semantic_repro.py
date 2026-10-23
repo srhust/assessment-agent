@@ -40,6 +40,13 @@ def sha(p: Path) -> str:
 ART_RE = re.compile(r"R14[A-Z0-9_\-]*\.json")
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import r14_attribute_producer as AP  # noqa: E402
+
+AP_VOLATILE = AP.VOLATILE
+AP_MUST_SEE = AP.MUST_SEE
+
+
 def script_writes():
     """磁盘真值：每个脚本**字面量里写出的** R14 件名集合。"""
     out = {}
@@ -82,57 +89,20 @@ def meta(name: str):
             "keys": sorted(m.keys())}, d
 
 
-VOLATILE = {"_meta", "head", "generated_at", "git", "code_version",
-            "timestamp", "run_id", "sha256", "artifact_sha256", "elapsed_s",
-            "duration_s", "wall_clock", "committed_sha256", "rerun_at_head",
-            "n_checked", "violations", "annotation_only_drift", "budget",
-            "http_requests_made", "llm_calls_used"}
-# **逐点收集**差异而不是遇到第一处就返回：上轮 c2 的真实情况是
-# "缺一个手写 addendum" **并且** "两处 label 判定变了"；早退让报告只说前者，
-# 把更重的那条（判定漂移）盖住了。
+# 忽略表**不再**由本脚本自己写（上轮我为了消假阳性把它越写越宽 =
+# 把真差异一起吃掉）。真值在 `r14_attribute_producer.VOLATILE`，
+# bundle 的 A8 负责审这张表本身。
+VOLATILE = AP_VOLATILE
 MAX_DIFFS = 40
 
 
-def _brief(v):
-    t = v if isinstance(v, str) else json.dumps(v, ensure_ascii=False)
-    return t[:90]
-
-
-def diff_paths(a, b, path="$", out=None):
-    """返回 [(路径, 提交值, 重跑值)]；`VOLATILE` 键（时间/自指哈希）不参与比较。"""
-    out = [] if out is None else out
-    if len(out) >= MAX_DIFFS:
-        return out
-    if isinstance(a, dict) and isinstance(b, dict):
-        ka = {k for k in a if k not in VOLATILE}
-        kb = {k for k in b if k not in VOLATILE}
-        for k in sorted(ka - kb):
-            out.append((f"{path}.{k}", _brief(a[k]), "<重跑未产出>"))
-        for k in sorted(kb - ka):
-            out.append((f"{path}.{k}", "<提交件没有>", _brief(b[k])))
-        for k in sorted(ka & kb):
-            diff_paths(a[k], b[k], f"{path}.{k}", out)
-        return out
-    if isinstance(a, list) and isinstance(b, list):
-        if len(a) != len(b):
-            out.append((f"{path}.len", len(a), len(b)))
-        for i, (x, y) in enumerate(zip(a, b)):
-            diff_paths(x, y, f"{path}[{i}]", out)
-        return out
-    if a != b:
-        out.append((path, _brief(a), _brief(b)))
-    return out
-
-
 # 判定字段：这些**变了**才叫"结论漂移"；只有手写注解/addendum 缺失是"记账差异"。
-VERDICT_LEAVES = {"solver_status", "final_answer", "released", "release",
-                  "verdict", "label", "margin", "answer", "correct",
-                  "gold_match", "state", "status"}
+VERDICT_LEAVES = {"solver_status", "solver_answer", "final_answer", "released",
+                  "release", "verdict", "label", "margin", "answer", "correct",
+                  "gold_match", "state", "status", "verifier_action"}
 ANNOTATION_KEYS = {"causal_conclusion", "channel_correction_addendum",
-                   "addendum", "notes", "note", "erratum"}
-
-
-DISCRETE_CHANGES = {"failed", "solved", "abstain", "null", "None"}
+                   "addendum", "erratum"}
+DISCRETE_CHANGES = {"failed", "solved", "abstain", "null", "none"}
 
 
 def _to_float(v):
@@ -189,14 +159,13 @@ def classify_diffs(diffs):
 
 
 def semantic_equal(a, b):
-    out = diff_paths(a, b)
+    """比较**判定语义**：忽略表来自集中真值 `r14_attribute_producer.VOLATILE`，
+    逐点收集差异（不在遇到第一处时早退）。"""
+    out = AP.cmp_paths(a, b, "$", [], VOLATILE)
     return (not out), out
 
 
 
-# ---- 安全闸门：**复用**归属工具（同一份规则，两处各写必漂移） ----
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import r14_attribute_producer as AP  # noqa: E402
 
 
 def drift_registers() -> dict:
@@ -254,12 +223,40 @@ def _index_statuses():
 _NOT_CURRENT = {}
 
 
+def selftest_identical_detector() -> dict:
+    """**测"字节相同"这条判定本身**：造两个内容不同的对象，
+    要求比较器**必须**报出差异；再注入一个 VOLATILE 字段，要求它**确实**被忽略。
+    上一步实测过：往件里塞 `{"_probe2":1}` 会让 sha 变化，
+    但若比较器只看 sha 就什么都看不见——这里钉住它看的是**内容**。"""
+    fails = []
+    same, diffs = semantic_equal({"a": 1, "b": {"c": 2}}, {"a": 1, "b": {"c": 3}})
+    if same:
+        fails.append("内容不同却被判相同 ⇒ 比较器没在读字节")
+    if not diffs:
+        fails.append("差异列表为空")
+    vol, dvol = semantic_equal({"a": 1, "generated_at": "x"},
+                               {"a": 1, "generated_at": "y"})
+    if not vol:
+        fails.append(f"真 VOLATILE 键未被忽略：{dvol}")
+    # **必须可见**的键绝不允许进忽略表：代码基线漂移必须看得见。
+    # 上一轮我为了消一条假阳性把忽略表越写越宽，正是这条断言要挡的行为。
+    bad = sorted(set(AP_MUST_SEE) & set(VOLATILE))
+    if bad:
+        fails.append(f"忽略表吃掉了**必须可见**的键：{bad}")
+    hd, hdiffs = semantic_equal({"a": 1, "head": "x"}, {"a": 1, "head": "y"})
+    if hd:
+        fails.append("HEAD 变化被判成相同 ⇒ 代码基线漂移会被静默吃掉")
+    return {"fails": fails,
+            "cases": ["不同内容必须报差异", "VOLATILE 必须忽略",
+                      "head/code_version 不得被忽略"]}
+
+
 def selftest_drift_register(rows_now) -> dict:
     """**反证**：登记机制真能改变判定吗？拿一条**已登记**的结论级漂移，
     在内存里把它的解释件剥掉，要求该件**必须**重新成为违规。
     如果剥掉后仍算已登记，说明 `documented` 只是"吞掉违规的开关"，
     这套机制就等于没有。纯内存、不重跑、不改件、零 HTTP。"""
-    fails = []
+    fails, notes = [], []
     doc = [x for x in rows_now if x.get("status") == "semantic_drift_documented"]
     if not doc:
         fails.append("没有已登记的结论级漂移，反证无从执行")
@@ -274,11 +271,51 @@ def selftest_drift_register(rows_now) -> dict:
     still = target in stripped
     if still:
         fails.append("剥除解释件后该件仍算已登记 ⇒ 开关失灵")
+    # **跨件绑定**：解释件说的"真作者/基线"必须与 bundle 的归属结论一致。
+    # 上一步实测：解释件的 `rerun_by` 写的是 c2（它自己 --out 重跑），
+    # 而 bundle 归属给出的**真作者**是 e2d（写 V5 默认名那个）。
+    # 两个都算对（一个证 --out 可重跑，一个证默认名可复现），
+    # 但**必须**由机器确认二者是否同族，否则"登记式解释"可以各说各话。
+    att = {}
+    ap = EV / "R14E_ARTIFACT_ATTRIBUTION.json"
+    if ap.is_file():
+        try:
+            ad = json.loads(ap.read_text(encoding="utf-8"))
+            att = {x["artifact"]: x for x in ad.get("results", [])
+                   if x.get("artifact")}
+        except Exception:  # noqa: BLE001
+            fails.append("归属件存在但读不出（跨件绑定无从校验）")
+    for x in rows_now:
+        if x.get("status") != "semantic_drift_documented":
+            continue
+        for reg_name in (x.get("drift_register") or []):
+            rp = EV / reg_name
+            if not rp.is_file():
+                fails.append(f"解释件不存在：{reg_name}")
+                continue
+            try:
+                rd = json.loads(rp.read_text(encoding="utf-8"))
+            except Exception:  # noqa: BLE001
+                fails.append(f"解释件读不出：{reg_name}")
+                continue
+            if (rd.get("compared") or {}).get("committed") != x["artifact"]:
+                fails.append(f"解释件 {reg_name} 未指向 {x['artifact']}")
+            info = att.get(x["artifact"]) or {}
+            tpro = [t.rsplit("/", 1)[-1] for t in info.get("true_producers", [])]
+            rb = ((rd.get("compared") or {}).get("rerun_script")
+                  or (rd.get("compared") or {}).get("rerun_by") or "")
+            if tpro and rb and not any(t in rb for t in tpro):
+                notes.append(
+                    f"解释件 {reg_name} 的重跑脚本 {rb[:40]!r} 与 bundle 归属的"
+                    f"真作者 {tpro} **不同名**（同族 --out 关系，登记但不算错）")
+
+
     return {"fails": fails,
             "target": target,
             "register": reg.get(target),
             "verdict_level": (doc[0].get("diff_classes") or {}).get("verdict_level"),
             "after_removal_status": "violated" if not still else "STILL_DOCUMENTED",
+            "cross_artifact_notes": notes,
             "unexplained_verdict_drift": [
                 x["artifact"] for x in rows_now
                 if x.get("status") == "semantic_drift"
@@ -460,7 +497,13 @@ def main() -> int:
     documented = [x for x in rows if x.get("status")
                   == "semantic_drift_documented"]
     st = selftest_drift_register(rows)
+    # **反证必须在落盘之前算**：上一步把它放在 `write_text` 之后，
+    # 结果自检结果永远进不了件里，bundle 的 A7 也就永远看不到它（等于没测）。
+    st2 = selftest_identical_detector()
+    if st2["fails"]:
+        print("identical_detector FAILED:", st2["fails"])
     out = {"n_checked": len(rows), "violations": viol,
+           "identical_detector_selftest": st2,
            "drift_register_selftest": st,
            "drift_register_source": "evidence/*HEAD_DELTA.json 的 compared.committed",
            "documented_verdict_drift": [
@@ -488,7 +531,7 @@ def main() -> int:
     shutil.rmtree(TMP, ignore_errors=True)
     if st["fails"]:
         print("drift_register_selftest FAILED:", st["fails"])
-    return 1 if (viol or st["fails"]) else 0
+    return 1 if (viol or st["fails"] or out["identical_detector_selftest"]["fails"]) else 0
 
 
 if __name__ == "__main__":

@@ -50,6 +50,61 @@ def _snapshot():
     return snap
 
 
+def brief(v):
+    import json as _json
+    t = v if isinstance(v, str) else _json.dumps(v, ensure_ascii=False)
+    return t[:90]
+
+
+def cmp_paths(a, b, path="$", out=None, volatile=None):
+    """逐点比较（忽略 `volatile` 键）。**忽略表集中定义在本模块**：
+    上一轮我单独在 semantic_repro 里把忽略表越写越宽，
+    等于把真差异吃掉（核对退化成安慰剂）。"""
+    volatile = VOLATILE if volatile is None else volatile
+    out = [] if out is None else out
+    if len(out) >= 40:
+        return out
+    if isinstance(a, dict) and isinstance(b, dict):
+        ka = {k for k in a if k not in volatile}
+        kb = {k for k in b if k not in volatile}
+        for k in sorted(ka - kb):
+            out.append((f"{path}.{k}", brief(a[k]), "<重跑未产出>"))
+        for k in sorted(kb - ka):
+            out.append((f"{path}.{k}", "<提交件没有>", brief(b[k])))
+        for k in sorted(ka & kb):
+            cmp_paths(a[k], b[k], f"{path}.{k}", out, volatile)
+        return out
+    if isinstance(a, list) and isinstance(b, list):
+        if len(a) != len(b):
+            out.append((f"{path}.len", len(a), len(b)))
+        for i, (x, y) in enumerate(zip(a, b)):
+            cmp_paths(x, y, f"{path}[{i}]", out, volatile)
+        return out
+    if a != b:
+        out.append((path, brief(a), brief(b)))
+    return out
+
+
+# ---- 比较用**忽略表**的唯一真值 ----
+# 教训（本轮实测）：为消掉一条 `no_write_detected` 假阳性，我一路把
+# `committed_sha256 / rerun_at_head / n_checked / violations / budget`
+# 塞进 semantic_repro 的忽略表——那正是"把真差异一起吃掉"的路径。
+# 所以忽略表**集中定义**在这里，并由 bundle 检查 A8 审它本身。
+VOLATILE = {"_meta", "generated_at", "timestamp", "run_id", "elapsed_s",
+            "duration_s", "wall_clock", "seconds",
+            # 解释件里**有意**复述的字样（会引用 HEAD/文件名，属叙述而非数据）
+            "why_this_exists", "note", "notes", "drift_register_source",
+            "budget", "http_requests_made", "llm_calls_used"}
+# **必须可见**的键：代码基线与被核对件身份。忽略表若吃掉它们，
+# 复现核对就退化成"只看内容像不像"的安慰剂。
+MUST_SEE = ("head", "code_version", "artifact", "committed",
+            "committed_sha256", "rerun_at_head", "rerun_by")
+
+
+def cmp_ignore_keys():
+    return sorted(VOLATILE), sorted(MUST_SEE)
+
+
 def _collateral(snap_before):
     """**只归因本次运行**：前后快照做差，排除归属工具自己的输出件。
     （早先版本拿 `git status` 里"任何 evidence 改动"当违规，会把本轮

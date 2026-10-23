@@ -1,7 +1,7 @@
 {
  "purpose": "生产者归属：把'可复现'建立在**试过候选**上而不是试一个就下结论；候选范围由 mode 如实登记（full=全部 e2*/d1/f1*，一次约 20 条全量管线；fast=族名/富化键命中的少数脚本）",
  "mode": "fast",
- "head": "f118cf9ee9f4c93808e7b1a0c36d15ddc702ca80",
+ "head": "d7917db7806ef39c44ffaeb2a2752c115b84cdec",
  "verdict_fields": [
   "solver_status",
   "solver_answer",

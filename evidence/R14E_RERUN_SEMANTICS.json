@@ -1,6 +1,14 @@
 {
  "n_checked": 44,
  "violations": [],
+ "identical_detector_selftest": {
+  "fails": [],
+  "cases": [
+   "不同内容必须报差异",
+   "VOLATILE 必须忽略",
+   "head/code_version 不得被忽略"
+  ]
+ },
  "drift_register_selftest": {
   "fails": [],
   "target": "R14C_PITCH_ABLATION.json",
@@ -9,6 +17,7 @@
   ],
   "verdict_level": 10,
   "after_removal_status": "violated",
+  "cross_artifact_notes": [],
   "unexplained_verdict_drift": [],
   "note": "纯内存反证，不重跑、不改件",
   "budget": {
@@ -426,29 +435,11 @@
   },
   {
    "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.json",
-   "script": "e2f_r14_causal_delta.py",
+   "status": "covered_by_bundle",
    "declared_writers": [
     "e2f_r14_causal_delta.py"
    ],
-   "refused_unsafe": [],
-   "worktree_collateral": [
-    "evidence/R14C_PITCH_ABLATION_HEAD_DELTA.json",
-    "evidence/R14C_PITCH_ABLATION_HEAD_DELTA.md"
-   ],
-   "collateral_removed": [],
-   "safety": "OK_ZERO_REQUESTS",
-   "offline": true,
-   "exit": 0,
-   "files_changed_by_rerun": [
-    "R14C_PITCH_ABLATION_HEAD_DELTA.json",
-    "R14C_PITCH_ABLATION_HEAD_DELTA.md"
-   ],
-   "own_declared_outputs_touched": [
-    "R14C_PITCH_ABLATION_HEAD_DELTA.json",
-    "R14C_PITCH_ABLATION_HEAD_DELTA.md"
-   ],
-   "status": "no_write_detected",
-   "detail": ""
+   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
   },
   {
    "artifact": "R14C_PITCH_ABLATION_RERUN2.json",
@@ -577,17 +568,11 @@
   },
   {
    "artifact": "R14E_RERUN_SEMANTICS.json",
-   "status": "refused_unsafe_candidates",
+   "status": "covered_by_bundle",
    "declared_writers": [
     "r14_semantic_repro.py"
    ],
-   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
-   "refused": [
-    {
-     "script": "r14_semantic_repro.py",
-     "reason": "自我编排器（名录）：动态核验它等于递归重跑整条链"
-    }
-   ]
+   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
   },
   {
    "artifact": "R14E_SIX_CONDITION.json",

@@ -1,6 +1,6 @@
 {
- "head_at_run": "f118cf9ee9f4c93808e7b1a0c36d15ddc702ca80",
- "n_steps": 16,
+ "head_at_run": "d7917db7806ef39c44ffaeb2a2752c115b84cdec",
+ "n_steps": 18,
  "steps": [
   {
    "step": "scripts/d9_r14_stage_g_manifest.py",
@@ -9,7 +9,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "aff7fb956f5a",
+   "artifact_sha256_short": "e9d461189bc7",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -22,7 +22,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.3,
-   "artifact_sha256_short": "ba920ba8da20",
+   "artifact_sha256_short": "395b15716ec4",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -34,7 +34,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.1,
+   "seconds": 1.2,
    "artifact_sha256_short": "d27ba4087d5c",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -47,7 +47,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 6.9,
+   "seconds": 5.7,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -73,7 +73,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.6,
+   "seconds": 2.4,
    "artifact_sha256_short": "9a6a48a7e9ad",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -112,8 +112,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 3.7,
-   "artifact_sha256_short": "8ff48be9b4c5",
+   "seconds": 3.8,
+   "artifact_sha256_short": "0318c0a0b08d",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -125,7 +125,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.1,
+   "seconds": 6.2,
    "artifact_sha256_short": "8812f2b72e12",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -146,13 +146,39 @@
    ]
   },
   {
+   "step": "scripts/e2f_r14_causal_delta.py",
+   "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.json",
+   "out_mode": "skip",
+   "exit": 0,
+   "seconds": 0.0,
+   "artifact_sha256_short": "bb03e02152e4",
+   "artifact_rewritten": false,
+   "not_rerunnable": true,
+   "stdout_tail": [
+    "未重跑：该件不可从 HEAD 复现，重跑写回等于修改历史结果"
+   ]
+  },
+  {
+   "step": "scripts/r14_semantic_repro.py",
+   "artifact": "R14E_RERUN_SEMANTICS.json",
+   "out_mode": "skip",
+   "exit": 0,
+   "seconds": 0.0,
+   "artifact_sha256_short": "644c51c4ae17",
+   "artifact_rewritten": false,
+   "not_rerunnable": true,
+   "stdout_tail": [
+    "未重跑：该件不可从 HEAD 复现，重跑写回等于修改历史结果"
+   ]
+  },
+  {
    "step": "scripts/e2_r14_v8_reproducibility.py",
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
    "seconds": 1.2,
-   "artifact_sha256_short": "540152e44ff1",
+   "artifact_sha256_short": "90beeade8ca7",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -177,8 +203,8 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 4.7,
-   "artifact_sha256_short": "8d8bc79934e6",
+   "seconds": 4.6,
+   "artifact_sha256_short": "f76e98d571bc",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -202,19 +228,16 @@
    "artifact": "R14_INDEX.json",
    "out_mode": "fixed",
    "expected_to_change": false,
-   "exit": 1,
-   "seconds": 6.7,
-   "artifact_sha256_short": "d858bd8e9e4f",
+   "exit": 0,
+   "seconds": 6.4,
+   "artifact_sha256_short": "bb30727399b0",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14_INDEX.json"
    ]
   }
  ],
- "fails": [
-  "scripts/e2e_r14_index.py 退出码 1：",
-  "scripts/e2e_r14_index.py → R14_INDEX.json 的 self_checks_failed = ['A1 当前件无生产脚本（不可复现）：R14H_KB_CHANNEL_AUDIT_RERUN.json']，应为 []"
- ],
+ "fails": [],
  "worktree_clean_before": true,
  "worktree_clean_after": false,
  "dirty_after": [
