@@ -184,8 +184,8 @@ C3 先验存在性（现核 27 条），且**含点号的真实键不得假阳�
 
 ## 交付**索引**（`R14_INDEX.json` / `R14_INDEX.md`）
 
-56 件逐件登记 **sha256、生产脚本与**作者档位**、首次入库与最近改动 commit、
-地位（current 30 / superseded 17 / verification_byproduct 4 / historical 2 /
+57 件逐件登记 **sha256、生产脚本与**作者档位**、首次入库与最近改动 commit、
+地位（current 30 / superseded 17 / verification_byproduct 5 / historical 2 /
 erratum_kept 1 / self 2）**，
 并给出一条**人工阅读顺序**。自检 `self_checks_failed []`：
 · **A1** 每个当前件都必须追溯到"**会写出**它的脚本"。档位

@@ -185,11 +185,33 @@ def drift_registers() -> dict:
 
 
 def bundle_artifacts():
+    """bundle 已核过的件集。**必须是本轮可信件**：
+
+    本轮实测的坑：上一轮 bundle 以 `REFUSED` 落盘（工作区脏），
+    它的 `steps` 是**空表**；本函数照旧读盘 ⇒ 返回空集 ⇒
+    "bundle 已覆盖"的短路**静默失效** ⇒ 于是对
+    `R14E_REAL_PAGE_REPLAY_V8.json` 走"重跑"分支，
+    而且用的是生产者的**默认名** ⇒ **就地改写了现行历史件**
+    （虽然事后复原，但这是"改历史 Test 结果"的邻近操作）。
+    """
     p = EV / "R14_VERIFICATION_BUNDLE.json"
     if not p.is_file():
         return set()
     try:
+        _head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
+                               capture_output=True,
+                               text=True).stdout.strip()
+    except Exception:  # noqa: BLE001
+        _head = None
+    try:
         d = json.loads(p.read_text(encoding="utf-8"))
+        if d.get("status") not in (None, "RAN") or (
+                d.get("head_at_run") and _head
+                and d["head_at_run"] != _head):
+            # REFUSED / 跨 HEAD ⇒ **不可信**，返回 None 让上层拒跑
+            return None
+        if not d.get("steps"):
+            return None
         got = {x["artifact"] for x in d.get("steps", []) if x.get("artifact")}
         # bundle 里以 `_RERUN` / `_CHECK` 新名重跑的件，其**母件**也算已覆盖：
         # V8 的权威复现核对是 bundle 步（用真作者 e2d 重跑到 V8_RERUN 并比
@@ -201,7 +223,7 @@ def bundle_artifacts():
                     got.add(stem[:-len(suf)] + ".json")
         return got
     except Exception:  # noqa: BLE001
-        return set()
+        return None
 
 
 RUN_ALL = "--all" in sys.argv
@@ -358,9 +380,36 @@ def main() -> int:
         for n in declared:
             why = AP.unsafe_to_run(n)
             (refused if why else safe).append((n, why or ""))
-        cmd_script = safe[0][0] if safe else None
+        # **优先真作者**：归属器动态比形状认定的 `true_producers`
+        # 排在最前（上一版取 `safe[0]`，按目录序拿到的是
+        # **同族的另一个工具**，于是把"不同工具不同形状"
+        # 误报成"本件语义漂移"）。
+        try:
+            import json as _j
+            _ap = json.loads((EV / "R14E_ARTIFACT_ATTRIBUTION.json")
+                             .read_text(encoding="utf-8"))
+            _tp = {(r.get("artifact")): [t.rsplit("/", 1)[-1]
+                                         for t in r.get("true_producers", [])]
+                   for r in _ap.get("results", [])}
+        except Exception:  # noqa: BLE001
+            _tp = {}
+        _names = [n for n, _ in safe]
+        _tpn = [t for t in _tp.get(p.name, []) if t in _names]
+        _ordered = _tpn + [n for n in _names if n not in _tpn]
+        cmd_script = _ordered[0] if _ordered else None
+        row_reproducers = _ordered
         # **先**问"bundle 是否已核过这件"（比**件名**，上轮误比脚本名 → 永不命中，
         # 于是把 bundle 已重跑过的件又跑一遍）
+        if _BUNDLE_ONLY is None and not RUN_ALL:
+            rows.append({"artifact": p.name,
+                         "status": "refused_no_bundle_context",
+                         "note": "bundle 结论件**不可信**"
+                                 "（REFUSED / 跨 HEAD / steps 空）⇒ "
+                                 "无法判断本件是否已被 bundle 覆盖，"
+                                 "因此**拒绝重跑任何生产者**："
+                                 "宁可不核验，也不在默认名下碰现行件",
+                         "declared_writers": declared})
+            continue
         if p.name in _BUNDLE_ONLY and not RUN_ALL:
             rows.append({"artifact": p.name, "status": "covered_by_bundle",
                          "declared_writers": declared,
@@ -392,8 +441,16 @@ def main() -> int:
         env = {**os.environ, "PYTHONPATH": str(ROOT / "src"),
                "PYTHONIOENCODING": "utf-8", "ASSESSMENT_OFFLINE": "1"}
         snap_b = AP._snapshot()
-        r = subprocess.run([sys.executable, "-X", "utf8",
-                            str(ROOT / "scripts" / cmd_script)],
+        # **重跑不许用生产者默认名落盘**（本轮实测：V8 的默认名就是
+        # 被核验件本身 ⇒ 就地改写现行历史件，只靠事后 copy 复原）。
+        # 一律 `--out` 到 `__R14SR__` 前缀的临时名，读也在那儿读。
+        _scratch = "__R14SR__" + p.name
+        _cmd = [sys.executable, "-X", "utf8", str(ROOT / "scripts" / cmd_script)]
+        _sp = ROOT / "scripts" / cmd_script
+        _src = _sp.read_text(encoding="utf-8") if _sp.is_file() else ""
+        if "--out" in _src:
+            _cmd += ["--out", _scratch]
+        r = subprocess.run(_cmd,
                            cwd=ROOT, capture_output=True, text=True,
                            encoding="utf-8", env=env)
         collateral = AP._collateral(snap_b)   # evidence/ **和** data/
@@ -419,16 +476,30 @@ def main() -> int:
         # 手写附 adds 不在脚本产出里）全判成 reproduced。这是本轮抓到的
         # 第二个"检查其实没在检查"。
         rerun_doc = None
-        if (EV / p.name).is_file():
+        row_rerun_from = None
+        # **优先读临时名**；只有脚本确实不支持 `--out` 才退回读现件，
+        # 并把"读的是现件"如实登记（那种情形等于默认名重跑）。
+        if (EV / _scratch).is_file():
+            try:
+                rerun_doc = json.loads((EV / _scratch)
+                                       .read_text(encoding="utf-8"))
+                row_rerun_from = _scratch
+            except Exception:  # noqa: BLE001
+                rerun_doc = None
+        if rerun_doc is None and (EV / p.name).is_file():
             try:
                 rerun_doc = json.loads(
                     (EV / p.name).read_text(encoding="utf-8"))
             except Exception:  # noqa: BLE001
                 rerun_doc = None
+        if row_rerun_from is None:
+            row_rerun_from = p.name        # 默认名重跑（脚本不支持 --out）
         # 恢复原样（本脚本只诊断，不落地）
         for q in list((bak / ".").glob("*.json")) + list((bak / ".").glob("*.md")):
             shutil.copy2(q, EV / q.name)
+        (EV / _scratch).unlink(missing_ok=True)   # 临时重跑件**不留档**
         row = {"artifact": p.name, "script": cmd_script,
+               "rerun_via_out": _scratch if "--out" in _src else None,
                "declared_writers": declared,
                "refused_unsafe": [{"script": n, "reason": w} for n, w in refused],
                "worktree_collateral": collateral,
@@ -438,7 +509,8 @@ def main() -> int:
                                   if not c.startswith("evidence/")]
                           else "SAFETY_VIOLATION_worktree_collateral"),
                "offline": True,
-               "exit": r.returncode, "files_changed_by_rerun": wrote}
+               "exit": r.returncode, "files_changed_by_rerun": wrote,
+               "rerun_read_from": row_rerun_from}
         # 一个脚本合法地会写**多件**（索引写 json+md、审计写 json+md）。
         # 只有写出**别人的历史件名**才算写路径漂移。
         siblings = {q.name for q in EV.glob(f"{p.stem}.*")}   # foo.json ↔ foo.md
