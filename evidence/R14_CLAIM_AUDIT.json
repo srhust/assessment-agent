@@ -10,26 +10,55 @@
  ],
  "fails": [],
  "notes": {
-  "C1_citations_checked": 57,
+  "C1_citations_checked": 60,
   "C8_count_citations": [
    {
     "doc": "R14_PROGRESS_STOPGATE.md",
-    "kind": "current",
-    "cited": 30,
-    "truth": 30
+    "kind": "artifact_total",
+    "cited": 55,
+    "truth": 56,
+    "context": "example_or_old_value_skipped",
+    "exempt_by": "inline_code_or_fence"
+   },
+   {
+    "doc": "R14_PROGRESS_STOPGATE.md",
+    "kind": "artifact_total",
+    "cited": 55,
+    "truth": 56,
+    "context": "example_or_old_value_skipped",
+    "exempt_by": "inline_code_or_fence"
+   },
+   {
+    "doc": "R14_PROGRESS_STOPGATE.md",
+    "kind": "artifact_total",
+    "cited": 56,
+    "truth": 56,
+    "context": "example_or_old_value_skipped",
+    "exempt_by": "inline_code_or_fence"
    },
    {
     "doc": "R14_PROGRESS_STOPGATE.md",
     "kind": "current",
     "cited": 30,
-    "truth": 30
+    "truth": 30,
+    "context": "example_or_old_value_skipped",
+    "exempt_by": "inline_code_or_fence"
+   },
+   {
+    "doc": "R14_PROGRESS_STOPGATE.md",
+    "kind": "current",
+    "cited": 30,
+    "truth": 30,
+    "context": "example_or_old_value_skipped",
+    "exempt_by": "inline_code_or_fence"
    },
    {
     "doc": "R14_PROGRESS_STOPGATE.md",
     "kind": "current",
     "cited": 25,
     "truth": 30,
-    "context": "example_or_old_value_skipped"
+    "context": "example_or_old_value_skipped",
+    "exempt_by": "bracket_pair"
    },
    {
     "doc": "R14_PROGRESS_STOPGATE.md",
@@ -68,10 +97,40 @@
     "truth": 2
    },
    {
+    "doc": "R14_PROGRESS_STOPGATE.md",
+    "kind": "current",
+    "cited": 19,
+    "truth": 30,
+    "context": "example_or_old_value_skipped",
+    "exempt_by": "single_alias_prose"
+   },
+   {
+    "doc": "R14_STAGE_E_DELIVERABLES.md",
+    "kind": "artifact_total",
+    "cited": 55,
+    "truth": 56,
+    "context": "example_or_old_value_skipped",
+    "exempt_by": "inline_code_or_fence"
+   },
+   {
     "doc": "R14_STAGE_E_DELIVERABLES.md",
     "kind": "artifact_total",
     "cited": 56,
     "truth": 56
+   },
+   {
+    "doc": "R14_STAGE_E_DELIVERABLES.md",
+    "kind": "current",
+    "cited": 29,
+    "truth": 30,
+    "context": "example_or_old_value_skipped",
+    "exempt_by": "inline_code_or_fence"
+   },
+   {
+    "doc": "R14_STAGE_E_DELIVERABLES.md",
+    "kind": "current",
+    "cited": 30,
+    "truth": 30
    },
    {
     "doc": "R14_STAGE_E_DELIVERABLES.md",
@@ -95,8 +154,7 @@
     "doc": "R14_STAGE_E_DELIVERABLES.md",
     "kind": "historical",
     "cited": 2,
-    "truth": 2,
-    "context": "example_or_old_value_skipped"
+    "truth": 2
    },
    {
     "doc": "R14_STAGE_E_DELIVERABLES.md",
@@ -111,7 +169,7 @@
     "truth": 2
    }
   ],
-  "C8_counts_checked": 16,
+  "C8_counts_checked": 23,
   "C1_missing_but_erratum_context": [
    {
     "doc": "R14G0_READINESS.md",
@@ -134,7 +192,7 @@
     "artifact": "R14E_PERTURB_RELEASE_AUDIT_V5.json",
     "lines": [
      54,
-     170
+     227
     ],
     "why": "该句本身声明此件不存在/被取代，属勘误语境"
    }
@@ -224,7 +282,7 @@
     "injection_applied": "n/a",
     "caught_expected_check": true,
     "note": "",
-    "sample_fail": "C2 R14_PROGRESS_STOPGATE.md:292 把被取代件 R14E_NEWLAYOUT_REGRESSION_V2.json 当作当前引用（该句无勘误语境）",
+    "sample_fail": "C2 R14_PROGRESS_STOPGATE.md:332 把被取代件 R14E_NEWLAYOUT_REGRESSION_V2.json 当作当前引用（该句无勘误语境）",
     "stderr_tail": ""
    },
    {
@@ -318,14 +376,35 @@
    {
     "case": "注入锚点缺失（必须记案例失效，不得冒充检查失效）",
     "expect_check_id": "C8",
-    "injection_applied": "yes_anchor_removed",
+    "injection_applied": "yes",
+    "exit": null,
+    "child_output_parseable": true,
+    "caught_expected_check": true,
+    "note": "锚点抹净=True / 抹掉后取不到活锚点=True（母进程据此记 NO_anchor_missing、不进子进程）/ 现行文档可取锚点=True",
+    "sample_fail": "",
+    "stderr_tail": ""
+   },
+   {
+    "case": "中文枚举行里的当前计数被改错",
+    "expect_check_id": "C8",
+    "injection_applied": "yes",
+    "exit": 1,
+    "caught_expected_check": true,
+    "note": "枚举行错值**必须**被抓",
+    "sample_fail": "C8 R14_PROGRESS_STOPGATE.md 写 当前=7，索引真值 30 ⇒ 计数过期",
+    "child_output_parseable": true,
+    "stderr_tail": ""
+   },
+   {
+    "case": "中文行文（带量词）不得被当作计数引用",
+    "expect_check_id": "C8",
+    "injection_applied": "yes",
     "exit": 0,
     "caught_expected_check": true,
-    "note": "锚点被抹掉后，母进程必须记 NO_anchor_missing 而不是把子进程退出 0 当作『C8 抓不住』；此处验证**子进程确实退出 0**（说明不能靠它判定）",
+    "note": "带量词的行文**不得**被当作计数引用",
     "sample_fail": "",
     "child_output_parseable": true,
-    "stderr_tail": "",
-    "anchor_present_after_removal": false
+    "stderr_tail": ""
    }
   ],
   "why": "恒真的检查器比没有检查器更糟：先证明本审计能抓住 5 类注入违规，其 fails [] 才有信息量"

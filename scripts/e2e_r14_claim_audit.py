@@ -108,6 +108,10 @@ def selftest() -> tuple:
         # 且**不得**被读成"C8 抓不住"。
         ("注入锚点缺失（必须记案例失效，不得冒充检查失效）", "C8",
          "c8_anchor_missing", None),
+        # 中文**枚举行**里的错值必须被抓，而"当前 19 个计数点"这种
+        # 带量词的行文必须被结构判据豁免 ⇒ 两个方向都钉住
+        ("中文枚举行里的当前计数被改错", "C8", "c8_zh_enum", None),
+        ("中文行文（带量词）不得被当作计数引用", "C8", "c8_zh_prose", None),
     ]
     results = []
     for label, expect_id, mode, payload in cases:
@@ -148,41 +152,81 @@ def selftest() -> tuple:
                 "sample_fail": "", "exit": 0,
                 "child_output_parseable": True, "stderr_tail": ""})
             continue
+        elif mode in ("c8_zh_enum", "c8_zh_prose"):
+            # 枚举行 vs 行文：两个方向都必须钉住（本轮实测过其中一侧的假阳性）
+            p = fake / "evidence" / "R14_PROGRESS_STOPGATE.md"
+            t = p.read_text(encoding="utf-8")
+            if mode == "c8_zh_enum":
+                mm = re.search(r"当前\s*(\d+)\s*/", t)
+                if not mm:
+                    results.append({
+                        "case": label, "expect_check_id": "C8",
+                        "injection_applied": "NO_no_enum_line",
+                        "caught_expected_check": False,
+                        "note": "停门件里找不到**枚举形态**的"
+                                "`当前 N /` ⇒ 案例前提不成立",
+                        "exit": None, "sample_fail": "",
+                        "child_output_parseable": False,
+                        "stderr_tail": ""})
+                    shutil.rmtree(tmp, ignore_errors=True)
+                    continue
+                t2 = t[:mm.start()] + "当前 7 /" + t[mm.end():]
+                want_caught = True
+            else:
+                t2 = (t + "\n\n实测：当前 19 个计数点 = 14 条活引用 + "
+                      "5 条豁免。\n")
+                want_caught = False
+            p.write_text(t2, encoding="utf-8")
+            r = subprocess.run([sys.executable, "-X", "utf8",
+                                str(fake / "scripts" / Path(__file__).name),
+                                *CHILD_ARGS],
+                               cwd=fake, capture_output=True, text=True,
+                               encoding="utf-8", errors="ignore")
+            try:
+                out = json.loads(r.stdout[r.stdout.index("{"):])
+                hit = [f for f in out.get("fails", [])
+                       if f.startswith("C8") and "当前" in f]
+                parseable = True
+            except Exception:  # noqa: BLE001
+                out, hit, parseable = {}, ["<子进程输出不可解析>"], False
+            caught = bool(hit) == want_caught
+            results.append({
+                "case": label, "expect_check_id": "C8",
+                "injection_applied": "yes", "exit": r.returncode,
+                "caught_expected_check": caught,
+                "note": ("枚举行错值**必须**被抓" if want_caught else
+                         "带量词的行文**不得**被当作计数引用"),
+                "sample_fail": (hit[0][:170] if hit else ""),
+                "child_output_parseable": parseable, "stderr_tail": ""})
+            shutil.rmtree(tmp, ignore_errors=True)
+            continue
         elif mode == "c8_anchor_missing":
+            # **直接测出口**，不再拿子进程退出码当前提（那与本题无关，
+            # 且实测把它写成"必须退出 0"后被真值改动证伪过一次）
             p = fake / "evidence" / "R14_STAGE_E_DELIVERABLES.md"
             t = p.read_text(encoding="utf-8")
-            # 抹掉**所有** C8 会读的计数锚点，模拟"文档改版、锚点失效"
-            t2 = re.sub(r"\d+ 件逐件登记", "N 件逐件登记", t)
-            t2 = re.sub(r"current \d+", "current N", t2)
+            t2 = re.sub(r"\d+\s*件逐件登记", "N 件逐件登记", t)
+            t2 = re.sub(r"current\s+\d+", "current N", t2)
+            t2 = re.sub(r"(当前|被取代|核对副产物|历史|勘误保留|自指)\s*\d+",
+                        r"\1 N", t2)
             p.write_text(t2, encoding="utf-8")
-            r = subprocess.run(
-                [sys.executable, "-X", "utf8", str(fake / "scripts" /
-                                                   Path(__file__).name),
-                 *CHILD_ARGS],
-                capture_output=True, text=True, encoding="utf-8",
-                errors="ignore", cwd=str(fake))
-            # **子进程参数绝不允许手打**：本轮我把这里写成不存在的
-            # `--selftest-child`，脚本不报错、而是**又跑一整套自测**，
-            # 自测再 fork 子进程 ⇒ 指数递归、两次把会话卡死（>10 分钟）。
-            entry = {
+            gone = live_c8_anchor(t2, "c8_total")
+            gone_cur = live_c8_anchor(t2, "c8_current")
+            live = live_c8_anchor(t, "c8_total")
+            premise_ok = not (re.search(r"\d+\s*件逐件登记", t2)
+                              or re.search(r"current\s+\d+", t2))
+            ok = bool(premise_ok and gone is None and gone_cur is None
+                      and live is not None)
+            results.append({
                 "case": label, "expect_check_id": expect_id,
-                "injection_applied": "yes_anchor_removed",
-                "exit": r.returncode,
-                "caught_expected_check": True,
-                "note": "锚点被抹掉后，母进程必须记 NO_anchor_missing "
-                        "而不是把子进程退出 0 当作『C8 抓不住』；"
-                        "此处验证**子进程确实退出 0**（说明不能靠它判定）",
-                "sample_fail": "", "child_output_parseable": True,
-                "stderr_tail": ""}
-            # 真正的判定发生在**母进程**：用同一份逻辑再跑一次 c8_total
-            m_tot = re.search(r"(\d+)\s*件逐件登记",
-                                  p.read_text(encoding="utf-8"))
-            entry["anchor_present_after_removal"] = m_tot is not None
-            if m_tot is not None or r.returncode != 0:
-                entry["caught_expected_check"] = False
-                entry["note"] = (f"锚点删除不干净（{m_tot is not None}）或"
-                                 f"子进程非零（{r.returncode}）⇒ 前提未成立")
-            results.append(entry)
+                "injection_applied": ("yes" if ok else "NO_premise"),
+                "exit": None, "child_output_parseable": True,
+                "caught_expected_check": ok,
+                "note": f"锚点抹净={premise_ok} / 抹掉后取不到活锚点="
+                        f"{gone is None and gone_cur is None}"
+                        f"（母进程据此记 NO_anchor_missing、不进子进程）/ "
+                        f"现行文档可取锚点={live is not None}",
+                "sample_fail": "", "stderr_tail": ""})
             shutil.rmtree(tmp, ignore_errors=True)
             continue
         elif mode in ("c8_total", "c8_current"):
@@ -195,23 +239,13 @@ def selftest() -> tuple:
             # 替换静默失手 ⇒ 子进程**退出 0** ⇒ 案例判"未抓住"。
             # 也就是说：**我的自测被自己的改动打断了**，而它诚实地报了。
             # 现在锚点从盘上文档现场取，数字仍由索引真值推出。
-            import re as _re
-            m_tot = _re.search(r"(\d+)\s*件逐件登记", t)
-            m_cur = _re.search(r"current\s+(\d+)", t)
-            if mode == "c8_total":
-                if not m_tot:
-                    applied_anchor = None
-                else:
-                    want = m_tot.group(0)
-                    after = f"{int(m_tot.group(1)) + 11} 件逐件登记"
-                    applied_anchor = (want, after)
-            else:
-                if not m_cur:
-                    applied_anchor = None
-                else:
-                    want = m_cur.group(0)
-                    after = f"current {int(m_cur.group(1)) + 17}"
-                    applied_anchor = (want, after)
+            # **并且必须取"活引用"那一个**：本轮我新写了一段
+            # 用反引号包起来的 `"55 件逐件登记"` 来讲这个 bug，
+            # 于是 `_re.search` 命中了**那个被豁免的样例**、
+            # 改完之后 C8 当然不报（它正确地跳过了围栏/行内代码）——
+            # 注入"落地"在**检查管不到**的位置，等于什么都没测。
+            # ⇒ 逐 match 找**第一个不在豁免语境里**的计数当锚点。
+            applied_anchor = live_c8_anchor(t, mode)
             if applied_anchor is None:
                 # **不许把"没落地的注入"交给子进程**：那会让它退出 0，
                 # 于是"我的锚点找错了"被误报成"检查抓不住"——
@@ -611,6 +645,68 @@ def run_checks(write_audit):
 
 
 
+def live_c8_anchor(text: str, mode: str):
+    """取**第一个"活引用"**计数当注入锚点（跳过围栏/行内代码/括号样例）。
+
+    本轮实测：我新写了一段用反引号包起来的 `"55 件逐件登记"` 来讲这个 bug，
+    于是 `_re.search` 命中**那个被 C8 豁免的样例**，改完后 C8 正确地不报——
+    注入落在**检查管不到**的位置，等于什么都没测，而案例却显示
+    `injection_applied: yes`。锚点必须与检查端**共用同一套豁免判据**。
+    """
+    pat = r"(\d+)\s*件逐件登记" if mode == "c8_total" else r"current\s+(\d+)"
+    for m in re.finditer(pat, text):
+        if in_inline_code(text, m.start()) or in_code_fence(text, m.start()):
+            continue
+        if in_paren_live(text, m.start(), m.end()):
+            continue
+        n = int(m.group(1))
+        if mode == "c8_total":
+            return m.group(0), f"{n + 11} 件逐件登记"
+        return m.group(0), f"current {n + 17}"
+    return None
+
+
+def in_paren_live(text: str, a: int, b: int) -> bool:
+    """与 C8 正文里同一条括号判据（**注入端与检查端必须共用**，
+    否则我注入到"检查不管"的位置、却以为自己在测它）。"""
+    return bracket_wrapped(text, a, b)
+
+
+def bracket_wrapped(text: str, a: int, b: int, span: int = 40) -> bool:
+    """数字是否被**一对**括号/竖线包住（左括号与右括号**必须同类**）。
+
+    旧写法只看"左边窗口里有没有出现过左括号"，于是
+    `把两份文档退回旧计数\n   （47 件 / current 25）后审计必须报 4 条 C8`
+    这类**旧值引用**会被整段放过——而它同时也可能是一次真过期，
+    判据不该取决于窗口碰巧多大。现在要求左右括号**成对且同类**，
+    并给跨距上限（超出即视为正文引用，照常检查）。
+    """
+    for L, R in (("（", "）"), ("(", ")"), ("|", "|")):
+        li = text.rfind(L, max(0, a - span), a)
+        ri = text.find(R, b, b + span)
+        if li >= 0 and ri >= 0:
+            return True
+    return False
+
+
+def in_code_fence(text: str, pos: int) -> bool:
+    """该位置是否落在 ``` 围栏代码块内。围栏内的计数是
+    **刻意保留的历史输出样例**，与"正文里引用当前计数"是两回事，
+    必须**独立判定**，不能靠'左边碰巧有个括号'蒙混过关。"""
+    before = text[:pos]
+    return before.count("```") % 2 == 1
+
+
+def in_inline_code(line: str, pos: int) -> bool:
+    """该位置是否落在**行内代码跨度**（反引号对）之内。
+    判定用"行首到该处的未转义反引号**个数奇偶**"——这是结构判据，
+    不是"附近有没有反引号字符"。后者会把
+    `我把 \"55 件逐件登记\" 写死在注入里` 这种**诚实引用旧值**
+    误判成过期计数（本轮实测的假阳性）。"""
+    lo = line.rfind("\n", 0, pos) + 1
+    return line[lo:pos].count("`") % 2 == 1
+
+
 def check_c8(docs, index):
     """**计数一致性**：交付文档凡写"N 件"或"current k / superseded m …"，
     必须与 `R14_INDEX.json` 的真值相等。
@@ -623,6 +719,17 @@ def check_c8(docs, index):
     total = len(index.get("artifacts", []))
     for name, text in docs.items():
         for m in re.finditer(r"(\d+)\s*件逐件登记", text):
+            _eb = ("inline_code_or_fence" if (
+                in_inline_code(text, m.start()) or in_code_fence(text,
+                                                                 m.start()))
+                else "NONE")
+            if _eb != "NONE":
+                # **诚实引用旧值**（行内代码或 ``` 围栏内的历史输出样例）
+                cited.append({"doc": name, "kind": "artifact_total",
+                              "cited": int(m.group(1)), "truth": total,
+                              "context": "example_or_old_value_skipped",
+                              "exempt_by": _eb})
+                continue
             cited.append({"doc": name, "kind": "artifact_total",
                           "cited": int(m.group(1)), "truth": total})
             if int(m.group(1)) != total:
@@ -642,12 +749,20 @@ def check_c8(docs, index):
             # **结构判据，不用模糊词表**：被反引号或括号包围的计数是
             # **样例/旧值引用**（讲检查器怎么工作），不是对登记册的当前引用。
             # 上一版用"前文含审计/必须/后"——词距不可控，实测豁免**永不触发**。
-            in_code = ctx.count("`") >= 2 and "`" in ctx[:30]
-            in_paren = ("（" in ctx[:30] or "(" in ctx[:30])
+            # **结构判据 = 该数字是否落在行内代码跨度内**（反引号奇偶），
+            # 不是"附近 30 字符里有没有反引号字符"：后者会把
+            # `我把 "55 件逐件登记" 写死在注入里` 这种**诚实引用旧值**
+            # 误判成过期计数（本轮实测的假阳性，由我自己新写的段落触发）。
+            _fence = in_code_fence(text, m.start())
+            in_code = in_inline_code(text, m.start()) or _fence
+            in_paren = bracket_wrapped(text, m.start(), m.end())
+            exempt_by = ("inline_code_or_fence" if in_code else
+                         ("bracket_pair" if in_paren else "NONE"))
             if in_code or in_paren:
                 cited.append({"doc": name, "kind": k, "cited": v,
                               "truth": counts.get(k, 0),
-                              "context": "example_or_old_value_skipped"})
+                              "context": "example_or_old_value_skipped",
+                              "exempt_by": exempt_by})
                 continue
             cited.append({"doc": name, "kind": k, "cited": v,
                           "truth": counts.get(k, 0)})
@@ -661,6 +776,30 @@ def check_c8(docs, index):
         for m in re.finditer(
                 r"(当前|被取代|核对副产物|历史|勘误保留|自指)\s*(\d+)", text):
             k = ZH[m.group(1)]
+            if in_inline_code(text, m.start()) or in_code_fence(text,
+                                                                 m.start()):
+                cited.append({"doc": name, "kind": k,
+                              "cited": int(m.group(2)),
+                              "truth": counts.get(k, 0),
+                              "context": "example_or_old_value_skipped",
+                              "exempt_by": "inline_code_or_fence"})
+                continue
+            # **结构判据**：这串数字是处在"状态枚举"里，还是普通行文？
+            # 本轮实测假阳性：我写「当前 19 个计数点 = 14 条活引用」，
+            # 被 `状态别名 + 数字` 当成对登记册地位的引用 ⇒ 报"计数过期"。
+            # 不是 C8 太严，是判据太宽：它不看数字**是否处在枚举结构**里。
+            line0 = text.rfind("\n", 0, m.start()) + 1
+            line1 = text.find("\n", m.end())
+            line = text[line0:(line1 if line1 > 0 else len(text))]
+            n_alias = len({a for a in ZH if re.search(a + r"\s*\d", line)})
+            unit_y = bool(re.match(r"\s*[个条处张次]", text[m.end():m.end() + 3]))
+            if n_alias < 2 and unit_y:
+                cited.append({"doc": name, "kind": k,
+                              "cited": int(m.group(2)),
+                              "truth": counts.get(k, 0),
+                              "context": "example_or_old_value_skipped",
+                              "exempt_by": "single_alias_prose"})
+                continue
             cited.append({"doc": name, "kind": k, "cited": int(m.group(2)),
                           "truth": counts.get(k, 0)})
             if int(m.group(2)) != counts.get(k, 0):

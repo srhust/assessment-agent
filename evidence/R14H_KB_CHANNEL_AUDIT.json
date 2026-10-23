@@ -246,6 +246,8 @@
    ]
   }
  },
+ "http_requests_made": 0,
+ "llm_calls_used": 0,
  "channel_correction_addendum": {
   "r10g-01": {
    "verbatim_claim_from_source": "retr=[] 且 solved：检索**已调用但为空**，作答走 direct-AST；不是日志丢失（R10E 已存 expr 原文为证）",

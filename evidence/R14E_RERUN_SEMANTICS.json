@@ -709,20 +709,11 @@
   },
   {
    "artifact": "R14H_KB_CHANNEL_AUDIT.json",
-   "script": "h1_r14_kb_channel_audit.py",
+   "status": "covered_by_bundle",
    "declared_writers": [
     "h1_r14_kb_channel_audit.py"
    ],
-   "refused_unsafe": [],
-   "worktree_collateral": [],
-   "collateral_removed": [],
-   "safety": "OK_ZERO_REQUESTS",
-   "offline": true,
-   "exit": 0,
-   "files_changed_by_rerun": [],
-   "own_declared_outputs_touched": [],
-   "status": "reproduced_identical",
-   "rerun_byte_identical": true
+   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
   },
   {
    "artifact": "R14H_KB_CHANNEL_AUDIT_RERUN.json",
