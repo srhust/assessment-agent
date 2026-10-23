@@ -13,7 +13,7 @@
 | C pitch 因果消融 | ✅ | `evidence/R14C_PITCH_ABLATION.json`（双轴×3 画布×5 件全数字）+ `R14C_REAL_PARSE_REPLAY.json` |
 | D 求解/验证强化 | ✅ 核心 | 绝对面积跨协议尺度、验证器复用坐标契约、节距槽统一、**退化常数序列弃权** |
 | **E 选项证据完整性** | ✅ **根修完成**（本版） | `R14E_STAGE_E_ACCEPTANCE_V7.json`（checks_failed `[]`、wrong_releases `[]`、`llm_calls_used 0`）、**新排版独立 Dev 回归 `R14E_NEWLAYOUT_REGRESSION_V2.json` + `R14E_NEWLAYOUT_REGRESSION.md`**（50 页三层计数 16/7/7、排版四不变量 50/50、`tight` 族三元组逐页入账）、`R14E_ANCHOR_SWEEP.json`、`R14E_REAL_PAGE_REPLAY_V8.json`、`tests/test_r14e_option_binding.py`（6 例） |
-| F 六条件+扰动配对 | ✅（E 回归后**重跑**） | `R14E_SIX_CONDITION_V8.json` == `V9.json`：A 11 cand/10 rel、C 5/3、E **5/13**、F **5/13**，各层 wrong_releases `[]`；`R14E_PERTURB_RELEASE_AUDIT_V5.json`：wrong_grid_releasable **[]**、wrong_accept_pert **[]**、contract **15/15**（与 E 前基线逐项相同，无漂移） |
+| F 六条件+扰动配对 | ✅（E 回归后**重跑**，并在 HEAD `b913813` 二次复验零漂移） | `R14E_SIX_CONDITION_V10.json` == `V9.json`（逐项 `identical_verdict_numbers true`、`differing_keys []`）：A 11 cand/10 rel、C 5/3、E **5/13**、F **5/13**，各层 wrong_releases `[]`。扰动审计的**实际件**是 `R14F_PERTURB_RELEASE_AUDIT.json`（`f1` 脚本忽略 `--out`、固定写该文件；此处此前写的 `R14E_PERTURB_RELEASE_AUDIT_V5.json` 并不存在，属**引用名错误**，已更正）：wrong_grid_releasable **[]**、wrong_accept_pert **[]**、contract **15/15**、perturb_loc 23/30——复验以 git HEAD 快照比对后**原样还原**，历史件未被本轮改动。汇总证据 `R14E_HEAD_REVERIFY.json`（`drift []`、`llm_calls_used 0`）。 |
 | G 小批 HTTP | ⛔ **门停，等人工批准** | 见下 |
 | H KB 审计 | ✅ | `R14H_KB_CHANNEL_AUDIT.json`（插桩通道证据 + 五态 + 4 卡归因 + 勘误附录） |
 

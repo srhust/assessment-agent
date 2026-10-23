@@ -1,0 +1,30 @@
+{
+ "head": "b913813e749a473d6ff951be53699e5c36aa0d96",
+ "comparisons": {
+  "R14E_SIX_CONDITION_V10.json vs R14E_SIX_CONDITION_V9.json": {
+   "artifact_written_to": "evidence/R14E_SIX_CONDITION_V10.json",
+   "compare_mode": "new-filename",
+   "historical_artifact_restored": false,
+   "identical_verdict_numbers": true,
+   "differing_keys": []
+  },
+  "R14E_STAGE_E_ACCEPTANCE_V8.json vs R14E_STAGE_E_ACCEPTANCE_V7.json": {
+   "artifact_written_to": "evidence/R14E_STAGE_E_ACCEPTANCE_V8.json",
+   "compare_mode": "new-filename",
+   "historical_artifact_restored": false,
+   "identical_verdict_numbers": true,
+   "differing_keys": []
+  },
+  "R14F_PERTURB_RELEASE_AUDIT.json vs R14F_PERTURB_RELEASE_AUDIT.json": {
+   "artifact_written_to": "evidence/R14F_PERTURB_RELEASE_AUDIT.json",
+   "compare_mode": "committed-snapshot-rerun-product-then-restored",
+   "historical_artifact_restored": true,
+   "identical_verdict_numbers": true,
+   "differing_keys": []
+  }
+ },
+ "drift": [],
+ "f1_worktree_after_restore": "(clean)",
+ "llm_calls_used": 0,
+ "note": "新文件名重跑 + 历史件快照还原：比对只读，不改历史结果件。"
+}

@@ -1,7 +1,9 @@
 # R14 Stage E 交付材料汇总（10 项）+ 盲评准入结论
 
 零 HTTP：本轮 **0/6 请求、0/100000 token** 动用。全套测试 **669 passed / 2 skipped**
-（基线 663 + 新增 6 例）。提交：`d715369` → `eb47076` → `423d91d` → `d6cbfe0`（已推送）。
+（基线 663 + 新增 6 例）。提交：`d715369` → `eb47076` → `423d91d` → `d6cbfe0`
+→ `de14d1e` → `32829d3`（新排版回归）→ `ce44cc7`（G0 就绪审计）→ `b913813`。
+下文 10 项之后的「补充件」是 E 之后两轮新增的独立证据，不替换 10 项本身。
 
 ## 1. 选项带切分根修（`_option_band_cells`，页内字母域锚点）
 `src/assessment_agent/tools/figure_page_localizer.py`。判据全部由页面像素导出：
@@ -46,7 +48,9 @@ ink 160×3 与页面真值逐像素对账通过（旧行为：merge_gap 数量�
 ## 7. 安全门与回归证明（零漂移）
 - 全套 669 passed / 2 skipped；`test_r13a_safety_gates`、`test_r10d_wiring` 全绿。
 - 扰动 30 页释放审计 `wrong_grid_releasable []`、`wrong_accept_pert []`、
-  region 契约 **15/15**、`perturb_loc 23/30`（`R14E_PERTURB_RELEASE_AUDIT_V5.json`）。
+  region 契约 **15/15**、`perturb_loc 23/30`（固定件
+  `evidence/R14F_PERTURB_RELEASE_AUDIT.json`；文档旧引用的
+  `R14E_PERTURB_RELEASE_AUDIT_V5.json` **并不存在**，已在此更正——见补充件 A）。
 - 验收 `checks_failed []`、`wrong_releases []`、`llm_calls_used 0`。
 
 ## 8. E 回归后 F 六条件复评（与 E 前基线逐项相同）
@@ -77,14 +81,52 @@ all_confirm。
 
 ---
 
+## 补充件（E 之后两轮新增的独立证据，不改 10 项结论）
+
+### A. HEAD 复验：三项离线基线零漂移（`R14E_HEAD_REVERIFY.json`）
+在当前提交状态 `b913813` 重跑 d1（六条件）、验收脚本、f1（扰动审计），
+逐项 `identical_verdict_numbers: true`、`differing_keys: []`、`drift: []`、
+`llm_calls_used 0`。两点如实记录：
+
+* **引用名错误已更正**：本文件与 STOPGATE 此前把扰动审计写成
+  `R14E_PERTURB_RELEASE_AUDIT_V5.json`，该件**不存在**；`f1` 忽略 `--out`，
+  固定写 `evidence/R14F_PERTURB_RELEASE_AUDIT.json`（数字与既报一致：
+  contract 15/15、perturb_loc 23/30、`wrong_grid_releasable []`、
+  `wrong_accept_pert []`）。
+* **历史件字节未被复验改动**：f1 走"取 git HEAD 快照 → 重跑 → 比对重跑
+  产物 → 用快照还原工作区"，还原后 `git status` 对该件为 clean。
+
+### B. 新排版独立 Dev 回归（`R14E_NEWLAYOUT_REGRESSION_V2.json` / `.md`）
+50 页（真实 5 + dev15 + perturb30）走**生产入口题面**，三层分列
+候选 16 / 接受 7 / 释放 7，排版四不变量 50/50，`wrong_releases []`。
+tight 族按 `声明/消费/页面末带列段` 三元组入账：**3 页拿到完整真实选项
+证据**（含 1 页真实截图 tight），**4 页仍消费 0 单元**（grid-10 /
+overlay-13 / scale-09 / trans-07 变体）→ 如实缺证据、不释放，是 E 之后
+**仍开的排版覆盖缺口**（STOPGATE 裁决点 5），不得说成已修好。
+
+### C. G0 零请求闸门就绪审计（`R14G0_GATE_READINESS_V5.json` / `R14G0_READINESS.md`）
+用 `httpx.MockTransport` 驱动**真实** `OpenAICompatibleClient` / `VisionParser`
+把每条 G 约束变成可执行证明，13 项 `ready:true / failing:[]`；G 批入口
+`scripts/e2e_r14_stage_g_batch.py` + manifest `R14G_PLAN.json`（5 件原图 SHA
+复算一致、代码版本==HEAD、Prompt 源哈希锁）。C9 实跑入口：无 `--approve`
+在任何 socket 之前 exit 2；伪造批准仍被 `model_lock` 拦下（模型名
+`UNRESOLVED_MUST_BE_CONFIRMED_BY_HUMAN`，本地 `vision_model=null` 且无 key，
+脚本禁止自选模型）。C1d 实测预算脆弱面：5 页 + 1 次余量 = 6，若两页重试
+则第 6 次后被拒、那 1 页记 `BudgetExhausted` 并入分母。
+**真实请求 0 次，预算仍 0/6、0/100000 token。**
+
+---
+
 ## 盲评准入结论：**NOT READY**
 
 支持该结论的当前证据（严格分三层，不混同）：
-- 离线 F 链：**5/13 全对、零错放**（候选 5、接受 5、释放 5）。
+- 离线 F 链：**5/13 全对、零错放**（候选 5、接受 5、释放 5；HEAD 复验
+  `R14E_SIX_CONDITION_V10.json` 与 V9 逐项相同）。
 - 真实截图解析件端到端：**2/5 释放且正确**（mirror-04、rot90-01），
   trans-07 / overlay-12 / tight 均如实弃权，0 错误接受
   （`R14E_REAL_PAGE_REPLAY_V8.json`）。
-- 扰动 30 页：无可释放假格阵（`wrong_grid_releasable []`）。
+- 扰动 30 页：无可释放假格阵（`wrong_grid_releasable []`，
+  `R14F_PERTURB_RELEASE_AUDIT.json`，HEAD 复验零漂移）。
 
 **F 5/13 与 dev15 数字不得表述成"真实截图端到端已突破"**；真实截图上的
 可释放率仍是 2/5，且 tight 排版页的证据虽已完整，其标签通道不可验证。
