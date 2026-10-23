@@ -1,0 +1,589 @@
+{
+ "table": {
+  "R12A_SIX_CONDITION_RESCORED.json": {
+   "protocol": "旧协议（R12-A：tol 15%、无独立 Verifier）",
+   "conditions": {
+    "A": {
+     "correct_candidates": 13,
+     "wrong_candidates": 0,
+     "verified_accepted": 10,
+     "final_released": 10,
+     "of_effective_answerable": "10/13",
+     "gated_unverified": [
+      "ft-trans-07",
+      "ft-trans-08",
+      "ft-overlay-12"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "B": {
+     "correct_candidates": 0,
+     "wrong_candidates": 0,
+     "verified_accepted": 0,
+     "final_released": 0,
+     "of_effective_answerable": "0/13",
+     "gated_unverified": [],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "C": {
+     "correct_candidates": 1,
+     "wrong_candidates": 0,
+     "verified_accepted": 1,
+     "final_released": 1,
+     "of_effective_answerable": "1/13",
+     "gated_unverified": [],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "D": {
+     "correct_candidates": 0,
+     "wrong_candidates": 1,
+     "verified_accepted": 0,
+     "final_released": 0,
+     "of_effective_answerable": "0/13",
+     "gated_unverified": [
+      "ft-trans-07"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "E": {
+     "correct_candidates": 1,
+     "wrong_candidates": 1,
+     "verified_accepted": 1,
+     "final_released": 1,
+     "of_effective_answerable": "1/13",
+     "gated_unverified": [
+      "ft-trans-08"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "F": {
+     "correct_candidates": 1,
+     "wrong_candidates": 1,
+     "verified_accepted": 0,
+     "final_released": 0,
+     "of_effective_answerable": "0/13",
+     "gated_unverified": [
+      "ft-mirror-04",
+      "ft-trans-08"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    }
+   },
+   "wrong_releases_by_layer": {
+    "A": [],
+    "B": [],
+    "C": [],
+    "D": [],
+    "E": [],
+    "F": []
+   },
+   "any_wrong_release": false
+  },
+  "R13A_SIX_CONDITION_VERIFIER_BACKED.json": {
+   "protocol": "旧协议（R13-A：Verifier 独立复核首次引入）",
+   "conditions": {
+    "A": {
+     "correct_candidates": 13,
+     "wrong_candidates": 0,
+     "verified_accepted": 10,
+     "final_released": 10,
+     "of_effective_answerable": "10/13",
+     "gated_unverified": [
+      "ft-trans-07",
+      "ft-trans-08",
+      "ft-overlay-12"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "B": {
+     "correct_candidates": 0,
+     "wrong_candidates": 0,
+     "verified_accepted": 0,
+     "final_released": 0,
+     "of_effective_answerable": "0/13",
+     "gated_unverified": [],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "C": {
+     "correct_candidates": 1,
+     "wrong_candidates": 0,
+     "verified_accepted": 1,
+     "final_released": 1,
+     "of_effective_answerable": "1/13",
+     "gated_unverified": [],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "D": {
+     "correct_candidates": 0,
+     "wrong_candidates": 1,
+     "verified_accepted": 0,
+     "final_released": 0,
+     "of_effective_answerable": "0/13",
+     "gated_unverified": [
+      "ft-trans-07"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "E": {
+     "correct_candidates": 1,
+     "wrong_candidates": 1,
+     "verified_accepted": 1,
+     "final_released": 1,
+     "of_effective_answerable": "1/13",
+     "gated_unverified": [
+      "ft-trans-08"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "F": {
+     "correct_candidates": 1,
+     "wrong_candidates": 1,
+     "verified_accepted": 1,
+     "final_released": 1,
+     "of_effective_answerable": "1/13",
+     "gated_unverified": [
+      "ft-trans-08"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    }
+   },
+   "wrong_releases_by_layer": {
+    "A": [],
+    "B": [],
+    "C": [],
+    "D": [],
+    "E": [],
+    "F": []
+   },
+   "any_wrong_release": false
+  },
+  "R14F_SIX_CONDITION.json": {
+   "protocol": "现行协议（E 根修**前**基线）",
+   "conditions": {
+    "A": {
+     "correct_candidates": 11,
+     "wrong_candidates": 0,
+     "verified_accepted": 10,
+     "final_released": 10,
+     "of_effective_answerable": "10/13",
+     "gated_unverified": [
+      "ft-overlay-12"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "B": {
+     "correct_candidates": 0,
+     "wrong_candidates": 0,
+     "verified_accepted": 0,
+     "final_released": 0,
+     "of_effective_answerable": "0/13",
+     "gated_unverified": [],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "C": {
+     "correct_candidates": 3,
+     "wrong_candidates": 0,
+     "verified_accepted": 3,
+     "final_released": 3,
+     "of_effective_answerable": "3/13",
+     "gated_unverified": [],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "D": {
+     "correct_candidates": 0,
+     "wrong_candidates": 1,
+     "verified_accepted": 0,
+     "final_released": 0,
+     "of_effective_answerable": "0/13",
+     "gated_unverified": [
+      "ft-trans-07"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "E": {
+     "correct_candidates": 5,
+     "wrong_candidates": 1,
+     "verified_accepted": 5,
+     "final_released": 5,
+     "of_effective_answerable": "5/13",
+     "gated_unverified": [
+      "ft-trans-08"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "F": {
+     "correct_candidates": 5,
+     "wrong_candidates": 1,
+     "verified_accepted": 5,
+     "final_released": 5,
+     "of_effective_answerable": "5/13",
+     "gated_unverified": [
+      "ft-trans-08"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    }
+   },
+   "wrong_releases_by_layer": {
+    "A": [],
+    "B": [],
+    "C": [],
+    "D": [],
+    "E": [],
+    "F": []
+   },
+   "any_wrong_release": false
+  },
+  "R14E_SIX_CONDITION.json": {
+   "protocol": "现行协议（E 根修首跑）",
+   "conditions": {
+    "A": {
+     "correct_candidates": 10,
+     "wrong_candidates": 0,
+     "verified_accepted": 9,
+     "final_released": 9,
+     "of_effective_answerable": "9/13",
+     "gated_unverified": [
+      "ft-overlay-12"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "B": {
+     "correct_candidates": 0,
+     "wrong_candidates": 0,
+     "verified_accepted": 0,
+     "final_released": 0,
+     "of_effective_answerable": "0/13",
+     "gated_unverified": [],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "C": {
+     "correct_candidates": 3,
+     "wrong_candidates": 0,
+     "verified_accepted": 3,
+     "final_released": 3,
+     "of_effective_answerable": "3/13",
+     "gated_unverified": [],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "D": {
+     "correct_candidates": 0,
+     "wrong_candidates": 1,
+     "verified_accepted": 0,
+     "final_released": 0,
+     "of_effective_answerable": "0/13",
+     "gated_unverified": [
+      "ft-trans-07"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "E": {
+     "correct_candidates": 5,
+     "wrong_candidates": 1,
+     "verified_accepted": 5,
+     "final_released": 5,
+     "of_effective_answerable": "5/13",
+     "gated_unverified": [
+      "ft-trans-08"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "F": {
+     "correct_candidates": 5,
+     "wrong_candidates": 1,
+     "verified_accepted": 5,
+     "final_released": 5,
+     "of_effective_answerable": "5/13",
+     "gated_unverified": [
+      "ft-trans-08"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    }
+   },
+   "wrong_releases_by_layer": {
+    "A": [],
+    "B": [],
+    "C": [],
+    "D": [],
+    "E": [],
+    "F": []
+   },
+   "any_wrong_release": false
+  },
+  "R14E_SIX_CONDITION_V9.json": {
+   "protocol": "现行协议（E 回归后重跑）",
+   "conditions": {
+    "A": {
+     "correct_candidates": 11,
+     "wrong_candidates": 0,
+     "verified_accepted": 10,
+     "final_released": 10,
+     "of_effective_answerable": "10/13",
+     "gated_unverified": [
+      "ft-overlay-12"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "B": {
+     "correct_candidates": 0,
+     "wrong_candidates": 0,
+     "verified_accepted": 0,
+     "final_released": 0,
+     "of_effective_answerable": "0/13",
+     "gated_unverified": [],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "C": {
+     "correct_candidates": 5,
+     "wrong_candidates": 0,
+     "verified_accepted": 3,
+     "final_released": 3,
+     "of_effective_answerable": "3/13",
+     "gated_unverified": [
+      "ft-rot90-01",
+      "ft-grid-10"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "D": {
+     "correct_candidates": 1,
+     "wrong_candidates": 0,
+     "verified_accepted": 0,
+     "final_released": 0,
+     "of_effective_answerable": "0/13",
+     "gated_unverified": [
+      "ft-grid-10"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "E": {
+     "correct_candidates": 5,
+     "wrong_candidates": 1,
+     "verified_accepted": 5,
+     "final_released": 5,
+     "of_effective_answerable": "5/13",
+     "gated_unverified": [
+      "ft-trans-08"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "F": {
+     "correct_candidates": 5,
+     "wrong_candidates": 1,
+     "verified_accepted": 5,
+     "final_released": 5,
+     "of_effective_answerable": "5/13",
+     "gated_unverified": [
+      "ft-trans-08"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    }
+   },
+   "wrong_releases_by_layer": {
+    "A": [],
+    "B": [],
+    "C": [],
+    "D": [],
+    "E": [],
+    "F": []
+   },
+   "any_wrong_release": false
+  },
+  "R14E_SIX_CONDITION_V10.json": {
+   "protocol": "现行协议（HEAD b913813 复验重跑）",
+   "conditions": {
+    "A": {
+     "correct_candidates": 11,
+     "wrong_candidates": 0,
+     "verified_accepted": 10,
+     "final_released": 10,
+     "of_effective_answerable": "10/13",
+     "gated_unverified": [
+      "ft-overlay-12"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "B": {
+     "correct_candidates": 0,
+     "wrong_candidates": 0,
+     "verified_accepted": 0,
+     "final_released": 0,
+     "of_effective_answerable": "0/13",
+     "gated_unverified": [],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "C": {
+     "correct_candidates": 5,
+     "wrong_candidates": 0,
+     "verified_accepted": 3,
+     "final_released": 3,
+     "of_effective_answerable": "3/13",
+     "gated_unverified": [
+      "ft-rot90-01",
+      "ft-grid-10"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "D": {
+     "correct_candidates": 1,
+     "wrong_candidates": 0,
+     "verified_accepted": 0,
+     "final_released": 0,
+     "of_effective_answerable": "0/13",
+     "gated_unverified": [
+      "ft-grid-10"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "E": {
+     "correct_candidates": 5,
+     "wrong_candidates": 1,
+     "verified_accepted": 5,
+     "final_released": 5,
+     "of_effective_answerable": "5/13",
+     "gated_unverified": [
+      "ft-trans-08"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    },
+    "F": {
+     "correct_candidates": 5,
+     "wrong_candidates": 1,
+     "verified_accepted": 5,
+     "final_released": 5,
+     "of_effective_answerable": "5/13",
+     "gated_unverified": [
+      "ft-trans-08"
+     ],
+     "design_abstain_ok": [
+      "ft-sym-14",
+      "ft-conflict-15"
+     ]
+    }
+   },
+   "wrong_releases_by_layer": {
+    "A": [],
+    "B": [],
+    "C": [],
+    "D": [],
+    "E": [],
+    "F": []
+   },
+   "any_wrong_release": false
+  }
+ },
+ "missing_artifacts": [],
+ "v10_equals_v9": true,
+ "v10_equals_v9_scope": "仅比较判定字段（conditions + wrong_releases_by_layer）；protocol 标注栏不参与",
+ "read_this_as": [
+  "候选/接受/释放是**三个不同计数**：本表 correct_candidates、verified_accepted、final_released 分列，禁止互相代称。",
+  "F 链在现行协议四件（R14F/E/V9/V10）里恒为 候选 5（含 1 个wrong_candidates 记录）、接受 5、释放 5（5/13），且 wrong_releases 全层为空——所以 E 的根修**没有**改动 F 的结论。",
+  "R12A/R13A 是旧协议件，数字不同（E 1/13、F 0/13 或 1/13）是协议差异所致，**不得**与现行协议同列比较或据此声称退化/进步。",
+  "R14E_SIX_CONDITION.json（E 首跑）里 C=3/3、D=0 与 V9/V10 的 C=5 候选/3 释放、D=1 候选/0 释放不同：差异来自 E 期间消费门与候选集回到 HEAD 口径（候选数上升但释放未上升，且 wrong_releases 始终为空），属如实记录，不是事后修饰。"
+ ],
+ "llm_calls_used": 0
+}

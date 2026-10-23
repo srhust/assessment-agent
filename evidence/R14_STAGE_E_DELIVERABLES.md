@@ -60,6 +60,20 @@ A 11 候选 / 10 释放、B 0、C 5 / 3、D 1 / 0、**E 5/13**、**F 5/13**，
 comp-06 / grid-10。`gated_unverified [ft-trans-08]`、
 `design_abstain_ok [ft-sym-14, ft-conflict-15]` 亦未变。
 
+**血缘已持久件化**（`R14E_LINEAGE_SIX_CONDITION.json`，由
+`scripts/e2e_r14_six_condition_lineage.py` 生成，零 API）：六个件同表列出
+`correct_candidates / wrong_candidates / verified_accepted / final_released /
+of_effective_answerable` 与逐层 `wrong_releases`，并写明四条读法——
+① 候选/接受/释放是三个不同计数，禁止互相代称；② 现行协议四件
+（R14F=E 前基线、R14E 首跑、V9、V10）里 F 恒为 **5/5/5（5/13）** 且
+`wrong_releases` 全空 ⇒ E 的根修没改 F 的结论；③ R12A/R13A 属**旧协议**
+（E 1/13、F 0/13 或 1/13），差异来自协议本身，**不得**同列比较以声称
+退化或进步；④ E 首跑件与 V9/V10 在 C/D 候选数上的差异（C 3→5、D 0→1，
+释放均未升）逐条说明成因，属如实记录而非事后修饰。
+本轮自纠一处：血缘脚本首版把 `protocol` **标注栏**卷进等价比较，得到
+假的 `v10_equals_v9=false`；实测判定字段全等后改为只比判定字段
+（`v10_equals_v9: true`，并写明比较口径）。
+
 ## 9. 独立排版锚点普查（59 页）
 `R14E_ANCHOR_SWEEP.json`：总 59、锚点 **18** = 真实截图 4/5、dev15 14/15、
 扰动 **0/30**、screens **0/9**。扰动/screens 为 0 是**设计结果**
