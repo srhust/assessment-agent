@@ -600,6 +600,24 @@ def main() -> int:
     _scripts = {f"scripts/{Path(x['step'].split()[0]).name}"
                 for x in rows if x.get("step", "").startswith("scripts/")}
     _collateral = a10_collateral(after_dirty, _expected | _scripts)
+    # **A10b**：bundle 写出**声明为人工撰写**的交付件 ⇒ 当场报，
+    # 不等下一轮索引发现（本轮实测：A13 回写 DELIVERABLES.md，
+    # 而 `HAND_WRITTEN` 仍列着它 ⇒ 声明已假；又因为该件在 A10
+    # **期望集**里，`A10_collateral` 显示 `[]`，看起来一切正常）。
+    _hw_path = ROOT / "scripts" / "e2e_r14_index.py"
+    _hw = set()
+    if _hw_path.is_file():
+        _mt = re.search(r"HAND_WRITTEN = \{([^}]*)\}",
+                        _hw_path.read_text(encoding="utf-8"), re.S)
+        if _mt:
+            _hw = set(re.findall(r"\"([^\"]+\.md)\"", _mt.group(1)))
+    _hw_written = sorted(
+        {x["artifact"] for x in rows if x.get("artifact") in _hw}
+        | set(a13.get("synced", [])) & _hw)
+    if _hw_written:
+        fails.append(
+            f"A10b bundle 写出了**声明人工撰写**的件 {_hw_written}："
+            f"要么删掉 HAND_WRITTEN 里的声明，要么别在 bundle 里写它")
     if _collateral:
         fails.append(f"A10 SAFETY_VIOLATION_bundle_collateral："
                      f"bundle 期间改动了**未登记**的证据/数据件 {sorted(set(_collateral))}"
