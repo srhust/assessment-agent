@@ -1,0 +1,5975 @@
+{
+ "n_pages": 50,
+ "by_kind": {
+  "real": 5,
+  "dev": 15,
+  "perturb": 30
+ },
+ "layers": {
+  "candidates_solved": 16,
+  "accepted": 7,
+  "released": 7
+ },
+ "released_ids": [
+  "ft-comp-06",
+  "ft-grid-10",
+  "ft-mirror-04",
+  "ft-mirror-04[real-screenshot]",
+  "ft-rot270-03",
+  "ft-rot90-01",
+  "ft-rot90-01[real-screenshot]"
+ ],
+ "wrong_releases": [],
+ "near_blank_consumed": [],
+ "letterless_released": [],
+ "letterless_anchor_claims": [],
+ "tight_layout_pages": {
+  "ft-mirror-04--tight": {
+   "declared_options": 0,
+   "provenance_option_cells": 3,
+   "saved_option_crops": 3,
+   "consumed_inks": [
+    168,
+    168,
+    168
+   ],
+   "n_cells": 3,
+   "anchored": 0,
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "page_truth_units": 3,
+   "page_truth_uniform": true,
+   "page_truth_ink": [
+    168,
+    168,
+    168
+   ],
+   "released": false,
+   "binding": "rebuilt",
+   "status": "failed"
+  },
+  "ft-grid-10--tight": {
+   "declared_options": 4,
+   "provenance_option_cells": 0,
+   "saved_option_crops": 4,
+   "consumed_inks": [
+    168,
+    296,
+    168,
+    168
+   ],
+   "n_cells": 0,
+   "anchored": 0,
+   "has_letter_labels": [],
+   "page_truth_units": 5,
+   "page_truth_uniform": false,
+   "page_truth_ink": [
+    168,
+    128,
+    168,
+    168,
+    168
+   ],
+   "released": false,
+   "binding": null,
+   "status": "failed"
+  },
+  "ft-mirror-04--tight[real-screenshot]": {
+   "declared_options": 3,
+   "provenance_option_cells": 3,
+   "saved_option_crops": 3,
+   "consumed_inks": [
+    168,
+    168,
+    168
+   ],
+   "n_cells": 3,
+   "anchored": 0,
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "page_truth_units": 3,
+   "page_truth_uniform": true,
+   "page_truth_ink": [
+    168,
+    168,
+    168
+   ],
+   "released": false,
+   "binding": "rebuilt",
+   "status": "solved"
+  },
+  "ft-overlay-13--tight": {
+   "declared_options": 4,
+   "provenance_option_cells": 0,
+   "saved_option_crops": 4,
+   "consumed_inks": [
+    107,
+    227,
+    349,
+    160
+   ],
+   "n_cells": 0,
+   "anchored": 0,
+   "has_letter_labels": [],
+   "page_truth_units": 7,
+   "page_truth_uniform": false,
+   "page_truth_ink": [
+    81,
+    227,
+    32,
+    81,
+    268,
+    41,
+    160
+   ],
+   "released": false,
+   "binding": null,
+   "status": "failed"
+  },
+  "ft-rot90-01--tight": {
+   "declared_options": 4,
+   "provenance_option_cells": 4,
+   "saved_option_crops": 4,
+   "consumed_inks": [
+    168,
+    168,
+    168,
+    168
+   ],
+   "n_cells": 4,
+   "anchored": 0,
+   "has_letter_labels": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "page_truth_units": 4,
+   "page_truth_uniform": true,
+   "page_truth_ink": [
+    168,
+    168,
+    168,
+    168
+   ],
+   "released": false,
+   "binding": "rebuilt",
+   "status": "solved"
+  },
+  "ft-scale-09--tight": {
+   "declared_options": 3,
+   "provenance_option_cells": 0,
+   "saved_option_crops": 0,
+   "consumed_inks": [],
+   "n_cells": 0,
+   "anchored": 0,
+   "has_letter_labels": [],
+   "page_truth_units": 3,
+   "page_truth_uniform": false,
+   "page_truth_ink": [
+    378,
+    38,
+    168
+   ],
+   "released": false,
+   "binding": null,
+   "status": "failed"
+  },
+  "ft-trans-07--tight": {
+   "declared_options": 3,
+   "provenance_option_cells": 0,
+   "saved_option_crops": 0,
+   "consumed_inks": [],
+   "n_cells": 0,
+   "anchored": 0,
+   "has_letter_labels": [],
+   "page_truth_units": 3,
+   "page_truth_uniform": false,
+   "page_truth_ink": [
+    160,
+    160,
+    160
+   ],
+   "released": false,
+   "binding": null,
+   "status": "failed"
+  }
+ },
+ "tight_declared_vs_evidence_cells": [
+  "ft-grid-10--tight: 题面声明 4 vs 证据链单元 0（落盘裁剪 4 份，页面末带列段 5，仅对照）",
+  "ft-mirror-04--tight: 题面声明 0 vs 证据链单元 3（落盘裁剪 3 份，页面末带列段 3，仅对照）",
+  "ft-overlay-13--tight: 题面声明 4 vs 证据链单元 0（落盘裁剪 4 份，页面末带列段 7，仅对照）",
+  "ft-scale-09--tight: 题面声明 3 vs 证据链单元 0（落盘裁剪 0 份，页面末带列段 3，仅对照）",
+  "ft-trans-07--tight: 题面声明 3 vs 证据链单元 0（落盘裁剪 0 份，页面末带列段 3，仅对照）"
+ ],
+ "tight_page_truth_by_page": {
+  "ft-mirror-04--tight": {
+   "declared": 0,
+   "evidence_cells": 3,
+   "saved_crops": 3,
+   "bottom_band_col_runs": 3,
+   "uniform_layout": true,
+   "run_inks": [
+    168,
+    168,
+    168
+   ]
+  },
+  "ft-grid-10--tight": {
+   "declared": 4,
+   "evidence_cells": 0,
+   "saved_crops": 4,
+   "bottom_band_col_runs": 5,
+   "uniform_layout": false,
+   "run_inks": [
+    168,
+    128,
+    168,
+    168,
+    168
+   ]
+  },
+  "ft-mirror-04--tight[real-screenshot]": {
+   "declared": 3,
+   "evidence_cells": 3,
+   "saved_crops": 3,
+   "bottom_band_col_runs": 3,
+   "uniform_layout": true,
+   "run_inks": [
+    168,
+    168,
+    168
+   ]
+  },
+  "ft-overlay-13--tight": {
+   "declared": 4,
+   "evidence_cells": 0,
+   "saved_crops": 4,
+   "bottom_band_col_runs": 7,
+   "uniform_layout": false,
+   "run_inks": [
+    81,
+    227,
+    32,
+    81,
+    268,
+    41,
+    160
+   ]
+  },
+  "ft-rot90-01--tight": {
+   "declared": 4,
+   "evidence_cells": 4,
+   "saved_crops": 4,
+   "bottom_band_col_runs": 4,
+   "uniform_layout": true,
+   "run_inks": [
+    168,
+    168,
+    168,
+    168
+   ]
+  },
+  "ft-scale-09--tight": {
+   "declared": 3,
+   "evidence_cells": 0,
+   "saved_crops": 0,
+   "bottom_band_col_runs": 3,
+   "uniform_layout": false,
+   "run_inks": [
+    378,
+    38,
+    168
+   ]
+  },
+  "ft-trans-07--tight": {
+   "declared": 3,
+   "evidence_cells": 0,
+   "saved_crops": 0,
+   "bottom_band_col_runs": 3,
+   "uniform_layout": false,
+   "run_inks": [
+    160,
+    160,
+    160
+   ]
+  }
+ },
+ "page_band20_audit": [
+  {
+   "pid": "ft-mirror-04",
+   "kind": "real",
+   "mask_hw": [
+    208,
+    348
+   ],
+   "ink": 2628,
+   "band_h": 134,
+   "band_w": 324,
+   "top_margin": 36,
+   "bottom_margin": 38
+  },
+  {
+   "pid": "ft-mirror-04--tight",
+   "kind": "real",
+   "mask_hw": [
+    240,
+    264
+   ],
+   "ink": 840,
+   "band_h": 134,
+   "band_w": 168,
+   "top_margin": 50,
+   "bottom_margin": 56
+  },
+  {
+   "pid": "ft-overlay-12",
+   "kind": "real",
+   "mask_hw": [
+    304,
+    380
+   ],
+   "ink": 4382,
+   "band_h": 230,
+   "band_w": 356,
+   "top_margin": 36,
+   "bottom_margin": 38
+  },
+  {
+   "pid": "ft-rot90-01",
+   "kind": "real",
+   "mask_hw": [
+    208,
+    380
+   ],
+   "ink": 3142,
+   "band_h": 138,
+   "band_w": 356,
+   "top_margin": 36,
+   "bottom_margin": 34
+  },
+  {
+   "pid": "ft-trans-07",
+   "kind": "real",
+   "mask_hw": [
+    208,
+    348
+   ],
+   "ink": 2741,
+   "band_h": 134,
+   "band_w": 324,
+   "top_margin": 36,
+   "bottom_margin": 38
+  },
+  {
+   "pid": "ft-rot90-01",
+   "kind": "dev",
+   "mask_hw": [
+    208,
+    380
+   ],
+   "ink": 3142,
+   "band_h": 138,
+   "band_w": 356,
+   "top_margin": 36,
+   "bottom_margin": 34
+  },
+  {
+   "pid": "ft-rot180-02",
+   "kind": "dev",
+   "mask_hw": [
+    208,
+    348
+   ],
+   "ink": 2857,
+   "band_h": 136,
+   "band_w": 324,
+   "top_margin": 36,
+   "bottom_margin": 36
+  },
+  {
+   "pid": "ft-rot270-03",
+   "kind": "dev",
+   "mask_hw": [
+    208,
+    348
+   ],
+   "ink": 3851,
+   "band_h": 140,
+   "band_w": 324,
+   "top_margin": 36,
+   "bottom_margin": 32
+  },
+  {
+   "pid": "ft-mirror-04",
+   "kind": "dev",
+   "mask_hw": [
+    208,
+    348
+   ],
+   "ink": 2628,
+   "band_h": 134,
+   "band_w": 324,
+   "top_margin": 36,
+   "bottom_margin": 38
+  },
+  {
+   "pid": "ft-mirror-05",
+   "kind": "dev",
+   "mask_hw": [
+    208,
+    348
+   ],
+   "ink": 3634,
+   "band_h": 140,
+   "band_w": 324,
+   "top_margin": 36,
+   "bottom_margin": 32
+  },
+  {
+   "pid": "ft-comp-06",
+   "kind": "dev",
+   "mask_hw": [
+    208,
+    348
+   ],
+   "ink": 3507,
+   "band_h": 140,
+   "band_w": 324,
+   "top_margin": 36,
+   "bottom_margin": 32
+  },
+  {
+   "pid": "ft-trans-07",
+   "kind": "dev",
+   "mask_hw": [
+    208,
+    348
+   ],
+   "ink": 2741,
+   "band_h": 134,
+   "band_w": 324,
+   "top_margin": 36,
+   "bottom_margin": 38
+  },
+  {
+   "pid": "ft-trans-08",
+   "kind": "dev",
+   "mask_hw": [
+    208,
+    348
+   ],
+   "ink": 3410,
+   "band_h": 145,
+   "band_w": 324,
+   "top_margin": 36,
+   "bottom_margin": 27
+  },
+  {
+   "pid": "ft-scale-09",
+   "kind": "dev",
+   "mask_hw": [
+    208,
+    348
+   ],
+   "ink": 2655,
+   "band_h": 140,
+   "band_w": 324,
+   "top_margin": 36,
+   "bottom_margin": 32
+  },
+  {
+   "pid": "ft-grid-10",
+   "kind": "dev",
+   "mask_hw": [
+    304,
+    380
+   ],
+   "ink": 3946,
+   "band_h": 234,
+   "band_w": 356,
+   "top_margin": 36,
+   "bottom_margin": 34
+  },
+  {
+   "pid": "ft-grid-11",
+   "kind": "dev",
+   "mask_hw": [
+    304,
+    348
+   ],
+   "ink": 4580,
+   "band_h": 236,
+   "band_w": 324,
+   "top_margin": 36,
+   "bottom_margin": 32
+  },
+  {
+   "pid": "ft-overlay-12",
+   "kind": "dev",
+   "mask_hw": [
+    304,
+    380
+   ],
+   "ink": 4382,
+   "band_h": 230,
+   "band_w": 356,
+   "top_margin": 36,
+   "bottom_margin": 38
+  },
+  {
+   "pid": "ft-overlay-13",
+   "kind": "dev",
+   "mask_hw": [
+    304,
+    380
+   ],
+   "ink": 4827,
+   "band_h": 234,
+   "band_w": 356,
+   "top_margin": 36,
+   "bottom_margin": 34
+  },
+  {
+   "pid": "ft-sym-14",
+   "kind": "dev",
+   "mask_hw": [
+    208,
+    348
+   ],
+   "ink": 3460,
+   "band_h": 136,
+   "band_w": 324,
+   "top_margin": 36,
+   "bottom_margin": 36
+  },
+  {
+   "pid": "ft-conflict-15",
+   "kind": "dev",
+   "mask_hw": [
+    304,
+    348
+   ],
+   "ink": 5340,
+   "band_h": 232,
+   "band_w": 324,
+   "top_margin": 36,
+   "bottom_margin": 36
+  },
+  {
+   "pid": "ft-grid-10--distractor",
+   "kind": "perturb",
+   "mask_hw": [
+    260,
+    480
+   ],
+   "ink": 2091,
+   "band_h": 260,
+   "band_w": 478,
+   "top_margin": 0,
+   "bottom_margin": 0
+  },
+  {
+   "pid": "ft-grid-10--large",
+   "kind": "perturb",
+   "mask_hw": [
+    300,
+    520
+   ],
+   "ink": 3644,
+   "band_h": 176,
+   "band_w": 414,
+   "top_margin": 52,
+   "bottom_margin": 72
+  },
+  {
+   "pid": "ft-grid-10--small",
+   "kind": "perturb",
+   "mask_hw": [
+    300,
+    520
+   ],
+   "ink": 1500,
+   "band_h": 162,
+   "band_w": 304,
+   "top_margin": 47,
+   "bottom_margin": 91
+  },
+  {
+   "pid": "ft-grid-10--tight",
+   "kind": "perturb",
+   "mask_hw": [
+    240,
+    334
+   ],
+   "ink": 1808,
+   "band_h": 138,
+   "band_w": 238,
+   "top_margin": 50,
+   "bottom_margin": 52
+  },
+  {
+   "pid": "ft-grid-10--vertical",
+   "kind": "perturb",
+   "mask_hw": [
+    340,
+    420
+   ],
+   "ink": 1880,
+   "band_h": 228,
+   "band_w": 188,
+   "top_margin": 40,
+   "bottom_margin": 72
+  },
+  {
+   "pid": "ft-mirror-04--distractor",
+   "kind": "perturb",
+   "mask_hw": [
+    260,
+    480
+   ],
+   "ink": 1075,
+   "band_h": 259,
+   "band_w": 478,
+   "top_margin": 1,
+   "bottom_margin": 0
+  },
+  {
+   "pid": "ft-mirror-04--large",
+   "kind": "perturb",
+   "mask_hw": [
+    300,
+    520
+   ],
+   "ink": 1575,
+   "band_h": 171,
+   "band_w": 288,
+   "top_margin": 52,
+   "bottom_margin": 77
+  },
+  {
+   "pid": "ft-mirror-04--small",
+   "kind": "perturb",
+   "mask_hw": [
+    300,
+    520
+   ],
+   "ink": 625,
+   "band_h": 159,
+   "band_w": 210,
+   "top_margin": 47,
+   "bottom_margin": 94
+  },
+  {
+   "pid": "ft-mirror-04--tight",
+   "kind": "perturb",
+   "mask_hw": [
+    240,
+    264
+   ],
+   "ink": 840,
+   "band_h": 134,
+   "band_w": 168,
+   "top_margin": 50,
+   "bottom_margin": 56
+  },
+  {
+   "pid": "ft-mirror-04--vertical",
+   "kind": "perturb",
+   "mask_hw": [
+    340,
+    420
+   ],
+   "ink": 840,
+   "band_h": 224,
+   "band_w": 188,
+   "top_margin": 40,
+   "bottom_margin": 76
+  },
+  {
+   "pid": "ft-overlay-13--distractor",
+   "kind": "perturb",
+   "mask_hw": [
+    260,
+    480
+   ],
+   "ink": 2955,
+   "band_h": 259,
+   "band_w": 478,
+   "top_margin": 1,
+   "bottom_margin": 0
+  },
+  {
+   "pid": "ft-overlay-13--large",
+   "kind": "perturb",
+   "mask_hw": [
+    300,
+    520
+   ],
+   "ink": 4372,
+   "band_h": 187,
+   "band_w": 420,
+   "top_margin": 41,
+   "bottom_margin": 72
+  },
+  {
+   "pid": "ft-overlay-13--small",
+   "kind": "perturb",
+   "mask_hw": [
+    300,
+    520
+   ],
+   "ink": 1668,
+   "band_h": 167,
+   "band_w": 307,
+   "top_margin": 41,
+   "bottom_margin": 92
+  },
+  {
+   "pid": "ft-overlay-13--tight",
+   "kind": "perturb",
+   "mask_hw": [
+    240,
+    334
+   ],
+   "ink": 2588,
+   "band_h": 147,
+   "band_w": 243,
+   "top_margin": 41,
+   "bottom_margin": 52
+  },
+  {
+   "pid": "ft-overlay-13--vertical",
+   "kind": "perturb",
+   "mask_hw": [
+    340,
+    420
+   ],
+   "ink": 2772,
+   "band_h": 227,
+   "band_w": 193,
+   "top_margin": 31,
+   "bottom_margin": 82
+  },
+  {
+   "pid": "ft-rot90-01--distractor",
+   "kind": "perturb",
+   "mask_hw": [
+    260,
+    480
+   ],
+   "ink": 1424,
+   "band_h": 260,
+   "band_w": 478,
+   "top_margin": 0,
+   "bottom_margin": 0
+  },
+  {
+   "pid": "ft-rot90-01--large",
+   "kind": "perturb",
+   "mask_hw": [
+    300,
+    520
+   ],
+   "ink": 2205,
+   "band_h": 176,
+   "band_w": 414,
+   "top_margin": 52,
+   "bottom_margin": 72
+  },
+  {
+   "pid": "ft-rot90-01--small",
+   "kind": "perturb",
+   "mask_hw": [
+    300,
+    520
+   ],
+   "ink": 875,
+   "band_h": 162,
+   "band_w": 304,
+   "top_margin": 47,
+   "bottom_margin": 91
+  },
+  {
+   "pid": "ft-rot90-01--tight",
+   "kind": "perturb",
+   "mask_hw": [
+    240,
+    334
+   ],
+   "ink": 1176,
+   "band_h": 138,
+   "band_w": 238,
+   "top_margin": 50,
+   "bottom_margin": 52
+  },
+  {
+   "pid": "ft-rot90-01--vertical",
+   "kind": "perturb",
+   "mask_hw": [
+    340,
+    420
+   ],
+   "ink": 1176,
+   "band_h": 228,
+   "band_w": 188,
+   "top_margin": 40,
+   "bottom_margin": 72
+  },
+  {
+   "pid": "ft-scale-09--distractor",
+   "kind": "perturb",
+   "mask_hw": [
+    260,
+    480
+   ],
+   "ink": 1114,
+   "band_h": 258,
+   "band_w": 478,
+   "top_margin": 0,
+   "bottom_margin": 2
+  },
+  {
+   "pid": "ft-scale-09--large",
+   "kind": "perturb",
+   "mask_hw": [
+    300,
+    520
+   ],
+   "ink": 1430,
+   "band_h": 174,
+   "band_w": 293,
+   "top_margin": 56,
+   "bottom_margin": 70
+  },
+  {
+   "pid": "ft-scale-09--small",
+   "kind": "perturb",
+   "mask_hw": [
+    300,
+    520
+   ],
+   "ink": 553,
+   "band_h": 160,
+   "band_w": 213,
+   "top_margin": 50,
+   "bottom_margin": 90
+  },
+  {
+   "pid": "ft-scale-09--tight",
+   "kind": "perturb",
+   "mask_hw": [
+    240,
+    264
+   ],
+   "ink": 874,
+   "band_h": 137,
+   "band_w": 172,
+   "top_margin": 53,
+   "bottom_margin": 50
+  },
+  {
+   "pid": "ft-scale-09--vertical",
+   "kind": "perturb",
+   "mask_hw": [
+    340,
+    420
+   ],
+   "ink": 874,
+   "band_h": 219,
+   "band_w": 173,
+   "top_margin": 43,
+   "bottom_margin": 78
+  },
+  {
+   "pid": "ft-trans-07--distractor",
+   "kind": "perturb",
+   "mask_hw": [
+    260,
+    480
+   ],
+   "ink": 1200,
+   "band_h": 259,
+   "band_w": 478,
+   "top_margin": 0,
+   "bottom_margin": 1
+  },
+  {
+   "pid": "ft-trans-07--large",
+   "kind": "perturb",
+   "mask_hw": [
+    300,
+    520
+   ],
+   "ink": 1524,
+   "band_h": 158,
+   "band_w": 257,
+   "top_margin": 65,
+   "bottom_margin": 77
+  },
+  {
+   "pid": "ft-trans-07--small",
+   "kind": "perturb",
+   "mask_hw": [
+    300,
+    520
+   ],
+   "ink": 564,
+   "band_h": 151,
+   "band_w": 190,
+   "top_margin": 55,
+   "bottom_margin": 94
+  },
+  {
+   "pid": "ft-trans-07--tight",
+   "kind": "perturb",
+   "mask_hw": [
+    240,
+    264
+   ],
+   "ink": 960,
+   "band_h": 124,
+   "band_w": 160,
+   "top_margin": 60,
+   "bottom_margin": 56
+  },
+  {
+   "pid": "ft-trans-07--vertical",
+   "kind": "perturb",
+   "mask_hw": [
+    340,
+    420
+   ],
+   "ink": 960,
+   "band_h": 214,
+   "band_w": 174,
+   "top_margin": 50,
+   "bottom_margin": 76
+  }
+ ],
+ "erratum_v3": "V2 的 tight 汇总把 Solver 证据链单元数标为\"消费单元\"，与落盘裁剪份数混同，导致\"4 页选项 0 份\"的表述**过强**：实测 scale-09--tight / trans-07--tight 确为 0 份裁剪；grid-10--tight / overlay-13--tight 各已落盘 4 份选项裁剪（ink 168/296/168/168、107/227/349/160），只是随后因题干布局假设不唯一而弃权、证据链未记录单元，且其中 296/349 两格明显**并含多图**（切分仍不合格）。三层计数、wrong_releases、checks_failed 均不受本次改名影响（同一批数字，仅口径命名更正）。",
+ "band20_flagged": [],
+ "checks_failed": [],
+ "llm_calls_used": 0,
+ "note": "三层分列：candidates_solved=Solver 产出候选、accepted=Verifier 动作、released=release_status 释放，互不代称；题面走生产入口（真实件用其 question.json 原样、绝对路径重写到本工作区），金标只用于事后打分。真实截图件与 dev 母版同 id 时行键加 [real-screenshot] 后缀，绝不合并计数。",
+ "rows": {
+  "ft-mirror-04": {
+   "kind": "real",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "accept",
+   "final_answer": "A",
+   "released": true,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 3,
+   "label_assoc": [
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": null,
+   "cell_inks": [
+    168,
+    168,
+    168
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 168
+    },
+    {
+     "file": "option_B.png",
+     "ink": 168
+    },
+    {
+     "file": "option_C.png",
+     "ink": 168
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     146,
+     170
+    ],
+    "units": 7,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      60,
+      84
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      150,
+      174
+     ],
+     [
+      201,
+      214
+     ],
+     [
+      238,
+      260
+     ]
+    ],
+    "unit_ink": [
+     60,
+     168,
+     60,
+     4,
+     168,
+     50,
+     168
+    ],
+    "unit_row_h": [
+     13,
+     22,
+     13,
+     2,
+     22,
+     13,
+     24
+    ],
+    "pitch": [
+     32,
+     56,
+     10,
+     24,
+     51,
+     37
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": ""
+  },
+  "ft-mirror-04--tight": {
+   "kind": "real",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 0,
+   "n_cells": 3,
+   "anchored": 0,
+   "label_assoc": [
+    null,
+    null,
+    null
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "column_cluster_no_label_anchor",
+   "cell_inks": [
+    168,
+    168,
+    168
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 168
+    },
+    {
+     "file": "option_B.png",
+     "ink": 168
+    },
+    {
+     "file": "option_C.png",
+     "ink": 168
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     160,
+     184
+    ],
+    "units": 3,
+    "unit_x": [
+     [
+      40,
+      64
+     ],
+     [
+      114,
+      138
+     ],
+     [
+      186,
+      208
+     ]
+    ],
+    "unit_ink": [
+     168,
+     168,
+     168
+    ],
+    "unit_row_h": [
+     22,
+     22,
+     24
+    ],
+    "pitch": [
+     74,
+     72
+    ],
+    "pitch_uniform": true,
+    "ink_uniform": true,
+    "row_h_uniform": true
+   },
+   "solver_error": "九宫格的目标空格不在行末，当前不支持该布局；变换通道：布局非单行/三行九宫格"
+  },
+  "ft-overlay-12": {
+   "kind": "real",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 4,
+   "anchored": 4,
+   "label_assoc": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": null,
+   "cell_inks": [
+    256,
+    320,
+    64,
+    160
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 256
+    },
+    {
+     "file": "option_B.png",
+     "ink": 320
+    },
+    {
+     "file": "option_C.png",
+     "ink": 64
+    },
+    {
+     "file": "option_D.png",
+     "ink": 160
+    }
+   ],
+   "page_reeval_n": 4,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 5,
+    "bottom_band": [
+     238,
+     266
+    ],
+    "units": 11,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      62,
+      82
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      148,
+      168
+     ],
+     [
+      201,
+      210
+     ],
+     [
+      212,
+      214
+     ],
+     [
+      244,
+      252
+     ],
+     [
+      288,
+      298
+     ],
+     [
+      300,
+      302
+     ],
+     [
+      320,
+      340
+     ]
+    ],
+    "unit_ink": [
+     55,
+     256,
+     57,
+     4,
+     320,
+     43,
+     4,
+     64,
+     54,
+     4,
+     160
+    ],
+    "unit_row_h": [
+     13,
+     28,
+     13,
+     2,
+     28,
+     13,
+     2,
+     8,
+     13,
+     2,
+     8
+    ],
+    "pitch": [
+     34,
+     54,
+     10,
+     22,
+     53,
+     11,
+     32,
+     44,
+     12,
+     20
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "没有支持范围内的规律能解释已知图形（当前支持：个数、边数、面积、平移、对称性）；变换通道：变换规律不可唯一判定"
+  },
+  "ft-rot90-01": {
+   "kind": "real",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "accept",
+   "final_answer": "A",
+   "released": true,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 4,
+   "anchored": 4,
+   "label_assoc": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": null,
+   "cell_inks": [
+    168,
+    168,
+    168,
+    168
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 168
+    },
+    {
+     "file": "option_B.png",
+     "ink": 168
+    },
+    {
+     "file": "option_C.png",
+     "ink": 168
+    },
+    {
+     "file": "option_D.png",
+     "ink": 168
+    }
+   ],
+   "page_reeval_n": 4,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     146,
+     174
+    ],
+    "units": 10,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      60,
+      82
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      146,
+      170
+     ],
+     [
+      201,
+      214
+     ],
+     [
+      236,
+      260
+     ],
+     [
+      288,
+      298
+     ],
+     [
+      300,
+      302
+     ],
+     [
+      322,
+      346
+     ]
+    ],
+    "unit_ink": [
+     59,
+     168,
+     59,
+     4,
+     168,
+     50,
+     168,
+     55,
+     4,
+     168
+    ],
+    "unit_row_h": [
+     13,
+     24,
+     13,
+     2,
+     22,
+     13,
+     22,
+     13,
+     2,
+     22
+    ],
+    "pitch": [
+     32,
+     56,
+     10,
+     20,
+     55,
+     35,
+     52,
+     12,
+     22
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": ""
+  },
+  "ft-trans-07": {
+   "kind": "real",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 3,
+   "label_assoc": [
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": null,
+   "cell_inks": [
+    160,
+    160,
+    160
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 160
+    },
+    {
+     "file": "option_B.png",
+     "ink": 160
+    },
+    {
+     "file": "option_C.png",
+     "ink": 160
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     150,
+     170
+    ],
+    "units": 7,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      76,
+      96
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      138,
+      158
+     ],
+     [
+      201,
+      214
+     ],
+     [
+      242,
+      250
+     ]
+    ],
+    "unit_ink": [
+     60,
+     160,
+     59,
+     4,
+     160,
+     50,
+     160
+    ],
+    "unit_row_h": [
+     13,
+     8,
+     13,
+     2,
+     8,
+     13,
+     20
+    ],
+    "pitch": [
+     48,
+     40,
+     10,
+     12,
+     63,
+     41
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配; 墨迹面积外推到 160px，多个选项接近，无法唯一确定；变换通道：变换规律不可唯一判定"
+  },
+  "ft-rot90-01[real-screenshot]": {
+   "kind": "dev",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "accept",
+   "final_answer": "A",
+   "released": true,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 4,
+   "anchored": 4,
+   "label_assoc": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "label_anchor_verified",
+   "cell_inks": [
+    168,
+    168,
+    168,
+    168
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 168
+    },
+    {
+     "file": "option_B.png",
+     "ink": 168
+    },
+    {
+     "file": "option_C.png",
+     "ink": 168
+    },
+    {
+     "file": "option_D.png",
+     "ink": 168
+    }
+   ],
+   "page_reeval_n": 4,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     146,
+     174
+    ],
+    "units": 10,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      60,
+      82
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      146,
+      170
+     ],
+     [
+      201,
+      214
+     ],
+     [
+      236,
+      260
+     ],
+     [
+      288,
+      298
+     ],
+     [
+      300,
+      302
+     ],
+     [
+      322,
+      346
+     ]
+    ],
+    "unit_ink": [
+     59,
+     168,
+     59,
+     4,
+     168,
+     50,
+     168,
+     55,
+     4,
+     168
+    ],
+    "unit_row_h": [
+     13,
+     24,
+     13,
+     2,
+     22,
+     13,
+     22,
+     13,
+     2,
+     22
+    ],
+    "pitch": [
+     32,
+     56,
+     10,
+     20,
+     55,
+     35,
+     52,
+     12,
+     22
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": ""
+  },
+  "ft-rot180-02": {
+   "kind": "dev",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 3,
+   "label_assoc": [
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "label_anchor_verified",
+   "cell_inks": [
+    216,
+    216,
+    216
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 216
+    },
+    {
+     "file": "option_B.png",
+     "ink": 216
+    },
+    {
+     "file": "option_C.png",
+     "ink": 216
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     142,
+     172
+    ],
+    "units": 9,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      56,
+      84
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      148,
+      154
+     ],
+     [
+      156,
+      162
+     ],
+     [
+      164,
+      170
+     ],
+     [
+      201,
+      214
+     ],
+     [
+      236,
+      264
+     ]
+    ],
+    "unit_ink": [
+     59,
+     216,
+     59,
+     4,
+     72,
+     72,
+     72,
+     50,
+     216
+    ],
+    "unit_row_h": [
+     13,
+     22,
+     13,
+     2,
+     12,
+     12,
+     12,
+     13,
+     22
+    ],
+    "pitch": [
+     28,
+     60,
+     10,
+     22,
+     8,
+     8,
+     37,
+     35
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：变换规律不可唯一判定"
+  },
+  "ft-rot270-03": {
+   "kind": "dev",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "accept",
+   "final_answer": "A",
+   "released": true,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 3,
+   "label_assoc": [
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "label_anchor_verified",
+   "cell_inks": [
+    352,
+    352,
+    352
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 352
+    },
+    {
+     "file": "option_B.png",
+     "ink": 352
+    },
+    {
+     "file": "option_C.png",
+     "ink": 352
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     144,
+     176
+    ],
+    "units": 8,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      58,
+      86
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      146,
+      174
+     ],
+     [
+      201,
+      210
+     ],
+     [
+      212,
+      214
+     ],
+     [
+      232,
+      260
+     ]
+    ],
+    "unit_ink": [
+     55,
+     352,
+     57,
+     4,
+     352,
+     43,
+     4,
+     352
+    ],
+    "unit_row_h": [
+     13,
+     28,
+     13,
+     2,
+     28,
+     13,
+     2,
+     28
+    ],
+    "pitch": [
+     30,
+     58,
+     10,
+     20,
+     55,
+     11,
+     20
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": ""
+  },
+  "ft-mirror-04[real-screenshot]": {
+   "kind": "dev",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "accept",
+   "final_answer": "A",
+   "released": true,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 3,
+   "label_assoc": [
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "label_anchor_verified",
+   "cell_inks": [
+    168,
+    168,
+    168
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 168
+    },
+    {
+     "file": "option_B.png",
+     "ink": 168
+    },
+    {
+     "file": "option_C.png",
+     "ink": 168
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     146,
+     170
+    ],
+    "units": 7,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      60,
+      84
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      150,
+      174
+     ],
+     [
+      201,
+      214
+     ],
+     [
+      238,
+      260
+     ]
+    ],
+    "unit_ink": [
+     60,
+     168,
+     60,
+     4,
+     168,
+     50,
+     168
+    ],
+    "unit_row_h": [
+     13,
+     22,
+     13,
+     2,
+     22,
+     13,
+     24
+    ],
+    "pitch": [
+     32,
+     56,
+     10,
+     24,
+     51,
+     37
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": ""
+  },
+  "ft-mirror-05": {
+   "kind": "dev",
+   "gold": "B",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 3,
+   "label_assoc": [
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "label_anchor_verified",
+   "cell_inks": [
+    379,
+    379,
+    379
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 379
+    },
+    {
+     "file": "option_B.png",
+     "ink": 379
+    },
+    {
+     "file": "option_C.png",
+     "ink": 379
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     144,
+     176
+    ],
+    "units": 8,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      58,
+      94
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      140,
+      176
+     ],
+     [
+      201,
+      210
+     ],
+     [
+      212,
+      214
+     ],
+     [
+      230,
+      266
+     ]
+    ],
+    "unit_ink": [
+     55,
+     379,
+     57,
+     4,
+     379,
+     43,
+     4,
+     379
+    ],
+    "unit_row_h": [
+     13,
+     25,
+     13,
+     2,
+     25,
+     13,
+     2,
+     25
+    ],
+    "pitch": [
+     30,
+     58,
+     10,
+     14,
+     61,
+     11,
+     18
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "已知格仅 2 且规律不唯一（多规则指向不同选项），弃权；变换通道：变换规律不可唯一判定"
+  },
+  "ft-comp-06": {
+   "kind": "dev",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "accept",
+   "final_answer": "A",
+   "released": true,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 3,
+   "label_assoc": [
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "label_anchor_verified",
+   "cell_inks": [
+    352,
+    352,
+    352
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 352
+    },
+    {
+     "file": "option_B.png",
+     "ink": 352
+    },
+    {
+     "file": "option_C.png",
+     "ink": 352
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     144,
+     176
+    ],
+    "units": 8,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      60,
+      88
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      148,
+      176
+     ],
+     [
+      201,
+      210
+     ],
+     [
+      212,
+      214
+     ],
+     [
+      232,
+      260
+     ]
+    ],
+    "unit_ink": [
+     55,
+     352,
+     57,
+     4,
+     352,
+     43,
+     4,
+     352
+    ],
+    "unit_row_h": [
+     13,
+     28,
+     13,
+     2,
+     28,
+     13,
+     2,
+     28
+    ],
+    "pitch": [
+     32,
+     56,
+     10,
+     22,
+     53,
+     11,
+     20
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": ""
+  },
+  "ft-trans-07[real-screenshot]": {
+   "kind": "dev",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 3,
+   "label_assoc": [
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "label_anchor_verified",
+   "cell_inks": [
+    160,
+    160,
+    160
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 160
+    },
+    {
+     "file": "option_B.png",
+     "ink": 160
+    },
+    {
+     "file": "option_C.png",
+     "ink": 160
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     150,
+     170
+    ],
+    "units": 7,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      76,
+      96
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      138,
+      158
+     ],
+     [
+      201,
+      214
+     ],
+     [
+      242,
+      250
+     ]
+    ],
+    "unit_ink": [
+     60,
+     160,
+     59,
+     4,
+     160,
+     50,
+     160
+    ],
+    "unit_row_h": [
+     13,
+     8,
+     13,
+     2,
+     8,
+     13,
+     20
+    ],
+    "pitch": [
+     48,
+     40,
+     10,
+     12,
+     63,
+     41
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配; 墨迹面积外推到 160px，多个选项接近，无法唯一确定；变换通道：变换规律不可唯一判定"
+  },
+  "ft-trans-08": {
+   "kind": "dev",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "C",
+   "verify_action": "unverified",
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 0,
+   "label_assoc": [
+    null,
+    null,
+    null
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "column_cluster_no_label_anchor",
+   "cell_inks": [
+    282,
+    290,
+    511
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 285
+    },
+    {
+     "file": "option_B.png",
+     "ink": 291
+    },
+    {
+     "file": "option_C.png",
+     "ink": 513
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     137,
+     181
+    ],
+    "units": 11,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      59,
+      70
+     ],
+     [
+      74,
+      89
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      146,
+      157
+     ],
+     [
+      161,
+      176
+     ],
+     [
+      201,
+      210
+     ],
+     [
+      212,
+      214
+     ],
+     [
+      223,
+      240
+     ],
+     [
+      246,
+      268
+     ]
+    ],
+    "unit_ink": [
+     55,
+     80,
+     149,
+     57,
+     4,
+     81,
+     149,
+     43,
+     4,
+     173,
+     340
+    ],
+    "unit_row_h": [
+     13,
+     10,
+     15,
+     13,
+     2,
+     11,
+     15,
+     13,
+     2,
+     17,
+     22
+    ],
+    "pitch": [
+     31,
+     15,
+     42,
+     10,
+     20,
+     15,
+     40,
+     11,
+     11,
+     23
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": ""
+  },
+  "ft-scale-09": {
+   "kind": "dev",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 3,
+   "label_assoc": [
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "label_anchor_verified",
+   "cell_inks": [
+    378,
+    38,
+    168
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 378
+    },
+    {
+     "file": "option_B.png",
+     "ink": 38
+    },
+    {
+     "file": "option_C.png",
+     "ink": 168
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     143,
+     176
+    ],
+    "units": 7,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      56,
+      92
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      154,
+      165
+     ],
+     [
+      201,
+      214
+     ],
+     [
+      236,
+      260
+     ]
+    ],
+    "unit_ink": [
+     60,
+     378,
+     59,
+     4,
+     38,
+     50,
+     168
+    ],
+    "unit_row_h": [
+     13,
+     33,
+     13,
+     2,
+     10,
+     13,
+     22
+    ],
+    "pitch": [
+     28,
+     60,
+     10,
+     28,
+     47,
+     35
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "空白格不在行末，当前只支持“求下一格”的序列题；变换通道：{'scale': {'A': 1.0, 'B': 1.0, 'C': 1.0}}"
+  },
+  "ft-grid-10": {
+   "kind": "dev",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "accept",
+   "final_answer": "A",
+   "released": true,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 4,
+   "anchored": 4,
+   "label_assoc": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "label_anchor_verified",
+   "cell_inks": [
+    168,
+    168,
+    168,
+    168
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 168
+    },
+    {
+     "file": "option_B.png",
+     "ink": 168
+    },
+    {
+     "file": "option_C.png",
+     "ink": 168
+    },
+    {
+     "file": "option_D.png",
+     "ink": 168
+    }
+   ],
+   "page_reeval_n": 4,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 5,
+    "bottom_band": [
+     242,
+     270
+    ],
+    "units": 11,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      60,
+      84
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      152,
+      174
+     ],
+     [
+      201,
+      210
+     ],
+     [
+      212,
+      214
+     ],
+     [
+      232,
+      256
+     ],
+     [
+      288,
+      298
+     ],
+     [
+      300,
+      302
+     ],
+     [
+      322,
+      346
+     ]
+    ],
+    "unit_ink": [
+     55,
+     168,
+     57,
+     4,
+     168,
+     43,
+     4,
+     168,
+     55,
+     4,
+     168
+    ],
+    "unit_row_h": [
+     13,
+     22,
+     13,
+     2,
+     24,
+     13,
+     2,
+     22,
+     13,
+     2,
+     22
+    ],
+    "pitch": [
+     32,
+     56,
+     10,
+     26,
+     49,
+     11,
+     20,
+     56,
+     12,
+     22
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": ""
+  },
+  "ft-grid-11": {
+   "kind": "dev",
+   "gold": "B",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 3,
+   "label_assoc": [
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "label_anchor_verified",
+   "cell_inks": [
+    229,
+    230,
+    230
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 230
+    },
+    {
+     "file": "option_B.png",
+     "ink": 230
+    },
+    {
+     "file": "option_C.png",
+     "ink": 230
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 5,
+    "bottom_band": [
+     242,
+     271
+    ],
+    "units": 11,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      60,
+      75
+     ],
+     [
+      77,
+      88
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      146,
+      157
+     ],
+     [
+      161,
+      176
+     ],
+     [
+      201,
+      210
+     ],
+     [
+      212,
+      214
+     ],
+     [
+      230,
+      245
+     ],
+     [
+      249,
+      260
+     ]
+    ],
+    "unit_ink": [
+     55,
+     148,
+     81,
+     57,
+     4,
+     81,
+     149,
+     42,
+     4,
+     149,
+     81
+    ],
+    "unit_row_h": [
+     13,
+     14,
+     11,
+     13,
+     2,
+     11,
+     15,
+     13,
+     2,
+     15,
+     11
+    ],
+    "pitch": [
+     32,
+     17,
+     39,
+     10,
+     20,
+     15,
+     40,
+     11,
+     18,
+     19
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：九宫格需恰好第9格为空格，实际空格位置 [5]"
+  },
+  "ft-overlay-12[real-screenshot]": {
+   "kind": "dev",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 4,
+   "anchored": 4,
+   "label_assoc": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "label_anchor_verified",
+   "cell_inks": [
+    256,
+    320,
+    64,
+    160
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 256
+    },
+    {
+     "file": "option_B.png",
+     "ink": 320
+    },
+    {
+     "file": "option_C.png",
+     "ink": 64
+    },
+    {
+     "file": "option_D.png",
+     "ink": 160
+    }
+   ],
+   "page_reeval_n": 4,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 5,
+    "bottom_band": [
+     238,
+     266
+    ],
+    "units": 11,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      62,
+      82
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      148,
+      168
+     ],
+     [
+      201,
+      210
+     ],
+     [
+      212,
+      214
+     ],
+     [
+      244,
+      252
+     ],
+     [
+      288,
+      298
+     ],
+     [
+      300,
+      302
+     ],
+     [
+      320,
+      340
+     ]
+    ],
+    "unit_ink": [
+     55,
+     256,
+     57,
+     4,
+     320,
+     43,
+     4,
+     64,
+     54,
+     4,
+     160
+    ],
+    "unit_row_h": [
+     13,
+     28,
+     13,
+     2,
+     28,
+     13,
+     2,
+     8,
+     13,
+     2,
+     8
+    ],
+    "pitch": [
+     34,
+     54,
+     10,
+     22,
+     53,
+     11,
+     32,
+     44,
+     12,
+     20
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "已有规律无法唯一匹配选项：未找到能同时解释所有完整行的叠加规则；变换通道：{'overlay_grid_col': {'A': 0.760391, 'B': 0.702407, 'C': 1.0, 'D': 0.966316}}"
+  },
+  "ft-overlay-13": {
+   "kind": "dev",
+   "gold": "B",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 308
+    },
+    {
+     "file": "option_B.png",
+     "ink": 349
+    },
+    {
+     "file": "option_C.png",
+     "ink": 41
+    },
+    {
+     "file": "option_D.png",
+     "ink": 160
+    }
+   ],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 5,
+    "bottom_band": [
+     242,
+     270
+    ],
+    "units": 13,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      55,
+      66
+     ],
+     [
+      68,
+      88
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      141,
+      152
+     ],
+     [
+      154,
+      174
+     ],
+     [
+      201,
+      210
+     ],
+     [
+      212,
+      214
+     ],
+     [
+      243,
+      256
+     ],
+     [
+      288,
+      298
+     ],
+     [
+      300,
+      302
+     ],
+     [
+      326,
+      346
+     ]
+    ],
+    "unit_ink": [
+     55,
+     81,
+     227,
+     57,
+     4,
+     81,
+     268,
+     42,
+     4,
+     41,
+     54,
+     4,
+     160
+    ],
+    "unit_row_h": [
+     13,
+     11,
+     18,
+     13,
+     2,
+     11,
+     18,
+     13,
+     2,
+     5,
+     13,
+     2,
+     8
+    ],
+    "pitch": [
+     27,
+     13,
+     48,
+     10,
+     15,
+     13,
+     47,
+     11,
+     31,
+     45,
+     12,
+     26
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：stem_evidence_ambiguous_layout（布局假设不唯一/空格不可判，弃权不猜）（不回退整图求解，避免在网页截图上产生假证据）"
+  },
+  "ft-sym-14": {
+   "kind": "dev",
+   "gold": null,
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 2,
+   "n_cells": 2,
+   "anchored": 2,
+   "label_assoc": [
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "label_anchor_verified",
+   "cell_inks": [
+    352,
+    352
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 352
+    },
+    {
+     "file": "option_B.png",
+     "ink": 352
+    }
+   ],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     148,
+     172
+    ],
+    "units": 5,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      60,
+      88
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      146,
+      174
+     ]
+    ],
+    "unit_ink": [
+     55,
+     352,
+     57,
+     4,
+     352
+    ],
+    "unit_row_h": [
+     13,
+     24,
+     13,
+     2,
+     24
+    ],
+    "pitch": [
+     32,
+     56,
+     10,
+     20
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 2 个选项匹配（无法唯一确定）; 边数外推为 4，但有 2 个选项匹配; 对称性应为 垂直=True 水平=True，但有 2 个选项匹配; 墨迹面积外推到 352px，多个选项接近，无法唯一确定；变换通道：变换规律不可唯一判定"
+  },
+  "ft-conflict-15": {
+   "kind": "dev",
+   "gold": null,
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 3,
+   "label_assoc": [
+    true,
+    true,
+    true
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "label_anchor_verified",
+   "cell_inks": [
+    352,
+    352,
+    130
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 352
+    },
+    {
+     "file": "option_B.png",
+     "ink": 352
+    },
+    {
+     "file": "option_C.png",
+     "ink": 130
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 5,
+    "bottom_band": [
+     244,
+     268
+    ],
+    "units": 8,
+    "unit_x": [
+     [
+      28,
+      43
+     ],
+     [
+      60,
+      88
+     ],
+     [
+      116,
+      124
+     ],
+     [
+      126,
+      128
+     ],
+     [
+      146,
+      174
+     ],
+     [
+      201,
+      210
+     ],
+     [
+      212,
+      214
+     ],
+     [
+      237,
+      254
+     ]
+    ],
+    "unit_ink": [
+     53,
+     352,
+     56,
+     4,
+     352,
+     42,
+     4,
+     130
+    ],
+    "unit_row_h": [
+     13,
+     24,
+     13,
+     2,
+     24,
+     13,
+     2,
+     14
+    ],
+    "pitch": [
+     32,
+     56,
+     10,
+     20,
+     55,
+     11,
+     25
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "已有规律无法唯一匹配选项：叠加规则不唯一：or 与 ['and'] 都能解释全部已知行；变换通道：{'rotate_flip_grid_row': {'A': 0.080808, 'B': 0.080808, 'C': 1.0}, 'rotate_flip_grid_col': {'A': 0.080808, 'B': 0.080808,"
+  },
+  "ft-grid-10--distractor": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     170,
+     217
+    ],
+    "units": 7,
+    "unit_x": [
+     [
+      1,
+      8
+     ],
+     [
+      56,
+      80
+     ],
+     [
+      108,
+      130
+     ],
+     [
+      166,
+      188
+     ],
+     [
+      264,
+      288
+     ],
+     [
+      372,
+      396
+     ],
+     [
+      473,
+      479
+     ]
+    ],
+    "unit_ink": [
+     28,
+     168,
+     168,
+     168,
+     168,
+     168,
+     24
+    ],
+    "unit_row_h": [
+     44,
+     22,
+     24,
+     24,
+     22,
+     22,
+     46
+    ],
+    "pitch": [
+     55,
+     52,
+     58,
+     98,
+     108,
+     101
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；option_band_not_last:4 单元止于 y217，页面墨迹延伸至 259（单行非末带聚类切分不消费）（不回退整图求解，避免在网页截图上产生假"
+  },
+  "ft-grid-10--large": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 809
+    },
+    {
+     "file": "option_B.png",
+     "ink": 315
+    },
+    {
+     "file": "option_C.png",
+     "ink": 315
+    },
+    {
+     "file": "option_D.png",
+     "ink": 315
+    }
+   ],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     177,
+     228
+    ],
+    "units": 6,
+    "unit_x": [
+     [
+      52,
+      83
+     ],
+     [
+      100,
+      108
+     ],
+     [
+      132,
+      160
+     ],
+     [
+      186,
+      214
+     ],
+     [
+      304,
+      335
+     ],
+     [
+      435,
+      466
+     ]
+    ],
+    "unit_ink": [
+     315,
+     179,
+     315,
+     315,
+     315,
+     315
+    ],
+    "unit_row_h": [
+     28,
+     28,
+     31,
+     31,
+     28,
+     28
+    ],
+    "pitch": [
+     48,
+     32,
+     54,
+     118,
+     131
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": true
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；stem_evidence_ambiguous_layout（布局假设不唯一/空格不可判，弃权不猜）（不回退整图求解，避免在网页截图上产生假证据）"
+  },
+  "ft-grid-10--small": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "unverified",
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 4,
+   "anchored": 0,
+   "label_assoc": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "column_cluster_no_label_anchor",
+   "cell_inks": [
+    125,
+    125,
+    125,
+    125
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 125
+    },
+    {
+     "file": "option_B.png",
+     "ink": 125
+    },
+    {
+     "file": "option_C.png",
+     "ink": 125
+    },
+    {
+     "file": "option_D.png",
+     "ink": 125
+    }
+   ],
+   "page_reeval_n": 4,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 4,
+    "bottom_band": [
+     187,
+     209
+    ],
+    "units": 4,
+    "unit_x": [
+     [
+      47,
+      66
+     ],
+     [
+      146,
+      163
+     ],
+     [
+      235,
+      254
+     ],
+     [
+      332,
+      351
+     ]
+    ],
+    "unit_ink": [
+     125,
+     125,
+     125,
+     125
+    ],
+    "unit_row_h": [
+     17,
+     19,
+     17,
+     17
+    ],
+    "pitch": [
+     99,
+     89,
+     97
+    ],
+    "pitch_uniform": true,
+    "ink_uniform": true,
+    "row_h_uniform": true
+   },
+   "solver_error": ""
+  },
+  "ft-grid-10--tight": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 168
+    },
+    {
+     "file": "option_B.png",
+     "ink": 296
+    },
+    {
+     "file": "option_C.png",
+     "ink": 168
+    },
+    {
+     "file": "option_D.png",
+     "ink": 168
+    }
+   ],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     150,
+     188
+    ],
+    "units": 5,
+    "unit_x": [
+     [
+      40,
+      64
+     ],
+     [
+      88,
+      100
+     ],
+     [
+      116,
+      138
+     ],
+     [
+      180,
+      204
+     ],
+     [
+      254,
+      278
+     ]
+    ],
+    "unit_ink": [
+     168,
+     128,
+     168,
+     168,
+     168
+    ],
+    "unit_row_h": [
+     22,
+     24,
+     24,
+     22,
+     22
+    ],
+    "pitch": [
+     48,
+     28,
+     64,
+     74
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": true,
+    "row_h_uniform": true
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；stem_evidence_ambiguous_layout（布局假设不唯一/空格不可判，弃权不猜）（不回退整图求解，避免在网页截图上产生假证据）"
+  },
+  "ft-grid-10--vertical": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 4,
+    "bottom_band": [
+     240,
+     268
+    ],
+    "units": 2,
+    "unit_x": [
+     [
+      50,
+      74
+     ],
+     [
+      204,
+      228
+     ]
+    ],
+    "unit_ink": [
+     168,
+     168
+    ],
+    "unit_row_h": [
+     22,
+     22
+    ],
+    "pitch": [
+     154
+    ],
+    "pitch_uniform": true,
+    "ink_uniform": true,
+    "row_h_uniform": true
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：定位到 0 个选项区，题面 4 个选项（不回退整图求解，避免在网页截图上产生假证据）"
+  },
+  "ft-mirror-04--distractor": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     176,
+     208
+    ],
+    "units": 5,
+    "unit_x": [
+     [
+      1,
+      8
+     ],
+     [
+      56,
+      80
+     ],
+     [
+      164,
+      188
+     ],
+     [
+      270,
+      292
+     ],
+     [
+      473,
+      479
+     ]
+    ],
+    "unit_ink": [
+     21,
+     168,
+     168,
+     168,
+     21
+    ],
+    "unit_row_h": [
+     29,
+     22,
+     22,
+     24,
+     32
+    ],
+    "pitch": [
+     55,
+     108,
+     106,
+     203
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；option_band_not_last:3 单元止于 y208，页面墨迹延伸至 259（单行非末带聚类切分不消费）（不回退整图求解，避免在网页截图上产生假"
+  },
+  "ft-mirror-04--large": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "unverified",
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 0,
+   "label_assoc": [
+    null,
+    null,
+    null
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "column_cluster_no_label_anchor",
+   "cell_inks": [
+    315,
+    315,
+    315
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 315
+    },
+    {
+     "file": "option_B.png",
+     "ink": 315
+    },
+    {
+     "file": "option_C.png",
+     "ink": 315
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     192,
+     223
+    ],
+    "units": 3,
+    "unit_x": [
+     [
+      52,
+      83
+     ],
+     [
+      183,
+      214
+     ],
+     [
+      312,
+      340
+     ]
+    ],
+    "unit_ink": [
+     315,
+     315,
+     315
+    ],
+    "unit_row_h": [
+     28,
+     28,
+     31
+    ],
+    "pitch": [
+     131,
+     129
+    ],
+    "pitch_uniform": true,
+    "ink_uniform": true,
+    "row_h_uniform": true
+   },
+   "solver_error": ""
+  },
+  "ft-mirror-04--small": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "unverified",
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 0,
+   "label_assoc": [
+    null,
+    null,
+    null
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "column_cluster_no_label_anchor",
+   "cell_inks": [
+    125,
+    125,
+    125
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 125
+    },
+    {
+     "file": "option_B.png",
+     "ink": 125
+    },
+    {
+     "file": "option_C.png",
+     "ink": 125
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     187,
+     206
+    ],
+    "units": 3,
+    "unit_x": [
+     [
+      47,
+      66
+     ],
+     [
+      144,
+      163
+     ],
+     [
+      240,
+      257
+     ]
+    ],
+    "unit_ink": [
+     125,
+     125,
+     125
+    ],
+    "unit_row_h": [
+     17,
+     17,
+     19
+    ],
+    "pitch": [
+     97,
+     96
+    ],
+    "pitch_uniform": true,
+    "ink_uniform": true,
+    "row_h_uniform": true
+   },
+   "solver_error": ""
+  },
+  "ft-mirror-04--tight[real-screenshot]": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "unverified",
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 0,
+   "label_assoc": [
+    null,
+    null,
+    null
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "column_cluster_no_label_anchor",
+   "cell_inks": [
+    168,
+    168,
+    168
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 168
+    },
+    {
+     "file": "option_B.png",
+     "ink": 168
+    },
+    {
+     "file": "option_C.png",
+     "ink": 168
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     160,
+     184
+    ],
+    "units": 3,
+    "unit_x": [
+     [
+      40,
+      64
+     ],
+     [
+      114,
+      138
+     ],
+     [
+      186,
+      208
+     ]
+    ],
+    "unit_ink": [
+     168,
+     168,
+     168
+    ],
+    "unit_row_h": [
+     22,
+     22,
+     24
+    ],
+    "pitch": [
+     74,
+     72
+    ],
+    "pitch_uniform": true,
+    "ink_uniform": true,
+    "row_h_uniform": true
+   },
+   "solver_error": ""
+  },
+  "ft-mirror-04--vertical": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "unverified",
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 0,
+   "label_assoc": [
+    null,
+    null,
+    null
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "column_cluster_no_label_anchor",
+   "cell_inks": [
+    168,
+    168,
+    168
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 168
+    },
+    {
+     "file": "option_B.png",
+     "ink": 168
+    },
+    {
+     "file": "option_C.png",
+     "ink": 168
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     240,
+     264
+    ],
+    "units": 1,
+    "unit_x": [
+     [
+      56,
+      78
+     ]
+    ],
+    "unit_ink": [
+     168
+    ],
+    "unit_row_h": [
+     24
+    ],
+    "pitch": [],
+    "pitch_uniform": false,
+    "ink_uniform": true,
+    "row_h_uniform": true
+   },
+   "solver_error": ""
+  },
+  "ft-overlay-13--distractor": {
+   "kind": "perturb",
+   "gold": "B",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     175,
+     212
+    ],
+    "units": 9,
+    "unit_x": [
+     [
+      1,
+      7
+     ],
+     [
+      51,
+      62
+     ],
+     [
+      64,
+      84
+     ],
+     [
+      116,
+      136
+     ],
+     [
+      155,
+      166
+     ],
+     [
+      168,
+      188
+     ],
+     [
+      275,
+      288
+     ],
+     [
+      376,
+      396
+     ],
+     [
+      473,
+      479
+     ]
+    ],
+    "unit_ink": [
+     17,
+     81,
+     227,
+     160,
+     81,
+     268,
+     41,
+     160,
+     19
+    ],
+    "unit_row_h": [
+     35,
+     11,
+     18,
+     8,
+     11,
+     18,
+     5,
+     8,
+     37
+    ],
+    "pitch": [
+     50,
+     13,
+     52,
+     39,
+     13,
+     107,
+     101,
+     97
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；option_band_not_last:4 单元止于 y212，页面墨迹延伸至 259（单行非末带聚类切分不消费）（不回退整图求解，避免在网页截图上产生假"
+  },
+  "ft-overlay-13--large": {
+   "kind": "perturb",
+   "gold": "B",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 435
+    },
+    {
+     "file": "option_B.png",
+     "ink": 555
+    },
+    {
+     "file": "option_C.png",
+     "ink": 66
+    },
+    {
+     "file": "option_D.png",
+     "ink": 256
+    }
+   ],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 4,
+    "bottom_band": [
+     185,
+     228
+    ],
+    "units": 8,
+    "unit_x": [
+     [
+      46,
+      60
+     ],
+     [
+      62,
+      88
+     ],
+     [
+      100,
+      104
+     ],
+     [
+      142,
+      166
+     ],
+     [
+      172,
+      186
+     ],
+     [
+      188,
+      214
+     ],
+     [
+      318,
+      335
+     ],
+     [
+      440,
+      466
+     ]
+    ],
+    "unit_ink": [
+     128,
+     362,
+     28,
+     238,
+     128,
+     427,
+     66,
+     256
+    ],
+    "unit_row_h": [
+     13,
+     23,
+     12,
+     10,
+     13,
+     23,
+     6,
+     10
+    ],
+    "pitch": [
+     16,
+     38,
+     42,
+     30,
+     16,
+     130,
+     122
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；stem_evidence_ambiguous_layout（布局假设不唯一/空格不可判，弃权不猜）（不回退整图求解，避免在网页截图上产生假证据）"
+  },
+  "ft-overlay-13--small": {
+   "kind": "perturb",
+   "gold": "B",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 140
+    },
+    {
+     "file": "option_B.png",
+     "ink": 182
+    },
+    {
+     "file": "option_C.png",
+     "ink": 205
+    },
+    {
+     "file": "option_D.png",
+     "ink": 96
+    }
+   ],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": true,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 4,
+    "bottom_band": [
+     188,
+     208
+    ],
+    "units": 4,
+    "unit_x": [
+     [
+      44,
+      69
+     ],
+     [
+      138,
+      163
+     ],
+     [
+      244,
+      253
+     ],
+     [
+      335,
+      351
+     ]
+    ],
+    "unit_ink": [
+     182,
+     205,
+     22,
+     96
+    ],
+    "unit_row_h": [
+     20,
+     20,
+     4,
+     6
+    ],
+    "pitch": [
+     94,
+     106,
+     91
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；stem_evidence_ambiguous_layout（布局假设不唯一/空格不可判，弃权不猜）（不回退整图求解，避免在网页截图上产生假证据）"
+  },
+  "ft-overlay-13--tight": {
+   "kind": "perturb",
+   "gold": "B",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 107
+    },
+    {
+     "file": "option_B.png",
+     "ink": 227
+    },
+    {
+     "file": "option_C.png",
+     "ink": 349
+    },
+    {
+     "file": "option_D.png",
+     "ink": 160
+    }
+   ],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     156,
+     188
+    ],
+    "units": 7,
+    "unit_x": [
+     [
+      35,
+      46
+     ],
+     [
+      48,
+      68
+     ],
+     [
+      96,
+      100
+     ],
+     [
+      105,
+      116
+     ],
+     [
+      118,
+      138
+     ],
+     [
+      191,
+      204
+     ],
+     [
+      258,
+      278
+     ]
+    ],
+    "unit_ink": [
+     81,
+     227,
+     32,
+     81,
+     268,
+     41,
+     160
+    ],
+    "unit_row_h": [
+     11,
+     18,
+     8,
+     11,
+     18,
+     5,
+     8
+    ],
+    "pitch": [
+     13,
+     48,
+     9,
+     13,
+     73,
+     67
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；stem_evidence_ambiguous_layout（布局假设不唯一/空格不可判，弃权不猜）（不回退整图求解，避免在网页截图上产生假证据）"
+  },
+  "ft-overlay-13--vertical": {
+   "kind": "perturb",
+   "gold": "B",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [],
+   "page_reeval_n": 0,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 5,
+    "bottom_band": [
+     250,
+     258
+    ],
+    "units": 2,
+    "unit_x": [
+     [
+      61,
+      74
+     ],
+     [
+      208,
+      228
+     ]
+    ],
+    "unit_ink": [
+     41,
+     160
+    ],
+    "unit_row_h": [
+     5,
+     8
+    ],
+    "pitch": [
+     147
+    ],
+    "pitch_uniform": true,
+    "ink_uniform": false,
+    "row_h_uniform": true
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：定位到 0 个选项区，题面 4 个选项（不回退整图求解，避免在网页截图上产生假证据）"
+  },
+  "ft-rot90-01--distractor": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     178,
+     210
+    ],
+    "units": 6,
+    "unit_x": [
+     [
+      1,
+      8
+     ],
+     [
+      56,
+      78
+     ],
+     [
+      160,
+      184
+     ],
+     [
+      268,
+      292
+     ],
+     [
+      372,
+      396
+     ],
+     [
+      473,
+      479
+     ]
+    ],
+    "unit_ink": [
+     29,
+     168,
+     168,
+     168,
+     168,
+     18
+    ],
+    "unit_row_h": [
+     32,
+     24,
+     22,
+     22,
+     22,
+     32
+    ],
+    "pitch": [
+     55,
+     104,
+     108,
+     104,
+     101
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；option_band_not_last:4 单元止于 y210，页面墨迹延伸至 259（单行非末带聚类切分不消费）（不回退整图求解，避免在网页截图上产生假"
+  },
+  "ft-rot90-01--large": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "unverified",
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 4,
+   "anchored": 0,
+   "label_assoc": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "column_cluster_no_label_anchor",
+   "cell_inks": [
+    315,
+    315,
+    315,
+    315
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 315
+    },
+    {
+     "file": "option_B.png",
+     "ink": 315
+    },
+    {
+     "file": "option_C.png",
+     "ink": 315
+    },
+    {
+     "file": "option_D.png",
+     "ink": 315
+    }
+   ],
+   "page_reeval_n": 4,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     192,
+     228
+    ],
+    "units": 4,
+    "unit_x": [
+     [
+      52,
+      80
+     ],
+     [
+      178,
+      209
+     ],
+     [
+      309,
+      340
+     ],
+     [
+      435,
+      466
+     ]
+    ],
+    "unit_ink": [
+     315,
+     315,
+     315,
+     315
+    ],
+    "unit_row_h": [
+     31,
+     28,
+     28,
+     28
+    ],
+    "pitch": [
+     126,
+     131,
+     126
+    ],
+    "pitch_uniform": true,
+    "ink_uniform": true,
+    "row_h_uniform": true
+   },
+   "solver_error": ""
+  },
+  "ft-rot90-01--small": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 4,
+   "anchored": 0,
+   "label_assoc": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "column_cluster_no_label_anchor",
+   "cell_inks": [
+    125,
+    125,
+    125,
+    125
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 125
+    },
+    {
+     "file": "option_B.png",
+     "ink": 125
+    },
+    {
+     "file": "option_C.png",
+     "ink": 125
+    },
+    {
+     "file": "option_D.png",
+     "ink": 125
+    }
+   ],
+   "page_reeval_n": 4,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     187,
+     209
+    ],
+    "units": 4,
+    "unit_x": [
+     [
+      47,
+      64
+     ],
+     [
+      141,
+      160
+     ],
+     [
+      238,
+      257
+     ],
+     [
+      332,
+      351
+     ]
+    ],
+    "unit_ink": [
+     125,
+     125,
+     125,
+     125
+    ],
+    "unit_row_h": [
+     19,
+     17,
+     17,
+     17
+    ],
+    "pitch": [
+     94,
+     97,
+     94
+    ],
+    "pitch_uniform": true,
+    "ink_uniform": true,
+    "row_h_uniform": true
+   },
+   "solver_error": "空白格不在行末，当前只支持“求下一格”的序列题；变换通道：变换规律不可唯一判定"
+  },
+  "ft-rot90-01--tight": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "unverified",
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 4,
+   "anchored": 0,
+   "label_assoc": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "column_cluster_no_label_anchor",
+   "cell_inks": [
+    168,
+    168,
+    168,
+    168
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 168
+    },
+    {
+     "file": "option_B.png",
+     "ink": 168
+    },
+    {
+     "file": "option_C.png",
+     "ink": 168
+    },
+    {
+     "file": "option_D.png",
+     "ink": 168
+    }
+   ],
+   "page_reeval_n": 4,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     160,
+     188
+    ],
+    "units": 4,
+    "unit_x": [
+     [
+      40,
+      62
+     ],
+     [
+      110,
+      134
+     ],
+     [
+      184,
+      208
+     ],
+     [
+      254,
+      278
+     ]
+    ],
+    "unit_ink": [
+     168,
+     168,
+     168,
+     168
+    ],
+    "unit_row_h": [
+     24,
+     22,
+     22,
+     22
+    ],
+    "pitch": [
+     70,
+     74,
+     70
+    ],
+    "pitch_uniform": true,
+    "ink_uniform": true,
+    "row_h_uniform": true
+   },
+   "solver_error": ""
+  },
+  "ft-rot90-01--vertical": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "unverified",
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 4,
+   "n_cells": 4,
+   "anchored": 0,
+   "label_assoc": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "column_cluster_no_label_anchor",
+   "cell_inks": [
+    168,
+    168,
+    168,
+    168
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 168
+    },
+    {
+     "file": "option_B.png",
+     "ink": 168
+    },
+    {
+     "file": "option_C.png",
+     "ink": 168
+    },
+    {
+     "file": "option_D.png",
+     "ink": 168
+    }
+   ],
+   "page_reeval_n": 4,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     240,
+     268
+    ],
+    "units": 2,
+    "unit_x": [
+     [
+      54,
+      78
+     ],
+     [
+      204,
+      228
+     ]
+    ],
+    "unit_ink": [
+     168,
+     168
+    ],
+    "unit_row_h": [
+     22,
+     22
+    ],
+    "pitch": [
+     150
+    ],
+    "pitch_uniform": true,
+    "ink_uniform": true,
+    "row_h_uniform": true
+   },
+   "solver_error": ""
+  },
+  "ft-scale-09--distractor": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     174,
+     210
+    ],
+    "units": 5,
+    "unit_x": [
+     [
+      1,
+      7
+     ],
+     [
+      52,
+      88
+     ],
+     [
+      168,
+      179
+     ],
+     [
+      268,
+      292
+     ],
+     [
+      473,
+      479
+     ]
+    ],
+    "unit_ink": [
+     12,
+     378,
+     38,
+     168,
+     12
+    ],
+    "unit_row_h": [
+     28,
+     33,
+     10,
+     22,
+     34
+    ],
+    "pitch": [
+     51,
+     116,
+     100,
+     205
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：定位到 0 个选项区，题面 3 个选项（不回退整图求解，避免在网页截图上产生假证据）"
+  },
+  "ft-scale-09--large": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 0,
+   "label_assoc": [
+    null,
+    false,
+    null
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "column_cluster_no_label_anchor",
+   "cell_inks": [
+    594,
+    58,
+    315
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 594
+    },
+    {
+     "file": "option_B.png",
+     "ink": 58
+    },
+    {
+     "file": "option_C.png",
+     "ink": 315
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     189,
+     230
+    ],
+    "units": 3,
+    "unit_x": [
+     [
+      47,
+      93
+     ],
+     [
+      188,
+      202
+     ],
+     [
+      309,
+      340
+     ]
+    ],
+    "unit_ink": [
+     594,
+     58,
+     315
+    ],
+    "unit_row_h": [
+     41,
+     12,
+     28
+    ],
+    "pitch": [
+     141,
+     121
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "空白格不在行末，当前只支持“求下一格”的序列题；变换通道：{'scale': {'A': 1.0, 'B': 1.0, 'C': 0.925166}}"
+  },
+  "ft-scale-09--small": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 93
+    },
+    {
+     "file": "option_B.png",
+     "ink": 237
+    },
+    {
+     "file": "option_C.png",
+     "ink": 125
+    }
+   ],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     185,
+     210
+    ],
+    "units": 3,
+    "unit_x": [
+     [
+      44,
+      72
+     ],
+     [
+      147,
+      156
+     ],
+     [
+      238,
+      257
+     ]
+    ],
+    "unit_ink": [
+     237,
+     28,
+     125
+    ],
+    "unit_row_h": [
+     25,
+     8,
+     17
+    ],
+    "pitch": [
+     103,
+     91
+    ],
+    "pitch_uniform": true,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；stem_band_missing（像素证据无题干带）（不回退整图求解，避免在网页截图上产生假证据）"
+  },
+  "ft-scale-09--tight": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     157,
+     190
+    ],
+    "units": 3,
+    "unit_x": [
+     [
+      36,
+      72
+     ],
+     [
+      118,
+      129
+     ],
+     [
+      184,
+      208
+     ]
+    ],
+    "unit_ink": [
+     378,
+     38,
+     168
+    ],
+    "unit_row_h": [
+     33,
+     10,
+     22
+    ],
+    "pitch": [
+     82,
+     66
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：定位到 0 个选项区，题面 3 个选项（不回退整图求解，避免在网页截图上产生假证据）"
+  },
+  "ft-scale-09--vertical": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     240,
+     262
+    ],
+    "units": 1,
+    "unit_x": [
+     [
+      54,
+      78
+     ]
+    ],
+    "unit_ink": [
+     168
+    ],
+    "unit_row_h": [
+     22
+    ],
+    "pitch": [],
+    "pitch_uniform": false,
+    "ink_uniform": true,
+    "row_h_uniform": true
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：定位到 0 个选项区，题面 3 个选项（不回退整图求解，避免在网页截图上产生假证据）"
+  },
+  "ft-trans-07--distractor": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     182,
+     205
+    ],
+    "units": 5,
+    "unit_x": [
+     [
+      1,
+      8
+     ],
+     [
+      72,
+      92
+     ],
+     [
+      152,
+      172
+     ],
+     [
+      274,
+      282
+     ],
+     [
+      473,
+      479
+     ]
+    ],
+    "unit_ink": [
+     11,
+     160,
+     160,
+     160,
+     10
+    ],
+    "unit_row_h": [
+     23,
+     8,
+     8,
+     20,
+     20
+    ],
+    "pitch": [
+     71,
+     80,
+     122,
+     199
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": false,
+    "row_h_uniform": false
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；option_band_not_last:3 单元止于 y205，页面墨迹延伸至 258（单行非末带聚类切分不消费）（不回退整图求解，避免在网页截图上产生假"
+  },
+  "ft-trans-07--large": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 3,
+   "anchored": 0,
+   "label_assoc": [
+    false,
+    false,
+    null
+   ],
+   "has_letter_labels": [
+    null,
+    null,
+    null
+   ],
+   "binding_state": "rebuilt",
+   "cut_provenance": "column_cluster_no_label_anchor",
+   "cell_inks": [
+    256,
+    256,
+    256
+   ],
+   "consumed": [
+    {
+     "file": "option_A.png",
+     "ink": 256
+    },
+    {
+     "file": "option_B.png",
+     "ink": 256
+    },
+    {
+     "file": "option_C.png",
+     "ink": 256
+    }
+   ],
+   "page_reeval_n": 3,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     197,
+     223
+    ],
+    "units": 3,
+    "unit_x": [
+     [
+      72,
+      98
+     ],
+     [
+      168,
+      194
+     ],
+     [
+      317,
+      327
+     ]
+    ],
+    "unit_ink": [
+     256,
+     256,
+     256
+    ],
+    "unit_row_h": [
+     10,
+     10,
+     26
+    ],
+    "pitch": [
+     96,
+     149
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": true,
+    "row_h_uniform": false
+   },
+   "solver_error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配；变换通道：变换规律不可唯一判定"
+  },
+  "ft-trans-07--small": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     190,
+     206
+    ],
+    "units": 3,
+    "unit_x": [
+     [
+      59,
+      75
+     ],
+     [
+      135,
+      151
+     ],
+     [
+      243,
+      249
+     ]
+    ],
+    "unit_ink": [
+     96,
+     96,
+     96
+    ],
+    "unit_row_h": [
+     6,
+     6,
+     16
+    ],
+    "pitch": [
+     76,
+     108
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": true,
+    "row_h_uniform": false
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；选项裁剪完整性未过: idx[2]（不回退整图求解，避免在网页截图上产生假证据）"
+  },
+  "ft-trans-07--tight": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [],
+   "page_reeval_n": 2,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 2,
+    "bottom_band": [
+     164,
+     184
+    ],
+    "units": 3,
+    "unit_x": [
+     [
+      56,
+      76
+     ],
+     [
+      102,
+      122
+     ],
+     [
+      190,
+      198
+     ]
+    ],
+    "unit_ink": [
+     160,
+     160,
+     160
+    ],
+    "unit_row_h": [
+     8,
+     8,
+     20
+    ],
+    "pitch": [
+     46,
+     88
+    ],
+    "pitch_uniform": false,
+    "ink_uniform": true,
+    "row_h_uniform": false
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；选项裁剪完整性未过: idx[2]（不回退整图求解，避免在网页截图上产生假证据）"
+  },
+  "ft-trans-07--vertical": {
+   "kind": "perturb",
+   "gold": "A",
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "release_status": null,
+   "declared_options": 3,
+   "n_cells": 0,
+   "anchored": 0,
+   "label_assoc": [],
+   "has_letter_labels": [],
+   "binding_state": null,
+   "cut_provenance": null,
+   "cell_inks": [],
+   "consumed": [],
+   "page_reeval_n": 0,
+   "page_reeval_anchored": false,
+   "cells_match_page_reeval": true,
+   "page_truth": {
+    "n_bands": 3,
+    "bottom_band": [
+     244,
+     264
+    ],
+    "units": 1,
+    "unit_x": [
+     [
+      60,
+      68
+     ]
+    ],
+    "unit_ink": [
+     160
+    ],
+    "unit_row_h": [
+     20
+    ],
+    "pitch": [],
+    "pitch_uniform": false,
+    "ink_uniform": true,
+    "row_h_uniform": true
+   },
+   "solver_error": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；选项裁剪完整性未过: idx[0, 1, 2]（不回退整图求解，避免在网页截图上产生假证据）"
+  }
+ }
+}

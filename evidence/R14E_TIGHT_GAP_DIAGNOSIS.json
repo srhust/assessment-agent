@@ -1,0 +1,3800 @@
+{
+ "pages": {
+  "ft-mirror-04--tight": {
+   "kind": "real",
+   "declared_options": 0,
+   "saved_option_crops": 3,
+   "saved_crop_inks": [
+    168,
+    168,
+    168
+   ],
+   "evidence_cells": 3,
+   "cause_class": "D 证据完整（对照件）",
+   "mask_hw": [
+    240,
+    264
+   ],
+   "page_last_ink_row": 183,
+   "n_bands": 2,
+   "bands_tail": [
+    [
+     50,
+     72
+    ],
+    [
+     160,
+     184
+    ]
+   ],
+   "solver_status": "failed",
+   "authoritative_production_notes": [],
+   "solver_error_excerpt": "九宫格的目标空格不在行末，当前不支持该布局；变换通道：布局非单行/三行九宫格",
+   "localizer_at_declared": {
+    "n_cells": 2,
+    "notes": [],
+    "cells": [
+     {
+      "index": 0,
+      "bbox": [
+       40,
+       160,
+       24,
+       24
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     },
+     {
+      "index": 1,
+      "bbox": [
+       114,
+       160,
+       94,
+       24
+      ],
+      "ink": 336,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     }
+    ]
+   },
+   "bottom_band_runs_measured": {
+    "band": [
+     160,
+     184
+    ],
+    "n_runs": 3,
+    "runs": [
+     {
+      "x": [
+       40,
+       64
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     },
+     {
+      "x": [
+       114,
+       138
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     },
+     {
+      "x": [
+       186,
+       208
+      ],
+      "w": 22,
+      "h": 24,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 0.917
+     }
+    ]
+   },
+   "anchor_path_mirror": {
+    "last_band": {
+     "band_h": 24,
+     "nc": 3,
+     "anchored_cells": null,
+     "letter_layers_h_to_count": {},
+     "layer_counts_matching_expect": []
+    },
+    "last_two_bands": "skip:带高 134 > 40"
+   },
+   "row_order_path_mirror": [
+    {
+     "cand_n": 2,
+     "n_cells": 2,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      74
+     ],
+     "widths": [
+      24,
+      94
+     ],
+     "heights": [
+      24,
+      24
+     ],
+     "inks": [
+      168,
+      336
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 3,
+     "n_cells": 3,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      74,
+      72
+     ],
+     "widths": [
+      24,
+      24,
+      22
+     ],
+     "heights": [
+      24,
+      24,
+      24
+     ],
+     "inks": [
+      168,
+      168,
+      168
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": true,
+      "height_uniform": true,
+      "ink_uniform": true
+     },
+     "stop_at": "全部通过（该路径会给出真实选项证据）"
+    },
+    {
+     "cand_n": 4,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    },
+    {
+     "cand_n": 5,
+     "n_cells": 5,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": false,
+     "pitch": [
+      52,
+      -52,
+      74,
+      72
+     ],
+     "widths": [
+      24,
+      24,
+      24,
+      24,
+      22
+     ],
+     "heights": [
+      22,
+      22,
+      24,
+      24,
+      24
+     ],
+     "inks": [
+      168,
+      168,
+      168,
+      168,
+      168
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": false,
+      "pitch_uniform": false,
+      "width_uniform": true,
+      "height_uniform": true,
+      "ink_uniform": true
+     },
+     "stop_at": "不通过谓词：same_row,pitch_uniform"
+    },
+    {
+     "cand_n": 6,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    }
+   ]
+  },
+  "ft-grid-10--tight": {
+   "kind": "perturb",
+   "declared_options": 4,
+   "saved_option_crops": 4,
+   "saved_crop_inks": [
+    168,
+    296,
+    168,
+    168
+   ],
+   "evidence_cells": 0,
+   "cause_class": "C 裁剪已落盘但证据链为空：随后在**题干**侧弃权（option_cells_not_label_anchored、stem_evidence_ambiguous_layout）；注意这不是\"选项证据缺失\"，而是选项证据未进入可核对链路",
+   "mask_hw": [
+    240,
+    334
+   ],
+   "page_last_ink_row": 187,
+   "n_bands": 3,
+   "bands_tail": [
+    [
+     50,
+     78
+    ],
+    [
+     98,
+     126
+    ],
+    [
+     150,
+     188
+    ]
+   ],
+   "solver_status": "failed",
+   "authoritative_production_notes": [
+    "option_cells_not_label_anchored",
+    "stem_evidence_ambiguous_layout"
+   ],
+   "solver_error_excerpt": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；stem_evidence_ambiguous_layout（布局假设不唯一/空格不可判，弃权不猜）（不回退整图求解，避免在网页截图上产生假证据）",
+   "localizer_at_declared": {
+    "n_cells": 4,
+    "notes": [],
+    "cells": [
+     {
+      "index": 0,
+      "bbox": [
+       40,
+       150,
+       36,
+       38
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     },
+     {
+      "index": 1,
+      "bbox": [
+       76,
+       150,
+       62,
+       38
+      ],
+      "ink": 296,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     },
+     {
+      "index": 2,
+      "bbox": [
+       180,
+       150,
+       24,
+       38
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     },
+     {
+      "index": 3,
+      "bbox": [
+       254,
+       150,
+       24,
+       38
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     }
+    ]
+   },
+   "bottom_band_runs_measured": {
+    "band": [
+     150,
+     188
+    ],
+    "n_runs": 5,
+    "runs": [
+     {
+      "x": [
+       40,
+       64
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     },
+     {
+      "x": [
+       88,
+       100
+      ],
+      "w": 12,
+      "h": 24,
+      "ink": 128,
+      "solid_ratio": 0.444,
+      "aspect_w_over_h": 0.5
+     },
+     {
+      "x": [
+       116,
+       138
+      ],
+      "w": 22,
+      "h": 24,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 0.917
+     },
+     {
+      "x": [
+       180,
+       204
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     },
+     {
+      "x": [
+       254,
+       278
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     }
+    ]
+   },
+   "anchor_path_mirror": {
+    "last_band": {
+     "band_h": 38,
+     "nc": 5,
+     "anchored_cells": null,
+     "letter_layers_h_to_count": {},
+     "layer_counts_matching_expect": []
+    },
+    "last_two_bands": "skip:带高 90 > 40"
+   },
+   "row_order_path_mirror": [
+    {
+     "cand_n": 2,
+     "n_cells": 2,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      214
+     ],
+     "widths": [
+      164,
+      24
+     ],
+     "heights": [
+      38,
+      38
+     ],
+     "inks": [
+      632,
+      168
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 3,
+     "n_cells": 3,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      140,
+      74
+     ],
+     "widths": [
+      98,
+      24,
+      24
+     ],
+     "heights": [
+      38,
+      38,
+      38
+     ],
+     "inks": [
+      464,
+      168,
+      168
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：pitch_uniform,width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 4,
+     "n_cells": 4,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      36,
+      104,
+      74
+     ],
+     "widths": [
+      36,
+      62,
+      24,
+      24
+     ],
+     "heights": [
+      38,
+      38,
+      38,
+      38
+     ],
+     "inks": [
+      168,
+      296,
+      168,
+      168
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：pitch_uniform,width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 5,
+     "n_cells": 5,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      36,
+      32,
+      72,
+      74
+     ],
+     "widths": [
+      36,
+      32,
+      30,
+      24,
+      24
+     ],
+     "heights": [
+      38,
+      38,
+      38,
+      38,
+      38
+     ],
+     "inks": [
+      168,
+      128,
+      168,
+      168,
+      168
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": false,
+      "width_uniform": true,
+      "height_uniform": true,
+      "ink_uniform": true
+     },
+     "stop_at": "不通过谓词：pitch_uniform"
+    },
+    {
+     "cand_n": 6,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    }
+   ]
+  },
+  "ft-mirror-04--tight[perturb]": {
+   "kind": "perturb",
+   "declared_options": 3,
+   "saved_option_crops": 3,
+   "saved_crop_inks": [
+    168,
+    168,
+    168
+   ],
+   "evidence_cells": 3,
+   "cause_class": "D 证据完整（对照件）",
+   "mask_hw": [
+    240,
+    264
+   ],
+   "page_last_ink_row": 183,
+   "n_bands": 2,
+   "bands_tail": [
+    [
+     50,
+     72
+    ],
+    [
+     160,
+     184
+    ]
+   ],
+   "solver_status": "solved",
+   "authoritative_production_notes": [],
+   "solver_error_excerpt": "",
+   "localizer_at_declared": {
+    "n_cells": 3,
+    "notes": [],
+    "cells": [
+     {
+      "index": 0,
+      "bbox": [
+       40,
+       160,
+       24,
+       24
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     },
+     {
+      "index": 1,
+      "bbox": [
+       114,
+       160,
+       24,
+       24
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     },
+     {
+      "index": 2,
+      "bbox": [
+       186,
+       160,
+       22,
+       24
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     }
+    ]
+   },
+   "bottom_band_runs_measured": {
+    "band": [
+     160,
+     184
+    ],
+    "n_runs": 3,
+    "runs": [
+     {
+      "x": [
+       40,
+       64
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     },
+     {
+      "x": [
+       114,
+       138
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     },
+     {
+      "x": [
+       186,
+       208
+      ],
+      "w": 22,
+      "h": 24,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 0.917
+     }
+    ]
+   },
+   "anchor_path_mirror": {
+    "last_band": {
+     "band_h": 24,
+     "nc": 3,
+     "anchored_cells": null,
+     "letter_layers_h_to_count": {},
+     "layer_counts_matching_expect": []
+    },
+    "last_two_bands": "skip:带高 134 > 40"
+   },
+   "row_order_path_mirror": [
+    {
+     "cand_n": 2,
+     "n_cells": 2,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      74
+     ],
+     "widths": [
+      24,
+      94
+     ],
+     "heights": [
+      24,
+      24
+     ],
+     "inks": [
+      168,
+      336
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 3,
+     "n_cells": 3,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      74,
+      72
+     ],
+     "widths": [
+      24,
+      24,
+      22
+     ],
+     "heights": [
+      24,
+      24,
+      24
+     ],
+     "inks": [
+      168,
+      168,
+      168
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": true,
+      "height_uniform": true,
+      "ink_uniform": true
+     },
+     "stop_at": "全部通过（该路径会给出真实选项证据）"
+    },
+    {
+     "cand_n": 4,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    },
+    {
+     "cand_n": 5,
+     "n_cells": 5,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": false,
+     "pitch": [
+      52,
+      -52,
+      74,
+      72
+     ],
+     "widths": [
+      24,
+      24,
+      24,
+      24,
+      22
+     ],
+     "heights": [
+      22,
+      22,
+      24,
+      24,
+      24
+     ],
+     "inks": [
+      168,
+      168,
+      168,
+      168,
+      168
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": false,
+      "pitch_uniform": false,
+      "width_uniform": true,
+      "height_uniform": true,
+      "ink_uniform": true
+     },
+     "stop_at": "不通过谓词：same_row,pitch_uniform"
+    },
+    {
+     "cand_n": 6,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    }
+   ]
+  },
+  "ft-overlay-13--tight": {
+   "kind": "perturb",
+   "declared_options": 4,
+   "saved_option_crops": 4,
+   "saved_crop_inks": [
+    107,
+    227,
+    349,
+    160
+   ],
+   "evidence_cells": 0,
+   "cause_class": "C 裁剪已落盘但证据链为空：随后在**题干**侧弃权（option_cells_not_label_anchored、stem_evidence_ambiguous_layout）；注意这不是\"选项证据缺失\"，而是选项证据未进入可核对链路",
+   "mask_hw": [
+    240,
+    334
+   ],
+   "page_last_ink_row": 187,
+   "n_bands": 3,
+   "bands_tail": [
+    [
+     41,
+     63
+    ],
+    [
+     108,
+     136
+    ],
+    [
+     156,
+     188
+    ]
+   ],
+   "solver_status": "failed",
+   "authoritative_production_notes": [
+    "option_cells_not_label_anchored",
+    "stem_evidence_ambiguous_layout"
+   ],
+   "solver_error_excerpt": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；stem_evidence_ambiguous_layout（布局假设不唯一/空格不可判，弃权不猜）（不回退整图求解，避免在网页截图上产生假证据）",
+   "localizer_at_declared": {
+    "n_cells": 4,
+    "notes": [],
+    "cells": [
+     {
+      "index": 0,
+      "bbox": [
+       36,
+       156,
+       11,
+       32
+      ],
+      "ink": 80,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     },
+     {
+      "index": 1,
+      "bbox": [
+       47,
+       156,
+       21,
+       32
+      ],
+      "ink": 227,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     },
+     {
+      "index": 2,
+      "bbox": [
+       106,
+       156,
+       32,
+       32
+      ],
+      "ink": 348,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     },
+     {
+      "index": 3,
+      "bbox": [
+       258,
+       156,
+       20,
+       32
+      ],
+      "ink": 160,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     }
+    ]
+   },
+   "bottom_band_runs_measured": {
+    "band": [
+     156,
+     188
+    ],
+    "n_runs": 5,
+    "runs": [
+     {
+      "x": [
+       35,
+       68
+      ],
+      "w": 33,
+      "h": 28,
+      "ink": 308,
+      "solid_ratio": 0.333,
+      "aspect_w_over_h": 1.179
+     },
+     {
+      "x": [
+       96,
+       100
+      ],
+      "w": 4,
+      "h": 8,
+      "ink": 32,
+      "solid_ratio": 1.0,
+      "aspect_w_over_h": 0.5
+     },
+     {
+      "x": [
+       105,
+       138
+      ],
+      "w": 33,
+      "h": 28,
+      "ink": 349,
+      "solid_ratio": 0.378,
+      "aspect_w_over_h": 1.179
+     },
+     {
+      "x": [
+       191,
+       204
+      ],
+      "w": 13,
+      "h": 5,
+      "ink": 41,
+      "solid_ratio": 0.631,
+      "aspect_w_over_h": 2.6
+     },
+     {
+      "x": [
+       258,
+       278
+      ],
+      "w": 20,
+      "h": 8,
+      "ink": 160,
+      "solid_ratio": 1.0,
+      "aspect_w_over_h": 2.5
+     }
+    ]
+   },
+   "anchor_path_mirror": {
+    "last_band": {
+     "band_h": 32,
+     "nc": 7,
+     "anchored_cells": null,
+     "letter_layers_h_to_count": {
+      "11": 2
+     },
+     "layer_counts_matching_expect": []
+    },
+    "last_two_bands": "skip:带高 80 > 40"
+   },
+   "row_order_path_mirror": [
+    {
+     "cand_n": 2,
+     "n_cells": 2,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      222
+     ],
+     "widths": [
+      102,
+      20
+     ],
+     "heights": [
+      32,
+      32
+     ],
+     "inks": [
+      688,
+      160
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 3,
+     "n_cells": 3,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      70,
+      152
+     ],
+     "widths": [
+      32,
+      32,
+      20
+     ],
+     "heights": [
+      32,
+      32,
+      32
+     ],
+     "inks": [
+      307,
+      348,
+      160
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：pitch_uniform,width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 4,
+     "n_cells": 4,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      11,
+      59,
+      152
+     ],
+     "widths": [
+      11,
+      21,
+      32,
+      20
+     ],
+     "heights": [
+      32,
+      32,
+      32,
+      32
+     ],
+     "inks": [
+      80,
+      227,
+      348,
+      160
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：pitch_uniform,width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 5,
+     "n_cells": 5,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      11,
+      59,
+      11,
+      141
+     ],
+     "widths": [
+      11,
+      21,
+      11,
+      21,
+      20
+     ],
+     "heights": [
+      32,
+      32,
+      32,
+      32,
+      32
+     ],
+     "inks": [
+      80,
+      227,
+      80,
+      268,
+      160
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：pitch_uniform,width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 6,
+     "n_cells": 6,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": false,
+     "pitch": [
+      56,
+      34,
+      -92,
+      70,
+      152
+     ],
+     "widths": [
+      28,
+      34,
+      42,
+      32,
+      32,
+      20
+     ],
+     "heights": [
+      28,
+      28,
+      28,
+      32,
+      32,
+      32
+     ],
+     "inks": [
+      216,
+      352,
+      448,
+      307,
+      348,
+      160
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": false,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：same_row,pitch_uniform,width_uniform,ink_uniform"
+    }
+   ]
+  },
+  "ft-rot90-01--tight": {
+   "kind": "perturb",
+   "declared_options": 4,
+   "saved_option_crops": 4,
+   "saved_crop_inks": [
+    168,
+    168,
+    168,
+    168
+   ],
+   "evidence_cells": 4,
+   "cause_class": "D 证据完整（对照件）",
+   "mask_hw": [
+    240,
+    334
+   ],
+   "page_last_ink_row": 187,
+   "n_bands": 2,
+   "bands_tail": [
+    [
+     50,
+     78
+    ],
+    [
+     160,
+     188
+    ]
+   ],
+   "solver_status": "solved",
+   "authoritative_production_notes": [],
+   "solver_error_excerpt": "",
+   "localizer_at_declared": {
+    "n_cells": 4,
+    "notes": [],
+    "cells": [
+     {
+      "index": 0,
+      "bbox": [
+       40,
+       160,
+       22,
+       28
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     },
+     {
+      "index": 1,
+      "bbox": [
+       110,
+       160,
+       24,
+       28
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     },
+     {
+      "index": 2,
+      "bbox": [
+       184,
+       160,
+       24,
+       28
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     },
+     {
+      "index": 3,
+      "bbox": [
+       254,
+       160,
+       24,
+       28
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     }
+    ]
+   },
+   "bottom_band_runs_measured": {
+    "band": [
+     160,
+     188
+    ],
+    "n_runs": 4,
+    "runs": [
+     {
+      "x": [
+       40,
+       62
+      ],
+      "w": 22,
+      "h": 24,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 0.917
+     },
+     {
+      "x": [
+       110,
+       134
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     },
+     {
+      "x": [
+       184,
+       208
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     },
+     {
+      "x": [
+       254,
+       278
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     }
+    ]
+   },
+   "anchor_path_mirror": {
+    "last_band": {
+     "band_h": 28,
+     "nc": 4,
+     "anchored_cells": null,
+     "letter_layers_h_to_count": {},
+     "layer_counts_matching_expect": []
+    },
+    "last_two_bands": "skip:带高 138 > 40"
+   },
+   "row_order_path_mirror": [
+    {
+     "cand_n": 2,
+     "n_cells": 2,
+     "notes": [],
+     "has_letter_labels": [
+      true,
+      true
+     ],
+     "all_letterless": false,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      144
+     ],
+     "widths": [
+      94,
+      94
+     ],
+     "heights": [
+      28,
+      28
+     ],
+     "inks": [
+      336,
+      336
+     ],
+     "predicates": {
+      "letterless": false,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": true,
+      "height_uniform": true,
+      "ink_uniform": true
+     },
+     "stop_at": "不通过谓词：letterless"
+    },
+    {
+     "cand_n": 3,
+     "n_cells": 3,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      70,
+      74
+     ],
+     "widths": [
+      22,
+      24,
+      94
+     ],
+     "heights": [
+      28,
+      28,
+      28
+     ],
+     "inks": [
+      168,
+      168,
+      336
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 4,
+     "n_cells": 4,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      70,
+      74,
+      70
+     ],
+     "widths": [
+      22,
+      24,
+      24,
+      24
+     ],
+     "heights": [
+      28,
+      28,
+      28,
+      28
+     ],
+     "inks": [
+      168,
+      168,
+      168,
+      168
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": true,
+      "height_uniform": true,
+      "ink_uniform": true
+     },
+     "stop_at": "全部通过（该路径会给出真实选项证据）"
+    },
+    {
+     "cand_n": 5,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    },
+    {
+     "cand_n": 6,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    }
+   ]
+  },
+  "ft-scale-09--tight": {
+   "kind": "perturb",
+   "declared_options": 3,
+   "saved_option_crops": 0,
+   "saved_crop_inks": [],
+   "evidence_cells": 0,
+   "cause_class": "A 选项带根本未定位：localizer 在声明数下给 0 单元（notes=['options_band_not_detected']）",
+   "mask_hw": [
+    240,
+    264
+   ],
+   "page_last_ink_row": 189,
+   "n_bands": 2,
+   "bands_tail": [
+    [
+     53,
+     75
+    ],
+    [
+     157,
+     190
+    ]
+   ],
+   "solver_status": "failed",
+   "authoritative_production_notes": [
+    "定位到 0 个选项区"
+   ],
+   "solver_error_excerpt": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：定位到 0 个选项区，题面 3 个选项（不回退整图求解，避免在网页截图上产生假证据）",
+   "localizer_at_declared": {
+    "n_cells": 0,
+    "notes": [
+     "options_band_not_detected"
+    ],
+    "cells": []
+   },
+   "bottom_band_runs_measured": {
+    "band": [
+     157,
+     190
+    ],
+    "n_runs": 3,
+    "runs": [
+     {
+      "x": [
+       36,
+       72
+      ],
+      "w": 36,
+      "h": 33,
+      "ink": 378,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     },
+     {
+      "x": [
+       118,
+       129
+      ],
+      "w": 11,
+      "h": 10,
+      "ink": 38,
+      "solid_ratio": 0.345,
+      "aspect_w_over_h": 1.1
+     },
+     {
+      "x": [
+       184,
+       208
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     }
+    ]
+   },
+   "anchor_path_mirror": {
+    "last_band": {
+     "band_h": 33,
+     "nc": 3,
+     "anchored_cells": null,
+     "letter_layers_h_to_count": {
+      "10": 1
+     },
+     "layer_counts_matching_expect": []
+    },
+    "last_two_bands": "skip:带高 137 > 40"
+   },
+   "row_order_path_mirror": [
+    {
+     "cand_n": 2,
+     "n_cells": 2,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      148
+     ],
+     "widths": [
+      36,
+      24
+     ],
+     "heights": [
+      33,
+      33
+     ],
+     "inks": [
+      378,
+      168
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": true,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：ink_uniform"
+    },
+    {
+     "cand_n": 3,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    },
+    {
+     "cand_n": 4,
+     "n_cells": 4,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": false,
+     "pitch": [
+      44,
+      -102,
+      148
+     ],
+     "widths": [
+      16,
+      24,
+      36,
+      24
+     ],
+     "heights": [
+      22,
+      22,
+      33,
+      33
+     ],
+     "inks": [
+      84,
+      168,
+      378,
+      168
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": false,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": false,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：same_row,pitch_uniform,width_uniform,height_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 5,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    },
+    {
+     "cand_n": 6,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    }
+   ]
+  },
+  "ft-trans-07--tight": {
+   "kind": "perturb",
+   "declared_options": 3,
+   "saved_option_crops": 0,
+   "saved_crop_inks": [],
+   "evidence_cells": 0,
+   "cause_class": "B 单元定位到但有格裁剪完整性未过：idx2:min(h,w)=8 < MIN_CELL_PX=10",
+   "mask_hw": [
+    240,
+    264
+   ],
+   "page_last_ink_row": 183,
+   "n_bands": 2,
+   "bands_tail": [
+    [
+     60,
+     68
+    ],
+    [
+     164,
+     184
+    ]
+   ],
+   "solver_status": "failed",
+   "authoritative_production_notes": [
+    "option_cells_not_label_anchored",
+    "选项裁剪完整性未过"
+   ],
+   "solver_error_excerpt": "图形区域证据不完整：缺少题干矩阵裁剪；带图形的选项仅 0 个（至少需要 2 个）；选项图形裁剪不足 2 份；像素定位器：option_cells_not_label_anchored；选项裁剪完整性未过: idx[2]（不回退整图求解，避免在网页截图上产生假证据）",
+   "localizer_at_declared": {
+    "n_cells": 3,
+    "notes": [],
+    "cells": [
+     {
+      "index": 0,
+      "bbox": [
+       56,
+       164,
+       20,
+       20
+      ],
+      "ink": 160,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     },
+     {
+      "index": 1,
+      "bbox": [
+       102,
+       164,
+       20,
+       20
+      ],
+      "ink": 160,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": false
+     },
+     {
+      "index": 2,
+      "bbox": [
+       190,
+       164,
+       8,
+       20
+      ],
+      "ink": 160,
+      "completeness_passed": false,
+      "completeness_subreason_if_fail": [
+       "min(h,w)=8 < MIN_CELL_PX=10"
+      ],
+      "has_letter_labels": false
+     }
+    ]
+   },
+   "bottom_band_runs_measured": {
+    "band": [
+     164,
+     184
+    ],
+    "n_runs": 3,
+    "runs": [
+     {
+      "x": [
+       56,
+       76
+      ],
+      "w": 20,
+      "h": 8,
+      "ink": 160,
+      "solid_ratio": 1.0,
+      "aspect_w_over_h": 2.5
+     },
+     {
+      "x": [
+       102,
+       122
+      ],
+      "w": 20,
+      "h": 8,
+      "ink": 160,
+      "solid_ratio": 1.0,
+      "aspect_w_over_h": 2.5
+     },
+     {
+      "x": [
+       190,
+       198
+      ],
+      "w": 8,
+      "h": 20,
+      "ink": 160,
+      "solid_ratio": 1.0,
+      "aspect_w_over_h": 0.4
+     }
+    ]
+   },
+   "anchor_path_mirror": {
+    "last_band": {
+     "band_h": 20,
+     "nc": 3,
+     "anchored_cells": null,
+     "letter_layers_h_to_count": {},
+     "layer_counts_matching_expect": []
+    },
+    "last_two_bands": "skip:带高 124 > 40"
+   },
+   "row_order_path_mirror": [
+    {
+     "cand_n": 2,
+     "n_cells": 2,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": false,
+     "completeness_fails": {
+      "1": [
+       "min(h,w)=8 < MIN_CELL_PX=10"
+      ]
+     },
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      134
+     ],
+     "widths": [
+      66,
+      8
+     ],
+     "heights": [
+      20,
+      20
+     ],
+     "inks": [
+      320,
+      160
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": false,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：complete,width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 3,
+     "n_cells": 3,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": false,
+     "completeness_fails": {
+      "2": [
+       "min(h,w)=8 < MIN_CELL_PX=10"
+      ]
+     },
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      46,
+      88
+     ],
+     "widths": [
+      20,
+      20,
+      8
+     ],
+     "heights": [
+      20,
+      20,
+      20
+     ],
+     "inks": [
+      160,
+      160,
+      160
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": false,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": true
+     },
+     "stop_at": "不通过谓词：complete,pitch_uniform,width_uniform"
+    },
+    {
+     "cand_n": 4,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    },
+    {
+     "cand_n": 5,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    },
+    {
+     "cand_n": 6,
+     "n_cells": 6,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": false,
+     "completeness_fails": {
+      "0": [
+       "min(h,w)=8 < MIN_CELL_PX=10"
+      ],
+      "1": [
+       "min(h,w)=8 < MIN_CELL_PX=10"
+      ],
+      "2": [
+       "min(h,w)=8 < MIN_CELL_PX=10"
+      ],
+      "5": [
+       "min(h,w)=8 < MIN_CELL_PX=10"
+      ]
+     },
+     "all_ink_ge_20": true,
+     "same_row": false,
+     "pitch": [
+      54,
+      54,
+      -90,
+      46,
+      88
+     ],
+     "widths": [
+      20,
+      20,
+      20,
+      20,
+      20,
+      8
+     ],
+     "heights": [
+      8,
+      8,
+      8,
+      20,
+      20,
+      20
+     ],
+     "inks": [
+      160,
+      160,
+      160,
+      160,
+      160,
+      160
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": false,
+      "ink20": true,
+      "same_row": false,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": false,
+      "ink_uniform": true
+     },
+     "stop_at": "不通过谓词：complete,same_row,pitch_uniform,width_uniform,height_uniform"
+    }
+   ]
+  },
+  "ft-mirror-04": {
+   "kind": "real",
+   "declared_options": 3,
+   "saved_option_crops": 3,
+   "saved_crop_inks": [
+    168,
+    168,
+    168
+   ],
+   "evidence_cells": 3,
+   "cause_class": "D 证据完整（对照件）",
+   "mask_hw": [
+    208,
+    348
+   ],
+   "page_last_ink_row": 169,
+   "n_bands": 3,
+   "bands_tail": [
+    [
+     36,
+     50
+    ],
+    [
+     74,
+     96
+    ],
+    [
+     146,
+     170
+    ]
+   ],
+   "solver_status": "solved",
+   "authoritative_production_notes": [],
+   "solver_error_excerpt": "",
+   "localizer_at_declared": {
+    "n_cells": 3,
+    "notes": [],
+    "cells": [
+     {
+      "index": 0,
+      "bbox": [
+       28,
+       146,
+       88,
+       24
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": true
+     },
+     {
+      "index": 1,
+      "bbox": [
+       116,
+       146,
+       85,
+       24
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": true
+     },
+     {
+      "index": 2,
+      "bbox": [
+       201,
+       146,
+       62,
+       24
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": true
+     }
+    ]
+   },
+   "bottom_band_runs_measured": {
+    "band": [
+     146,
+     170
+    ],
+    "n_runs": 6,
+    "runs": [
+     {
+      "x": [
+       28,
+       43
+      ],
+      "w": 15,
+      "h": 13,
+      "ink": 60,
+      "solid_ratio": 0.308,
+      "aspect_w_over_h": 1.154
+     },
+     {
+      "x": [
+       60,
+       84
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     },
+     {
+      "x": [
+       116,
+       128
+      ],
+      "w": 12,
+      "h": 13,
+      "ink": 64,
+      "solid_ratio": 0.41,
+      "aspect_w_over_h": 0.923
+     },
+     {
+      "x": [
+       150,
+       174
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     },
+     {
+      "x": [
+       201,
+       214
+      ],
+      "w": 13,
+      "h": 13,
+      "ink": 50,
+      "solid_ratio": 0.296,
+      "aspect_w_over_h": 1.0
+     },
+     {
+      "x": [
+       238,
+       260
+      ],
+      "w": 22,
+      "h": 24,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 0.917
+     }
+    ]
+   },
+   "anchor_path_mirror": {
+    "last_band": {
+     "band_h": 24,
+     "nc": 9,
+     "anchored_cells": 3,
+     "letter_layers_h_to_count": {
+      "13": 3
+     },
+     "layer_counts_matching_expect": [
+      13
+     ]
+    },
+    "last_two_bands": "skip:带高 96 > 40"
+   },
+   "row_order_path_mirror": [
+    {
+     "cand_n": 2,
+     "n_cells": 2,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      90
+     ],
+     "widths": [
+      24,
+      110
+     ],
+     "heights": [
+      24,
+      24
+     ],
+     "inks": [
+      168,
+      386
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 3,
+     "n_cells": 3,
+     "notes": [],
+     "has_letter_labels": [
+      true,
+      true,
+      true
+     ],
+     "all_letterless": false,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      88,
+      85
+     ],
+     "widths": [
+      88,
+      85,
+      62
+     ],
+     "heights": [
+      24,
+      24,
+      24
+     ],
+     "inks": [
+      168,
+      168,
+      168
+     ],
+     "predicates": {
+      "letterless": false,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": true
+     },
+     "stop_at": "不通过谓词：letterless,width_uniform"
+    },
+    {
+     "cand_n": 4,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    },
+    {
+     "cand_n": 5,
+     "n_cells": 5,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": false,
+     "pitch": [
+      52,
+      -26,
+      90,
+      88
+     ],
+     "widths": [
+      24,
+      24,
+      24,
+      24,
+      22
+     ],
+     "heights": [
+      22,
+      22,
+      24,
+      24,
+      24
+     ],
+     "inks": [
+      168,
+      168,
+      168,
+      168,
+      168
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": false,
+      "pitch_uniform": false,
+      "width_uniform": true,
+      "height_uniform": true,
+      "ink_uniform": true
+     },
+     "stop_at": "不通过谓词：same_row,pitch_uniform"
+    },
+    {
+     "cand_n": 6,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    }
+   ]
+  },
+  "ft-overlay-12": {
+   "kind": "real",
+   "declared_options": 4,
+   "saved_option_crops": 4,
+   "saved_crop_inks": [
+    256,
+    320,
+    64,
+    160
+   ],
+   "evidence_cells": 4,
+   "cause_class": "D 证据完整（对照件）",
+   "mask_hw": [
+    304,
+    380
+   ],
+   "page_last_ink_row": 265,
+   "n_bands": 5,
+   "bands_tail": [
+    [
+     120,
+     148
+    ],
+    [
+     166,
+     194
+    ],
+    [
+     238,
+     266
+    ]
+   ],
+   "solver_status": "failed",
+   "authoritative_production_notes": [],
+   "solver_error_excerpt": "没有支持范围内的规律能解释已知图形（当前支持：个数、边数、面积、平移、对称性）；变换通道：变换规律不可唯一判定",
+   "localizer_at_declared": {
+    "n_cells": 4,
+    "notes": [],
+    "cells": [
+     {
+      "index": 0,
+      "bbox": [
+       28,
+       238,
+       88,
+       28
+      ],
+      "ink": 256,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": true
+     },
+     {
+      "index": 1,
+      "bbox": [
+       116,
+       238,
+       85,
+       28
+      ],
+      "ink": 320,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": true
+     },
+     {
+      "index": 2,
+      "bbox": [
+       201,
+       238,
+       87,
+       28
+      ],
+      "ink": 64,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": true
+     },
+     {
+      "index": 3,
+      "bbox": [
+       288,
+       238,
+       55,
+       28
+      ],
+      "ink": 160,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": true
+     }
+    ]
+   },
+   "bottom_band_runs_measured": {
+    "band": [
+     238,
+     266
+    ],
+    "n_runs": 8,
+    "runs": [
+     {
+      "x": [
+       28,
+       43
+      ],
+      "w": 15,
+      "h": 13,
+      "ink": 55,
+      "solid_ratio": 0.282,
+      "aspect_w_over_h": 1.154
+     },
+     {
+      "x": [
+       62,
+       82
+      ],
+      "w": 20,
+      "h": 28,
+      "ink": 256,
+      "solid_ratio": 0.457,
+      "aspect_w_over_h": 0.714
+     },
+     {
+      "x": [
+       116,
+       128
+      ],
+      "w": 12,
+      "h": 13,
+      "ink": 61,
+      "solid_ratio": 0.391,
+      "aspect_w_over_h": 0.923
+     },
+     {
+      "x": [
+       148,
+       168
+      ],
+      "w": 20,
+      "h": 28,
+      "ink": 320,
+      "solid_ratio": 0.571,
+      "aspect_w_over_h": 0.714
+     },
+     {
+      "x": [
+       201,
+       214
+      ],
+      "w": 13,
+      "h": 13,
+      "ink": 47,
+      "solid_ratio": 0.278,
+      "aspect_w_over_h": 1.0
+     },
+     {
+      "x": [
+       244,
+       252
+      ],
+      "w": 8,
+      "h": 8,
+      "ink": 64,
+      "solid_ratio": 1.0,
+      "aspect_w_over_h": 1.0
+     },
+     {
+      "x": [
+       288,
+       302
+      ],
+      "w": 14,
+      "h": 13,
+      "ink": 58,
+      "solid_ratio": 0.319,
+      "aspect_w_over_h": 1.077
+     },
+     {
+      "x": [
+       320,
+       340
+      ],
+      "w": 20,
+      "h": 8,
+      "ink": 160,
+      "solid_ratio": 1.0,
+      "aspect_w_over_h": 2.5
+     }
+    ]
+   },
+   "anchor_path_mirror": {
+    "last_band": {
+     "band_h": 28,
+     "nc": 12,
+     "anchored_cells": 4,
+     "letter_layers_h_to_count": {
+      "8": 1,
+      "13": 4
+     },
+     "layer_counts_matching_expect": [
+      13
+     ]
+    },
+    "last_two_bands": "skip:带高 100 > 40"
+   },
+   "row_order_path_mirror": [
+    {
+     "cand_n": 2,
+     "n_cells": 2,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      86
+     ],
+     "widths": [
+      20,
+      192
+     ],
+     "heights": [
+      28,
+      28
+     ],
+     "inks": [
+      256,
+      649
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 3,
+     "n_cells": 3,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      86,
+      140
+     ],
+     "widths": [
+      20,
+      104,
+      52
+     ],
+     "heights": [
+      28,
+      28,
+      28
+     ],
+     "inks": [
+      256,
+      431,
+      218
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：pitch_uniform,width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 4,
+     "n_cells": 4,
+     "notes": [],
+     "has_letter_labels": [
+      true,
+      true,
+      true,
+      true
+     ],
+     "all_letterless": false,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      88,
+      85,
+      87
+     ],
+     "widths": [
+      88,
+      85,
+      87,
+      55
+     ],
+     "heights": [
+      28,
+      28,
+      28,
+      28
+     ],
+     "inks": [
+      256,
+      320,
+      64,
+      160
+     ],
+     "predicates": {
+      "letterless": false,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：letterless,width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 5,
+     "n_cells": 5,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": false,
+     "completeness_fails": {
+      "3": [
+       "min(h,w)=8 < MIN_CELL_PX=10"
+      ]
+     },
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      86,
+      53,
+      43,
+      44
+     ],
+     "widths": [
+      20,
+      20,
+      13,
+      8,
+      52
+     ],
+     "heights": [
+      28,
+      28,
+      28,
+      28,
+      28
+     ],
+     "inks": [
+      256,
+      320,
+      47,
+      64,
+      218
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": false,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：complete,pitch_uniform,width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 6,
+     "n_cells": 6,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": false,
+     "completeness_fails": {
+      "3": [
+       "min(h,w)=8 < MIN_CELL_PX=10"
+      ]
+     },
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      86,
+      53,
+      43,
+      44,
+      23
+     ],
+     "widths": [
+      20,
+      20,
+      13,
+      8,
+      23,
+      29
+     ],
+     "heights": [
+      28,
+      28,
+      28,
+      28,
+      28,
+      28
+     ],
+     "inks": [
+      256,
+      320,
+      47,
+      64,
+      58,
+      160
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": false,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：complete,pitch_uniform,width_uniform,ink_uniform"
+    }
+   ]
+  },
+  "ft-rot90-01": {
+   "kind": "real",
+   "declared_options": 4,
+   "saved_option_crops": 4,
+   "saved_crop_inks": [
+    168,
+    168,
+    168,
+    168
+   ],
+   "evidence_cells": 4,
+   "cause_class": "D 证据完整（对照件）",
+   "mask_hw": [
+    208,
+    380
+   ],
+   "page_last_ink_row": 173,
+   "n_bands": 3,
+   "bands_tail": [
+    [
+     36,
+     50
+    ],
+    [
+     74,
+     102
+    ],
+    [
+     146,
+     174
+    ]
+   ],
+   "solver_status": "solved",
+   "authoritative_production_notes": [],
+   "solver_error_excerpt": "",
+   "localizer_at_declared": {
+    "n_cells": 4,
+    "notes": [],
+    "cells": [
+     {
+      "index": 0,
+      "bbox": [
+       28,
+       146,
+       88,
+       28
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": true
+     },
+     {
+      "index": 1,
+      "bbox": [
+       116,
+       146,
+       85,
+       28
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": true
+     },
+     {
+      "index": 2,
+      "bbox": [
+       201,
+       146,
+       87,
+       28
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": true
+     },
+     {
+      "index": 3,
+      "bbox": [
+       288,
+       146,
+       61,
+       28
+      ],
+      "ink": 168,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": true
+     }
+    ]
+   },
+   "bottom_band_runs_measured": {
+    "band": [
+     146,
+     174
+    ],
+    "n_runs": 8,
+    "runs": [
+     {
+      "x": [
+       28,
+       43
+      ],
+      "w": 15,
+      "h": 13,
+      "ink": 59,
+      "solid_ratio": 0.303,
+      "aspect_w_over_h": 1.154
+     },
+     {
+      "x": [
+       60,
+       82
+      ],
+      "w": 22,
+      "h": 24,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 0.917
+     },
+     {
+      "x": [
+       116,
+       128
+      ],
+      "w": 12,
+      "h": 13,
+      "ink": 63,
+      "solid_ratio": 0.404,
+      "aspect_w_over_h": 0.923
+     },
+     {
+      "x": [
+       146,
+       170
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     },
+     {
+      "x": [
+       201,
+       214
+      ],
+      "w": 13,
+      "h": 13,
+      "ink": 50,
+      "solid_ratio": 0.296,
+      "aspect_w_over_h": 1.0
+     },
+     {
+      "x": [
+       236,
+       260
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     },
+     {
+      "x": [
+       288,
+       302
+      ],
+      "w": 14,
+      "h": 13,
+      "ink": 59,
+      "solid_ratio": 0.324,
+      "aspect_w_over_h": 1.077
+     },
+     {
+      "x": [
+       322,
+       346
+      ],
+      "w": 24,
+      "h": 22,
+      "ink": 168,
+      "solid_ratio": 0.318,
+      "aspect_w_over_h": 1.091
+     }
+    ]
+   },
+   "anchor_path_mirror": {
+    "last_band": {
+     "band_h": 28,
+     "nc": 12,
+     "anchored_cells": 4,
+     "letter_layers_h_to_count": {
+      "13": 4
+     },
+     "layer_counts_matching_expect": [
+      13
+     ]
+    },
+    "last_two_bands": "skip:带高 100 > 40"
+   },
+   "row_order_path_mirror": [
+    {
+     "cand_n": 2,
+     "n_cells": 2,
+     "notes": [],
+     "has_letter_labels": [
+      true,
+      true
+     ],
+     "all_letterless": false,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      176
+     ],
+     "widths": [
+      110,
+      110
+     ],
+     "heights": [
+      28,
+      28
+     ],
+     "inks": [
+      399,
+      395
+     ],
+     "predicates": {
+      "letterless": false,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": true,
+      "height_uniform": true,
+      "ink_uniform": true
+     },
+     "stop_at": "不通过谓词：letterless"
+    },
+    {
+     "cand_n": 3,
+     "n_cells": 3,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      86,
+      90
+     ],
+     "widths": [
+      22,
+      24,
+      110
+     ],
+     "heights": [
+      28,
+      28,
+      28
+     ],
+     "inks": [
+      168,
+      168,
+      395
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 4,
+     "n_cells": 4,
+     "notes": [],
+     "has_letter_labels": [
+      true,
+      true,
+      true,
+      true
+     ],
+     "all_letterless": false,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      88,
+      85,
+      87
+     ],
+     "widths": [
+      88,
+      85,
+      87,
+      61
+     ],
+     "heights": [
+      28,
+      28,
+      28,
+      28
+     ],
+     "inks": [
+      168,
+      168,
+      168,
+      168
+     ],
+     "predicates": {
+      "letterless": false,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": true
+     },
+     "stop_at": "不通过谓词：letterless,width_uniform"
+    },
+    {
+     "cand_n": 5,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    },
+    {
+     "cand_n": 6,
+     "n_cells": 0,
+     "notes": [
+      "options_band_not_detected"
+     ],
+     "stop_at": "单元数 != cand_n（选项带未定位到该数量）"
+    }
+   ]
+  },
+  "ft-trans-07": {
+   "kind": "real",
+   "declared_options": 3,
+   "saved_option_crops": 3,
+   "saved_crop_inks": [
+    160,
+    160,
+    160
+   ],
+   "evidence_cells": 3,
+   "cause_class": "D 证据完整（对照件）",
+   "mask_hw": [
+    208,
+    348
+   ],
+   "page_last_ink_row": 169,
+   "n_bands": 3,
+   "bands_tail": [
+    [
+     36,
+     50
+    ],
+    [
+     84,
+     92
+    ],
+    [
+     150,
+     170
+    ]
+   ],
+   "solver_status": "failed",
+   "authoritative_production_notes": [],
+   "solver_error_excerpt": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配; 墨迹面积外推到 160px，多个选项接近，无法唯一确定；变换通道：变换规律不可唯一判定",
+   "localizer_at_declared": {
+    "n_cells": 3,
+    "notes": [],
+    "cells": [
+     {
+      "index": 0,
+      "bbox": [
+       28,
+       150,
+       88,
+       20
+      ],
+      "ink": 160,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": true
+     },
+     {
+      "index": 1,
+      "bbox": [
+       116,
+       150,
+       85,
+       20
+      ],
+      "ink": 160,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": true
+     },
+     {
+      "index": 2,
+      "bbox": [
+       201,
+       150,
+       52,
+       20
+      ],
+      "ink": 160,
+      "completeness_passed": true,
+      "completeness_subreason_if_fail": [],
+      "has_letter_labels": true
+     }
+    ]
+   },
+   "bottom_band_runs_measured": {
+    "band": [
+     150,
+     170
+    ],
+    "n_runs": 6,
+    "runs": [
+     {
+      "x": [
+       28,
+       43
+      ],
+      "w": 15,
+      "h": 13,
+      "ink": 60,
+      "solid_ratio": 0.308,
+      "aspect_w_over_h": 1.154
+     },
+     {
+      "x": [
+       76,
+       96
+      ],
+      "w": 20,
+      "h": 8,
+      "ink": 160,
+      "solid_ratio": 1.0,
+      "aspect_w_over_h": 2.5
+     },
+     {
+      "x": [
+       116,
+       128
+      ],
+      "w": 12,
+      "h": 13,
+      "ink": 63,
+      "solid_ratio": 0.404,
+      "aspect_w_over_h": 0.923
+     },
+     {
+      "x": [
+       138,
+       158
+      ],
+      "w": 20,
+      "h": 8,
+      "ink": 160,
+      "solid_ratio": 1.0,
+      "aspect_w_over_h": 2.5
+     },
+     {
+      "x": [
+       201,
+       214
+      ],
+      "w": 13,
+      "h": 13,
+      "ink": 50,
+      "solid_ratio": 0.296,
+      "aspect_w_over_h": 1.0
+     },
+     {
+      "x": [
+       242,
+       250
+      ],
+      "w": 8,
+      "h": 20,
+      "ink": 160,
+      "solid_ratio": 1.0,
+      "aspect_w_over_h": 0.4
+     }
+    ]
+   },
+   "anchor_path_mirror": {
+    "last_band": {
+     "band_h": 20,
+     "nc": 9,
+     "anchored_cells": 3,
+     "letter_layers_h_to_count": {
+      "13": 3
+     },
+     "layer_counts_matching_expect": [
+      13
+     ]
+    },
+    "last_two_bands": "skip:带高 86 > 40"
+   },
+   "row_order_path_mirror": [
+    {
+     "cand_n": 2,
+     "n_cells": 2,
+     "notes": [],
+     "has_letter_labels": [
+      true,
+      true
+     ],
+     "all_letterless": false,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      172
+     ],
+     "widths": [
+      129,
+      49
+     ],
+     "heights": [
+      20,
+      20
+     ],
+     "inks": [
+      442,
+      210
+     ],
+     "predicates": {
+      "letterless": false,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：letterless,width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 3,
+     "n_cells": 3,
+     "notes": [],
+     "has_letter_labels": [
+      true,
+      true,
+      true
+     ],
+     "all_letterless": false,
+     "all_complete": true,
+     "completeness_fails": {},
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      88,
+      85
+     ],
+     "widths": [
+      88,
+      85,
+      52
+     ],
+     "heights": [
+      20,
+      20,
+      20
+     ],
+     "inks": [
+      160,
+      160,
+      160
+     ],
+     "predicates": {
+      "letterless": false,
+      "complete": true,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": true,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": true
+     },
+     "stop_at": "不通过谓词：letterless,width_uniform"
+    },
+    {
+     "cand_n": 4,
+     "n_cells": 4,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": false,
+     "completeness_fails": {
+      "3": [
+       "min(h,w)=8 < MIN_CELL_PX=10"
+      ]
+     },
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      47,
+      125,
+      41
+     ],
+     "widths": [
+      14,
+      82,
+      13,
+      8
+     ],
+     "heights": [
+      20,
+      20,
+      20,
+      20
+     ],
+     "inks": [
+      59,
+      383,
+      50,
+      160
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": false,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：complete,pitch_uniform,width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 5,
+     "n_cells": 5,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": false,
+     "completeness_fails": {
+      "4": [
+       "min(h,w)=8 < MIN_CELL_PX=10"
+      ]
+     },
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      47,
+      57,
+      68,
+      41
+     ],
+     "widths": [
+      14,
+      57,
+      25,
+      13,
+      8
+     ],
+     "heights": [
+      20,
+      20,
+      20,
+      20,
+      20
+     ],
+     "inks": [
+      59,
+      223,
+      160,
+      50,
+      160
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": false,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：complete,pitch_uniform,width_uniform,ink_uniform"
+    },
+    {
+     "cand_n": 6,
+     "n_cells": 6,
+     "notes": [],
+     "has_letter_labels": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+     ],
+     "all_letterless": true,
+     "all_complete": false,
+     "completeness_fails": {
+      "5": [
+       "min(h,w)=8 < MIN_CELL_PX=10"
+      ]
+     },
+     "all_ink_ge_20": true,
+     "same_row": true,
+     "pitch": [
+      47,
+      30,
+      27,
+      68,
+      41
+     ],
+     "widths": [
+      14,
+      30,
+      27,
+      25,
+      13,
+      8
+     ],
+     "heights": [
+      20,
+      20,
+      20,
+      20,
+      20,
+      20
+     ],
+     "inks": [
+      59,
+      160,
+      63,
+      160,
+      50,
+      160
+     ],
+     "predicates": {
+      "letterless": true,
+      "complete": false,
+      "ink20": true,
+      "same_row": true,
+      "pitch_uniform": false,
+      "width_uniform": false,
+      "height_uniform": true,
+      "ink_uniform": false
+     },
+     "stop_at": "不通过谓词：complete,pitch_uniform,width_uniform,ink_uniform"
+    }
+   ]
+  }
+ },
+ "gap_pages_no_crop_at_all": [
+  "ft-scale-09--tight",
+  "ft-trans-07--tight"
+ ],
+ "gap_pages_crop_saved_but_not_in_evidence": [
+  "ft-grid-10--tight",
+  "ft-overlay-13--tight"
+ ],
+ "crops_with_suspicious_high_ink_gt_250": {
+  "ft-grid-10--tight": [
+   296
+  ],
+  "ft-overlay-13--tight": [
+   349
+  ],
+  "ft-overlay-12": [
+   256,
+   320
+  ]
+ },
+ "quantity_definitions": {
+  "saved_option_crops": "落盘 option_*.png 份数（Solver 中途弃权也可能已写盘）",
+  "evidence_cells": "region_provenance.option_cells 单元数（可核对证据链）",
+  "V2_erratum": "V2 的 tight 汇总把 evidence_cells 标成\"消费单元\"，故\"4 页选项 0 份\"表述过强：实测其中 2 页有 4 份裁剪落盘（grid-10--tight、overlay-13--tight），另 2 页确为 0 份"
+ },
+ "gate_constants": {
+  "MIN_CELL_PX": 10,
+  "MIN_INK_RATIO": 0.0015
+ },
+ "no_changes_made": "本脚本不调阈值、不加规则、不改 src；仅测量。",
+ "llm_calls_used": 0,
+ "http_requests_made": 0
+}

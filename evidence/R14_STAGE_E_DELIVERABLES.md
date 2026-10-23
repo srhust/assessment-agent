@@ -110,13 +110,40 @@ all_confirm。
 * **历史件字节未被复验改动**：f1 走"取 git HEAD 快照 → 重跑 → 比对重跑
   产物 → 用快照还原工作区"，还原后 `git status` 对该件为 clean。
 
-### B. 新排版独立 Dev 回归（`R14E_NEWLAYOUT_REGRESSION_V2.json` / `.md`）
+### B. 新排版独立 Dev 回归（`R14E_NEWLAYOUT_REGRESSION_V3.json` / `.md`）
 50 页（真实 5 + dev15 + perturb30）走**生产入口题面**，三层分列
 候选 16 / 接受 7 / 释放 7，排版四不变量 50/50，`wrong_releases []`。
-tight 族按 `声明/消费/页面末带列段` 三元组入账：**3 页拿到完整真实选项
-证据**（含 1 页真实截图 tight），**4 页仍消费 0 单元**（grid-10 /
-overlay-13 / scale-09 / trans-07 变体）→ 如实缺证据、不释放，是 E 之后
-**仍开的排版覆盖缺口**（STOPGATE 裁决点 5），不得说成已修好。
+
+**勘误（本轮，V2→V3）**：V2 的 tight 汇总把 **Solver 证据链单元数**标成
+"消费单元"，与**落盘裁剪份数**混同，使我此前"4 页 tight 选项 0 份"的表述
+**过强**。V3 分列两个量并写 `erratum_v3`；除该口径改名外**判定数字一字未变**
+（实测：layers 16/7/7、`checks_failed []`、`wrong_releases []`、同源复核 50/50、
+`band20_flagged []` 全等）。真实构成：
+· **确为 0 份裁剪**：`ft-scale-09--tight`（`options_band_not_detected`）、
+  `ft-trans-07--tight`（第三格 `min(h,w)=8 < MIN_CELL_PX=10`）；
+· **4 份裁剪已落盘但未进证据链**：`ft-grid-10--tight`（168/**296**/168/168）、
+  `ft-overlay-13--tight`（107/227/**349**/160），随后在题干侧弃权
+  （`stem_evidence_ambiguous_layout`），且含并图/劈图格。
+V2 件保留不删，但**不得**再作当前引用。
+
+### D. tight 覆盖缺口的逐页成因（`R14E_TIGHT_GAP_DIAGNOSIS.json` / `.md`）
+零 API、零规则改动，7 张 tight + 4 张真实对照页逐页测量，四个量分列
+（声明 / 证据链单元 / 落盘裁剪 / 页面末带列段），成因分四类：
+· **A**（scale-09--tight）三选项**故意**尺寸悬殊（ink 378/38/168），
+  "宽高/墨一致"正则性谓词**按设计**必须拒绝——放松它等于拆掉防假格阵的门；
+· **B**（trans-07--tight）真图形本就 8px 横/竖条（实心度 1.0），
+  `min(h,w)=8 < MIN_CELL_PX`；锚点路径有 tight 内容基（最小边 4px）**但无字母
+  版式走不到**——属**规则不对称**，需新规则而非调阈值；且节距 46/88 不等距，
+  第二道阻碍独立存在；
+· **C**（grid-10 / overlay-13--tight）末带是**混合内容**（5 段 vs 声明 4；
+  7 段 vs 4），页面像素**不含**"哪几段是选项"的信息 → **不可安全恢复**；
+· **D** 对照：`ft-rot90-01--tight` 4×168、`ft-mirror-04--tight`（含真实件，
+  其题面 `declared_options=0`，生产走行序无字母路径）。
+另记 `ink>250` 只是**指路启发式**、不是缺陷标记：对照页 `ft-overlay-12`
+的 256/320 是叠加系列每格多形状、已锚点切分且同源复核通过。
+是否投入新规则属 STOPGATE 裁决点 5；本轮未加规则、未动
+tol=0.15 / margin_min=0.05 / MIN_CELL_PX=10。
+
 
 ### C. G0 零请求闸门就绪审计（`R14G0_GATE_READINESS_V5.json` / `R14G0_READINESS.md`）
 用 `httpx.MockTransport` 驱动**真实** `OpenAICompatibleClient` / `VisionParser`

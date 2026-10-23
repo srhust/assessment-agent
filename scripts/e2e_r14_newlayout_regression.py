@@ -288,13 +288,21 @@ def main() -> int:
             if letterless:
                 bad.append(f"{rid}: 无字母页被释放（标签通道不可验证）")
     tight = {k: {"declared_options": v["declared_options"],
-                 "n_cells": v["n_cells"], "anchored": v["anchored"],
-                 "has_letter_labels": v["has_letter_labels"],
+                 # **两个量必须分开命名**（V2 把 provenance 单元数标成
+                 # "consumed" 造成误读，见 V3 勘误）：
+                 #   provenance_option_cells = Solver 证据链里的选项单元数
+                 #   saved_option_crops      = 实际落盘的 option_*.png 份数
+                 # 二者可以不同：题干布局歧义先弃权时证据链为空，但裁剪已写盘。
+                 "provenance_option_cells": v["n_cells"],
+                 "saved_option_crops": len(v["consumed"]),
                  "consumed_inks": [c["ink"] for c in v["consumed"]],
+                 "n_cells": v["n_cells"],
+                 "anchored": v["anchored"],
+                 "has_letter_labels": v["has_letter_labels"],
                  "page_truth_units": v["page_truth"]["units"],
                  "page_truth_uniform": (v["page_truth"]["pitch_uniform"]
-                                        and v["page_truth"]["ink_uniform"]
-                                        and v["page_truth"]["row_h_uniform"]),
+                                         and v["page_truth"]["ink_uniform"]
+                                         and v["page_truth"]["row_h_uniform"]),
                  "page_truth_ink": v["page_truth"]["unit_ink"],
                  "released": v["released"], "binding": v["binding_state"],
                  "status": v["solver_status"]}
@@ -318,19 +326,32 @@ def main() -> int:
                                                    x is False for x in
                                                    (v["has_letter_labels"] or []))}),
            "tight_layout_pages": tight,
-           # 三元组分列：声明 / 消费 / 页面末带列段（列段数只是对照，见 docstring）
-           "tight_declared_vs_consumed": sorted(
-               {f"{k}: 题面声明 {v['declared_options']} vs 消费单元 "
-                f"{v['n_cells']}（页面末带列段 {v['page_truth_units']}，仅对照）"
+           # 三元组分列：声明 / **证据链单元** / 页面末带列段（列段数只是对照，
+           # 见 docstring）。V2 在这里把"证据链单元数"标成"消费单元"，与**落盘
+           # 裁剪份数**混同：grid-10--tight / overlay-13--tight 各有 4 份选项
+           # 裁剪已落盘，但题干布局歧义先弃权使证据链为空。V3 起两个量分列。
+           "tight_declared_vs_evidence_cells": sorted(
+               {f"{k}: 题面声明 {v['declared_options']} vs 证据链单元 "
+                f"{v['provenance_option_cells']}（落盘裁剪 {v['saved_option_crops']} 份，"
+                f"页面末带列段 {v['page_truth_units']}，仅对照）"
                 for k, v in tight.items()
-                if v["declared_options"] != v["n_cells"]}),
+                if v["declared_options"] != v["provenance_option_cells"]}),
            "tight_page_truth_by_page": {
-               k: {"declared": v["declared_options"], "consumed": v["n_cells"],
+               k: {"declared": v["declared_options"],
+                   "evidence_cells": v["provenance_option_cells"],
+                   "saved_crops": v["saved_option_crops"],
                    "bottom_band_col_runs": v["page_truth_units"],
                    "uniform_layout": v["page_truth_uniform"],
                    "run_inks": v["page_truth_ink"]}
                for k, v in tight.items()},
            "page_band20_audit": band20,
+           "erratum_v3": "V2 的 tight 汇总把 Solver 证据链单元数标为\"消费单元\"，"
+                         "与落盘裁剪份数混同，导致\"4 页选项 0 份\"的表述**过强**：" "实测 scale-09--tight / trans-07--tight 确为 0 份裁剪；grid-10--tight / "
+                         "overlay-13--tight 各已落盘 4 份选项裁剪（ink 168/296/168/168、"
+                         "107/227/349/160），只是随后因题干布局假设不唯一而弃权、"
+                         "证据链未记录单元，且其中 296/349 两格明显**并含多图**"
+                         "（切分仍不合格）。三层计数、wrong_releases、checks_failed "
+                         "均不受本次改名影响（同一批数字，仅口径命名更正）。",
            "band20_flagged": sorted(r["pid"] for r in band20
                                     if r["band_h"] < 20 or r["band_w"] < 20),
            "checks_failed": bad, "llm_calls_used": 0,
@@ -350,7 +371,8 @@ def main() -> int:
                                           "released_ids", "wrong_releases",
                                           "near_blank_consumed",
                                           "letterless_released",
-                                          "tight_declared_vs_consumed",
+                                          "tight_declared_vs_evidence_cells",
+                                          "tight_page_truth_by_page",
                                           "letterless_anchor_claims",
                                           "band20_flagged", "checks_failed",
                                           "llm_calls_used")},

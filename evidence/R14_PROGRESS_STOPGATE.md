@@ -12,7 +12,7 @@
 | B CellGeometry 契约 | ✅ | `diagram_layout.py`：pitch 槽/边界/置信度三档；两已知格 ⇒ 单间距样本=medium，"规律唯一性由下游规则通道独立证明"写入 note |
 | C pitch 因果消融 | ✅ | `evidence/R14C_PITCH_ABLATION.json`（双轴×3 画布×5 件全数字）+ `R14C_REAL_PARSE_REPLAY.json` |
 | D 求解/验证强化 | ✅ 核心 | 绝对面积跨协议尺度、验证器复用坐标契约、节距槽统一、**退化常数序列弃权** |
-| **E 选项证据完整性** | ✅ **根修完成**（本版） | `R14E_STAGE_E_ACCEPTANCE_V7.json`（checks_failed `[]`、wrong_releases `[]`、`llm_calls_used 0`）、**新排版独立 Dev 回归 `R14E_NEWLAYOUT_REGRESSION_V2.json` + `R14E_NEWLAYOUT_REGRESSION.md`**（50 页三层计数 16/7/7、排版四不变量 50/50、`tight` 族三元组逐页入账）、`R14E_ANCHOR_SWEEP.json`、`R14E_REAL_PAGE_REPLAY_V8.json`、`tests/test_r14e_option_binding.py`（6 例） |
+| **E 选项证据完整性** | ✅ **根修完成**（本版）+ 回归**勘误 V3** | `R14E_STAGE_E_ACCEPTANCE_V8.json`（== V7，`checks_failed []`、`wrong_releases []`、`llm_calls_used 0`）、**新排版独立 Dev 回归 `R14E_NEWLAYOUT_REGRESSION_V3.json` + `R14E_NEWLAYOUT_REGRESSION.md`**（50 页三层计数 16/7/7、排版四不变量 50/50；V3 把"证据链单元"与"落盘裁剪份数"分列——V2 曾混同，使"4 页 tight 选项 0 份"表述过强，已在件内 `erratum_v3` 与两份文档更正，判定数字一字未变）、**缺口逐页成因 `R14E_TIGHT_GAP_DIAGNOSIS.json` + `.md`**（A 尺寸悬殊 / B 8px 真图形遇 10px 最小边门 / C 末带混合内容不可安全恢复 / D 对照）、`R14E_ANCHOR_SWEEP.json`、`R14E_REAL_PAGE_REPLAY_V8.json`、`tests/test_r14e_option_binding.py`（6 例） |
 | F 六条件+扰动配对 | ✅（E 回归后**重跑**，并在 HEAD `b913813` 二次复验零漂移） | `R14E_SIX_CONDITION_V10.json` == `V9.json`（逐项 `identical_verdict_numbers true`、`differing_keys []`）：A 11 cand/10 rel、C 5/3、E **5/13**、F **5/13**，各层 wrong_releases `[]`。**血缘已件化** `R14E_LINEAGE_SIX_CONDITION.json`：现行协议四件（R14F=E 前基线 / R14E 首跑 / V9 / V10）F 恒为 5/5/5（5/13）且全层零错放；R12A/R13A 属**旧协议**件（E 1/13、F 0/13–1/13），差异源于协议，不得同列比较声称退化或进步。扰动审计的**实际件**是 `R14F_PERTURB_RELEASE_AUDIT.json`（`f1` 脚本忽略 `--out`、固定写该文件；此处此前写的 `R14E_PERTURB_RELEASE_AUDIT_V5.json` 并不存在，属**引用名错误**，已更正）：wrong_grid_releasable **[]**、wrong_accept_pert **[]**、contract **15/15**、perturb_loc 23/30——复验以 git HEAD 快照比对后**原样还原**，历史件未被本轮改动。汇总证据 `R14E_HEAD_REVERIFY.json`（`drift []`、`llm_calls_used 0`）。 |
 | G 小批 HTTP | ⛔ **门停，等人工批准** | 见下 |
 | H KB 审计 | ✅ | `R14H_KB_CHANNEL_AUDIT.json`（插桩通道证据 + 五态 + 4 卡归因 + 勘误附录） |
@@ -119,11 +119,24 @@ G0 也**如实暴露了预算的脆弱面**（C1d）：计划 5 页 + 1 次余�
 4. tight 页的诚实边界请确认：证据已完整（3 份真裁剪）但**标签不可验证
    → 不释放**。若人工认为"行序标签 + 无字母证据"应可进入释放候选，
    需要的是**新规则**而非放松现有 label-association 门（后者属禁止项）。
-5. 新排版回归暴露的**排版覆盖缺口**请裁决是否纳入 R14 范围：4 张 tight
-   变体（grid-10/overlay-13/scale-09/trans-07）消费 0 单元、如实不释放。
-   现状是"安全地不产出证据"，不是错放；若要覆盖它们，需要新的排版规则
-   （放松现有门将触碰禁止项），建议留待人工定优先级而**不是**在本轮内
-   自行加规则。
+5. 新排版回归暴露的**排版覆盖缺口**请裁决是否纳入 R14 范围。
+   **先更正我自己的口径错误**：此前写"4 张 tight 变体消费 0 单元"是
+   **过强**表述——`R14E_NEWLAYOUT_REGRESSION_V2` 把"证据链单元数"标成了
+   "消费单元"。V3 已分列两个量（其余数字一字未变），真实构成是
+   **2 页确实 0 份裁剪（scale-09、trans-07）+ 2 页有 4 份裁剪落盘但该次
+   运行随后在题干侧弃权、证据链为空（grid-10、overlay-13）**；零错放不变。
+   逐页成因见 `R14E_TIGHT_GAP_DIAGNOSIS.md`（零 API、不调阈值、不加规则）：
+   · **A 类**（scale-09--tight）三选项**故意**尺寸悬殊（ink 378/38/168），
+     "宽高/墨一致"正则性谓词**按设计**必须拒绝——放松它就是拆防假格阵的门；
+   · **B 类**（trans-07--tight）真图形本就是 8px 横/竖条（实心度 1.0），
+     `min(h,w)=8 < MIN_CELL_PX=10` 不过；锚点路径有 tight 内容基（最小边
+     4px）**但无字母版式走不到它**——这是**规则不对称**，需新规则而非调阈值，
+     且该页节距 46/88 不等距，第二道阻碍独立存在；
+   · **C 类**（grid-10 / overlay-13--tight）末带是**混合内容**（5 段 vs 声明 4；
+     7 段 vs 4），落盘裁剪里含并图格（ink 296 / 348）与劈图格——页面像素
+     **不含**"哪几段才是选项"的信息，属**不可安全恢复**，不是可修缺陷。
+   建议：留待人工定优先级；本轮**没有**自行加规则，也**未**动
+   tol=0.15 / margin_min=0.05 / MIN_CELL_PX=10。
 6. 若批准 G：还须给出**模型名**。本地配置 `vision_model=null` 且无 key，
    manifest 的 `model_lock.status = UNRESOLVED_MUST_BE_CONFIRMED_BY_HUMAN`；
    发批入口在模型名未锁定时**拒绝发起**（G0 C9 已实跑验证），脚本不会
