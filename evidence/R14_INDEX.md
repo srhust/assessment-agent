@@ -2,7 +2,7 @@
 
 注：本轮**改了** STOPGATE / DELIVERABLES / NEWLAYOUT_REGRESSION 三份文档的措辞，也**重跑**了回归脚本（产物字节逐字一致），因此下表 commit 列是**入库时点**、与工作区未提交内容不同属**已知且如实**，不是漏记。
 
-HEAD `a5d9a6b4cd25a81e2b7bc32f2dedf5c34b091f97` · 件数 **56** · 自检失败 **0** 项 · 真实请求 **0**
+HEAD `b2b8154f5cea1dda39f58916dd6988ced8391a59` · 件数 **56** · 自检失败 **0** 项 · 真实请求 **0**
 
 ## 当前件（可复现性 = 是否登记生产脚本）
 
@@ -13,7 +13,7 @@ HEAD `a5d9a6b4cd25a81e2b7bc32f2dedf5c34b091f97` · 件数 **56** · 自检失败
 | `R14_CLAIM_AUDIT.json` | 交付件一致性审计（含审计器自证） | e2e_r14_claim_audit.py | aa81b50 | acc4c1d | `afee54087687` |
 | `R14_CLAIM_AUDIT.md` | 交付件一致性审计说明（含审计器自证） | **无** | aa81b50 | bf49734 | `030a7557e10e` |
 | `R14_PROGRESS_STOPGATE.md` | 人工评审入口（本轮闸门文档） | d9_r14_stage_g_manifest.py, e2e_r14_stage_g_batc | 5ab91dd | acc4c1d | `92351d747c89` |
-| `R14_STAGE_E_DELIVERABLES.md` | Stage E 十项交付正文 | **无** | de14d1e | acc4c1d | `8971a90d23c8` |
+| `R14_STAGE_E_DELIVERABLES.md` | Stage E 十项交付正文 | **无** | de14d1e | b2b8154 | `8971a90d23c8` |
 | `R14_VERIFICATION_BUNDLE.json` | 一键复现 bundle（18 步离线验证） | r14_verify_all.py | f9a2fc8 | b93a72e | `8ea989567315` |
 | `R14C_PITCH_ABLATION.json` | pitch 双轴消融（因果上限依据） | c2_r14_pitch_ablation.py | 59a244f | 59a244f | `df83fb21b136` |
 | `R14C_PITCH_ABLATION_HEAD_DELTA.json` | 因果实验在现行 HEAD 的复现差异 | e2f_r14_causal_delta.py | f118cf9 | b93a72e | `041628a24ccc` |

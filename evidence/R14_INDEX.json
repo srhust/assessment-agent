@@ -1,5 +1,55 @@
 {
- "generated_at_head": "a5d9a6b4cd25a81e2b7bc32f2dedf5c34b091f97",
+ "run_mark": "c823c0d1cc3d",
+ "A1b_selftest": {
+  "probe": [
+   "R14_VERIFICATION_BUNDLE.json",
+   "R14E_RERUN_SEMANTICS.json"
+  ],
+  "detected": [
+   "R14_VERIFICATION_BUNDLE.json",
+   "R14E_RERUN_SEMANTICS.json"
+  ],
+  "negative_control": {
+   "artifact": "R14G_HISTORICAL_BYTES_SELFTEST.json",
+   "must_not_be_producer": true,
+   "out_arg_hit": [],
+   "same_line_write_hit": false
+  },
+  "out_form_hits": {
+   "R14_VERIFICATION_BUNDLE.json": [],
+   "R14E_RERUN_SEMANTICS.json": []
+  },
+  "probe_status": {
+   "R14_VERIFICATION_BUNDLE.json": "current",
+   "R14E_RERUN_SEMANTICS.json": "current",
+   "R14_INDEX.json": "self"
+  },
+  "note": "故意把**确有写出语句**的**非自指**件说成人工撰写，检测必须命中行号；命中为空说明反证空转"
+ },
+ "hand_written_declared": [
+  "R14E_NEWLAYOUT_REGRESSION.md",
+  "R14E_TIGHT_GAP_DIAGNOSIS.md",
+  "R14G0_READINESS.md",
+  "R14G_HISTORICAL_BYTES.md",
+  "R14_CLAIM_AUDIT.md",
+  "R14_PROGRESS_STOPGATE.md",
+  "R14_STAGE_E_DELIVERABLES.md"
+ ],
+ "deliverables_required": [
+  "R14_STAGE_E_DELIVERABLES.md",
+  "R14_PROGRESS_STOPGATE.md",
+  "R14_INDEX.md",
+  "R14_INDEX.json",
+  "R14_VERIFICATION_BUNDLE.json",
+  "R14G_PLAN.json",
+  "R14G0_GATE_READINESS_V5.json",
+  "R14G_HISTORICAL_BYTES.md",
+  "R14E_RERUN_SEMANTICS.json",
+  "R14_CLAIM_AUDIT.json",
+  "R14E_ATTRIBUTION_SELFTEST.json",
+  "R14E_ARTIFACT_ATTRIBUTION.json"
+ ],
+ "generated_at_head": "b2b8154f5cea1dda39f58916dd6988ced8391a59",
  "n_artifacts": 56,
  "by_status": {
   "current": [
@@ -104,9 +154,9 @@
   },
   {
    "artifact": "R14_INDEX.json",
-   "bytes": 42172,
-   "sha256": "2a9f894aefd5e7f61c457b37f890e7d9ffac2e46c03d0124d713e4aabef109a1",
-   "sha_short": "2a9f894aefd5",
+   "bytes": 43586,
+   "sha256": "9c71d12179ae5342a03a541870a407b3e4c98b9def367fc3a26c62a1d6975a5a",
+   "sha_short": "9c71d12179ae",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -121,13 +171,13 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "b93a72e"
+   "commit_last_touched": "b2b8154"
   },
   {
    "artifact": "R14_INDEX.md",
    "bytes": 9187,
-   "sha256": "4b011a9db486682006f2eb6dcda834c2249b8abe1be0178ed2156a1f9deafe13",
-   "sha_short": "4b011a9db486",
+   "sha256": "97425be5610194dad31bd6fd37d3403a75649901dfd5b5ca877cd58953b08037",
+   "sha_short": "97425be56101",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -140,7 +190,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "b93a72e"
+   "commit_last_touched": "b2b8154"
   },
   {
    "artifact": "R14_PROGRESS_STOPGATE.md",
@@ -178,7 +228,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "de14d1e",
-   "commit_last_touched": "acc4c1d"
+   "commit_last_touched": "b2b8154"
   },
   {
    "artifact": "R14_VERIFICATION_BUNDLE.json",

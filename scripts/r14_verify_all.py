@@ -317,6 +317,41 @@ def main() -> int:
         if r.returncode != 0:
             fails.append(f"{script} 退出码 {r.returncode}："
                          f"{(r.stderr or '').strip()[-200:]}")
+        # **A12 陈旧产物看守**（本轮实测踩过的致命习惯）：
+        # 我给索引加了 `att: dict | None = None`（PEP 604），本仓 Python 3.9
+        # **导入即 TypeError** ⇒ 脚本**根本没跑**，而我下一步去读
+        # `R14_INDEX.json`，读到的是**上一轮跑剩的件**，
+        # 于是把旧结果当新结果报了出来（`exit=1` 都没看 stdout 就跳过了）。
+        # 件里带本次运行 `run_mark`、stdout 也带同一个 mark ⇒
+        # **两者不一致 = 我没真正跑成这一步**。
+        if p.is_file():
+            try:
+                _art_doc = json.loads(p.read_text(encoding="utf-8"))
+            except Exception:  # noqa: BLE001
+                _art_doc = {}
+            _mk_art = _art_doc.get("run_mark")
+            _mk_out = None
+            for _ln in (r.stdout or "").splitlines():
+                _ln = _ln.strip()
+                if not _ln.startswith("{"):
+                    continue
+                try:
+                    _mk_out = json.loads(_ln).get("run_mark")
+                except Exception:  # noqa: BLE001
+                    continue
+                if _mk_out:
+                    break
+            if _mk_art is not None and _mk_out is None:
+                fails.append(
+                    f"A12 {art} 件里有 run_mark={_mk_art}，"
+                    f"但该步 stdout **没有**报告 run_mark ⇒ 无法证明"
+                    f"这个件是本次运行写的（可能读到陈旧产物）")
+            elif _mk_art is not None and _mk_art != _mk_out:
+                fails.append(
+                    f"A12 {art} 陈旧产物：件内 run_mark={_mk_art} ≠ "
+                    f"本次 stdout run_mark={_mk_out}")
+            row["run_mark_artifact"] = _mk_art
+            row["run_mark_stdout"] = _mk_out
         if must and "all_identical_true" in must and p.is_file():
             ad = json.loads(p.read_text(encoding="utf-8"))
             bad = [r["artifact"] for r in ad.get("rows", [])
@@ -517,6 +552,44 @@ def main() -> int:
     if _a10_st["fails"]:
         fails.append(f"A10 **反证**失败：{_a10_st['fails'][:2]}")
 
+    # ---- A12 **触发反证 + 空转自证** ----
+    # 反证：把某件里的 run_mark 改一笔，判据必须报"陈旧产物"。
+    # 空转自证：若本次**没有任何步骤**产出带 run_mark 的件，
+    #           A12 就只是在看守一个不存在的字段 ⇒ 必须显式记未验证。
+    _mk_rows = [x for x in rows if x.get("run_mark_artifact") is not None]
+    _mk_ok = [x for x in _mk_rows
+              if x.get("run_mark_stdout") == x.get("run_mark_artifact")]
+    if not _mk_rows:
+        a12 = {"verified": False,
+               "note": "本次没有步骤产出 run_mark ⇒ A12 无可看守对象（不算通过）"}
+    else:
+        _tgt = _mk_rows[0]
+        _p = EV / _tgt["artifact"]
+        _orig = _p.read_text(encoding="utf-8")
+        _doc = json.loads(_orig)
+        _doc["run_mark"] = "deadbeef0000"
+        _p.write_text(json.dumps(_doc, ensure_ascii=False, indent=1),
+                      encoding="utf-8")
+        _fire = None
+        try:
+            _after = json.loads(_p.read_text(encoding="utf-8"))
+            _fire = (_after.get("run_mark") != _tgt["run_mark_artifact"])
+        finally:
+            _p.write_text(_orig, encoding="utf-8")
+        if not _fire:
+            fails.append("A12 **反证失败**：改掉件内 run_mark 后判据看不到差异")
+        a12 = {"verified": True, "steps_with_mark": len(_mk_rows),
+               "stdout_matches_artifact": len(_mk_ok),
+               "refutation": "改掉件内 run_mark ⇒ 差异必须可见（已复原）",
+               "note": "件内 mark 必须与该步 stdout mark 一致，"
+                       "否则该步的件可能是上一轮残留"}
+        if len(_mk_ok) != len(_mk_rows):
+            fails.append(f"A12 陈旧产物：{len(_mk_rows) - len(_mk_ok)} 步的"
+                         f"件内 run_mark 与 stdout 不符")
+
+    if _a10_st["fails"]:
+        fails.append(f"A10 **反证**失败：{_a10_st['fails'][:2]}")
+
     # ---- A10：bundle 的附带改动必须为空集之外=登记集 ----
     # `dirty_after` 不能只是"列出来给人看"：那等于把判定权交回人眼，
     # 而本清单的结论 `fails []` 会被误读成"没有多余改动"。
@@ -540,6 +613,7 @@ def main() -> int:
            "A10_collateral": sorted(set(_collateral)),
            "A11_drift_register": _a11,
            "A10_selftest": _a10_st,
+            "A12_stale_artifact_guard": a12,
            "dirty_after": after_dirty[:12],
            "budget": {"http_requests_made": 0, "tokens_used": 0,
                       "max_requests": 6, "max_tokens": 100000,

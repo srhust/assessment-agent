@@ -161,6 +161,172 @@ def _bundle_steps():
         return {}
 
 
+# **人工撰写**的交付文档：没有生产脚本是**正确**的，
+# 但必须逐件显式声明，且被**反向核验**（见 A1b）。
+HAND_WRITTEN = {
+    "R14_STAGE_E_DELIVERABLES.md", "R14_PROGRESS_STOPGATE.md",
+    "R14_CLAIM_AUDIT.md", "R14E_NEWLAYOUT_REGRESSION.md",
+    "R14E_TIGHT_GAP_DIAGNOSIS.md", "R14G0_READINESS.md",
+    "R14G_HISTORICAL_BYTES.md",
+    # **被我删掉的假豁免**（A1b 抓的）：
+    # `R14C_PITCH_ABLATION_HEAD_DELTA.md` 确实由 `e2f_r14_causal_delta.py`
+    # 现场写出 ⇒ 声明"人工撰写"是**假的**。
+}
+
+# 只有这两档才算"真的有生产者"；`mention_only` 是**读到/引用**该件名，
+# 不是写它 —— 用它当"有生产者"会把人工撰写的件误判成可复现。
+_REAL_PRODUCER_TIERS = ("attribution_verified", "declared_writer")
+
+# 交付材料清单（**代码内常量**，索引据此核对；
+# 本轮实测：我在会话里手敲 10 个名字核对，把档位为 `self` 的
+# `R14_INDEX.md` 误报成"缺件"——人工清单既会漏也会错报。）
+DELIVERABLES = [
+    "R14_STAGE_E_DELIVERABLES.md", "R14_PROGRESS_STOPGATE.md",
+    "R14_INDEX.md", "R14_INDEX.json", "R14_VERIFICATION_BUNDLE.json",
+    "R14G_PLAN.json", "R14G0_GATE_READINESS_V5.json",
+    "R14G_HISTORICAL_BYTES.md", "R14E_RERUN_SEMANTICS.json",
+    "R14_CLAIM_AUDIT.json", "R14E_ATTRIBUTION_SELFTEST.json",
+    "R14E_ARTIFACT_ATTRIBUTION.json",
+]
+
+
+def check_deliverables(rows):
+    """每件交付材料必须**在册**且档位是 current/self，且可追溯生产者。"""
+    by = {r["artifact"]: r for r in rows}
+    out = []
+    for name in DELIVERABLES:
+        r = by.get(name)
+        if r is None:
+            out.append(f"D 交付材料**不在册**：{name}")
+        elif r["status"] not in ("current", "self"):
+            out.append(f"D 交付材料档位异常：{name} = {r['status']}")
+        elif not r["producer_scripts"] and name not in HAND_WRITTEN:
+            out.append(f"D 交付材料既无生产者、也不在人工撰写清单：{name}")
+    return out
+
+
+WRITE_STMT = re.compile(
+    r"(?:write_text|write_bytes|open\s*\([^)]*[wa])")
+
+
+def script_default_out(script: str):
+    """脚本的**默认输出件名**（`name = "X.json"` 紧跟 `--out` 处理）。
+    归属必须能被这个字面量**直接对上**，不能只信下游件的自述。"""
+    try:
+        t = (ROOT / "scripts" / script).read_text(encoding="utf-8",
+                                                  errors="ignore")
+    except OSError:
+        return None
+    m = re.search(r'^\s*name\s*=\s*"([^"]+\.json)"', t, re.M)
+    return m.group(1) if m else None
+
+
+def honors_out_flag(script: str) -> bool:
+    """脚本是否**真的**实现 `--out`（名字可由调用方给 ⇒ 才有资格
+    在"行为归属"档里当作者）。"""
+    try:
+        t = (ROOT / "scripts" / script).read_text(encoding="utf-8",
+                                                  errors="ignore")
+    except OSError:
+        return False
+    return '"--out"' in t or "'--out'" in t or "add_argument(\"--out\")" in t
+
+
+def behavioral_backing(artifact: str, script: str, att: dict) -> bool:
+    """行为归属：归属件把 `script` 列为该件的 `true_producers`，
+    **且**该脚本实现 `--out`。缺任一条都不算。"""
+    row = (att or {}).get(artifact) or {}
+    tp = [str(x).rsplit("/", 1)[-1] for x in (row.get("true_producers") or [])]
+    return script in tp and honors_out_flag(script)
+
+
+def attribution_is_backed(script: str, artifact: str,
+                          att=None,
+                          allow_behavioral: bool = True):
+    """归属证据：**两档任一**成立即算有作者，并返回是哪一档。
+
+    ① `literal`：默认输出名 / `--out` 实参 / 写出语句**字面**对得上；
+    ② `behavioral_replay`：归属件把该脚本列为 `true_producers`，
+       **且该脚本真的实现 `--out`**（本轮实测：`e2d_...v4.py` 的
+       `--out` 在 `:80`，件名由调用方传入；归属器是**跑一遍比形状**
+       得出结论的，不是抄文件名的 ⇒ 只认字面会把行为核验误判成证言）。
+    """
+    if script_default_out(script) == artifact:
+        return True, "literal_default_out"
+    if any(script == n for n, _l in out_arg_producer(artifact)):
+        return True, "literal_out_arg"
+    if really_written_by(script, artifact):
+        return True, "literal_write_stmt"
+    if allow_behavioral and behavioral_backing(artifact, script, att or {}):
+        return True, "behavioral_replay"
+    return False, "none"
+
+
+def out_arg_producer(artifact: str):
+    """哪些脚本在**本仓库的调用点**里被以 `--out <artifact>` 形式使用。
+
+    本轮 A1b 反证实测出来的空档：真作者 `e2d_...v4.py` 源码里的默认名是
+    `..._V5.json`，被归属件 `..._V8.json` 这个名字**只出现在调用方**
+    （bundle 的 STEPS 字符串）⇒ 只看"同行字面量"会把它判成"没人写它"，
+    于是假的人工撰写声明可绕开反向核验。"""
+    hits = []
+    for p in sorted((ROOT / "scripts").glob("*.py")):
+        try:
+            t = p.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        for m in re.finditer(r"--out[ =" + "]" + re.escape(artifact), t):
+            hits.append((p.name, t[:m.start()].count("\n") + 1))
+    return hits
+
+
+def produced_by(script: str, artifact: str, row) -> bool:
+    """**两种生产形态任一**即算生产：同行写出语句，或 `--out` 实参。"""
+    if really_written_by(script, artifact):
+        return True
+    return any(script == n for n, _ln in out_arg_producer(artifact))
+
+
+def really_written_by(script: str, artifact: str):
+    """**默认输出名 == 被归属件** ⇒ 直接算命中（真作者最硬的证据）。
+
+    本轮实测：`R14E_REAL_PAGE_REPLAY_V8.json` 的真作者是
+    `e2_r14_optionband_replay.py`——它 `:72` 的默认名正是 V8、
+    `:76` 才 `write_text`，**名字与写出语句不同行**，
+    于是"同行字面量"判据看不见它，反而把
+    默认名是 `..._V5.json` 的 `e2d_...v4.py`（来自下游 CHECK 的自述）
+    当成了作者 ⇒ 归属与索引口径**都错了一层**。
+    """
+    if script_default_out(script) == artifact:
+        try:
+            lines = (ROOT / "scripts" / script).read_text(
+                encoding="utf-8", errors="ignore").splitlines()
+        except OSError:
+            return None
+        for i, ln in enumerate(lines, 1):
+            if re.search(r'^\s*name\s*=\s*"' + re.escape(artifact) + '"', ln):
+                return i
+        return None
+    try:
+        text = (ROOT / "scripts" / script).read_text(encoding="utf-8",
+                                                      errors="ignore")
+    except OSError:
+        return None
+    lines = text.splitlines()
+    for i, ln in enumerate(lines):
+        if artifact not in ln or not WRITE_STMT.search(ln):
+            continue
+        return i + 1
+    # 跨行写法：`json.dumps(...)` 与 `write_text` 分行
+    for i, ln in enumerate(lines):
+        if artifact not in ln:
+            continue
+        win = "\n".join(lines[max(0, i - 3):i + 4])
+        if WRITE_STMT.search(win):
+            return i + 1
+    return None
+
+
 def producer(name: str):
     """作者脚本 = 会**写出**该件的脚本。分两档，避免两个首版错误：
 
@@ -281,17 +447,119 @@ def main() -> int:
                 and r.get("reproducible")):
             fails.append(f"A5 {r['artifact']} 归属结论为不可复现，索引却登记"
                          f" reproducible=true（乐观误判，禁止）")
-        if r["status"] == "self":
-            continue                     # 自指件不入 A1/A3
-        if r["status"] == "current" and r["artifact"].endswith(".json") \
+        # **A1 口径修正**（本轮实测）：
+        # · `self` 曾被直接 continue ⇒ 索引自己的 `.md` 永不追溯生产者；
+        # · 旧判据只看 `.json` ⇒ 交付文档 `.md` 一律免检，
+        #   而"10 项材料"多数正是 `.md`。
+        # 现在 `current` 与 `self` 的 `.json`/`.md` **全量**要求
+        # "有生产者，或有明确的手写/自指说明"。
+        # **A1c 归属硬条件**（本轮 A1b 反证挖出来的）：
+        # `R14E_REAL_PAGE_REPLAY_V8.json` 挂着
+        # `attribution_verified / reproducible=True`，作者写的是
+        # `e2d_r14_production_replay_v4.py`——但那脚本的**默认输出名**是
+        # `..._V5.json`，也从不以 `--out` 写 V8；
+        # 归属来自**下游 CHECK 件的自述**（二手证言）。
+        # 真作者是 `e2_r14_optionband_replay.py`（默认名正是 V8）。
+        _att = _attribution()
+        if (r["status"] != "self"
+                and r.get("producer_tier") == "attribution_verified"
+                and r["producer_scripts"]
+                and not any(attribution_is_backed(
+                    x, r["artifact"], _att)[0]
+                    for x in r["producer_scripts"])):
+            _att = _attribution()
+            fails.append(
+                f"A1c {r['artifact']} 声称 attribution_verified，"
+                f"但生产者 {r['producer_scripts']} 中没有一个的"
+                f"默认输出名 / `--out` 实参 / 写出语句对得上该件"
+                f" ⇒ 归属是下游件的**自述**，不算作者")
+        if r["status"] in ("current", "self") \
+                and r["artifact"].endswith((".json", ".md")) \
                 and not r["producer_scripts"]:
-            fails.append(f"A1 当前件无生产脚本（不可复现）：{r['artifact']}")
+            if r["artifact"] not in HAND_WRITTEN:
+                fails.append(
+                    f"A1 在册件无生产脚本、也不在**人工撰写**清单里"
+                    f"⇒ 不可复现：{r['artifact']} [{r['status']}]")
+        elif r["artifact"] in HAND_WRITTEN and (
+                any(produced_by(x, r["artifact"], r)
+                    for x in (r["producer_scripts"] or []))
+                or out_arg_producer(r["artifact"])
+                # ↑ **`--out` 实参形态**：本轮 A1b 反证实测出的空档
+                or bool(r.get("written_via_out_override"))):
+            # **反向核验**：一旦真有脚本写出这件，声明立刻失效——
+            # 防 `hand_written` 变成新的"万能豁免"。
+            fails.append(
+                f"A1b {r['artifact']} 声明人工撰写，却有脚本写它 "
+                f"{r['producer_scripts']} ⇒ 要么删声明，要么承认它可复现")
         if r["written_via_out_override"]:
             unregistered.append(
                 f"{r['artifact']} ← {', '.join(r['producer_scripts'])}"
                 f"（需 --out 复现）")
         if r["artifact"].endswith(".json") and sha(EV / r["artifact"]) != r["sha256"]:
             fails.append(f"A3 哈希不稳定：{r['artifact']}")
+    # ---- A1b **反证**：谎报一件人工撰写，必须被抓 ----
+    # **定义顺序**也是本轮踩过的坑：我第一版在这里用了 `by_name_early`，
+    # 而它到下面才赋值 ⇒ 生成器推导式里报
+    # "free variable referenced before assignment"、索引整跑崩掉。
+    # 另外探针**不能**是 `self` 件（A1 对 self 直接跳过，
+    # 拿它当探针会得到"探针存在但检测永不触发"的假绿）。
+    by_name_early = {r["artifact"] for r in rows}
+    # 正向探针**必须真有可核对的生产点**；上一轮我挑了
+    # `R14E_REAL_PAGE_REPLAY_V8.json`，反证当场揭穿它**没有任何生产点**
+    # （bundle 那一步写的是 `..._V8_RERUN.json`，全仓 `--out` 也搜不到 V8）
+    # ⇒ 挑错探针会让"检测器空转"与"件本身不可复现"两件事**混成一条**。
+    _probe_map = {"R14_VERIFICATION_BUNDLE.json": "r14_verify_all.py",
+                  "R14E_RERUN_SEMANTICS.json": "r14_semantic_repro.py",
+                  "R14_INDEX.json": "e2e_r14_index.py"}
+    _liar = [a for a in _probe_map
+             if a in by_name_early
+             and {r["artifact"]: r for r in rows}[a]["status"] != "self"]
+    _probe_status = {a: {r["artifact"]: r for r in rows}[a]["status"]
+                     for a in _probe_map if a in by_name_early}
+    if _liar:
+        _by = {r["artifact"]: r for r in rows}
+        _bad = [a for a in _liar
+                if produced_by(_probe_map[a], a, _by[a])
+                or bool(_by[a].get("written_via_out_override"))]
+        # **负例自证**：只被"提及"（列进 `R14G_*` 前缀数组）的件
+        # 必须判**非生产**，否则这条判据就退化成"提到过就算作者"
+        _neg = "R14G_HISTORICAL_BYTES_SELFTEST.json"
+        _neg_hit = [n for n, _l in out_arg_producer(_neg)
+                    if n == "e2e_r14_stage_g_readiness.py"]
+        if _neg_hit:
+            fails.append(f"A1b 负例失守：`{_neg}` 只是被 readiness 脚本"
+                         f"**提及**（前缀数组），却被判成生产者 ⇒ "
+                         f"mention ≠ production 的口径又被丢了")
+        _neg_produced = bool(really_written_by(
+            "e2e_r14_stage_g_readiness.py", _neg))
+        if _neg_produced:
+            fails.append(f"A1b 负例失守：同行字面量判据说 readiness 写出了 "
+                         f"{_neg}")
+        _miss = [a for a in _liar if a not in _bad]
+        if len(_bad) != len(_liar):
+            fails.append(
+                f"A1b **反证不完整**：探针 {len(_liar)} 个只判出 "
+                f"{len(_bad)} 个（漏 {_miss}）⇒ 写出语句检测对某种生产形态"
+                f"是空转，人工撰写声明可绕开反向核验")
+        if not _bad:
+            fails.append("A1b **反证失效**：写出语句检测对确有生产者的件"
+                         "判不出命中 ⇒ 该看守是空转")
+        out_a1b = {"probe": _liar, "detected": _bad,
+                   "negative_control": {
+                       "artifact": _neg,
+                       "must_not_be_producer": True,
+                       "out_arg_hit": _neg_hit,
+                       "same_line_write_hit": _neg_produced},
+                   "out_form_hits": {a: out_arg_producer(a) for a in _liar},
+                   "probe_status": _probe_status,
+                   "note": "故意把**确有写出语句**的**非自指**件说成人工撰写，"
+                           "检测必须命中行号；命中为空说明反证空转"}
+    else:
+        out_a1b = {"probe": [], "detected": [],
+                   "note": "无可用的谎报探针件 ⇒ 反证未执行（不算通过）",
+                   "not_verified": True}
+    fails += check_deliverables(rows)
+    by_name_early = {r["artifact"] for r in rows}
     by_name = {r["artifact"]: r for r in rows}
     for d, t in docs.items():
         for m in set(re.findall(r"R14[A-Z0-9_\-]*\.json", t)):
@@ -305,7 +573,15 @@ def main() -> int:
                             "混同", "首跑", "前**基线", "保留")):
                         fails.append(f"A2 {d}:{ln} 把 {r['status']} 件 {m} "
                                      f"当作当前引用")
-    out = {"generated_at_head": subprocess.run(
+    # **本次运行的指纹**：脚本崩在半路时，磁盘上留下的是**上一轮**的件；
+    # 只看件会把旧结果当新结果（本轮实测踩过，见 A12）。
+    import uuid as _uuid
+    run_mark = _uuid.uuid4().hex[:12]
+    out = {"run_mark": run_mark,
+           "A1b_selftest": out_a1b,
+           "hand_written_declared": sorted(HAND_WRITTEN),
+           "deliverables_required": DELIVERABLES,
+           "generated_at_head": subprocess.run(
                 ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
                 text=True).stdout.strip(),
            "n_artifacts": len(rows),
@@ -366,7 +642,8 @@ f"{r['commit_added'] or '未入库'} | "
     if fails:
         lines += ["## 自检失败", ""] + [f"- {f}" for f in fails]
     (EV / "R14_INDEX.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(json.dumps({"n_artifacts": out["n_artifacts"],
+    print(json.dumps({"run_mark": run_mark,
+                      "n_artifacts": out["n_artifacts"],
                       "by_status_count": {k: len(v) for k, v in
                                           out["by_status"].items()},
                       "self_checks_failed": fails},
