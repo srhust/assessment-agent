@@ -263,6 +263,70 @@ subprocess.run(["python", "scripts/e2e_r14_index.py"])
 """
 
 
+COLLATERAL_PROBE = "data/_r14_attr_selftest_probe.txt"
+
+# 一个**合法通过全部前置闸门**（有 --out、无网络标记、非编排器）但
+# **越界写 data/** 的假脚本，用来证明 worktree_collateral 检测器会真的触发。
+SELFTEST_COLLATERAL = (
+    "import pathlib, sys\n"
+    'name = sys.argv[sys.argv.index("--out") + 1]\n'
+    'pathlib.Path("evidence", name).write_text(\'{"ok": 1}\', '
+    'encoding="utf-8")\n'
+    "# 故意越界：写 data/ 下探针（归属本该零附带改动）\n"
+    'pathlib.Path("data/_r14_attr_selftest_probe.txt").write_text(\n'
+    '    "collateral probe", encoding="utf-8")\n'
+)
+
+
+def _restore_probe() -> bool:
+    q = ROOT / COLLATERAL_PROBE
+    if q.is_file():
+        q.unlink()
+    return not q.exists()
+
+
+def selftest_collateral_detector(artifact: str = "R14E_REAL_PAGE_REPLAY_V8.json"):
+    """**测检测器本身**：注入"闸门合法但会写 data/"的脚本，断言
+    safety 变成 SAFETY_VIOLATION_worktree_collateral 且**点名**探针。
+    （一个从未触发过的安全检查等于没有检查——本轮的纪律就是这条。）"""
+    fails = []
+    fake = "zfake_collateral.py"
+    probe = ROOT / COLLATERAL_PROBE
+    _restore_probe()
+    (ROOT / "scripts" / fake).write_text(SELFTEST_COLLATERAL, encoding="utf-8")
+    try:
+        reason = unsafe_to_run(fake)
+        if reason is not None:
+            fails.append(f"前置闸门**误杀**合法脚本：{reason}")
+        res = attribute(artifact, only=[fake])
+        ran = {e.get("script", "").rsplit("/", 1)[-1]
+               for e in res["evidence"] if e.get("script")}
+        if fake not in ran:
+            fails.append("假脚本未被执行，检测器无从验证")
+        if not probe.is_file():
+            fails.append("探针未出现：没有真的越界，检测器无法判断")
+        if res.get("safety") != "SAFETY_VIOLATION_worktree_collateral":
+            fails.append("检测器**未触发**：safety="
+                         f"{res.get('safety')!r}")
+        if COLLATERAL_PROBE not in " ".join(res.get("worktree_collateral", [])):
+            fails.append("检测器没点名探针："
+                         f"{res.get('worktree_collateral')}")
+        restored = _restore_probe()
+        if not restored:
+            fails.append("探针未复原")
+        return {"fails": fails,
+                "safety_seen": res.get("safety"),
+                "collateral_seen": res.get("worktree_collateral"),
+                "restored": restored,
+                "note": "本自检**故意**制造一次附带改动再复原，"
+                        "证明 worktree_collateral 不是摆设"}
+    finally:
+        q = ROOT / "scripts" / fake
+        if q.is_file():
+            q.unlink()
+        _restore_probe()
+
+
 def selftest(artifact: str = "R14E_REAL_PAGE_REPLAY_V8.json"):
     """注入两类**必须被拒**的假脚本，断言它们进了拒跑清单且**没被执行**。
 
@@ -316,6 +380,13 @@ def main() -> int:
     which = args or ["R14E_REAL_PAGE_REPLAY_V8.json"]
     if "--selftest" in sys.argv:
         st = selftest(which[0])
+        st2 = selftest_collateral_detector(which[0])
+        st = {"fails": st["fails"] + st2["fails"],
+              "refused": st["refused"], "executed": st["executed"],
+              "safety": st["safety"], "budget_after": st["budget_after"],
+              "collateral_detector": {k: st2[k] for k in
+                                      ("safety_seen", "collateral_seen",
+                                       "restored", "note")}}
         (EV / "R14E_ATTRIBUTION_SELFTEST.json").write_text(
             json.dumps({"purpose": "安全闸门自检：注入必拒脚本，断言被拒且未执行"
                                    "（无自检的检查不算检查）",

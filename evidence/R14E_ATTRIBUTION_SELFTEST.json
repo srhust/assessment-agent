@@ -26,5 +26,13 @@
  "budget_after": {
   "requests": 0,
   "tokens": 0
+ },
+ "collateral_detector": {
+  "safety_seen": "SAFETY_VIOLATION_worktree_collateral",
+  "collateral_seen": [
+   "data/_r14_attr_selftest_probe.txt"
+  ],
+  "restored": true,
+  "note": "本自检**故意**制造一次附带改动再复原，证明 worktree_collateral 不是摆设"
  }
 }

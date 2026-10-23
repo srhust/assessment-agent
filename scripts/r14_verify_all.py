@@ -277,6 +277,12 @@ def main() -> int:
         sd = json.loads(sp.read_text(encoding="utf-8"))
         if sd.get("fails"):
             fails.append(f"A6 安全闸门自检未过：{sd['fails'][:3]}")
+        cd = sd.get("collateral_detector") or {}
+        if cd.get("safety_seen") != "SAFETY_VIOLATION_worktree_collateral":
+            fails.append(f"A6 附带改动检测器**自检未触发**："
+                         f"{cd.get('safety_seen')!r}（没触发过的安全检查等于没检查）")
+        if not cd.get("restored"):
+            fails.append("A6 检测器自检未复原 data/ 探针")
         for inj in ("zfake_net.py", "zfake_orch.py"):
             if inj not in " ".join(sd.get("refused", [])):
                 fails.append(f"A6 自检未拒跑注入样本 {inj}")
