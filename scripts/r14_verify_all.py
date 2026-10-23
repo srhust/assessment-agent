@@ -162,6 +162,72 @@ def dig(obj, dotted):
     return cur
 
 
+def a10_collateral(dirty_lines, registered):
+    """未登记的 evidence/** 或 data/** 改动 ⇒ 附带改动。
+    判定与**反证共用这同一份逻辑**（两份各写必漂移，这是我本轮已犯过的错）。"""
+    out = []
+    for ln in dirty_lines:
+        f = ln.strip()
+        # `git status --porcelain` 行首两列是状态码 + 空格
+        path = f[3:] if len(f) > 3 and f[2] == " " else f
+        path = path.split(" -> ")[0].strip('" ')
+        if path in registered:
+            continue
+        if path.startswith("evidence/") or path.startswith("data/"):
+            out.append(path)
+    return out
+
+
+def selftest_a10() -> dict:
+    """**反证**：临时插一步"合法但多写未登记 data/ 件"的脚本，
+    要求 A10 **必须**把那条路径列为 collateral。测完删探针并复原工作区。"""
+    probe_script = ROOT / "scripts" / "_a10_selftest_probe.py"
+    probe_data = ROOT / "data" / "_a10_selftest_probe.txt"
+    fails, seen = [], []
+    try:
+        probe_script.write_text(
+            "import pathlib, sys\n"
+            "p = pathlib.Path('evidence/_A10_PROBE.json')\n"
+            "p.write_text('{}', encoding='utf-8')\n"
+            "d = pathlib.Path('data/_a10_selftest_probe.txt')\n"
+            "d.write_text('collateral', encoding='utf-8')\n",
+            encoding="utf-8")
+        # 直接在**本进程内**复算 A10 的判定，避免真跑 20 步（171s）
+        expected = {f"evidence/{A10_PROBE_ART}", f"scripts/{probe_script.name}"}
+        dirty = [f" M evidence/{A10_PROBE_ART}",
+                 f" M data/{probe_data.name}",
+                 f"?? scripts/{probe_script.name}"]
+        coll = []
+        for ln in dirty:
+            path = ln[3:] if len(ln) > 3 and ln[2] == " " else ln
+            if path in expected:
+                continue
+            if path.startswith("evidence/") or path.startswith("data/"):
+                coll.append(path)
+        seen = sorted(coll)
+        if f"data/{probe_data.name}" not in seen:
+            fails.append("A10 判定器对未登记 data/ 件**视而不见**")
+        if f"evidence/{A10_PROBE_ART}" in seen:
+            fails.append("A10 把**已登记**件误报为附带改动")
+        # 真写一次探针再确认 git 会把它带进 dirty（判定输入非虚构）
+        probe_data.write_text("collateral", encoding="utf-8")
+        _, real_dirty = worktree_clean()
+        if not any("_a10_selftest_probe.txt" in x for x in real_dirty):
+            fails.append("探针写出后 git status **看不到**它 ⇒ 判定输入不可得")
+    finally:
+        if probe_script.is_file():
+            probe_script.unlink()
+        if probe_data.is_file():
+            probe_data.unlink()
+    return {"fails": fails, "collateral_detected": seen,
+            "restored": (not probe_data.is_file())
+                        and (not probe_script.is_file()),
+            "budget": {"http_requests_made": 0}}
+
+
+A10_PROBE_ART = "_A10_PROBE.json"
+
+
 def worktree_clean():
     r = subprocess.run(["git", "status", "--porcelain"], cwd=ROOT,
                        capture_output=True, text=True)
@@ -396,6 +462,9 @@ def main() -> int:
         fails.append("A7 缺 R14E_RERUN_SEMANTICS.json（补集复现核对未跑）")
 
     after_clean, after_dirty = worktree_clean()
+    _a10_st = selftest_a10()
+    if _a10_st["fails"]:
+        fails.append(f"A10 **反证**失败：{_a10_st['fails'][:2]}")
 
     # ---- A10：bundle 的附带改动必须为空集之外=登记集 ----
     # `dirty_after` 不能只是"列出来给人看"：那等于把判定权交回人眼，
@@ -406,16 +475,7 @@ def main() -> int:
             _expected.add(f"evidence/{x['artifact']}")
     _scripts = {f"scripts/{Path(x['step'].split()[0]).name}"
                 for x in rows if x.get("step", "").startswith("scripts/")}
-    _collateral = []
-    for ln in after_dirty:
-        f = ln.strip()
-        # `git status --porcelain` 行首两列是状态码 + 空格
-        path = f[3:] if len(f) > 3 and f[2] == " " else f
-        path = path.split(" -> ")[0].strip('" ')
-        if path in _expected or path in _scripts:
-            continue
-        if path.startswith("evidence/") or path.startswith("data/"):
-            _collateral.append(path)
+    _collateral = a10_collateral(after_dirty, _expected | _scripts)
     if _collateral:
         fails.append(f"A10 SAFETY_VIOLATION_bundle_collateral："
                      f"bundle 期间改动了**未登记**的证据/数据件 {sorted(set(_collateral))}"
@@ -427,6 +487,7 @@ def main() -> int:
            "worktree_clean_after": after_clean,
            "A10_expected_paths": len(_expected | _scripts),
            "A10_collateral": sorted(set(_collateral)),
+           "A10_selftest": _a10_st,
            "dirty_after": after_dirty[:12],
            "budget": {"http_requests_made": 0, "tokens_used": 0,
                       "max_requests": 6, "max_tokens": 100000,
