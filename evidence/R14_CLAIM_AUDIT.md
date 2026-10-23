@@ -15,7 +15,7 @@
 
 所以我需要一台**机器**替我盯着文档与件是否一致，而不是靠下一轮再人肉发现。
 
-## 六类检查
+## 七类检查
 
 | 项 | 内容 | 本轮实测 |
 |---|---|---|
@@ -25,10 +25,16 @@
 | C4 | 三层不混同 | 件内 `candidates_solved / accepted / released` 三独立键；文档无"候选=释放"式代称 |
 | C5 | 禁止措辞与因果上限 | 无"真实截图突破 / blind eval READY / 已批准 G"等；因果表述不高于"尺度协议充分、pitch 非因果必需" |
 | C6 | G 未执行 | `evidence/R14G_RESULT*.json` **不存在**；PLAN `spent_so_far` 仍 `{requests: 0, tokens: 0}` |
+| C7 | 跨文档**结论一致性**（本轮新增） | 件的 `REPRODUCIBLE_FROM_HEAD / NOT_REPRODUCIBLE_FROM_HEAD / VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING` 以 `R14E_ARTIFACT_ATTRIBUTION.json` 为**唯一真值**；任何句子同时出现"件族名 + 状态词"就必须与真值一致，除非该句处于**勘误语境**（±3 行内出现 撤回/勘误/上一版本/误判/retract/不得/禁止）。本轮实测：DELIVERABLES 的勘误行被正确豁免并登记 `C7_erratum_context`（该行同句含两个状态词，因为它在陈述"旧结论 → 新结论"）|
+
+**为什么需要 C7**：上一轮我撤回"V8 不可复现"这个错误结论时**只改了 STOPGATE**，
+DELIVERABLES 里仍留着已撤回的说法。C1/C2/C5 都抓不到它：引用的件**存在**、
+不是被取代件、也不是禁用措辞。若人工只看 DELIVERABLES，会读到与真值相反的结论。
+C7 把"结论必须有唯一真值来源"变成机器检查，并在自测里**注入同类违规**证明它会报。
 
 ## 审计器**自身**的有效性自证（关键）
 
-一个恒真的检查器比没有检查器更糟。审计运行时会先在**临时副本**里注入 5 类
+一个恒真的检查器比没有检查器更糟。审计运行时会先在**临时副本**里注入 6 类
 违规，要求子进程**必须报出对应类别**才算通过（父进程检查子进程 JSON 输出的
 **失败项前缀**，而不是只看退出码）：
 
@@ -38,6 +44,7 @@ C2 被取代件当当前 → caught (C2 …)
 C3 抄录 17 ≠ 件内 16 → caught (C3 …)
 C5 "真实截图已突破" → caught (C5 …)
 C6 伪造 R14G_RESULT.json → caught (C6 …)
+C7 把已撤回的 NOT_REPRODUCIBLE_FROM_HEAD 留在交付文档 → caught (C7 …)
 → all_injected_violations_caught: true
 ```
 

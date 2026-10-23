@@ -85,6 +85,9 @@ def selftest() -> tuple:
          "replace", None),
         ("C6 G 结果件存在（未获批准却执行）", "C6",
          "ghost_g_result", None),
+        ("C7 已撤回的可复现性结论留在交付文档里", "C7",
+         "append", "\n真实截图复放件 `R14E_REAL_PAGE_REPLAY_V8.json` 属 "
+         "NOT_REPRODUCIBLE_FROM_HEAD。\n"),
     ]
     results = []
     for label, expect_id, mode, payload in cases:
@@ -174,6 +177,46 @@ def run_checks(write_audit):
                                 NON_EXISTENT_CONTEXT)):
                         fails.append(f"C2 {d}:{line_no} 把被取代件 {name} "
                                      f"当作当前引用（该句无勘误语境）")
+
+    # ---------- C7 跨文档**结论一致性**（本轮新增，根修一个真实漏洞）----------
+    # 事故：我把"V8 NOT_REPRODUCIBLE_FROM_HEAD"写进了 STOPGATE **和**
+    # DELIVERABLES；撤回时只改了 STOPGATE，DELIVERABLES 里**仍留着已撤回的结论**。
+    # C1/C2/C5 都抓不到它——引用的是**存在的**件、不是被取代件、也不是禁用措辞。
+    # 规则：件的可复现性以 `R14E_ARTIFACT_ATTRIBUTION.json` 为唯一真值；
+    # 任何文档句子同时出现"件名（族）"与"某个状态词"，状态词必须与真值一致，
+    # 除非该句处于**勘误语境**（撤回/勘误/上一版本/retract 等）。
+    ATT = jload("R14E_ARTIFACT_ATTRIBUTION.json") or {}
+    statuses = {"REPRODUCIBLE_FROM_HEAD", "NOT_REPRODUCIBLE_FROM_HEAD",
+                "VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING"}
+    truth = {}
+    for x in ATT.get("results", []):
+        if x.get("artifact"):
+            truth[re.sub(r"_V\d+$", "", x["artifact"].rsplit(".", 1)[0])] = (
+                x["artifact"], x.get("reproducibility"))
+    notes["C7_attribution_covered"] = sorted(v[0] for v in truth.values())
+    ERRATA_C7 = ("撤回", "勘误", "上一版本", "误判", "retract", "formerly",
+                 "不得", "禁止", "NOT_REPRODUCIBLE 的件")
+    for fam, (aname, status) in truth.items():
+        if not status:
+            continue
+        for d, t in docs.items():
+            lines = t.splitlines()
+            for ln, line in enumerate(lines, 1):
+                if fam not in line:
+                    continue
+                seen = {st for st in statuses if st in line}
+                if not seen or seen == {status}:
+                    continue
+                window = " ".join(lines[max(0, ln - 4):ln + 3])
+                if any(cx in window for cx in ERRATA_C7):
+                    notes.setdefault("C7_erratum_context", []).append(
+                        {"doc": d, "line": ln, "artifact": aname,
+                         "asserted": sorted(seen), "truth": status})
+                    continue
+                fails.append(
+                    f"C7 {d}:{ln} 对 {aname} 断言 {sorted(seen)}，"
+                    f"但归属真值是 {status}（且该句不在勘误语境）——"
+                    f"已撤回的结论不得留在交付文档里")
 
     # ---------- C3 数字对账 ----------
     V3 = jload("R14E_NEWLAYOUT_REGRESSION_V3.json") or {}

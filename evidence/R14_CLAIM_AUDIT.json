@@ -8,7 +8,7 @@
  ],
  "fails": [],
  "notes": {
-  "C1_citations_checked": 47,
+  "C1_citations_checked": 48,
   "C1_missing_but_erratum_context": [
    {
     "doc": "R14G0_READINESS.md",
@@ -31,9 +31,24 @@
     "artifact": "R14E_PERTURB_RELEASE_AUDIT_V5.json",
     "lines": [
      54,
-     139
+     153
     ],
     "why": "该句本身声明此件不存在/被取代，属勘误语境"
+   }
+  ],
+  "C7_attribution_covered": [
+   "R14E_REAL_PAGE_REPLAY_V8.json"
+  ],
+  "C7_erratum_context": [
+   {
+    "doc": "R14_STAGE_E_DELIVERABLES.md",
+    "line": 99,
+    "artifact": "R14E_REAL_PAGE_REPLAY_V8.json",
+    "asserted": [
+     "NOT_REPRODUCIBLE_FROM_HEAD",
+     "REPRODUCIBLE_FROM_HEAD"
+    ],
+    "truth": "REPRODUCIBLE_FROM_HEAD"
    }
   ],
   "C6_g_result_files": [],
@@ -57,7 +72,6 @@
   "R14E_NEWLAYOUT_REGRESSION_V3.json",
   "R14E_PERTURB_RELEASE_AUDIT_V5.json",
   "R14E_REAL_PAGE_REPLAY_V8.json",
-  "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
   "R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
   "R14E_SIX_CONDITION_V10.json",
   "R14E_STAGE_E_ACCEPTANCE_V8.json",
@@ -124,6 +138,15 @@
     "child_output_parseable": true,
     "caught_expected_check": true,
     "sample_fail": "C6 不应存在 G 结果件（未获人工批准）：['R14G_RESULT.json']",
+    "stderr_tail": ""
+   },
+   {
+    "case": "C7 已撤回的可复现性结论留在交付文档里",
+    "expect_check_id": "C7",
+    "exit": 1,
+    "child_output_parseable": true,
+    "caught_expected_check": true,
+    "sample_fail": "C7 R14E_NEWLAYOUT_REGRESSION.md:80 对 R14E_REAL_PAGE_REPLAY_V8.json 断言 ['NOT_REPRODUCIBLE_FROM_HEAD', 'REPRODUCIBLE_FROM_HEAD']，但归属真值是 REPRODUCIBLE_FRO",
     "stderr_tail": ""
    }
   ],

@@ -82,34 +82,48 @@ of_effective_answerable` 与逐层 `wrong_releases`，并写明四条读法—�
 （那些页没有可验证的字母带，锚点判据必须拒绝）；真实 5 页中唯一未锚定者
 即 tight 页（无字母）。
 
-## 交付索引**与一键复现**（本轮新增，人工评审入口）
+## 一键复现（`R14_VERIFICATION_BUNDLE.json`，人工评审入口）
 
-`scripts/r14_verify_all.py` → `R14_VERIFICATION_BUNDLE.json`：从干净工作区**真跑**
-14 步离线验证器，当前 `fails []` / `all_steps_exit_zero true`。含 **A4 预检**
-（跑前算出绝对写路径，不等于现行件即拒绝）与 **f1 固定件重跑哈希不变**。
+`scripts/r14_verify_all.py`：从**干净工作区**按固定顺序**真跑** 16 步离线验证器
+（子进程、`PYTHONPATH=src`），登记每步退出码 / 耗时 / 产物 sha256 / 件内关键事实。
+当前 **`fails []`、`all_steps_exit_zero true`**。检查项：
+· **A4 预检**——跑之前就按 `--out` 形态算出"将写到哪个绝对路径"，不等于现行件
+  即拒绝（这条抓出了会**覆盖历史件**的写路径）；
+· **A5**——任何触碰 `R14E_REAL_PAGE_REPLAY_V8.json` 的改动直接失败；
+· **A6 安全准入**——生产者归属步必须 `safety OK_ZERO_REQUESTS`、
+  `worktree_collateral []`，且**附带改动检测器自己的自检必须真的触发过**
+  （没触发过的安全检查等于没有检查）；
+· **f1 固定件重跑后哈希不变**（漂移检查，不是重跑仪式）。
 
-**复现边界（如实）**：`R14E_REAL_PAGE_REPLAY_V8.json` =
-**NOT_REPRODUCIBLE_FROM_HEAD**（富化键产不出、题面 question.json 已就地重写）。
-`R14E_REAL_PAGE_REPLAY_V8_CHECK.json` 分层登记：判定层 9 字段（含 option_boxes）
-**逐字一致 5/5** ⇒ 2/5 结论未变；证据层可核对性退化。bundle 用 **skip 形态**
-不重跑该件并断言 `v8_untouched true`。附带修好一处**诊断字段退化**：重放脚本的
-`option_boxes` 曾被写窄成 `[bbox, ink]` 而丢 `label_bbox`（正是"标签一一对应"
-要看的字段），恢复为三元组后与提交版**逐字相同**。
+**复现性结论的勘误（重要，覆盖本文档上一版本）**：上一版本此处写
+`R14E_REAL_PAGE_REPLAY_V8.json = NOT_REPRODUCIBLE_FROM_HEAD`。**该结论已撤回**——
+当时只试了一个**引用**该件名却不产出它的脚本，于是找错对象。穷尽归属
+（`R14E_ARTIFACT_ATTRIBUTION.json`）给出真作者
+`e2d_r14_production_replay_v4.py`：重跑到**新文件**
+`R14E_REAL_PAGE_REPLAY_V8_RERUN.json` 后 5/5 页**判定字段逐字一致且不缺任何键**
+⇒ **`REPRODUCIBLE_FROM_HEAD`**；`e2_r14_optionband_replay.py` 为 `partial`
+（判定相同、缺 7 个富化键）。V8 历史字节全程未动（`artifact_untouched true`）。
+bundle 不再用 `skip`，改由真作者重跑到 `_RERUN` 证明复现，同时 A5 禁改 V8。
 
-## 交付**索引**（本轮新增，人工评审入口）
-`R14_INDEX.json` / `R14_INDEX.md`：42 件逐件登记 **sha256、生产脚本、首次入库
-与最近改动 commit、地位（current 20 / superseded 17 / historical 2 /
-erratum_kept 1 / self 2）**，并给出一条**人工阅读顺序**。三条自检
-`self_checks_failed []`：
-· **A1** 每个当前件都必须能追溯到"会写出它的脚本"——检测时分**精确命中**与
-  **同族命中**两档，且**排除审计器/索引等读取方**（首版把检查器误标成作者，
-  已纠）；`R14_CLAIM_AUDIT.json` 确由审计器自写，作为唯一例外。
-  A1 首跑还抓到 V3 只能靠 `--out` 复现：回归脚本默认名仍是 V2 → 已把默认名
-  改为 V3 并重跑，产物字节逐字一致（sha `9a6a48a7e9ad` 不变）。
-· **A2** 非当前件不得被当作当前引用 —— **首跑抓到 4 处我自己留下的陈旧引用**，
-  已全部改指现行件：STOPGATE 两处（旧真实截图复放件、六条件 V9）、
-  DELIVERABLES 两处（验收 V7、六条件 V8）。
-· **A3** 索引内哈希现场复算必须一致（防"改了件没改账"）。
+另修好一处**诊断字段退化**（与复现性无关，但属"标签一一对应"要看的证据）：
+重放脚本的 `option_boxes` 曾被写窄成 `[bbox, ink]` 而丢 `label_bbox`；
+恢复为三元组 `[cell_bbox_page, label_bbox, ink]` 后与提交版**逐字相同**。
+
+## 交付**索引**（`R14_INDEX.json` / `R14_INDEX.md`）
+
+47 件逐件登记 **sha256、生产脚本与**作者档位**、首次入库与最近改动 commit、
+地位（current 25 / superseded 18 / historical 2 / erratum_kept 1 / self 2）**，
+并给出一条**人工阅读顺序**。自检 `self_checks_failed []`：
+· **A1** 每个当前件都必须追溯到"**会写出**它的脚本"。档位
+  `attribution_verified > declared_writer > mention_only`——
+  **"件名出现在脚本里"不等于产出**（首版正是这样把读取方登记成作者，
+  并让我顺着错登记下了"V8 不可复现"的错结论）。写出声明的识别与归属工具
+  **同源**（一处规则，两处引用），避免正则各写一份而漂移；
+· **A2** 非当前件不得被当作当前引用（首跑抓到我自己 4 处陈旧引用，已改指现行件）；
+· **A3** 索引内哈希现场复算必须一致（防"改了件没改账"）；
+· **A5**（新增，反向）某件若归属结论为 `NOT_REPRODUCIBLE_FROM_HEAD`，
+  索引**不得**登记 `reproducible: true`。本轮我先后犯过"乐观"与"悲观"两个方向的
+  同类误判（后者把 15 个可复现件标成不可复现），所以两个方向都要有硬检查。
 诚实边界：索引**无法登记自己写出后的最终字节**，故两个自指件标 `self` 并
 排除 A3；`sha256` 对 `.md` 只证明身份、不证明内容正确。
 
