@@ -84,10 +84,28 @@ def main() -> int:
         "llm_calls_used": 0, "http_requests_made": 0,
     }
     dst = ROOT / "evidence" / "R14G_PLAN.json"
+    # **防自毁**：manifest 重算只该更新版本/哈希，**不该**顺手删掉人工闸门
+    # 记录。本轮实测发生过：重算后 `model_lock` 整段消失，等于悄悄放宽了
+    # 发批前置条件。旧件里有就原样携带；旧件里没有（首次生成）则保持缺失，
+    # 由 d9b/人工补，**绝不虚构**。
+    carried = None
+    if dst.is_file():
+        try:
+            old_ml = json.loads(dst.read_text(encoding="utf-8")).get("model_lock")
+        except Exception:  # noqa: BLE001
+            old_ml = None
+        if old_ml:
+            manifest["model_lock"] = old_ml
+            carried = old_ml.get("status")
+    manifest["regen_note"] = (
+        "d9 重算只更新 code_version / 各件 SHA / prompt SHA；model_lock "
+        "段从旧件原样携带（缺失则不虚构）。"
+        f"本次携带状态：{carried or '无（旧件不含 model_lock，需 d9b/人工补）'}")
     dst.write_text(json.dumps(manifest, ensure_ascii=False, indent=1),
                    encoding="utf-8")
     print(json.dumps({"planned": len(calls), "budget": manifest["budget"],
                       "code_version": git_sha,
+                      "model_lock_carried": carried,
                       "prompt_sha256": manifest["fixed"]["prompt_sha256"],
                       "order": [c["pid"] for c in calls]},
                      ensure_ascii=False, indent=1))

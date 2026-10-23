@@ -103,7 +103,7 @@
   "retry_headroom_note": "计划 5 页 + 余量 1 次请求 = 上限 6；一旦发生 **2 页**重试即触顶，第 6 次之后的请求会被原子闸拒绝——缺的那一页必须记为 BudgetExhausted 并计入端到端分母，不得降低页数或放松闸来抹掉。（G0 C1d 已实测该行为）"
  },
  "fixed": {
-  "code_version": "32829d3dca33b80d243b88b0e7f5eaf6ae946c42",
+  "code_version": "9f3858fd61f2d2f303a95c8986ee818529eefba7",
   "worktree_dirty": true,
   "prompt_file": null,
   "prompt_sha256": "7c9dc3c847da45d4db5938c9696e43991b0892070280b8e1d751a4887b18eb19",
@@ -129,5 +129,6 @@
   "status": "UNRESOLVED_MUST_BE_CONFIRMED_BY_HUMAN",
   "rule": "G 批发起前模型名必须与工单/人工确认一致并写回本 manifest；本地无配置时**禁止**由脚本自选模型。",
   "vision_model": null
- }
+ },
+ "regen_note": "d9 重算只更新 code_version / 各件 SHA / prompt SHA；model_lock 段从旧件原样携带（缺失则不虚构）。本次携带状态：UNRESOLVED_MUST_BE_CONFIRMED_BY_HUMAN"
 }
