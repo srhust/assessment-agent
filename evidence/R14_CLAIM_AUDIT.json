@@ -114,7 +114,7 @@
     "exit": 1,
     "child_output_parseable": true,
     "caught_expected_check": true,
-    "sample_fail": "C2 R14_PROGRESS_STOPGATE.md:246 把被取代件 R14E_NEWLAYOUT_REGRESSION_V2.json 当作当前引用（该句无勘误语境）",
+    "sample_fail": "C2 R14_PROGRESS_STOPGATE.md:273 把被取代件 R14E_NEWLAYOUT_REGRESSION_V2.json 当作当前引用（该句无勘误语境）",
     "stderr_tail": ""
    },
    {

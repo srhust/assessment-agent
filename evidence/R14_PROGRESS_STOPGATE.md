@@ -111,6 +111,33 @@ G0 也**如实暴露了预算的脆弱面**（C1d）：计划 5 页 + 1 次余�
 `BudgetExhausted` 并计入端到端分母（实测 `sent=6 / succ=4 / tok=4080`、
 `{429:2, 200:4}`）。届时**不得**用降低页数、放松闸或"只除成功件"来抹掉。
 
+## 本轮的纪律性收获：**"检查其实在空转"** 这一类缺陷（4 例，全部机器化）
+
+1. **恢复早于比较**：补集复现核对先把原件恢复、再做语义比较 ⇒
+   比的是「原件 vs 原件」，**恒判 reproduced**。修好后立刻浮出 R14C 的
+   10 处结论级差异（见上节）。
+2. **忽略表越写越宽**：为消一条假阳性，我在核对脚本里把私有 VOLATILE
+   一路加到 `committed_sha256 / violations / budget`——那正好把真差异吃掉。
+   ⇒ 忽略表**集中**定义在 `r14_attribute_producer.VOLATILE + MUST_SEE`，
+   bundle **A8** 断言 `head / code_version / committed_sha256 / rerun_by`
+   等**必须可见**键不得进忽略表。
+3. **反证放在落盘之后**：比较器反证曾在 `write_text` 之后才调用，
+   结果它的结论**永远进不了件里**，bundle 也就永远看不到 ⇒ 视为"没测"。
+4. **登记式解释可能只是吞违规的开关**：⇒ **A7** 要求每条
+   `semantic_drift_documented` 都有**在盘的解释件**，且解释件的
+   `compared.committed` 指向该件、并带 J1/J2 判据；核对工具自身还要做
+   **内存剥除反证**（剥掉解释件 ⇒ 状态必须回落到 `violated`，
+   实测 `after_removal_status: violated`、`unexplained_verdict_drift: []`）。
+
+索引侧同轮改为 **deny-by-default**：不再 `status = "current"` 起手
+（那会让核对副产物 `*_RERUN.json` 冒充当前交付件并把 A1 顶失败），
+地位一律取自登记表；当前 25 / 被取代 18 / **核对副产物 4** / 历史 2 /
+勘误保留 1 / 自指 2，`unregistered []`。
+
+一键复现清单现为 **18 步**（新两步 `e2f_r14_causal_delta.py`、
+`r14_semantic_repro.py` 由 `skip` 改为真 `fixed` 步，耗时 0.1s / 46.2s，
+总计 95.7s），`fails []`，`http_requests_made 0`、`tokens_used 0`。
+
 ## 因果实验在现行 HEAD 的复现差异（人工裁决项 2 的直接材料）
 
 补集复现核对（`scripts/r14_semantic_repro.py` → `R14E_RERUN_SEMANTICS.json`）

@@ -1,6 +1,6 @@
 {
  "stage": "R14-C 因果实验在现行 HEAD 的复现差异（0 HTTP；提交件未改动）",
- "head": "bf49734d5",
+ "head": "45ed4566d",
  "compared": {
   "committed": "R14C_PITCH_ABLATION.json",
   "committed_sha256": "df83fb21b1362156",
@@ -179,14 +179,5 @@
  "budget": {
   "http_requests_made": 0,
   "llm_calls_used": 0
- },
- "wording_qualification": {
-  "saturated_1_0": "提交件字面「legacy 三臂全部饱和 1.0 失败」在现行 HEAD 应读作「近饱和」（mirror-04: margin 0.0153 / 顶分 0.9847）；结论方向（legacy 全 failed、protocol 全 solved）不变",
-  "scope": "人工锁定结论仅就 mirror-04/rot90-01 的 R13-G live 失败而言；tight 反例页在现行 HEAD 上 J1 不再成立（C_gold 单独变 solved），故不得把结论推广为『pitch 对任何页都无关』"
- },
- "boundary_found": {
-  "item": "ft-mirror-04--tight",
-  "change": "C_gold failed -> solved（protocol 与 legacy_scale 两臂同）",
-  "effect_on_locked_conclusion": "不构成反驳（该页不在结论适用范围内），但限制其外推"
  }
 }
