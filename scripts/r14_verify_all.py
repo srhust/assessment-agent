@@ -600,24 +600,6 @@ def main() -> int:
     _scripts = {f"scripts/{Path(x['step'].split()[0]).name}"
                 for x in rows if x.get("step", "").startswith("scripts/")}
     _collateral = a10_collateral(after_dirty, _expected | _scripts)
-    # **A10b**：bundle 写出**声明为人工撰写**的交付件 ⇒ 当场报，
-    # 不等下一轮索引发现（本轮实测：A13 回写 DELIVERABLES.md，
-    # 而 `HAND_WRITTEN` 仍列着它 ⇒ 声明已假；又因为该件在 A10
-    # **期望集**里，`A10_collateral` 显示 `[]`，看起来一切正常）。
-    _hw_path = ROOT / "scripts" / "e2e_r14_index.py"
-    _hw = set()
-    if _hw_path.is_file():
-        _mt = re.search(r"HAND_WRITTEN = \{([^}]*)\}",
-                        _hw_path.read_text(encoding="utf-8"), re.S)
-        if _mt:
-            _hw = set(re.findall(r"\"([^\"]+\.md)\"", _mt.group(1)))
-    _hw_written = sorted(
-        {x["artifact"] for x in rows if x.get("artifact") in _hw}
-        | set(a13.get("synced", [])) & _hw)
-    if _hw_written:
-        fails.append(
-            f"A10b bundle 写出了**声明人工撰写**的件 {_hw_written}："
-            f"要么删掉 HAND_WRITTEN 里的声明，要么别在 bundle 里写它")
     if _collateral:
         fails.append(f"A10 SAFETY_VIOLATION_bundle_collateral："
                      f"bundle 期间改动了**未登记**的证据/数据件 {sorted(set(_collateral))}"
@@ -625,10 +607,12 @@ def main() -> int:
     # **交付文档里的步数由本步回写**：手写"18 步 / 21 步"
     # 就是再造一个会过期的计数（本轮我已经错过两次）。
     _doc_sync = []
+    _rewrite_targets = []          # **声明的回写目标**（不管本轮改没改）
     for _dn in ("R14_STAGE_E_DELIVERABLES.md", "R14_PROGRESS_STOPGATE.md"):
         _dp = EV / _dn
         if not _dp.is_file():
             continue
+        _rewrite_targets.append(_dn)
         _t = _dp.read_text(encoding="utf-8")
         # **全篇统一**：凡"N 步"（真跑/清单/一键复现）都按本次
         # `n_steps` 校正。上一版只替两个位置，结果同一篇文档里
@@ -653,6 +637,7 @@ def main() -> int:
         if _n != _t:
             _dp.write_text(_n, encoding="utf-8")
             _doc_sync.append(_dn)
+    _a13_seen = []
     # **A13 残留断言**：改完必须真的没有过期步数，
     # 而不是"我写了替换逻辑"就算完。
     for _dn in ("R14_STAGE_E_DELIVERABLES.md", "R14_PROGRESS_STOPGATE.md"):
@@ -661,6 +646,8 @@ def main() -> int:
             continue
         _t = _dp.read_text(encoding="utf-8")
         for _m in re.finditer(r"(?<![\d{])(\d+)\s*步", _t):
+            if _is_step_count(_m, _t):
+                _a13_seen.append([_dn, int(_m.group(1))])
             if _is_step_count(_m, _t) and int(_m.group(1)) != len(rows):
                 _ctx = _t[max(0, _m.start() - 26):_m.end() + 8]
                 fails.append(
@@ -672,9 +659,31 @@ def main() -> int:
             fails.append("A13 排版破坏：" + _dn +
                          " 的 `一键复现` 后面残留花括号 " + str(_brace[:2]))
     a13 = {"checked_docs": 2, "required_steps": len(rows),
-           "synced": _doc_sync,
+           "synced": _doc_sync, "rewrite_targets": _rewrite_targets,
+           "step_count_lines": _a13_seen,
            "note": "交付文档里的步数由本步统一回写并断言无残留；"
                    "上一版只替两个位置 ⇒ 同一篇文档出现 15/16/21 步自相矛盾"}
+    # **A10b（位置修正）**：必须在 A13 **之后**——上一版放在前面、
+    # 又引用 `a13` ⇒ `UnboundLocalError` 把整个 bundle 崩掉。
+    # 并且用**显式并集**，不写 `x | y & z`（`&` 优先级高于 `|`，
+    # 实际算的不是我写的那个意思）。
+    _hw_path = ROOT / "scripts" / "e2e_r14_index.py"
+    _hw = set()
+    if _hw_path.is_file():
+        _mt = re.search(r"HAND_WRITTEN = \{([^}]*)\}",
+                        _hw_path.read_text(encoding="utf-8"), re.S)
+        if _mt:
+            _hw = set(re.findall(r"\"([^\"]+\.md)\"", _mt.group(1)))
+    _by_step = {x["artifact"] for x in rows if x.get("artifact") in _hw}
+    _by_sync = {x for x in a13.get("synced", []) if x in _hw}
+    _by_target = {x for x in a13.get("rewrite_targets", []) if x in _hw}
+    _hw_written = sorted(_by_step | _by_sync | _by_target)
+    if _hw_written:
+        fails.append(
+            "A10b bundle 写出了**声明人工撰写**的件 " + str(_hw_written) +
+            "（本轮改写 ∪ **声明的回写目标**）："
+            "要么删掉 HAND_WRITTEN 里的声明，要么别在 bundle 里写它")
+
     out = {"head_at_run": head, "n_steps": len(rows),
            "docs_step_count_synced": _doc_sync,
            "A13_step_count_guard": a13, "steps": rows,
