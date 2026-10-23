@@ -10,10 +10,10 @@
   ],
   "artifact_untouched": true,
   "candidates_tried": 8,
-  "attribution_stale": true,
-  "attribution_head": "f8a6540610fec0542fc939c1d1431b3132bee518"
+  "attribution_stale": false,
+  "attribution_head": "4fd5dc8636cdc67df73e0ac8eac13f6594c15c8d"
  },
- "head": "d48d97ece081fe1f26a44d81bea7a6e603207b67",
+ "head": "4fd5dc8636cdc67df73e0ac8eac13f6594c15c8d",
  "verdict_fields_checked": [
   "solver_status",
   "solver_answer",

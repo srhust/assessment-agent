@@ -1,6 +1,6 @@
 {
- "head_at_run": "d48d97ece081fe1f26a44d81bea7a6e603207b67",
- "n_steps": 14,
+ "head_at_run": "4fd5dc8636cdc67df73e0ac8eac13f6594c15c8d",
+ "n_steps": 16,
  "steps": [
   {
    "step": "scripts/d9_r14_stage_g_manifest.py",
@@ -9,7 +9,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "f898f568c6a6",
+   "artifact_sha256_short": "1f177dd619ee",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -22,7 +22,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.3,
-   "artifact_sha256_short": "ffd98509914c",
+   "artifact_sha256_short": "6ef313e931e2",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -47,7 +47,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 6.0,
+   "seconds": 5.6,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -73,7 +73,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.4,
+   "seconds": 2.3,
    "artifact_sha256_short": "9a6a48a7e9ad",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -101,7 +101,33 @@
    "exit": 0,
    "seconds": 0.8,
    "artifact_sha256_short": "b96827fe92f9",
+   "artifact_rewritten": false,
+   "stdout_tail": [
+    "}"
+   ]
+  },
+  {
+   "step": "scripts/r14_attribute_producer.py",
+   "artifact": "R14E_ARTIFACT_ATTRIBUTION.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 2.6,
+   "artifact_sha256_short": "c4331760c7d4",
    "artifact_rewritten": true,
+   "stdout_tail": [
+    "}"
+   ]
+  },
+  {
+   "step": "scripts/r14_attribute_producer.py --selftest",
+   "artifact": "R14E_ATTRIBUTION_SELFTEST.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 2.5,
+   "artifact_sha256_short": "24e26d7052a0",
+   "artifact_rewritten": false,
    "stdout_tail": [
     "}"
    ]
@@ -114,7 +140,7 @@
    "exit": 0,
    "seconds": 1.1,
    "artifact_sha256_short": "89be0925dcbf",
-   "artifact_rewritten": true,
+   "artifact_rewritten": false,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_RERUN.json"
    ]
@@ -124,9 +150,9 @@
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
    "out_mode": "bare",
    "expected_to_change": false,
-   "exit": 1,
+   "exit": 0,
    "seconds": 1.2,
-   "artifact_sha256_short": "91d57351d209",
+   "artifact_sha256_short": "1bc34472c34c",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -152,7 +178,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 4.6,
-   "artifact_sha256_short": "455ea14c6c39",
+   "artifact_sha256_short": "3fe2293d646d",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -177,21 +203,19 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 4.6,
-   "artifact_sha256_short": "b431a3b92868",
+   "seconds": 4.4,
+   "artifact_sha256_short": "9287268fde08",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14_INDEX.json"
    ]
   }
  ],
- "fails": [
-  "scripts/e2_r14_v8_reproducibility.py 退出码 1："
- ],
+ "fails": [],
  "worktree_clean_before": true,
  "worktree_clean_after": false,
  "dirty_after": [
-  " M evidence/R14E_ANCHOR_SWEEP.json",
+  " M evidence/R14E_ARTIFACT_ATTRIBUTION.json",
   " M evidence/R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
   " M evidence/R14G0_GATE_READINESS_V5.json",
   " M evidence/R14G_PLAN.json",
