@@ -202,7 +202,7 @@
    "evidence": {
     "planned": 5,
     "sha_mismatches": [],
-    "code_version": "45ed4566d70dec894a48163f28c6cf3b42be430d",
+    "code_version": "e2ae3ed1c240e0b1aafc664707fb1cb68d1139a0",
     "code_version_matches_manifest": true,
     "worktree_dirty_at_plan_time": false,
     "worktree_dirty_now": true,
@@ -226,12 +226,23 @@
   },
   {
    "id": "C7",
-   "name": "证据命名 R14G_* 与 R13G_* 隔离（除 PLAN 外无 R14G 结果件）",
+   "name": "证据命名隔离：除 PLAN 与**离线核验件白名单**外，不得存在任何 R14G_* 结果件",
    "ok": true,
    "evidence": {
     "R14G_files": [
+     "R14G_HISTORICAL_BYTES.json",
+     "R14G_HISTORICAL_BYTES.md",
+     "R14G_HISTORICAL_BYTES_SELFTEST.json",
      "R14G_PLAN.json"
     ],
+    "stray_result_files": [],
+    "allowed_nonresult": [
+     "R14G_PLAN.json",
+     "R14G_HISTORICAL_BYTES.json",
+     "R14G_HISTORICAL_BYTES.md",
+     "R14G_HISTORICAL_BYTES_SELFTEST.json"
+    ],
+    "why_allowlist": "白名单只放零 HTTP 的核验/计划产物；R14G_RESULT* 等真结果件不在其中，一旦出现立刻失败",
     "R13G_files_count": 3
    }
   }

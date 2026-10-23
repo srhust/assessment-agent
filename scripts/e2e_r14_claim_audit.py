@@ -98,6 +98,11 @@ def selftest() -> tuple:
          "c8_total", None),
         ("C8 文档地位计数（current）与索引真值不符", "C8",
          "c8_current", None),
+        # **C3 引用存在性**的两个方向都要测：
+        ("C3 登记引用了真值件中不存在的键", "C3",
+         "c3_bad_key", None),
+        ("C3 键名含点号但真实存在（不得假阳性）", "C3",
+         "c3_dotted_ok", None),
     ]
     results = []
     for label, expect_id, mode, payload in cases:
@@ -109,6 +114,35 @@ def selftest() -> tuple:
         if mode == "ghost_g_result":
             (fake / "evidence" / "R14G_RESULT.json").write_text(
                 "{}", encoding="utf-8")
+        elif mode == "c3_bad_key":
+            sp = fake / "scripts" / Path(__file__).name
+            t = sp.read_text(encoding="utf-8")
+            t = t.replace('("R14G_PLAN.json", "status"),',
+                          '("R14G_PLAN.json", "status_typo_not_a_key"),')
+            sp.write_text(t, encoding="utf-8")
+            (fake / "evidence" / "_INJECTION_APPLIED").write_text(
+                "yes" if "status_typo_not_a_key" in t else "NO",
+                encoding="utf-8")
+        elif mode == "c3_dotted_ok":
+            # 直接单测解析器：含点号的真实键必须判存在
+            import importlib.util as _iu
+            spec = _iu.spec_from_file_location("ca", str(Path(__file__)))
+            m = _iu.module_from_spec(spec)
+            spec.loader.exec_module(m)
+            ok = m.key_exists({"table": {"R14E_SIX_CONDITION_V10.json":
+                                         {"conditions": {"F": 1}}}},
+                              "table.R14E_SIX_CONDITION_V10.json.conditions.F")
+            bad = m.key_exists({"table": {"x": {}}}, "table.y.z")
+            (fake / "evidence" / "_INJECTION_APPLIED").write_text(
+                "yes", encoding="utf-8")
+            results.append({
+                "case": label, "expect_check_id": expect_id,
+                "injection_applied": "yes",
+                "caught_expected_check": bool(ok and not bad),
+                "note": f"含点号真实键判存在={ok} / 不存在键判不存在={not bad}",
+                "sample_fail": "", "exit": 0,
+                "child_output_parseable": True, "stderr_tail": ""})
+            continue
         elif mode in ("c8_total", "c8_current"):
             # 只改**文档**里的数字，索引真值保持不动 ⇒ C8 必须发现不符
             p = fake / "evidence" / "R14_STAGE_E_DELIVERABLES.md"
@@ -176,6 +210,31 @@ def selftest() -> tuple:
                         "stderr_tail": "" if parseable else r.stderr[-200:]})
         shutil.rmtree(tmp, ignore_errors=True)
     return all(x["caught_expected_check"] for x in results), results
+
+
+def key_exists(doc, dotted):
+    """按 `a.b.c` 走一遍；**任一段不存在**返回 False。
+    登记表写错键名时，必须报"引用不存在"而不是"数字不符"——
+    后者把**检查器的 bug**伪装成**交付件的问题**（本轮实测犯过）。"""
+    cur = doc
+    parts = dotted.split(".")
+    i = 0
+    while i < len(parts):
+        hit = False
+        # **贪心合并**：真值件的键名本身可能含点号
+        # （`table` 的键就是 `R14E_SIX_CONDITION_V10.json` 这样的**文件名**）。
+        # 朴素按点切分会把一个**真实存在**的键判成不存在 ⇒
+        # 存在性检查自己制造假阳性，把交付件冤枉成"数字不符"。
+        for j in range(len(parts), i, -1):
+            cand = ".".join(parts[i:j])
+            if isinstance(cur, dict) and cand in cur:
+                cur = cur[cand]
+                i = j
+                hit = True
+                break
+        if not hit:
+            return False
+    return True
 
 
 def run_checks(write_audit):
@@ -272,7 +331,9 @@ def run_checks(write_audit):
                     f"但归属真值是 {status}（且该句不在勘误语境）——"
                     f"已撤回的结论不得留在交付文档里")
 
-    # ---------- C3 数字对账 ----------
+        # ---------- C3 数字对账 ----------
+    # 登记表里的每个**键路径**都必须真实存在（见 key_exists）。
+# ---------- C3 数字对账 ----------
     V3 = jload("R14E_NEWLAYOUT_REGRESSION_V3.json") or {}
     AC = jload("R14E_STAGE_E_ACCEPTANCE_V8.json") or {}
     PE = jload("R14F_PERTURB_RELEASE_AUDIT.json") or {}
@@ -282,6 +343,75 @@ def run_checks(write_audit):
     PLAN = jload("R14G_PLAN.json") or {}
     GAP = jload("R14E_TIGHT_GAP_DIAGNOSIS.json") or {}
     RV8 = jload("R14E_HEAD_REVERIFY.json") or {}
+
+    REFS = {   # 每条登记引用了**哪个件的哪些键路径**
+        "V3 layers 16/7/7": [("R14E_NEWLAYOUT_REGRESSION_V3.json",
+                              k) for k in ("layers.candidates_solved",
+                                           "layers.accepted",
+                                           "layers.released")],
+        "V3 wrong_releases []": [("R14E_NEWLAYOUT_REGRESSION_V3.json",
+                                  "wrong_releases")],
+        "V3 checks_failed []": [("R14E_NEWLAYOUT_REGRESSION_V3.json",
+                                 "checks_failed")],
+        "验收 V8 checks_failed [] / wrong_releases []":
+            [("R14E_STAGE_E_ACCEPTANCE_V8.json", "checks_failed"),
+             ("R14E_STAGE_E_ACCEPTANCE_V8.json", "wrong_releases")],
+        "扰动 contract 15/15": [("R14F_PERTURB_RELEASE_AUDIT.json",
+                                 "fifteen_page_grid_contract.matches")],
+        "扰动 perturb_loc 23/30": [("R14F_PERTURB_RELEASE_AUDIT.json",
+                                    "perturbation_regression.matches"),
+                                   ("R14F_PERTURB_RELEASE_AUDIT.json",
+                                    "perturbation_regression.n")],
+        "扰动 wrong_grid_releasable []":
+            [("R14F_PERTURB_RELEASE_AUDIT.json",
+              "perturbation_regression.wrong_grid_releasable")],
+        "血缘 F 释放 5/接受 5/候选 5":
+            [("R14E_LINEAGE_SIX_CONDITION.json",
+              "table.R14E_SIX_CONDITION_V10.json.conditions.F"
+              ".final_released"),
+             ("R14E_LINEAGE_SIX_CONDITION.json",
+              "table.R14E_SIX_CONDITION_V10.json.conditions.F"
+              ".correct_candidates")],
+        "血缘 V10==V9": [("R14E_LINEAGE_SIX_CONDITION.json", "v10_equals_v9")],
+        "HEAD 复验 drift []": [("R14E_HEAD_REVERIFY.json", "drift")],
+        # 复放件**没有** released_correct 这种汇总键——它就是 5 个页名做顶层键
+        # （`ft-mirror-04` …），释放与否写在每页的 `released` 里。
+        # 先前登记 `released_correct` 是我**凭空造的键名**，
+        # 存在性检查一装上去就把它抓出来了（这正是装它的理由）。
+        "真实截图件 2/5 释放": [
+            ("R14E_REAL_PAGE_REPLAY_V8.json", f"{k}.released")
+            for k in ("ft-mirror-04", "ft-mirror-04--tight", "ft-overlay-12",
+                      "ft-rot90-01", "ft-trans-07")],
+        "G0 ready true / failing []":
+            [("R14G0_GATE_READINESS_V5.json",
+              "ready_for_G_after_human_approval"),
+             ("R14G0_GATE_READINESS_V5.json", "failing")],
+        "G0 real_http_requests_made 0":
+            [("R14G0_GATE_READINESS_V5.json", "real_http_requests_made")],
+        "PLAN 预算 6 / 100000": [("R14G_PLAN.json",
+                                  "budget.max_requests_including_retry"),
+                                 ("R14G_PLAN.json", "budget.max_tokens")],
+        "PLAN 未执行": [("R14G_PLAN.json", "status"),
+                        ("R14G_PLAN.json", "budget.spent_so_far.requests")],
+    }
+    _DOCSRC = {"R14E_NEWLAYOUT_REGRESSION_V3.json": V3,
+              "R14E_STAGE_E_ACCEPTANCE_V8.json": AC,
+              "R14F_PERTURB_RELEASE_AUDIT.json": PE,
+              "R14E_LINEAGE_SIX_CONDITION.json": LIN,
+              "R14E_REAL_PAGE_REPLAY_V8.json": RV,
+              "R14G0_GATE_READINESS_V5.json": G0,
+              "R14G_PLAN.json": PLAN,
+              "R14E_HEAD_REVERIFY.json": RV8}
+    for label, refs in REFS.items():
+        for artifact, kp in refs:
+            src = _DOCSRC.get(artifact)
+            if src is None:
+                continue
+            if not key_exists(src, kp):
+                fails.append(f"C3 登记表 **{label}** 引用了 {artifact} 中"
+                             f"**不存在的键** {kp} ⇒ 检查器自身写错了引用，"
+                             f"不是交付件数字不符")
+    notes["C3_key_paths_checked"] = sum(len(v) for v in REFS.values())
 
     checks = [
         ("V3 layers 16/7/7",

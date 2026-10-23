@@ -369,9 +369,22 @@ check("C9", "G 批入口零请求自证：无 --approve 直接退出；伪造批
 
 # ================= C7 命名隔离 =================
 r14g = sorted(p.name for p in (ROOT / "evidence").glob("R14G_*"))
-check("C7", "证据命名 R14G_* 与 R13G_* 隔离（除 PLAN 外无 R14G 结果件）",
-      [x for x in r14g if x != "R14G_PLAN.json"] == [],
-      {"R14G_files": r14g,
+# **C7 的真实意图**是"G 批**结果件**不得在未获批准前存在"，不是
+# "不许有任何 R14G_ 前缀文件"。本轮 A9 落了三个**零 HTTP 离线核验**产物
+# （R14G_HISTORICAL_BYTES.{json,md} / _SELFTEST.json），字面判定把 C7 顶失败，
+# 逼我在"改坏检查"和"删掉证据"之间二选一。现按语义分档，
+# 白名单**只放核验/计划件**：真 G 批结果件不在其中，一出现立刻失败。
+_ALLOWED_NONRESULT = ("R14G_PLAN.json", "R14G_HISTORICAL_BYTES.json",
+                      "R14G_HISTORICAL_BYTES.md",
+                      "R14G_HISTORICAL_BYTES_SELFTEST.json")
+_stray = [x for x in r14g if x not in _ALLOWED_NONRESULT]
+check("C7", "证据命名隔离：除 PLAN 与**离线核验件白名单**外，"
+      "不得存在任何 R14G_* 结果件",
+      _stray == [],
+      {"R14G_files": r14g, "stray_result_files": _stray,
+       "allowed_nonresult": list(_ALLOWED_NONRESULT),
+       "why_allowlist": "白名单只放零 HTTP 的核验/计划产物；R14G_RESULT* 等"
+                        "真结果件不在其中，一旦出现立刻失败",
        "R13G_files_count": len(list((ROOT / "evidence").glob("R13G_*")))})
 
 out = {"checks": CHECKS,

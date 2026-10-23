@@ -1,5 +1,5 @@
 {
- "n_checked": 44,
+ "n_checked": 46,
  "violations": [],
  "identical_detector_selftest": {
   "fails": [],
@@ -509,6 +509,7 @@
    "artifact": "R14E_NEWLAYOUT_REGRESSION_V3.json",
    "status": "covered_by_bundle",
    "declared_writers": [
+    "e2e_r14_claim_audit.py",
     "e2e_r14_newlayout_regression.py"
    ],
    "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
@@ -689,6 +690,40 @@
     "e2e_r14_stage_g_readiness.py"
    ],
    "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+  },
+  {
+   "artifact": "R14G_HISTORICAL_BYTES.json",
+   "script": "a9_r14_historical_bytes.py",
+   "declared_writers": [
+    "a9_r14_historical_bytes.py"
+   ],
+   "refused_unsafe": [],
+   "worktree_collateral": [],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [],
+   "own_declared_outputs_touched": [],
+   "status": "reproduced_identical",
+   "rerun_byte_identical": true
+  },
+  {
+   "artifact": "R14G_HISTORICAL_BYTES_SELFTEST.json",
+   "script": "a9_r14_historical_bytes.py",
+   "declared_writers": [
+    "a9_r14_historical_bytes.py"
+   ],
+   "refused_unsafe": [],
+   "worktree_collateral": [],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [],
+   "own_declared_outputs_touched": [],
+   "status": "no_write_detected",
+   "detail": ""
   },
   {
    "artifact": "R14G_PLAN.json",

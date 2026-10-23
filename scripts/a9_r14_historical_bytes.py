@@ -88,7 +88,11 @@ def main() -> int:
                                    "与其写出者、该备份目录**均不存在**，"
                                    "data/ 亦无本轮改动 ⇒ 该说法**不成立**，"
                                    "已按事实收缩。"},
-            "budget": {"http_requests_made": 0, "tokens_used": 0}}
+            "budget": {"http_requests_made": 0, "tokens_used": 0},
+            # **顶层**也要有：bundle 的 `dig` 按顶层键取值，只嵌在 budget
+            # 里会让"零请求"这条断言拿到 None（本轮实测）
+            "http_requests_made": 0, "llm_calls_used": 0,
+            "head": git("rev-parse", "HEAD").strip()}
     (EV / "R14G_HISTORICAL_BYTES.json").write_text(
         json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     print(json.dumps({"n": len(rows), "fails": fails,
@@ -129,6 +133,12 @@ def selftest_tripped() -> dict:
         fails.append(f"复原后 A9 未重新通过：{r2.stdout[-160:]}")
     return {"fails": fails, "artifact": f,
             "restored_identical": p.read_bytes() == orig,
+            "http_requests_made": 0, "llm_calls_used": 0,
+            "main_artifact_is_complete": (not (
+                EV / "R14G_HISTORICAL_BYTES.json").is_file()) or all(
+                    k in json.loads((EV / "R14G_HISTORICAL_BYTES.json")
+                                    .read_text(encoding="utf-8"))
+                    for k in ("checks", "rows", "fails", "incident_record")),
             "budget": {"http_requests_made": 0}}
 
 

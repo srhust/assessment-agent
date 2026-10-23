@@ -154,6 +154,7 @@
     "truth": "REPRODUCIBLE_FROM_HEAD"
    }
   ],
+  "C3_key_paths_checked": 27,
   "C6_g_result_files": [],
   "budget": {
    "max_requests": 6,
@@ -290,6 +291,28 @@
     "caught_expected_check": true,
     "note": "",
     "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 current=12，索引真值 29 ⇒ 计数过期",
+    "stderr_tail": ""
+   },
+   {
+    "case": "C3 登记引用了真值件中不存在的键",
+    "expect_check_id": "C3",
+    "exit": 1,
+    "child_output_parseable": true,
+    "injection_applied": "yes",
+    "caught_expected_check": true,
+    "note": "",
+    "sample_fail": "C3 登记表 **PLAN 未执行** 引用了 R14G_PLAN.json 中**不存在的键** status_typo_not_a_key ⇒ 检查器自身写错了引用，不是交付件数字不符",
+    "stderr_tail": ""
+   },
+   {
+    "case": "C3 键名含点号但真实存在（不得假阳性）",
+    "expect_check_id": "C3",
+    "injection_applied": "yes",
+    "caught_expected_check": true,
+    "note": "含点号真实键判存在=True / 不存在键判不存在=True",
+    "sample_fail": "",
+    "exit": 0,
+    "child_output_parseable": true,
     "stderr_tail": ""
    }
   ],

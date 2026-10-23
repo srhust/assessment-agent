@@ -2,6 +2,9 @@
  "fails": [],
  "artifact": "R11G_REAL_VISION.json",
  "restored_identical": true,
+ "http_requests_made": 0,
+ "llm_calls_used": 0,
+ "main_artifact_is_complete": true,
  "budget": {
   "http_requests_made": 0
  }
