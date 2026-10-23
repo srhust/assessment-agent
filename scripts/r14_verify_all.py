@@ -616,12 +616,20 @@ def main() -> int:
         # `n_steps` 校正。上一版只替两个位置，结果同一篇文档里
         # `:87` 真跑 16 步、`:198` 真跑 15 步、`:312` 21 步**自相矛盾**，
         # 而我口头上说的是"步数由 bundle 回写、不再手写"。
+        STEP_CTX = ("离线验证器", "一键复现", "清单")
+
+        def _is_step_count(mm, text):
+            """"N 步"只有处在**步数语境**里才是可核对的步数；
+            `第 19/20 步 = …` 这类**序号**不是（误伤会把文档改成假话）。"""
+            pre = text[max(0, mm.start() - 6):mm.start()]
+            if re.search(r"第\s*$|/\s*$|第\s*\d+\s*/\s*$", pre):
+                return False
+            win = text[max(0, mm.start() - 40):mm.end() + 12]
+            return any(c in win for c in STEP_CTX)
+
         _n = re.sub(r"(?<!\d)(\d+)\s*步",
-                    lambda m: m.group(0).replace(m.group(1), str(len(rows)))
-                    if "离线验证器" in _t[max(0, m.start() - 40):m.end() + 40]
-                    or "一键复现" in _t[max(0, m.start() - 30):m.end() + 10]
-                    or "清单" in _t[max(0, m.start() - 12):m.end()]
-                    else m.group(0), _t)
+                    lambda m: (m.group(0).replace(m.group(1), str(len(rows)))
+                               if _is_step_count(m, _t) else m.group(0)), _t)
         # 修掉上一版留下的**坏排版**：`一键复现{**21 步**}` → `一键复现 **21 步**`
         _n = re.sub(r"一键复现\{\*\*(\d+) 步\*\*", r"一键复现 **\1 步**", _n)
         if _n != _t:
@@ -635,7 +643,7 @@ def main() -> int:
             continue
         _t = _dp.read_text(encoding="utf-8")
         for _m in re.finditer(r"(?<![\d{])(\d+)\s*步", _t):
-            if int(_m.group(1)) != len(rows):
+            if _is_step_count(_m, _t) and int(_m.group(1)) != len(rows):
                 _ctx = _t[max(0, _m.start() - 26):_m.end() + 8]
                 fails.append(
                     "A13 陈旧步数：" + _dn + " 仍写 " + _m.group(1) +

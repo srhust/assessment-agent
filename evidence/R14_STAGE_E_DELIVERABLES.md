@@ -84,7 +84,7 @@ of_effective_answerable` 与逐层 `wrong_releases`，并写明四条读法—�
 
 ## 一键复现（`R14_VERIFICATION_BUNDLE.json`，人工评审入口）
 
-`scripts/r14_verify_all.py`：从**干净工作区**按固定顺序**真跑** 16 步离线验证器
+`scripts/r14_verify_all.py`：从**干净工作区**按固定顺序**真跑** 21 步离线验证器
 （子进程、`PYTHONPATH=src`），登记每步退出码 / 耗时 / 产物 sha256 / 件内关键事实。
 当前 **`fails []`、`all_steps_exit_zero true`**。检查项：
 · **A4 预检**——跑之前就按 `--out` 形态算出"将写到哪个绝对路径"，不等于现行件
@@ -309,9 +309,8 @@ C4 三层键独立不代称、C5 禁止措辞与因果上限、C6 **G 未执行*
   "解释件存在 + 指向正确 + 带判据 + 内存剥除后必须回落到违规"，
   检查 **A8** 审比较忽略表本身（`head/code_version/committed_sha256` 必须可见）；
 · 索引改为 **deny-by-default**（不再默认 current），核对副产物单列
-  `verification_byproduct`；一键复现{**21 步**} `fails []`
-  （第 19/20 步 = A9 历史件字节基线 + 其触发反证，第 21 步 = h1 现场生成
-  漂移解释件；A10 附带改动看守 + A11 漂移登记看守在收尾断言里）。
+  `verification_byproduct`；一键复现 **21 步**} `fails []`
+  （新增的三步是 A9 历史件字节基线、A9 触发反证、h1 现场生成漂移解释件；A10 附带改动看守 + A11 漂移登记看守在收尾断言里）。
 
 ## 盲评准入结论：**NOT READY**
 

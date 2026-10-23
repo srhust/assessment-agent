@@ -2,7 +2,7 @@
  "compared": {
   "committed": "R14H_KB_CHANNEL_AUDIT.json",
   "rerun_by": "h1_r14_kb_channel_audit.py",
-  "code_version": "9dff5eec21db"
+  "code_version": "663e811ab08b"
  },
  "annotation_only": [],
  "verdict_level": [],
