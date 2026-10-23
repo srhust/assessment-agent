@@ -1,5 +1,5 @@
 {
- "head_at_run": "e2ae3ed1c240e0b1aafc664707fb1cb68d1139a0",
+ "head_at_run": "337dfd7da6b9dd38646b8dfa1dc2d0ba1437d7c1",
  "n_steps": 20,
  "steps": [
   {
@@ -8,8 +8,8 @@
    "out_mode": "fixed",
    "expected_to_change": true,
    "exit": 0,
-   "seconds": 1.7,
-   "artifact_sha256_short": "d797ab631b61",
+   "seconds": 1.2,
+   "artifact_sha256_short": "3b4240425128",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -21,8 +21,8 @@
    "out_mode": "fixed",
    "expected_to_change": true,
    "exit": 0,
-   "seconds": 0.4,
-   "artifact_sha256_short": "cf8aa0a48692",
+   "seconds": 0.3,
+   "artifact_sha256_short": "2e4a4c3a90f8",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -34,7 +34,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.8,
+   "seconds": 1.6,
    "artifact_sha256_short": "d27ba4087d5c",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -47,7 +47,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 9.4,
+   "seconds": 8.3,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -73,7 +73,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 3.4,
+   "seconds": 3.0,
    "artifact_sha256_short": "9a6a48a7e9ad",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -86,7 +86,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.8,
+   "seconds": 1.5,
    "artifact_sha256_short": "13b771de58f9",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -99,7 +99,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.1,
+   "seconds": 0.9,
    "artifact_sha256_short": "b96827fe92f9",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -112,8 +112,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 6.1,
-   "artifact_sha256_short": "65fe3be7c5dd",
+   "seconds": 9.7,
+   "artifact_sha256_short": "152d84ca5149",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -125,7 +125,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 9.3,
+   "seconds": 9.8,
    "artifact_sha256_short": "8812f2b72e12",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -138,7 +138,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.8,
+   "seconds": 1.2,
    "artifact_sha256_short": "89be0925dcbf",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -151,9 +151,9 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 0.9,
-   "artifact_sha256_short": "cda437e80169",
-   "artifact_rewritten": false,
+   "seconds": 0.7,
+   "artifact_sha256_short": "2d4d3ab078aa",
+   "artifact_rewritten": true,
    "stdout_tail": [
     "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
    ]
@@ -164,11 +164,11 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.6,
-   "artifact_sha256_short": "418f724ad8f2",
+   "seconds": 2.0,
+   "artifact_sha256_short": "0f8a026f9b49",
    "artifact_rewritten": false,
    "stdout_tail": [
-    "{\"selftest_fails\": [], \"main_rc\": 0, \"main_artifact_keys\": [\"budget\", \"checks\", \"data_worktree_entries\", \"fails\", \"incident_record\", \"rows\"], \"missing_keys\": []}"
+    "{\"selftest_fails\": [], \"main_rc\": 0, \"main_artifact_keys\": [\"budget\", \"checks\", \"data_worktree_entries\", \"fails\", \"head\", \"http_requests_made\", \"incident_record\", \"llm_calls_used\", \"rows\"], \"missing_keys\": []}"
    ]
   },
   {
@@ -177,8 +177,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 0.2,
-   "artifact_sha256_short": "544164ada4b7",
+   "seconds": 0.1,
+   "artifact_sha256_short": "9aef0f443838",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -190,8 +190,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 64.0,
-   "artifact_sha256_short": "3d51504e8dbb",
+   "seconds": 106.5,
+   "artifact_sha256_short": "10fce6023ae5",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -203,8 +203,8 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.9,
-   "artifact_sha256_short": "4a483f864604",
+   "seconds": 1.4,
+   "artifact_sha256_short": "d53227c267a3",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -228,9 +228,9 @@
    "artifact": "R14G0_GATE_READINESS_V5.json",
    "out_mode": "bare",
    "expected_to_change": false,
-   "exit": 1,
-   "seconds": 5.5,
-   "artifact_sha256_short": "9ec9ec9acdf3",
+   "exit": 0,
+   "seconds": 4.7,
+   "artifact_sha256_short": "93771f54fe67",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -241,10 +241,10 @@
    "artifact": "R14_CLAIM_AUDIT.json",
    "out_mode": "fixed",
    "expected_to_change": false,
-   "exit": 1,
-   "seconds": 9.1,
-   "artifact_sha256_short": "fc04dd05dd09",
-   "artifact_rewritten": true,
+   "exit": 0,
+   "seconds": 7.9,
+   "artifact_sha256_short": "93f7c242ca87",
+   "artifact_rewritten": false,
    "stdout_tail": [
     "}"
    ]
@@ -255,8 +255,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 10.2,
-   "artifact_sha256_short": "5560485d658e",
+   "seconds": 8.4,
+   "artifact_sha256_short": "bd3933897bb7",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14_INDEX.json"
@@ -291,15 +291,7 @@
    "rerun_by"
   ]
  },
- "fails": [
-  "scripts/a9_r14_historical_bytes.py → R14G_HISTORICAL_BYTES.json 的 llm_calls_used = None，应为 0",
-  "scripts/a9_r14_historical_bytes.py → R14G_HISTORICAL_BYTES.json 的 http_requests_made = None，应为 0",
-  "scripts/a9_r14_historical_bytes.py --selftest → R14G_HISTORICAL_BYTES_SELFTEST.json 的 main_artifact_is_complete = None，应为 True",
-  "scripts/e2e_r14_stage_g_readiness.py 退出码 1：",
-  "scripts/e2e_r14_stage_g_readiness.py → R14G0_GATE_READINESS_V5.json 的 failing = ['C7']，应为 []",
-  "scripts/e2e_r14_claim_audit.py 退出码 1：",
-  "scripts/e2e_r14_claim_audit.py → R14_CLAIM_AUDIT.json 的 fails = ['C3 数字对账不过：G0 ready true / failing []']，应为 []"
- ],
+ "fails": [],
  "worktree_clean_before": true,
  "worktree_clean_after": false,
  "dirty_after": [
@@ -311,7 +303,6 @@
   " M evidence/R14G0_GATE_READINESS_V5.json",
   " M evidence/R14G_HISTORICAL_BYTES.json",
   " M evidence/R14G_PLAN.json",
-  " M evidence/R14_CLAIM_AUDIT.json",
   " M evidence/R14_INDEX.json",
   " M evidence/R14_INDEX.md"
  ],

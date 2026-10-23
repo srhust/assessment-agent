@@ -693,44 +693,27 @@
   },
   {
    "artifact": "R14G_HISTORICAL_BYTES.json",
-   "script": "a9_r14_historical_bytes.py",
+   "status": "covered_by_bundle",
    "declared_writers": [
     "a9_r14_historical_bytes.py"
    ],
-   "refused_unsafe": [],
-   "worktree_collateral": [],
-   "collateral_removed": [],
-   "safety": "OK_ZERO_REQUESTS",
-   "offline": true,
-   "exit": 0,
-   "files_changed_by_rerun": [],
-   "own_declared_outputs_touched": [],
-   "status": "reproduced_identical",
-   "rerun_byte_identical": true
+   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
   },
   {
    "artifact": "R14G_HISTORICAL_BYTES_SELFTEST.json",
-   "script": "a9_r14_historical_bytes.py",
+   "status": "covered_by_bundle",
    "declared_writers": [
     "a9_r14_historical_bytes.py"
    ],
-   "refused_unsafe": [],
-   "worktree_collateral": [],
-   "collateral_removed": [],
-   "safety": "OK_ZERO_REQUESTS",
-   "offline": true,
-   "exit": 0,
-   "files_changed_by_rerun": [],
-   "own_declared_outputs_touched": [],
-   "status": "no_write_detected",
-   "detail": ""
+   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
   },
   {
    "artifact": "R14G_PLAN.json",
    "status": "covered_by_bundle",
    "declared_writers": [
     "d9_r14_stage_g_manifest.py",
-    "d9b_r14_lock_manifest.py"
+    "d9b_r14_lock_manifest.py",
+    "e2e_r14_claim_audit.py"
    ],
    "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
   },
