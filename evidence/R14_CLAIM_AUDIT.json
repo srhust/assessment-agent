@@ -283,7 +283,7 @@
     "injection_applied": "n/a",
     "caught_expected_check": true,
     "note": "",
-    "sample_fail": "C2 R14_PROGRESS_STOPGATE.md:374 把被取代件 R14E_NEWLAYOUT_REGRESSION_V2.json 当作当前引用（该句无勘误语境）",
+    "sample_fail": "C2 R14_PROGRESS_STOPGATE.md:377 把被取代件 R14E_NEWLAYOUT_REGRESSION_V2.json 当作当前引用（该句无勘误语境）",
     "stderr_tail": ""
    },
    {
