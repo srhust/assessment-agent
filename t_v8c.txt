@@ -1,0 +1,13 @@
+{
+ "verdict_identical_all": true,
+ "reproducibility": "NOT_REPRODUCIBLE_FROM_HEAD",
+ "v8_untouched": true,
+ "per_page_verdict": {
+  "ft-mirror-04": true,
+  "ft-mirror-04--tight": true,
+  "ft-overlay-12": true,
+  "ft-rot90-01": true,
+  "ft-trans-07": true
+ }
+}
+written E:\assessment-agent\evidence\R14E_REAL_PAGE_REPLAY_V8_CHECK.json

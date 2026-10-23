@@ -198,12 +198,12 @@
   {
    "id": "C4",
    "name": "manifest 5 件原图 SHA 复算一致 + 代码版本==HEAD + Prompt 源锁定",
-   "ok": true,
+   "ok": false,
    "evidence": {
     "planned": 5,
     "sha_mismatches": [],
-    "code_version": "9f3858fd61f2d2f303a95c8986ee818529eefba7",
-    "code_version_matches_manifest": true,
+    "code_version": "c3aadf24307d0a25e972c5c0fcc2419862244ce6",
+    "code_version_matches_manifest": false,
     "worktree_dirty_at_plan_time": true,
     "worktree_dirty_now": true,
     "prompt_source": "src/assessment_agent/prompts.py",
@@ -236,8 +236,10 @@
    }
   }
  ],
- "ready_for_G_after_human_approval": true,
- "failing": [],
+ "ready_for_G_after_human_approval": false,
+ "failing": [
+  "C4"
+ ],
  "real_http_requests_made": 0,
  "budget": {
   "max_requests_including_retry": 6,

@@ -52,7 +52,10 @@ def main() -> int:
             "solver_status": sol.status, "solver_answer": sol.answer,
             "verify_action": act, "final_answer": fa,
             **rs, "failed_checks": fails[:3],
-            "option_boxes": [[c["bbox_page"], c["ink"]] for c in opt_cells][:6],
+            # 三元组与已提交 V8 同形：cell_bbox_page + label_bbox + ink。
+            # 曾写窄成二元组，丢了 label_bbox（正是"标签一一对应"要看的信息）。
+            "option_boxes": [[c.get("cell_bbox_page") or c.get("bbox_page"),
+                              c.get("label_bbox"), c["ink"]] for c in opt_cells][:6],
             "solver_error": (sol.error or "")[:140],
         }
         print(pid, "->", sol.status, sol.answer, "|", act, fa,

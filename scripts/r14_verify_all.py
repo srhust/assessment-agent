@@ -43,6 +43,17 @@ EV = ROOT / "evidence"
 #   cwd_relative 脚本按 cwd 相对路径写（d1）
 #   fixed        脚本忽略 --out，固定写该件名（不许传）
 STEPS = [
+    # ---- step 0：G 批 manifest 重锁（HEAD 一推进 C4 必失效，故把"重锁"
+    # 本身变成清单的一步，而不是放松 C4，也不是每轮手动补跑）
+    ("scripts/d9_r14_stage_g_manifest.py",
+     "R14G_PLAN.json",
+     {"status": "PLANNED_NOT_EXECUTED", "llm_calls_used": 0,
+      "http_requests_made": 0},
+     "fixed", None),
+    ("scripts/d9b_r14_lock_manifest.py",
+     "R14G_PLAN.json",
+     {"model_lock": {"status": "UNRESOLVED_MUST_BE_CONFIRMED_BY_HUMAN"}},
+     "fixed", None),
     ("scripts/e2e_r14_stage_e_acceptance.py",
      "R14E_STAGE_E_ACCEPTANCE_V8.json",
      {"checks_failed": [], "wrong_releases": [], "llm_calls_used": 0},
@@ -63,9 +74,19 @@ STEPS = [
      "R14E_TIGHT_GAP_DIAGNOSIS.json", None, "fixed", None),
     ("scripts/e2e_r14_anchor_sweep.py",
      "R14E_ANCHOR_SWEEP.json", None, "fixed", None),
-    ("scripts/e2_r14_optionband_replay.py",
-     "R14E_REAL_PAGE_REPLAY_V8.json", None, "bare",
-     "R14E_REAL_PAGE_REPLAY_V8.json"),
+    # 真实截图复放件 V8：判定层可复现（见 R14E_REAL_PAGE_REPLAY_V8_CHECK），
+    # 但 V8 的**富化键**当前 HEAD 产不出、其题面 question.json 已被就地重写
+    # ⇒ **NOT reproducible from HEAD**。把重跑产物写回 V8 等于**改历史 Test
+    # 结果**（目标②禁止），故此步**不重跑**，只核对"该件没被动过"；
+    # 判定层复现由独立脚本 e2_r14_v8_reproducibility.py 负责（它写 **_RERUN**
+    # 新文件，绝不覆盖 V8）。
+    ("(no-rerun) scripts/e2_r14_optionband_replay.py",
+     "R14E_REAL_PAGE_REPLAY_V8.json", None, "skip", None),
+    ("scripts/e2_r14_v8_reproducibility.py",
+     "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
+     {"verdict_identical_all": True, "v8_untouched": True,
+      "reproducibility": {"status": "NOT_REPRODUCIBLE_FROM_HEAD"}},
+     "bare", "R14E_REAL_PAGE_REPLAY_V8_CHECK.json"),
     ("scripts/e2e_r14_six_condition_lineage.py",
      "R14E_LINEAGE_SIX_CONDITION.json", {"v10_equals_v9": True},
      "fixed", None),
@@ -79,6 +100,9 @@ STEPS = [
      {"self_checks_failed": []}, "fixed", None),
 ]
 SNAPSHOT_MODE = {"scripts/f1_r14_perturb_release_audit.py"}
+# 允许**因 HEAD 推进而如实改动**的件：G 批 manifest 的版本锁必须跟着 HEAD 走。
+# 登记出来而不是假装"零改动"。
+EXPECTED_CHANGE = {"R14G_PLAN.json"}
 
 # 一次性运行日志（非证据件）不该挡住"工作区干净"闸门；证据件仍逐哈希核对
 SCRATCH = re.compile(r"^(t_|tmp_|\.DS_Store)")
@@ -108,6 +132,11 @@ def worktree_clean():
         base = path.rsplit("/", 1)[-1]
         if "R14_VERIFICATION_BUNDLE" in path or SCRATCH.match(base):
             continue
+        if path.startswith("evidence/R14E_REAL_PAGE_REPLAY_V8_RERUN"):
+            continue          # 比对用的重跑新件，允许未跟踪
+        if path.startswith("evidence/R14E_REAL_PAGE_REPLAY_V8.") :
+            fails.append(f"A5 禁止改动历史件：{x}")
+            continue
         keep.append(x)
     return (not keep), keep
 
@@ -134,6 +163,18 @@ def main() -> int:
         if out_val:
             argv += ["--out", out_val]
         # ---- A4 预检：这步**将会**写到哪个绝对路径，必须就是现行件本身
+        if out_mode == "skip":
+            cur = sha(EV / art)
+            rows.append({"step": script, "artifact": art, "out_mode": "skip",
+                         "exit": 0, "seconds": 0.0,
+                         "artifact_sha256_short": cur[:12],
+                         "artifact_rewritten": False, "not_rerunnable": True,
+                         "stdout_tail": ["未重跑：该件不可从 HEAD 复现，"
+                                         "重跑写回等于修改历史结果"]})
+            if cur != before.get(art):
+                fails.append(f"A5 {art} 在 bundle 运行期间被改动（skip 步不应"
+                             f"写出任何东西）")
+            continue
         will_write = {
             "bare": str(EV / out_val) if out_val else None,
             "cwd_relative": str(ROOT / out_val) if out_val else None,
@@ -154,6 +195,7 @@ def main() -> int:
         dt = round(time.time() - t0, 1)
         p = EV / art
         row = {"step": script, "artifact": art, "out_mode": out_mode,
+               "expected_to_change": art in EXPECTED_CHANGE,
                "exit": r.returncode, "seconds": dt,
                "artifact_sha256_short": sha(p)[:12] if p.is_file() else None,
                "artifact_rewritten": bool(p.is_file()) and
@@ -170,12 +212,27 @@ def main() -> int:
                 d = {}
             for k, want in must.items():
                 got = dig(d, k)
+                if isinstance(want, dict) and isinstance(got, dict):
+                    if any(got.get(wk) != wv for wk, wv in want.items()):
+                        fails.append(f"{script} → {art} 的 {k} 子集不符："
+                                     f"{ {wk: got.get(wk) for wk in want} }"
+                                     f" ≠ {want}")
+                    continue
                 if got != want:
                     fails.append(f"{script} → {art} 的 {k} = {got!r}，"
                                  f"应为 {want!r}")
             if d.get("llm_calls_used") not in (0, None):
                 fails.append(f"{art} llm_calls_used 非 0：{d['llm_calls_used']}")
         rows.append(row)
+
+    # 重锁**不得**动预算
+    plan = json.loads((EV / "R14G_PLAN.json").read_text(encoding="utf-8"))
+    if plan.get("budget", {}).get("spent_so_far") != {"requests": 0, "tokens": 0}:
+        fails.append(f"重锁后预算被改动：{plan['budget'].get('spent_so_far')}")
+    if not plan.get("model_lock"):
+        fails.append("重锁后 model_lock 段缺失 —— d9 不得抹掉人工闸门记录")
+    if plan.get("fixed", {}).get("code_version") != head:
+        fails.append("重锁后 code_version 仍 != HEAD，C4 不可能通过")
 
     # f1 是固定写：重跑后哈希**必须不变**
     key = "R14F_PERTURB_RELEASE_AUDIT.json"

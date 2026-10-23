@@ -1,23 +1,25 @@
 {
- "head_at_run": "0e6b1c1e6d9fe1da861083a9a653d1be73553383",
+ "head_at_run": "c3aadf24307d0a25e972c5c0fcc2419862244ce6",
  "n_steps": 11,
  "steps": [
   {
    "step": "scripts/e2e_r14_stage_e_acceptance.py",
    "artifact": "R14E_STAGE_E_ACCEPTANCE_V8.json",
-   "exit": 1,
+   "out_mode": "bare",
+   "exit": 0,
    "seconds": 1.2,
    "artifact_sha256_short": "d27ba4087d5c",
    "artifact_rewritten": false,
    "stdout_tail": [
-    "== ft-mirror-04--tight: failed None | None None | rel=False | cells=3 anch=0 | binding=rebuilt | consumed=[('option_A.png', 168), ('option_B.png', 168), ('option_C.png', 168)]"
+    "checks_failed: []"
    ]
   },
   {
    "step": "scripts/d1_r11_six_condition.py",
    "artifact": "R14E_SIX_CONDITION_V10.json",
+   "out_mode": "cwd_relative",
    "exit": 0,
-   "seconds": 6.6,
+   "seconds": 5.8,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -27,6 +29,7 @@
   {
    "step": "scripts/f1_r14_perturb_release_audit.py",
    "artifact": "R14F_PERTURB_RELEASE_AUDIT.json",
+   "out_mode": "fixed",
    "exit": 0,
    "seconds": 1.6,
    "artifact_sha256_short": "da176b1a274b",
@@ -38,15 +41,19 @@
   {
    "step": "scripts/e2e_r14_newlayout_regression.py",
    "artifact": "R14E_NEWLAYOUT_REGRESSION_V3.json",
-   "exit": 1,
+   "out_mode": "bare",
+   "exit": 0,
    "seconds": 2.4,
    "artifact_sha256_short": "9a6a48a7e9ad",
    "artifact_rewritten": false,
-   "stdout_tail": []
+   "stdout_tail": [
+    "written E:\\assessment-agent\\evidence\\R14E_NEWLAYOUT_REGRESSION_V3.json"
+   ]
   },
   {
    "step": "scripts/e2e_r14_tight_gap_diagnosis.py",
    "artifact": "R14E_TIGHT_GAP_DIAGNOSIS.json",
+   "out_mode": "fixed",
    "exit": 0,
    "seconds": 1.3,
    "artifact_sha256_short": "13b771de58f9",
@@ -58,6 +65,7 @@
   {
    "step": "scripts/e2e_r14_anchor_sweep.py",
    "artifact": "R14E_ANCHOR_SWEEP.json",
+   "out_mode": "fixed",
    "exit": 0,
    "seconds": 0.8,
    "artifact_sha256_short": "e7e6d05b3720",
@@ -69,17 +77,19 @@
   {
    "step": "scripts/e2_r14_optionband_replay.py",
    "artifact": "R14E_REAL_PAGE_REPLAY_V8.json",
+   "out_mode": "bare",
    "exit": 0,
    "seconds": 1.1,
-   "artifact_sha256_short": "89be0925dcbf",
-   "artifact_rewritten": false,
+   "artifact_sha256_short": "9c1becbe7a7d",
+   "artifact_rewritten": true,
    "stdout_tail": [
-    "ft-mirror-04--tight -> failed None | None None | released False ok | 九宫格的目标空格不在行末，当前不支持该布局；变换通道：布局非单行/三行九宫格"
+    "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8.json"
    ]
   },
   {
    "step": "scripts/e2e_r14_six_condition_lineage.py",
    "artifact": "R14E_LINEAGE_SIX_CONDITION.json",
+   "out_mode": "fixed",
    "exit": 0,
    "seconds": 0.1,
    "artifact_sha256_short": "51c6deb05227",
@@ -91,9 +101,10 @@
   {
    "step": "scripts/e2e_r14_stage_g_readiness.py",
    "artifact": "R14G0_GATE_READINESS_V5.json",
+   "out_mode": "bare",
    "exit": 1,
    "seconds": 4.6,
-   "artifact_sha256_short": "0ac7c6a2f277",
+   "artifact_sha256_short": "2cb3c7025cf1",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -102,6 +113,7 @@
   {
    "step": "scripts/e2e_r14_claim_audit.py",
    "artifact": "R14_CLAIM_AUDIT.json",
+   "out_mode": "fixed",
    "exit": 1,
    "seconds": 2.4,
    "artifact_sha256_short": "f91f40e96377",
@@ -113,9 +125,10 @@
   {
    "step": "scripts/e2e_r14_index.py",
    "artifact": "R14_INDEX.json",
+   "out_mode": "fixed",
    "exit": 0,
-   "seconds": 4.1,
-   "artifact_sha256_short": "f75242b950d2",
+   "seconds": 4.3,
+   "artifact_sha256_short": "fdbb126d2fe5",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14_INDEX.json"
@@ -123,8 +136,6 @@
   }
  ],
  "fails": [
-  "scripts/e2e_r14_stage_e_acceptance.py 退出码 1：e 1120, in _opener\n    return self._accessor.open(self, flags, mode)\nFileNotFoundError: [Errno 2] No such file or directory: 'E:\\\\assessment-agent\\\\evidence\\\\evidence\\\\R14E_STAGE_E_ACCEPTANCE_V8.json'",
-  "scripts/e2e_r14_newlayout_regression.py 退出码 1：1120, in _opener\n    return self._accessor.open(self, flags, mode)\nFileNotFoundError: [Errno 2] No such file or directory: 'E:\\\\assessment-agent\\\\evidence\\\\evidence\\\\R14E_NEWLAYOUT_REGRESSION_V3.json'",
   "scripts/e2e_r14_stage_g_readiness.py 退出码 1：",
   "scripts/e2e_r14_stage_g_readiness.py → R14G0_GATE_READINESS_V5.json 的 failing = ['C4']，应为 []",
   "scripts/e2e_r14_claim_audit.py 退出码 1：",
@@ -133,7 +144,7 @@
  "worktree_clean_before": true,
  "worktree_clean_after": false,
  "dirty_after": [
-  " M evidence/R14E_REAL_PAGE_REPLAY.json",
+  " M evidence/R14E_REAL_PAGE_REPLAY_V8.json",
   " M evidence/R14G0_GATE_READINESS_V5.json",
   " M evidence/R14_CLAIM_AUDIT.json",
   " M evidence/R14_INDEX.json",

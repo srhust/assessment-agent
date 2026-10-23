@@ -1,0 +1,110 @@
+{
+ "purpose": "V8 复现性核验：判定层可复现、证据层不可复现，二者分开登记",
+ "head": "c3aadf24307d0a25e972c5c0fcc2419862244ce6",
+ "verdict_fields_checked": [
+  "solver_status",
+  "solver_answer",
+  "verify_action",
+  "final_answer",
+  "released",
+  "wrong_accept",
+  "failed_checks",
+  "solver_error",
+  "option_boxes"
+ ],
+ "verdict_identical_all": true,
+ "per_page": {
+  "ft-mirror-04": {
+   "verdict_identical": true,
+   "verdict_diff": {},
+   "released": true,
+   "wrong_accept": false,
+   "extra_keys_only_in_committed": [
+    "chain",
+    "consumed_crop_shas",
+    "consumption_binding",
+    "label_association_verified",
+    "option_sha256",
+    "options_used",
+    "provenance"
+   ],
+   "extra_keys_only_in_rerun": []
+  },
+  "ft-mirror-04--tight": {
+   "verdict_identical": true,
+   "verdict_diff": {},
+   "released": false,
+   "wrong_accept": false,
+   "extra_keys_only_in_committed": [
+    "chain",
+    "consumed_crop_shas",
+    "consumption_binding",
+    "label_association_verified",
+    "option_sha256",
+    "options_used",
+    "provenance"
+   ],
+   "extra_keys_only_in_rerun": []
+  },
+  "ft-overlay-12": {
+   "verdict_identical": true,
+   "verdict_diff": {},
+   "released": false,
+   "wrong_accept": false,
+   "extra_keys_only_in_committed": [
+    "chain",
+    "consumed_crop_shas",
+    "consumption_binding",
+    "label_association_verified",
+    "option_sha256",
+    "options_used",
+    "provenance"
+   ],
+   "extra_keys_only_in_rerun": []
+  },
+  "ft-rot90-01": {
+   "verdict_identical": true,
+   "verdict_diff": {},
+   "released": true,
+   "wrong_accept": false,
+   "extra_keys_only_in_committed": [
+    "chain",
+    "consumed_crop_shas",
+    "consumption_binding",
+    "label_association_verified",
+    "option_sha256",
+    "options_used",
+    "provenance"
+   ],
+   "extra_keys_only_in_rerun": []
+  },
+  "ft-trans-07": {
+   "verdict_identical": true,
+   "verdict_diff": {},
+   "released": false,
+   "wrong_accept": false,
+   "extra_keys_only_in_committed": [
+    "chain",
+    "consumed_crop_shas",
+    "consumption_binding",
+    "label_association_verified",
+    "option_sha256",
+    "options_used",
+    "provenance"
+   ],
+   "extra_keys_only_in_rerun": []
+  }
+ },
+ "reproducibility": {
+  "status": "NOT_REPRODUCIBLE_FROM_HEAD",
+  "why": "V8 含富化键（chain/consumed_crop_shas/consumption_binding/label_association_verified/option_sha256/options_used/provenance），当前 HEAD 的重放脚本产不出；且其题面 question.json 已被就地重写",
+  "what_is_still_true": "判定字段与 option_boxes 逐字一致 ⇒ 结论未变",
+  "degraded": "证据可核对性（不是数字）",
+  "action_for_human": "若要恢复完整复现，需把富化步骤纳入可重跑脚本（属新脚本，须人工批准；本轮不做）"
+ },
+ "v8_untouched": true,
+ "v8_sha256": "89be0925dcbf",
+ "rerun_artifact": "R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
+ "llm_calls_used": 0,
+ "http_requests_made": 0
+}

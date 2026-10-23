@@ -1,0 +1,310 @@
+{
+ "stage": "R14-E option-band anchor split; production solve+verify on 5 real screenshots (0 HTTP)",
+ "items": {
+  "ft-mirror-04": {
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "accept",
+   "final_answer": "A",
+   "released": true,
+   "wrong_accept": false,
+   "release_anomaly_missing_final": false,
+   "failed_checks": [],
+   "option_boxes": [
+    [
+     [
+      28,
+      146,
+      88,
+      24
+     ],
+     [
+      28,
+      146,
+      15,
+      24
+     ],
+     168
+    ],
+    [
+     [
+      116,
+      146,
+      85,
+      24
+     ],
+     [
+      116,
+      146,
+      12,
+      24
+     ],
+     168
+    ],
+    [
+     [
+      201,
+      146,
+      62,
+      24
+     ],
+     [
+      201,
+      146,
+      13,
+      24
+     ],
+     168
+    ]
+   ],
+   "solver_error": ""
+  },
+  "ft-rot90-01": {
+   "solver_status": "solved",
+   "solver_answer": "A",
+   "verify_action": "accept",
+   "final_answer": "A",
+   "released": true,
+   "wrong_accept": false,
+   "release_anomaly_missing_final": false,
+   "failed_checks": [],
+   "option_boxes": [
+    [
+     [
+      28,
+      146,
+      88,
+      28
+     ],
+     [
+      28,
+      146,
+      15,
+      28
+     ],
+     168
+    ],
+    [
+     [
+      116,
+      146,
+      85,
+      28
+     ],
+     [
+      116,
+      146,
+      12,
+      28
+     ],
+     168
+    ],
+    [
+     [
+      201,
+      146,
+      87,
+      28
+     ],
+     [
+      201,
+      146,
+      13,
+      28
+     ],
+     168
+    ],
+    [
+     [
+      288,
+      146,
+      61,
+      28
+     ],
+     [
+      288,
+      146,
+      14,
+      28
+     ],
+     168
+    ]
+   ],
+   "solver_error": ""
+  },
+  "ft-trans-07": {
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "wrong_accept": false,
+   "release_anomaly_missing_final": false,
+   "failed_checks": [],
+   "option_boxes": [
+    [
+     [
+      28,
+      150,
+      88,
+      20
+     ],
+     [
+      28,
+      150,
+      15,
+      20
+     ],
+     160
+    ],
+    [
+     [
+      116,
+      150,
+      85,
+      20
+     ],
+     [
+      116,
+      150,
+      12,
+      20
+     ],
+     160
+    ],
+    [
+     [
+      201,
+      150,
+      52,
+      20
+     ],
+     [
+      201,
+      150,
+      13,
+      20
+     ],
+     160
+    ]
+   ],
+   "solver_error": "已有规律无法唯一匹配选项：图形个数外推为 1，但有 3 个选项匹配（无法唯一确定）; 边数外推为 4，但有 3 个选项匹配; 对称性应为 垂直=True 水平=True，但有 3 个选项匹配; 墨迹面积外推到 160px，多个选项接近，无法唯一确定；变换通道：变换规律不可唯一判定"
+  },
+  "ft-overlay-12": {
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "wrong_accept": false,
+   "release_anomaly_missing_final": false,
+   "failed_checks": [],
+   "option_boxes": [
+    [
+     [
+      28,
+      238,
+      88,
+      28
+     ],
+     [
+      28,
+      238,
+      15,
+      28
+     ],
+     256
+    ],
+    [
+     [
+      116,
+      238,
+      85,
+      28
+     ],
+     [
+      116,
+      238,
+      12,
+      28
+     ],
+     320
+    ],
+    [
+     [
+      201,
+      238,
+      87,
+      28
+     ],
+     [
+      201,
+      238,
+      13,
+      28
+     ],
+     64
+    ],
+    [
+     [
+      288,
+      238,
+      55,
+      28
+     ],
+     [
+      288,
+      238,
+      14,
+      28
+     ],
+     160
+    ]
+   ],
+   "solver_error": "没有支持范围内的规律能解释已知图形（当前支持：个数、边数、面积、平移、对称性）；变换通道：变换规律不可唯一判定"
+  },
+  "ft-mirror-04--tight": {
+   "solver_status": "failed",
+   "solver_answer": null,
+   "verify_action": null,
+   "final_answer": null,
+   "released": false,
+   "wrong_accept": false,
+   "release_anomaly_missing_final": false,
+   "failed_checks": [],
+   "option_boxes": [
+    [
+     [
+      40,
+      160,
+      24,
+      24
+     ],
+     null,
+     168
+    ],
+    [
+     [
+      114,
+      160,
+      24,
+      24
+     ],
+     null,
+     168
+    ],
+    [
+     [
+      186,
+      160,
+      22,
+      24
+     ],
+     null,
+     168
+    ]
+   ],
+   "solver_error": "九宫格的目标空格不在行末，当前不支持该布局；变换通道：布局非单行/三行九宫格"
+  }
+ }
+}
