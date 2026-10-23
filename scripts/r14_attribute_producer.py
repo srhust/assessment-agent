@@ -369,16 +369,51 @@ def _writer_closure(src: str, lit: str) -> bool:
     `name = "X.json"` → `out = EV / name` → `out.write_text(...)` 这种
     二跳/三跳写法必须判成写出（V8/V5/V3 三个关键件都是这种写法）。
     """
-    seeds = set(re.findall(r"(\w+)\s*=\s*[^\n]{0,80}" + re.escape(lit), src))
+    # **种子只认路径形态**（本轮假作者根因）：
+    # `_probe_map = {"R14_VERIFICATION_BUNDLE.json": "r14_verify_all.py"}`
+    # 是**探针字典的键**，`DELIVERABLES = [..., "…BUNDLE.json", ...]`
+    # 是**清单元素**，都不是输出路径；旧写法把它们的左侧变量当种子，
+    # 再经 `p.read_text` 扩散到 `t/name/d`，最后撞上"别的件被 write_text"
+    # ⇒ 判成"索引写出了 bundle 件"（假作者）。
+    seeds = set()
+    # 种子按**赋值形态**取，不按"提到过该字面量"取：
+    # · `x = EV / "X.json"`、`x = ROOT / "evidence" / "X.json"`（字面路径）
+    # · `x = "X.json"`（裸字符串，再经 `ROOT / "evidence" / x` 拼出去 ——
+    #    V8 / V5 / V3 三个关键件正是这种写法，漏了就是**漏判**）
+    # · **容器字面量不算**：`_probe_map = {"X.json": …}`（探针字典的键）、
+    #   `DELIVERABLES = [..., "X.json", ...]`（清单元素）都只是**引用**；
+    #   旧写法把它们当种子，再经 `p.read_text` 扩散，
+    #   最后撞上"别的件被 write_text" ⇒ 判成**假作者**。
+    for _line in src.splitlines():
+        _m = ASSIGN_RE.match(_line.strip().split("#")[0].strip())
+        if not _m or lit not in _m.group(2):
+            continue
+        _v, _rhs = _m.group(1), _m.group(2).strip()
+        if _rhs.startswith(("{", "[")):
+            continue
+        if (re.search(r"^(?:EV|ROOT|EVIDENCE|Path|pathlib\.Path|os\.path)\b",
+                      _rhs)
+                or re.search(r"pathlib\.Path\s*\(|Path\s*\(|join\s*\(", _rhs)
+                or re.fullmatch(r"[\"'][A-Za-z0-9_.\-]+[\"']", _rhs)):
+            seeds.add(_v)
     # argparse 形态：`add_argument("--out", default="X.json")` → dest = out，
     # 真正的使用点是 `args.out` / `/ a.out`。上轮假脚本用这种形态，
     # 静态判据认不出来，于是"注入的假作者没被认出"= 自检失去意义。
     for m in re.finditer(r'add_argument\(\s*"--([a-z0-9_\-]+)"[^)]{0,120}'
                          + re.escape(lit), src):
         seeds.add(m.group(1).replace("-", "_"))
+        # argparse 的**目标变量**通常是 `args = ap.parse_args()` 之后
+        # 用 `args.<dest>` / `a.<dest>`。旧写法把 dest（`out`）当变量名去找
+        # `out.write_text`，而真实使用点是 **`a.out`** ⇒ 假作者判不出来、
+        # 自检失去意义（本轮 `zfake_orch.py` 就是这么暴露的）。
+        # ⇒ 把"承接 parse_args 的变量"也纳入种子，按 `<var>.<dest>` 匹配。
+        for mm in re.finditer(
+                r"(\w+)\s*=\s*\w+\.(?:parse_args|parse_known_args)\s*\(", src):
+            seeds.add(f"{mm.group(1)}.{m.group(1).replace('-', '_')}")
     if not seeds:
         return False
     vars_ = set(seeds)
+    _dotted = {v for v in seeds if "." in v}      # `a.out` 这类属性种子
     for _ in range(4):                      # 闭包迭代（够深且必然终止）
         grew = False
         for line in src.splitlines():
@@ -386,12 +421,36 @@ def _writer_closure(src: str, lit: str) -> bool:
             if not mm:
                 continue
             v, rhs = mm.group(1), mm.group(2)
-            if any(re.search(rf"\b{re.escape(s)}\b", rhs) for s in vars_):
+            # **只沿路径语义扩散**：
+            # `a = ROOT / "evidence" / x`、`a = x / "Y"`、`a = Path(x)`、
+            # `a = os.path.join(x, …)`、`a = EV / x`；
+            # `d = json.loads(p.read_text(…))`、`t = p.read_text(…)`
+            # 这类**读**不再扩散（旧写法正是从读扩散到 write_text，
+            # 把只读该件的脚本判成作者）。
+            def _path_spread(_v, _rhs):
+                if re.search(r"\b" + re.escape(_v) + r"\s*\)?\s*\.write_",
+                             _rhs):
+                    return False                      # 写它不等于路径扩散
+                if re.search(r"read_text|read_bytes|open\s*\(", _rhs):
+                    return False                      # 读，不扩散
+                return bool(re.search(
+                    r"(?:/\s*" + re.escape(_v) + r"\b"
+                    r"|" + re.escape(_v) + r"\s*/"
+                    r"|Path\s*\(\s*" + re.escape(_v) + r"\b"
+                    r"|join\s*\([^)]*\b" + re.escape(_v) + r"\b)", _rhs))
+            if any(_path_spread(s, rhs) for s in (vars_ - _dotted)):
                 if v not in vars_:
                     vars_.add(v)
                     grew = True
         if not grew:
             break
+    # 属性种子（argparse `a.out`）：要求出现 `p = … / a.out` 且该 `p` 被写
+    for d_ in _dotted:
+        mm = re.search(r"(\w+)\s*=\s*[^\n]{0,80}" + re.escape(d_)
+                       + r"\b", src)
+        if mm and re.search(r"\b" + re.escape(mm.group(1))
+                            + r"\s*\.write_", src):
+            return True
     for v in vars_:
         if re.search(rf"\.\s*{re.escape(v)}\s*\)\s*\.write_text\s*\(", src) \
                 or re.search(rf"\.\s*{re.escape(v)}\s*[,)]\s*[^\n]{{0,40}}"

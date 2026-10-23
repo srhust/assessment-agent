@@ -1,5 +1,5 @@
 {
- "head_at_run": "6700ea074a4520eea847da808642b6b8d5d1273e",
+ "head_at_run": "f830e4784880237f189d2cff0c503da549a1b47a",
  "n_steps": 21,
  "steps": [
   {
@@ -9,11 +9,13 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "e8ed782bae12",
+   "artifact_sha256_short": "26bf04ee378d",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/d9b_r14_lock_manifest.py",
@@ -22,11 +24,13 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.3,
-   "artifact_sha256_short": "bdbad4b8a416",
+   "artifact_sha256_short": "f9673a4c316b",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/e2e_r14_stage_e_acceptance.py",
@@ -34,12 +38,14 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.2,
+   "seconds": 1.1,
    "artifact_sha256_short": "d27ba4087d5c",
    "artifact_rewritten": false,
    "stdout_tail": [
     "checks_failed: []"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/d1_r11_six_condition.py",
@@ -47,12 +53,14 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.4,
+   "seconds": 5.8,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
     "}"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/f1_r14_perturb_release_audit.py",
@@ -65,7 +73,9 @@
    "artifact_rewritten": false,
    "stdout_tail": [
     "{\"contract\": \"15/15\", \"perturb_loc\": \"23/30\", \"perturb_status\": {\"ok\": 18, \"ambiguous\": 10, \"no_band\": 1, \"assumed_target\": 1}, \"solve_rows\": 17, \"wrong_grid_releasable\": [], \"wrong_accept_pert\": []}"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/e2e_r14_newlayout_regression.py",
@@ -73,12 +83,14 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.3,
+   "seconds": 2.4,
    "artifact_sha256_short": "9a6a48a7e9ad",
    "artifact_rewritten": false,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_NEWLAYOUT_REGRESSION_V3.json"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/e2e_r14_tight_gap_diagnosis.py",
@@ -86,12 +98,14 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.3,
+   "seconds": 1.4,
    "artifact_sha256_short": "13b771de58f9",
    "artifact_rewritten": false,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_TIGHT_GAP_DIAGNOSIS.json"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/e2e_r14_anchor_sweep.py",
@@ -104,7 +118,9 @@
    "artifact_rewritten": false,
    "stdout_tail": [
     "}"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/r14_attribute_producer.py",
@@ -112,25 +128,29 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.2,
-   "artifact_sha256_short": "9efd3a7a6835",
+   "seconds": 5.7,
+   "artifact_sha256_short": "9abd7e5d6088",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/r14_attribute_producer.py --selftest",
    "artifact": "R14E_ATTRIBUTION_SELFTEST.json",
    "out_mode": "fixed",
    "expected_to_change": false,
-   "exit": 0,
-   "seconds": 11.7,
-   "artifact_sha256_short": "8812f2b72e12",
-   "artifact_rewritten": false,
+   "exit": 1,
+   "seconds": 15.6,
+   "artifact_sha256_short": "7ed7f4070b19",
+   "artifact_rewritten": true,
    "stdout_tail": [
     "}"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/e2d_r14_production_replay_v4.py",
@@ -143,7 +163,9 @@
    "artifact_rewritten": false,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_RERUN.json"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/a9_r14_historical_bytes.py",
@@ -152,11 +174,13 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "7cf16142af60",
+   "artifact_sha256_short": "db33b742331e",
    "artifact_rewritten": true,
    "stdout_tail": [
     "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/a9_r14_historical_bytes.py --selftest",
@@ -164,12 +188,14 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.0,
+   "seconds": 2.1,
    "artifact_sha256_short": "0f8a026f9b49",
    "artifact_rewritten": false,
    "stdout_tail": [
     "{\"selftest_fails\": [], \"main_rc\": 0, \"main_artifact_keys\": [\"budget\", \"checks\", \"data_worktree_entries\", \"fails\", \"head\", \"http_requests_made\", \"incident_record\", \"llm_calls_used\", \"rows\"], \"missing_keys\": []}"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/h1_r14_kb_channel_audit.py",
@@ -182,7 +208,9 @@
    "artifact_rewritten": false,
    "stdout_tail": [
     "{\"missing\": {\"jr.categorical-syllogism\": \"缺卡（三段论属逻辑判断族，numeric\", \"nc.arithmetic-precedence\": \"确定性执行器已覆盖（Direct-AST\", \"nc.combinatorics-power\": \"缺卡（排列组合/幂集计数族 KB 无任何\", \"nc.work-rate\": \"异名等价卡（效率最小公倍数法即工程问题通\"}, \"channel_rows\": 7}"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/e2f_r14_causal_delta.py",
@@ -191,24 +219,28 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.1,
-   "artifact_sha256_short": "041628a24ccc",
+   "artifact_sha256_short": "df3431354231",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/r14_semantic_repro.py",
    "artifact": "R14E_RERUN_SEMANTICS.json",
    "out_mode": "fixed",
    "expected_to_change": false,
-   "exit": 0,
-   "seconds": 122.9,
-   "artifact_sha256_short": "640ef933c137",
-   "artifact_rewritten": false,
+   "exit": 1,
+   "seconds": 109.7,
+   "artifact_sha256_short": "dc6d21420e24",
+   "artifact_rewritten": true,
    "stdout_tail": [
     "}"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/e2_r14_v8_reproducibility.py",
@@ -216,12 +248,14 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.2,
-   "artifact_sha256_short": "2be4012c16d8",
+   "seconds": 1.3,
+   "artifact_sha256_short": "355d3bee31ec",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/e2e_r14_six_condition_lineage.py",
@@ -234,7 +268,9 @@
    "artifact_rewritten": false,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_LINEAGE_SIX_CONDITION.json"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/e2e_r14_stage_g_readiness.py",
@@ -243,11 +279,13 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 4.6,
-   "artifact_sha256_short": "1c69701d044d",
+   "artifact_sha256_short": "a54ca397260b",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/e2e_r14_claim_audit.py",
@@ -255,12 +293,14 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 9.8,
+   "seconds": 9.7,
    "artifact_sha256_short": "afee54087687",
    "artifact_rewritten": false,
    "stdout_tail": [
     "}"
-   ]
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
   },
   {
    "step": "scripts/e2e_r14_index.py",
@@ -268,12 +308,14 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 8.8,
-   "artifact_sha256_short": "2a9f894aefd5",
+   "seconds": 10.7,
+   "artifact_sha256_short": "6f74e7a76dcc",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14_INDEX.json"
-   ]
+   ],
+   "run_mark_artifact": "fc54e04eb962",
+   "run_mark_stdout": null
   }
  ],
  "comparison_volatile_keys": {
@@ -304,7 +346,16 @@
    "rerun_by"
   ]
  },
- "fails": [],
+ "fails": [
+  "scripts/r14_attribute_producer.py --selftest 退出码 1：",
+  "scripts/r14_attribute_producer.py --selftest → R14E_ATTRIBUTION_SELFTEST.json 的 fails = ['写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者']，应为 []",
+  "scripts/r14_semantic_repro.py 退出码 1：",
+  "scripts/r14_semantic_repro.py → R14E_RERUN_SEMANTICS.json 的 violations = [{'artifact': 'R14_VERIFICATION_BUNDLE.json', 'script': 'e2e_r14_index.py', 'declared_writers': ['e2e_r14_index.py', 'r14_verify_all.py'], 'refused_unsafe': [{'script': 'r14_verify_all.py', 'reason': '自我编排器（名录）：动态核验它等于递归重跑整条链'}], 'worktree_collateral': ['evidence/R14_INDEX.json', 'evidence/R14_INDEX.md'], 'collateral_removed': [], 'safety': 'OK_ZERO_REQUESTS', 'offline': True, 'exit': 0, 'files_changed_by_rerun': ['R14_INDEX.json', 'R14_INDEX.md'], 'own_declared_outputs_touched': ['R14_INDEX.json'], 'status': 'VIOLATION_write_path_drift', 'detail': \"重跑 scripts/e2e_r14_index.py 除本件外还改动了非自指件 ['R14_INDEX.md']\"}]，应为 []",
+  "A12 R14_INDEX.json 件里有 run_mark=fc54e04eb962，但该步 stdout **没有**报告 run_mark ⇒ 无法证明这个件是本次运行写的（可能读到陈旧产物）",
+  "A6 安全闸门自检未过：['写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者']",
+  "A7 补集复现核对仍有违规：['R14_VERIFICATION_BUNDLE.json']",
+  "A12 陈旧产物：1 步的件内 run_mark 与 stdout 不符"
+ ],
  "worktree_clean_before": true,
  "worktree_clean_after": false,
  "A10_expected_paths": 39,
@@ -332,11 +383,20 @@
    "http_requests_made": 0
   }
  },
+ "A12_stale_artifact_guard": {
+  "verified": true,
+  "steps_with_mark": 1,
+  "stdout_matches_artifact": 0,
+  "refutation": "改掉件内 run_mark ⇒ 差异必须可见（已复原）",
+  "note": "件内 mark 必须与该步 stdout mark 一致，否则该步的件可能是上一轮残留"
+ },
  "dirty_after": [
   " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.json",
   " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.md",
   " M evidence/R14E_ARTIFACT_ATTRIBUTION.json",
+  " M evidence/R14E_ATTRIBUTION_SELFTEST.json",
   " M evidence/R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
+  " M evidence/R14E_RERUN_SEMANTICS.json",
   " M evidence/R14G0_GATE_READINESS_V5.json",
   " M evidence/R14G_HISTORICAL_BYTES.json",
   " M evidence/R14G_PLAN.json",
