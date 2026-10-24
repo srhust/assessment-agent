@@ -2,10 +2,10 @@
  "status": "REFUSED",
  "reason": "crashed",
  "detail": {
-  "traceback_tail": "Traceback (most recent call last):\n  File \"E:\\assessment-agent\\scripts\\r14_verify_all.py\", line 879, in <module>\n    sys.exit(main())\n  File \"E:\\assessment-agent\\scripts\\r14_verify_all.py\", line 416, in main\n    \"DSH_BUNDLE_RUN_MARK\": mark}\nNameError: name 'mark' is not defined\n"
+  "traceback_tail": "Traceback (most recent call last):\n  File \"E:\\assessment-agent\\scripts\\r14_verify_all.py\", line 898, in <module>\n    sys.exit(main())\n  File \"E:\\assessment-agent\\scripts\\r14_verify_all.py\", line 382, in main\n    _this_run_mark = _uuid.uuid4().hex[:12]\nUnboundLocalError: local variable '_uuid' referenced before assignment\n"
  },
- "head_at_run": "1fed0fc924f30472130e74a19919358c736005b2",
- "run_mark": "c2094c0268a9",
+ "head_at_run": "935aae516985331efbaa92cee69d32645aa05b0e",
+ "run_mark": "835cbe1cb16f",
  "n_steps": 0,
  "steps": [],
  "fails": [

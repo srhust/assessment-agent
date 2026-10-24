@@ -379,7 +379,11 @@ def main() -> int:
     # ② 最终写进 bundle 件；两处**同一个值**才能让交付汇总区分
     # "本轮证据"与"上一轮证据"。落盘时才生成 ⇒ 子步骤读到的
     # 永远是上一轮的 mark ⇒ 判据空转。
-    _this_run_mark = _uuid.uuid4().hex[:12]
+    # **`_uuid` 是 L838 的函数内延迟导入**，在此点尚未绑定
+    # （实测 `UnboundLocalError: local variable '_uuid' referenced
+    # before assignment`）⇒ 就地导入。
+    import uuid as _u2
+    _this_run_mark = _u2.uuid4().hex[:12]
     rows, fails = [], []
     for script, art, must, out_mode, out_val in STEPS:
         parts = script.split()
