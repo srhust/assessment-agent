@@ -1,7 +1,7 @@
 {
  "status": "RAN",
- "run_mark": "0e5ddf7aceac",
- "head_at_run": "9b39356b5ad64a729f6db21897b1980264ffe6a0",
+ "run_mark": "aafd5548a31a",
+ "head_at_run": "b56b90f027c878511393356e9b236332ab642b95",
  "n_steps": 21,
  "docs_step_count_synced": [],
  "A13_step_count_guard": {
@@ -40,8 +40,8 @@
    "out_mode": "fixed",
    "expected_to_change": true,
    "exit": 0,
-   "seconds": 1.1,
-   "artifact_sha256_short": "9f4503d3757e",
+   "seconds": 1.0,
+   "artifact_sha256_short": "043c4b4b85d5",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -56,7 +56,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.5,
-   "artifact_sha256_short": "7ecc09f05b51",
+   "artifact_sha256_short": "ed2b6cccdbef",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -70,7 +70,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.9,
+   "seconds": 1.8,
    "artifact_sha256_short": "d27ba4087d5c",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -85,7 +85,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 11.1,
+   "seconds": 10.8,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -100,7 +100,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 3.3,
+   "seconds": 2.8,
    "artifact_sha256_short": "da176b1a274b",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -115,7 +115,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 4.8,
+   "seconds": 5.1,
    "artifact_sha256_short": "9a6a48a7e9ad",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -130,7 +130,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.4,
+   "seconds": 2.3,
    "artifact_sha256_short": "13b771de58f9",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -145,7 +145,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.5,
+   "seconds": 1.4,
    "artifact_sha256_short": "b96827fe92f9",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -160,8 +160,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 16.6,
-   "artifact_sha256_short": "05039c10ed51",
+   "seconds": 16.5,
+   "artifact_sha256_short": "80648cb70d65",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -175,7 +175,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 26.1,
+   "seconds": 28.3,
    "artifact_sha256_short": "b7d44eecbd8d",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -190,7 +190,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.8,
+   "seconds": 1.7,
    "artifact_sha256_short": "89be0925dcbf",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -206,7 +206,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 1.1,
-   "artifact_sha256_short": "cf1e61ed72f5",
+   "artifact_sha256_short": "45482f030801",
    "artifact_rewritten": true,
    "stdout_tail": [
     "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
@@ -220,7 +220,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 3.4,
+   "seconds": 3.3,
    "artifact_sha256_short": "0f8a026f9b49",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -235,7 +235,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.3,
+   "seconds": 1.9,
    "artifact_sha256_short": "9fd286b67089",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -251,7 +251,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.2,
-   "artifact_sha256_short": "99799da0d6a8",
+   "artifact_sha256_short": "2cdb676d2c26",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -265,9 +265,9 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 239.4,
-   "artifact_sha256_short": "84c66c451bf8",
-   "artifact_rewritten": true,
+   "seconds": 238.1,
+   "artifact_sha256_short": "07ce92bf8c62",
+   "artifact_rewritten": false,
    "stdout_tail": [
     "}"
    ],
@@ -280,8 +280,8 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.9,
-   "artifact_sha256_short": "037daa10f33d",
+   "seconds": 1.8,
+   "artifact_sha256_short": "8e8665f4d9b9",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -310,8 +310,8 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.6,
-   "artifact_sha256_short": "3b0449f6d214",
+   "seconds": 5.4,
+   "artifact_sha256_short": "0862db572907",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -325,8 +325,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 16.1,
-   "artifact_sha256_short": "c1816e5937fa",
+   "seconds": 15.1,
+   "artifact_sha256_short": "8f881f1ff40c",
    "artifact_rewritten": false,
    "stdout_tail": [
     "}"
@@ -340,14 +340,14 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 25.8,
-   "artifact_sha256_short": "922f6b8d9629",
+   "seconds": 21.4,
+   "artifact_sha256_short": "348de233266e",
    "artifact_rewritten": true,
    "stdout_tail": [
-    "{\"run_mark\": \"bc80b16d8462\", \"n_artifacts\": 60, \"count_synced_to_docs\": [], \"self_checks_failed\": []}"
+    "{\"run_mark\": \"f5cc87bbc093\", \"n_artifacts\": 60, \"count_synced_to_docs\": [], \"self_checks_failed\": []}"
    ],
-   "run_mark_artifact": "bc80b16d8462",
-   "run_mark_stdout": "bc80b16d8462"
+   "run_mark_artifact": "f5cc87bbc093",
+   "run_mark_stdout": "f5cc87bbc093"
   }
  ],
  "comparison_volatile_keys": {
