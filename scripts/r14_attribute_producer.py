@@ -553,6 +553,29 @@ def _resolve_target(node, src_map):
     return {v.rsplit("/", 1)[-1] for v in got}
 
 
+def _has_write_verb(src):
+    """语法树级预过滤：本脚本**是否可能**写文件。
+
+    覆盖 `write_text` / `write_bytes` / `open(...)`，
+    以及 `Path.write_*` 的任意属性名（新形态自动被接纳，
+    不会像字符串判据那样把没见过的写法**静默判成不产出**）。
+    """
+    try:
+        tree = ast.parse(src)
+    except SyntaxError:
+        return "write" in src or "open(" in src
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Attribute) and node.attr.startswith("write"):
+            return True
+        if isinstance(node, ast.Call):
+            f = node.func
+            if isinstance(f, ast.Name) and f.id in ("open", "dump"):
+                return True
+            if isinstance(f, ast.Attribute) and f.attr.startswith("run"):
+                return True          # subprocess 包装写入也算候选，交给后判
+    return False
+
+
 def _dotted(node):
     """把 `Name`/`Attribute` 链**迭代**拼成 `"a.out"`（不用 `ast.unparse`）。
 
@@ -788,7 +811,12 @@ def script_declares_write(name: str):
         实测产生了"索引改了 bundle 件"的假阳性漂移。
     """
     src = script_text(name)
-    if "write_text" not in src and "open(" not in src:
+    # **预过滤必须走语法树，不能走字符串**：
+    # 上一版用 `"write_text" not in src and "open(" not in src`，
+    # 于是只写 `Path.write_bytes(...)`（或 `dump(..., open(...,"w"))`
+    # 之外任何新形态）的生产者会被**静默判成不产出**——
+    # 预过滤的作用是省开销，**不能反过来当判据**。
+    if not _has_write_verb(src):
         return []
     out = set()
     for m in re.finditer(r'"([^"\n]{0,60}?R14[A-Za-z0-9_\-]*\.json)"', src):

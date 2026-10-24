@@ -85,8 +85,7 @@ def main() -> int:
     # （本轮实测命中：重跑 INJECT_SELFTEST 却改掉了
     #  `R14_DELIVERY_SUMMARY.md`）。"写了两个件"不是贴心，
     # 是**输出计划与声明不符**。
-    _out_explicit = name != "R14_DELIVERY_SUMMARY.json"
-    fails, rows, log_only = [], [], []
+    fails, rows = [], []
     try:
         i = L("R14_INDEX.json")
         b = L("R14_VERIFICATION_BUNDLE.json")
@@ -139,11 +138,13 @@ def main() -> int:
     else:
         _bundle_basis = "STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）"
         _basis_this_run = True
-    _degraded = (not _basis_this_run) and (
-        b.get("status") != "RAN" or "A12_stale_artifact_guard" not in b)
-    if _degraded:
-        # **不许覆盖真实值来"凑结构"**：只补**真正缺失**的键，
-        # 且不把 `status` 改成别的值、不把 `fails` 换成自造句子。
+    # **不许覆盖真实值来"凑结构"**：只补**真正缺失**的键，
+    # 且不把 `status` 改成别的值、不把 `fails` 换成自造句子。
+    # （上一版这里挂了一个 `if _degraded:` 条件，
+    # 而 `_degraded` 与 `_basis_this_run` 表达同一件事 ⇒ 两个名字
+    # 一份语义，删掉一个时必须连**它的 if** 一起删——
+    # 我上一版只删了赋值行，留下 `if _degraded:` ⇒ `NameError`。）
+    if not _basis_this_run:
         for _k in ("A12_stale_artifact_guard", "A13_step_count_guard",
                    "A10_collateral", "A11_drift_register", "budget"):
             b.setdefault(_k, "MISSING: 非本轮 bundle 证据")

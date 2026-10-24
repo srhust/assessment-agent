@@ -685,16 +685,6 @@ def main() -> int:
                       "sha256_now", "sha256_at_introductory_commit",
                       "bundle_run_mark", "recorded_at", "timestamp")
 
-    def _sha_stable(p: Path) -> str:
-        """对**去掉自身标识字段**后的内容取 sha（剥不掉就退回原 sha）。"""
-        try:
-            d = json.loads(p.read_text(encoding="utf-8"))
-        except Exception:  # noqa: BLE001
-            return sha(p)
-        if isinstance(d, dict):
-            d = {k: v for k, v in d.items() if k not in _VOLATILE_SELF}
-        return hashlib.sha256(json.dumps(
-            d, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
 
     # ⇒ 比较必须做**对称归一**：先对 HEAD 里的版本算"稳定 sha"，
     #   再对工作区版本算同一个"稳定 sha"——
@@ -712,8 +702,6 @@ def main() -> int:
                         "self_checks_failed", "n_artifacts",
                         "count_synced_to_docs", "gate_values", "n_cases")
 
-    def _conclusion(d):
-        return {k: d.get(k, "ABSENT") for k in _CONCLUSION_KEYS}
 
     def _norm(d):
         """**递归**剥掉轮次戳字段（`head/run_mark/code_version/git_sha…`）。
