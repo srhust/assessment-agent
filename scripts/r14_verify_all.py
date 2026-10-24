@@ -331,7 +331,10 @@ def selftest_a10() -> dict:
 A10_PROBE_ART = "_A10_PROBE.json"
 
 
-def worktree_clean():
+def worktree_clean(self_only: bool = False):
+    """`self_only=True`：**只把 bundle 结论件自身的改动当干净**。
+    入口守卫用它（否则 bundle 会被自己上一轮的输出卡死），
+    收尾守卫用默认严格模式。"""
     r = subprocess.run(["git", "status", "--porcelain"], cwd=ROOT,
                        capture_output=True, text=True)
     keep = []
@@ -340,8 +343,18 @@ def worktree_clean():
             continue
         path = x[3:].strip().replace("\\", "/")
         base = path.rsplit("/", 1)[-1]
+        if self_only and "R14_VERIFICATION_BUNDLE" in path:
+            continue
         if "R14_VERIFICATION_BUNDLE" in path or SCRATCH.match(base):
             continue
+        # **bundle 的入口守卫不许被自己的上轮输出卡死**（本轮实测）：
+        # 守卫跑在**任何步骤之前**，此时工作区"脏"的那一项
+        # 只可能是 bundle 结论件本身（`git add -A` 把它一起提交了，
+        # 于是下一轮它又被自己改写）⇒ 死锁：
+        # 拒跑 → 写出 REFUSED → 又脏 → 又拒跑。
+        # ⇒ `worktree_clean()` 保留一个 `self_only` 模式：
+        #   入口守卫用"除 bundle 件外是否还有别的东西"判，
+        #   **收尾守卫**仍用严格模式（步骤跑完后必须真的干净）。
         # **补集复现的重跑临时件不是脏**（本轮实测的死锁）：
         # bundle 第 16 步 `r14_semantic_repro.py` 会生成
         # `evidence/__R14SR__*.json` 并删除，但若它中途崩溃
@@ -362,11 +375,15 @@ def worktree_clean():
 
 
 def main() -> int:
-    clean, dirty = worktree_clean()
+    # **入口守卫用 `self_only`**：bundle 自己的结论件在本轮被改写
+    # 是**设计如此**（`git add -A` 提交后它又变脏是必然），
+    # 拿它当"工作区脏"拒跑 = 被自己上一轮的输出卡死（本轮实测）。
+    clean, dirty = worktree_clean(self_only=True)
     if not clean:
         return refuse_and_record(
             "dirty_worktree",
-            {"note": "bundle 要求先提交再复现（不自动 stash）",
+            {"note": "bundle 要求先提交再复现（不自动 stash）；"
+                     "入口守卫忽略 bundle 结论件自身",
              "dirty": dirty[:12]})
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
                           capture_output=True, text=True).stdout.strip()

@@ -4,11 +4,11 @@
  "detail": {
   "note": "bundle 要求先提交再复现（不自动 stash）",
   "dirty": [
-   "?? t1.txt"
+   "?? t3.txt"
   ]
  },
- "head_at_run": "5ea9b74279d027ae1f7d342486abf3be52d24bd2",
- "run_mark": "dfe55049e48d",
+ "head_at_run": "a3c871660d2eb50a8c326c494781af2b4da6c3c0",
+ "run_mark": "79de5e597437",
  "n_steps": 0,
  "steps": [],
  "fails": [
