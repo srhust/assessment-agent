@@ -1,12 +1,12 @@
 # R14 ④ 交付汇总与盲评准入结论
 
-- HEAD `a7c2c8dfc`；本汇总由 `scripts/r14_delivery_summary.py` **读真件生成**，数字不手打、不跨轮复用。
+- HEAD `8af0e2107`；本汇总由 `scripts/r14_delivery_summary.py` **读真件生成**，数字不手打、不跨轮复用。
 - 取数来源：14 项登记交付件 + F/perturb/A9/G 计划。
 
 ## 十项材料
 
 - **1 交付登记**：14 项在登记内且状态合规；索引 self_checks_failed []
-- **2 一键复现 bundle**：basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head a7c2c8dfc 步数 21 fails [] http 0 tokens 0；A12 1/1、A10 []、A11 []
+- **2 一键复现 bundle**：basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head 8af0e2107 步数 21 fails [] http 0 tokens 0；A12 1/1、A10 []、A11 []
 - **3 声明审计**：fails []；C1 63 条、C3 27 条、C8 计数点 23（活引用 13 / 豁免 10）；注入自证 13 例全抓 True
 - **4 补集语义复现**：violations 0；登记反证 mode synthetic proved True
 - **5 生产者归属**：V8 true_producers []、shape_only_matches ['scripts/e2d_r14_production_replay_v4.py']、partial ['scripts/e2_r14_optionband_replay.py'] ⇒ reproducibility VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING；双钉自测 fails []
