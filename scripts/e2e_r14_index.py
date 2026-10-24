@@ -18,6 +18,7 @@ import json
 import re
 import subprocess
 import sys
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -58,6 +59,8 @@ CURRENT = {
     "R14G_HISTORICAL_BYTES.json": "历史 Test 件逐字节对引入 commit 的完整性核验"
                                   "（含本轮误覆写事故记录）",
     "R14G_HISTORICAL_BYTES_SELFTEST.json": "A9 字节基线检查的触发反证",
+    "R14_DELIVERY_SUMMARY.json": "④ 交付汇总（逐项从真件取数）",
+    "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json": "④ 交付汇总的取数即断言反证",
     "R14G_HISTORICAL_BYTES.md": "历史 Test 件字节完整性核验正文（含本轮"
                                 "误覆写事故记录与自我撤回）",
     "R14_PROGRESS_STOPGATE.md": "人工评审入口（本轮闸门文档）",
@@ -188,8 +191,8 @@ DELIVERABLES = [
     "R14G_PLAN.json", "R14G0_GATE_READINESS_V5.json",
     "R14G_HISTORICAL_BYTES.md", "R14E_RERUN_SEMANTICS.json",
     "R14_CLAIM_AUDIT.json", "R14E_ATTRIBUTION_SELFTEST.json",
-    "R14E_ARTIFACT_ATTRIBUTION.json",
-    "R14_DELIVERY_SUMMARY.md", "R14_DELIVERY_SUMMARY.json",
+    "R14E_ARTIFACT_ATTRIBUTION.json", "R14_DELIVERY_SUMMARY.json",
+    "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
 ]
 
 
@@ -717,7 +720,152 @@ f"{r['commit_added'] or '未入库'} | "
     if fails:
         lines += ["## 自检失败", ""] + [f"- {f}" for f in fails]
     (EV / "R14_INDEX.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print("written", dst)
+    # **计数由生产者同步，不由我手打**：登记类散文里的
+    # "N 件逐件登记"必须等于本件 `n_artifacts`。
+    # 上一轮这类计数靠手改，改成了 59 而真值是 60 ⇒ C8 红；
+    # 更糟的是"由 bundle 每轮回写"这句话**当时并不成立**。
+    _sync = []
+    _sp = Counter(r["status"] for r in rows)
+    # **计数真值表**：C8 判什么形态，这里就同步什么形态。
+    # 上一版只回写 `N 件逐件登记` ⇒ bundle 立刻报出我漏掉的
+    # `current 30`（真值 32）——**部分同步比不同步更危险**，
+    # 它让文档看起来"已经自动化了"。
+    _truth = {
+        "artifact_total": out["n_artifacts"],
+        "current": _sp["current"],
+        "superseded": _sp["superseded"],
+        "verification_byproduct": _sp["verification_byproduct"],
+        "historical": _sp["historical"],
+        "erratum_kept": _sp["erratum_kept"],
+        "self": _sp["self"],
+    }
+    # 上一版**手写**这些形态的替换对（漏了一个分组、少同步一档），
+    # 于是 `IndexError: no such group` 把索引打崩 ⇒ 盘上留着**上一轮**
+    # 的索引件（本轮第 11 条坑的第 5 次复发）。
+    # ⇒ **由 `_truth` 的键**驱动正则：新增一档只要加一条形态，
+    #   不再手写捕获组。
+    # 每条形态 = (正则, 真值键, 模板, 自检样例, 自检期望)。
+    # **装载即自检**：模板引用了不存在的组 ⇒ 立刻 `IndexError`，
+    # 但我宁可在这里**显式报错**，也不要它在回写循环里
+    # 把索引打崩、让盘上留下上一轮的旧结论件冒充本轮。
+    import re as _re_f
+    # 每条形态 = (正则, 真值键, 模板, 自检样例, 自检期望, 命名来源)。
+    # **命名来源**：`pre`/`post` 从哪个捕获组取、或是字面量/空串。
+    # 位序（`{0}`/`{1}`/`{2}`）在这里**彻底消失**——
+    # 我为它连猜错三次（`{1}{t}{2}`、`{t}{2}`、`{0}{t}{1}`），
+    # 每次都要真跑一遍才知道对错；根因是
+    # `"{t}".format(*groups, t=v)` 里 **`t` 不占位置参数**，
+    # 位置参数只有 `*groups`，而 `str.format` 的 `{n}` 是 **0-based**。
+    # 每条形态 = (正则, 真值键, pre 来源, post 来源, 样例)。
+    # **期望值不再由我手填**：上一版同时手填模板和期望，
+    # 于是 `99 件逐件登记` 拼出 `9960 件逐件登记` 时，
+    # 我的"期望"也跟着写成 `99 件逐件登记`——
+    # 两者各自漂移还互相"验证"，这是**最像自检的非自检**。
+    # 现在只核**语义三条件**（下面 `_FORMS` 用后即验）。
+    # 每条形态 = (正则, 真值键, 样例)。正则**必须**含命名组 `num`，
+    # 替换时**只换 `num` 的内容、其余字符逐字保留** ⇒
+    # "改动了非数字文本"这条判据由**构造**保证。
+    # （上一版用 `{pre}{t}{post}` 裸拼，`current 99 /` 被同步成
+    #  `current32 /`——`\s` 属于捕获组却被丢掉，数字前后的空格是**原文**。）
+    _FORMS = [
+        (r"\d+(?=\s*件逐件登记)", "artifact_total", "99 件逐件登记"),
+        # **反引号内不匹配**：文档里 `"55 件逐件登记"` 是**注入锚点说明**、
+        # 不是声明；`claim audit` 的 C8 按 `inline_code_or_fence` 豁免它们。
+        # 同步器与审计器必须**同一口径**，否则我会把
+        # 一段"讲豁免机制"的话同步成假数字。
+        (r"(?<![A-Za-z_`])current\s+\d+", "current", "current 99 /"),
+        (r"当前\s+\d+", "current", "当前 99 /"),
+        (r"被取代\s+\d+", "superseded", "被取代 99 /"),
+        (r"核对副产物\s+\d+", "verification_byproduct", "核对副产物 99"),
+        (r"勘误保留\s+\d+", "erratum_kept", "勘误保留 99"),
+        (r"历史\s+\d+", "historical", "历史 99 /"),
+    ]
+
+    def _apply1(text):
+        """按 `_truth` 同步一遍（**自检与回写共用同一个函数**，
+        于是"自检通过"与"真回写"不可能走两条路）。"""
+        out_t = text
+        for rx, key, _sample in _FORMS:
+            out_t = re.sub(rx, lambda m, _k=key: re.sub(
+                r"\d+$", str(_truth[_k]), m.group(0)), out_t)
+        return out_t
+
+    for _rx, _k, _sample in _FORMS:
+        _m = re.search(_rx, _sample)
+        if not _m:
+            raise RuntimeError(f"计数形态自检失败（匹配不到）：{_rx}")
+        if not re.search(r"\d+$", _m.group(0)):
+            raise RuntimeError(f"计数形态自检失败（命中不以数字结尾）：{_rx}")
+        _old = re.search(r"\d+", _sample).group(0)
+        _tv = str(_truth[_k])
+        _got = _apply1(_sample)
+        if _old != _tv and re.search(rf"(?<!\d){_old}(?!\d)", _got):
+            raise RuntimeError(f"计数形态自检失败（旧数字残留）："
+                               f"{_sample} → {_got}")
+        if _tv not in _got:
+            raise RuntimeError(f"计数形态自检失败（真值没出现）：{_got}")
+        if re.sub(r"\d+", "", _got) != re.sub(r"\d+", "", _sample):
+            raise RuntimeError(f"计数形态自检失败（改动了非数字文本）："
+                               f"{_sample} → {_got}，应只换数字")
+    # **自检必须能红**：改真值 ⇒ 输出必须跟着变；
+    # 否则"同步"根本没吃到真值。
+    _bak = _truth["artifact_total"]
+    try:
+        _truth["artifact_total"] = 12345
+        if "12345" not in _apply1("99 件逐件登记"):
+            raise RuntimeError("计数同步**没吃到真值**（改 _truth 输出不变）")
+    finally:
+        _truth["artifact_total"] = _bak
+
+    # **过去式引文不是现行声明**：这一行讲的是"我当时同步成了 X"，
+    # 把 X 改成今天的真值等于**销毁现场**（本轮 C8 就因此
+    # 对 `56/current 30` 报假阳性）。同步器与 C8 **同一判据**。
+    _PAST = re.compile("我把|随后|当时|上轮|上一轮|曾把|曾经|已改成|"
+                       "历史真值|旧真值")
+    _tick = re.compile(r"^(`{3}.*|.*`.+`.*|[|·\-]\s.*|[0-9a-f]{8,}.*|.*`.*`"
+                       r".*)$")
+    for _dn in ("R14_STAGE_E_DELIVERABLES.md", "R14_PROGRESS_STOPGATE.md"):
+        _dp = EV / _dn
+        if not _dp.is_file():
+            continue
+        _t0 = _dp.read_text(encoding="utf-8")
+        _out = []
+        for _ln in _t0.splitlines():
+            # **逐行、且只在行首声明形态上同步**：反引号内/项目符号/
+            # sha 行等**示例语境**照 C8 的 `inline_code_or_fence` 豁免。
+            # 上一版做**全文 re.sub**，把 `:175` 那条
+            # "注入锚点必须来自盘上真值：我把 \`"55 件逐件登记"\`"
+            # 的**示例数字**同步成了 60 —— 那行讲的是"我当时写错了什么"，
+            # 改掉它=销毁现场，而 C8 会立刻把这行当成过期计数。
+            if _PAST.search(_ln) or _tick.match(_ln):
+                _out.append(_ln)
+                continue
+            # **引号内 = 示例/现场引文，不是声明**（与 C8 的
+            # `inline_code_or_fence` 同口径）。
+            # 上一版只豁免反引号**行首**，漏掉了行中含 `` `"55 件…"` ``
+            # 的引文 ⇒ 同步器**把我记录的 bug 现场改成了新数字**，
+            # 两处历史引文因此失真（改文档必须比改代码更保守）。
+            _span = 0
+            _skip = False
+            for _q, _c in (("``", 2), ("`", 1)):
+                pass
+            _parts = _ln.split("`")
+            _odd = [x for i, x in enumerate(_parts) if i % 2 == 1]
+            if any(re.search(r"\d+\s*件逐件登记|\bcurrent\s*\d+|"
+                             r"当前\s*\d+", x) for x in _odd):
+                _skip = True
+            if _skip:
+                _out.append(_ln)
+                continue
+            _o = _ln
+            _o = _apply1(_o)
+            _out.append(_o)
+        _t = "\n".join(_out) + ("\n" if _t0.endswith("\n") else "")
+        if _t != _t0:
+            _dp.write_text(_t, encoding="utf-8")
+            _sync.append(_dn)
+    out["artifact_count_synced_to_docs"] = _sync
+    out["count_truth"] = _truth
     # **stdout 末尾必须是单行紧凑 JSON**：
     # bundle 的 stdout 解析是**逐行**找 `startswith("{")` 的那一行，
     # 而我这里打的是 `indent=1` 的**多行** JSON ⇒ 只有第一行 `{`
@@ -725,6 +873,7 @@ f"{r['commit_added'] or '未入库'} | "
     # A12 就把这一步判成"无法证明件是本次运行写的"。
     # （本轮实测：A12 报 `stdout 没有报告 run_mark`，根因在此。）
     print(json.dumps({"run_mark": run_mark, "n_artifacts": out["n_artifacts"],
+                      "count_synced_to_docs": _sync,
                       "self_checks_failed": fails}, ensure_ascii=False))
     return 1 if fails else 0
 

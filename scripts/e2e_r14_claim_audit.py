@@ -659,6 +659,16 @@ def live_c8_anchor(text: str, mode: str):
             continue
         if in_paren_live(text, m.start(), m.end()):
             continue
+        # **同一份过去式判据**（与检查端共享 `PAST_RE`）：
+        # 上一轮我给检查端加了豁免却没加到这里 ⇒
+        # 注入落在 `随后自己把文档同步成 56/current 30` 这种
+        # **历史叙述行**上，被检查端正确豁免 ⇒ 案例 `exit 0`，
+        # 而它显示 `injection_applied: yes`——
+        # "看起来测了、其实锚点不在管辖区内"的第 3 次复发。
+        _ls = text.rfind("\n", 0, m.start()) + 1
+        _le = text.find("\n", m.start())
+        if PAST_RE.search(text[_ls:_le if _le > 0 else len(text)]):
+            continue
         n = int(m.group(1))
         if mode == "c8_total":
             return m.group(0), f"{n + 11} 件逐件登记"
@@ -670,6 +680,12 @@ def in_paren_live(text: str, a: int, b: int) -> bool:
     """与 C8 正文里同一条括号判据（**注入端与检查端必须共用**，
     否则我注入到"检查不管"的位置、却以为自己在测它）。"""
     return bracket_wrapped(text, a, b)
+
+
+# **同步器与审计器共用同一条"过去式"判据**（口径只能有一份定义）：
+# 行内含这些标记 ⇒ 该行在**叙述历史**，不是对登记册的当前引用。
+PAST_RE = re.compile("我把|随后|当时|上轮|上一轮|曾把|曾经|已改成|"
+                     "历史真值|旧真值")
 
 
 def bracket_wrapped(text: str, a: int, b: int, span: int = 40) -> bool:
@@ -756,9 +772,18 @@ def check_c8(docs, index):
             _fence = in_code_fence(text, m.start())
             in_code = in_inline_code(text, m.start()) or _fence
             in_paren = bracket_wrapped(text, m.start(), m.end())
+            # **过去式叙述不是现行声明**（与 `e2e_r14_index` 的同步器
+            # **同一份正则**）：这一行讲的是"我当时同步成了 X"，
+            # 拿今天的真值去核它必然假阳性，
+            # 而把它同步掉等于**销毁现场**。
+            _past = PAST_RE.search(
+                text[max(0, text.rfind("\n", 0, m.start()) + 1):
+                     text.find("\n", m.start()) if
+                     text.find("\n", m.start()) > 0 else len(text)])
             exempt_by = ("inline_code_or_fence" if in_code else
-                         ("bracket_pair" if in_paren else "NONE"))
-            if in_code or in_paren:
+                         ("bracket_pair" if in_paren else
+                          ("past_tense_narration" if _past else "NONE")))
+            if in_code or in_paren or _past:
                 cited.append({"doc": name, "kind": k, "cited": v,
                               "truth": counts.get(k, 0),
                               "context": "example_or_old_value_skipped",

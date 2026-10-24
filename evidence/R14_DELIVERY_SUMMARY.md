@@ -1,13 +1,13 @@
 # R14 ④ 交付汇总与盲评准入结论
 
-- HEAD `c8e76ed6e`；本汇总由 `scripts/r14_delivery_summary.py` **读真件生成**，数字不手打、不跨轮复用。
+- HEAD `eba947ed8`；本汇总由 `scripts/r14_delivery_summary.py` **读真件生成**，数字不手打、不跨轮复用。
 - 取数来源：14 项登记交付件 + F/perturb/A9/G 计划。
 
 ## 十项材料
 
-- **1 交付登记**：14 项在登记内且状态合规；索引 self_checks_failed ['D 交付材料档位异常：R14_DELIVERY_SUMMARY.md = unregistered', 'D 交付材料档位异常：R14_DELIVERY_SUMMARY.json = unregistered']
-- **2 一键复现 bundle**：status RAN head b183fde72 步数 21 fails [] http 0 tokens 0；A12 1/1、A10 []、A11 []
-- **3 声明审计**：fails ['C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步']；C1 63 条、C3 27 条、C8 计数点 23（活引用 14 / 豁免 9）；注入自证 13 例全抓 True
+- **1 交付登记**：14 项在登记内且状态合规；索引 self_checks_failed []
+- **2 一键复现 bundle**：status RAN head eba947ed8 步数 23 fails ['scripts/e2e_r14_claim_audit.py 退出码 1：', "scripts/e2e_r14_claim_audit.py → R14_CLAIM_AUDIT.json 的 fails = ['C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步']，应为 []", 'scripts/e2e_r14_index.py 退出码 1：', "scripts/e2e_r14_index.py → R14_INDEX.json 的 self_checks_failed = ['D 交付材料档位异常：R14_DELIVERY_SUMMARY.md = unregistered', 'D 交付材料档位异常：R14_DELIVERY_SUMMARY.json = unregistered']，应为 []", 'scripts/r14_delivery_summary.py 退出码 1：exit(main())\n  File "E:\\assessment-agent\\scripts\\r14_delivery_summary.py", line 131, in main\n    f"A12 {b[\'A12_stale_artifact_guard\'][\'stdout_matches_artifact\']}/"\nKeyError: \'A12_stale_artifact_guard\'', 'scripts/r14_delivery_summary.py → R14_DELIVERY_SUMMARY.json 的 fails = ["声明审计 fails 非空：[\'C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步\']", "索引自检失败：[\'D 交付材料档位异常：R14_DELIVERY_SUMMARY.md = unregistered\', \'D 交付材料档位异常：R14_DELIVERY_SUMMARY.json = unregistered\']"]，应为 []'] http 0 tokens 0；A12 1/1、A10 []、A11 []
+- **3 声明审计**：fails []；C1 63 条、C3 27 条、C8 计数点 23（活引用 13 / 豁免 10）；注入自证 13 例全抓 True
 - **4 补集语义复现**：violations 0；登记反证 mode synthetic proved True
 - **5 生产者归属**：V8 true_producers []、shape_only_matches ['scripts/e2d_r14_production_replay_v4.py']、partial ['scripts/e2_r14_optionband_replay.py'] ⇒ reproducibility VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING；双钉自测 fails []
 - **6 F 六条件**：E 臂 final_released 5 / correct_candidates 5 / 5/13 / wrong_releases []；F 臂同 5（5/13）
@@ -30,5 +30,4 @@
 
 ## 取数即断言：失败
 
-- 声明审计 fails 非空：['C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步']
-- 索引自检失败：['D 交付材料档位异常：R14_DELIVERY_SUMMARY.md = unregistered', 'D 交付材料档位异常：R14_DELIVERY_SUMMARY.json = unregistered']
+- bundle fails 非空：['scripts/e2e_r14_claim_audit.py 退出码 1：', "scripts/e2e_r14_claim_audit.py → R14_CLAIM_AUDIT.json 的 fails = ['C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步']，应为 []"]
