@@ -664,6 +664,13 @@ def main() -> int:
         fails.append("A7 缺 R14E_RERUN_SEMANTICS.json（补集复现核对未跑）")
 
     after_clean, after_dirty = worktree_clean()
+    # **收尾不干净必须计入失败**：上一版只把它写进件里，
+    # 于是出现过 `status RAN / fails [] / worktree_clean_after False`
+    # **同件并存**（本轮实测）——"跑完要干净"成了装饰。
+    if not after_clean:
+        fails.append("bundle 收尾工作区不干净：" + str(after_dirty[:6]) +
+                     "（步骤改写了在册件 ⇒ 本轮结论不可复用，"
+                     "需重跑或如实作废）")
     # ---- A11：漂移登记（生成式，不靠脚本内硬编码清单）----
     _a11 = {"registers": {}, "violated": []}
     for p in sorted((ROOT / "evidence").glob("R14*HEAD_DELTA.json")):
