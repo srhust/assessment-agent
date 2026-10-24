@@ -1,6 +1,31 @@
 {
- "n_checked": 48,
- "violations": [],
+ "n_checked": 50,
+ "violations": [
+  {
+   "artifact": "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
+   "script": "r14_delivery_summary.py",
+   "rerun_via_out": "__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
+   "declared_writers": [
+    "r14_delivery_summary.py"
+   ],
+   "refused_unsafe": [],
+   "worktree_collateral": [
+    "evidence/R14_DELIVERY_SUMMARY.md",
+    "evidence/__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json"
+   ],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [
+    "R14_DELIVERY_SUMMARY.md"
+   ],
+   "rerun_read_from": "__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
+   "own_declared_outputs_touched": [],
+   "status": "VIOLATION_write_path_drift",
+   "detail": "重跑 scripts/r14_delivery_summary.py 除本件外还改动了非自指件 ['R14_DELIVERY_SUMMARY.md']"
+  }
+ ],
  "identical_detector_selftest": {
   "fails": [],
   "cases": [
@@ -41,6 +66,56 @@
     "e2e_r14_claim_audit.py"
    ],
    "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+  },
+  {
+   "artifact": "R14_DELIVERY_SUMMARY.json",
+   "script": "r14_delivery_summary.py",
+   "rerun_via_out": "__R14SR__R14_DELIVERY_SUMMARY.json",
+   "declared_writers": [
+    "r14_delivery_summary.py"
+   ],
+   "refused_unsafe": [],
+   "worktree_collateral": [
+    "evidence/R14_DELIVERY_SUMMARY.md",
+    "evidence/__R14SR__R14_DELIVERY_SUMMARY.json"
+   ],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [
+    "R14_DELIVERY_SUMMARY.md"
+   ],
+   "rerun_read_from": "__R14SR__R14_DELIVERY_SUMMARY.json",
+   "own_declared_outputs_touched": [
+    "R14_DELIVERY_SUMMARY.md"
+   ],
+   "status": "no_write_detected",
+   "detail": ""
+  },
+  {
+   "artifact": "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
+   "script": "r14_delivery_summary.py",
+   "rerun_via_out": "__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
+   "declared_writers": [
+    "r14_delivery_summary.py"
+   ],
+   "refused_unsafe": [],
+   "worktree_collateral": [
+    "evidence/R14_DELIVERY_SUMMARY.md",
+    "evidence/__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json"
+   ],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [
+    "R14_DELIVERY_SUMMARY.md"
+   ],
+   "rerun_read_from": "__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
+   "own_declared_outputs_touched": [],
+   "status": "VIOLATION_write_path_drift",
+   "detail": "重跑 scripts/r14_delivery_summary.py 除本件外还改动了非自指件 ['R14_DELIVERY_SUMMARY.md']"
   },
   {
    "artifact": "R14_INDEX.json",

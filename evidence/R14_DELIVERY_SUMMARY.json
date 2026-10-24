@@ -1,5 +1,5 @@
 {
- "head": "e0ac90ea0e2beb386bf8c3b3ab9bd2fa393e178f",
+ "head": "e3f2f785e573533d0ae4f0e259ad09c5427d46f7",
  "numbers_source_artifacts": [
   "R14_STAGE_E_DELIVERABLES.md",
   "R14_PROGRESS_STOPGATE.md",
@@ -12,12 +12,14 @@
   "R14E_RERUN_SEMANTICS.json",
   "R14_CLAIM_AUDIT.json",
   "R14E_ATTRIBUTION_SELFTEST.json",
-  "R14E_ARTIFACT_ATTRIBUTION.json"
+  "R14E_ARTIFACT_ATTRIBUTION.json",
+  "R14_DELIVERY_SUMMARY.md",
+  "R14_DELIVERY_SUMMARY.json"
  ],
  "items": [
   {
    "item": "1 交付登记",
-   "value": "12 项在登记内且状态合规；索引 self_checks_failed []"
+   "value": "14 项在登记内且状态合规；索引 self_checks_failed ['D 交付材料档位异常：R14_DELIVERY_SUMMARY.md = unregistered', 'D 交付材料档位异常：R14_DELIVERY_SUMMARY.json = unregistered']"
   },
   {
    "item": "2 一键复现 bundle",
@@ -29,7 +31,7 @@
   },
   {
    "item": "4 补集语义复现",
-   "value": "violations 0；登记反证 mode synthetic proved True"
+   "value": "violations 1；登记反证 mode synthetic proved True"
   },
   {
    "item": "5 生产者归属",
@@ -57,7 +59,10 @@
   }
  ],
  "blind_eval_admission": "NOT_READY",
- "fails": [],
+ "fails": [
+  "索引自检失败：['D 交付材料档位异常：R14_DELIVERY_SUMMARY.md = unregistered', 'D 交付材料档位异常：R14_DELIVERY_SUMMARY.json = unregistered']",
+  "补集复现仍有 violations：1"
+ ],
  "budget": {
   "http_requests_made": 0,
   "tokens_used": 0

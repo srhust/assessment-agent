@@ -1,5 +1,5 @@
 {
- "run_mark": "933e96e66103",
+ "run_mark": "bf157be57861",
  "A1b_selftest": {
   "probe": [
    "R14_VERIFICATION_BUNDLE.json",
@@ -45,10 +45,12 @@
   "R14E_RERUN_SEMANTICS.json",
   "R14_CLAIM_AUDIT.json",
   "R14E_ATTRIBUTION_SELFTEST.json",
-  "R14E_ARTIFACT_ATTRIBUTION.json"
+  "R14E_ARTIFACT_ATTRIBUTION.json",
+  "R14_DELIVERY_SUMMARY.md",
+  "R14_DELIVERY_SUMMARY.json"
  ],
- "generated_at_head": "e0ac90ea0e2beb386bf8c3b3ab9bd2fa393e178f",
- "n_artifacts": 57,
+ "generated_at_head": "e3f2f785e573533d0ae4f0e259ad09c5427d46f7",
+ "n_artifacts": 60,
  "by_status": {
   "current": [
    "R14C_PITCH_ABLATION.json",
@@ -151,14 +153,72 @@
    "commit_last_touched": "bf49734"
   },
   {
+   "artifact": "R14_DELIVERY_SUMMARY.json",
+   "bytes": 2349,
+   "sha256": "a0b05aff8787829e449f8970bec422cf5f0e575a92fdff2807d7af68218a2e70",
+   "sha_short": "a0b05aff8787",
+   "status": "unregistered",
+   "status_note": "",
+   "producer_scripts": [
+    "r14_delivery_summary.py"
+   ],
+   "producer_tier": "declared_writer",
+   "written_via_out_override": false,
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
+   "git_tracked": true,
+   "reproduced_by_bundle": false,
+   "reproducible": true,
+   "commit_added": "e3f2f78",
+   "commit_last_touched": "e3f2f78"
+  },
+  {
+   "artifact": "R14_DELIVERY_SUMMARY.md",
+   "bytes": 2764,
+   "sha256": "be63494f86f70464ec251d19422cbf76dc313cfeea1c8a79d8b8a1d8bb4324a7",
+   "sha_short": "be63494f86f7",
+   "status": "unregistered",
+   "status_note": "",
+   "producer_scripts": [
+    "r14_delivery_summary.py"
+   ],
+   "producer_tier": "mention_exact_only",
+   "written_via_out_override": false,
+   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "git_tracked": true,
+   "reproduced_by_bundle": false,
+   "reproducible": true,
+   "commit_added": "e3f2f78",
+   "commit_last_touched": "e3f2f78"
+  },
+  {
+   "artifact": "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
+   "bytes": 313,
+   "sha256": "b0e0ae1b2bdff941c366f55a867c6f7d11320411e392deac01b845078814d0ea",
+   "sha_short": "b0e0ae1b2bdf",
+   "status": "unregistered",
+   "status_note": "",
+   "producer_scripts": [
+    "r14_delivery_summary.py"
+   ],
+   "producer_tier": "declared_writer",
+   "written_via_out_override": false,
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
+   "git_tracked": true,
+   "reproduced_by_bundle": false,
+   "reproducible": true,
+   "commit_added": "e3f2f78",
+   "commit_last_touched": "e3f2f78"
+  },
+  {
    "artifact": "R14_INDEX.json",
    "bytes": 44212,
-   "sha256": "8832bfbd12de2223616a2042caaf01df62a29f58e5cc50c9fdb1f80ed65768b5",
-   "sha_short": "8832bfbd12de",
+   "sha256": "9ebed3f32648efe778f620dbc4a14d340891afd74318fd4e2330902848bd8ceb",
+   "sha_short": "9ebed3f32648",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
     "r14_attribute_producer.py",
+    "r14_delivery_summary.py",
     "r14_semantic_repro.py",
     "r14_verify_all.py"
    ],
@@ -169,13 +229,13 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "e0ac90e"
+   "commit_last_touched": "e3f2f78"
   },
   {
    "artifact": "R14_INDEX.md",
    "bytes": 9144,
-   "sha256": "3412d01bdd5043567b6ef8a348bdb33bf5aa72632569ef2c16ca9801f7e3a59d",
-   "sha_short": "3412d01bdd50",
+   "sha256": "1b50d9144cda7e6812521ec4c6c1b345d3a6f9608567ed208329ab36ea0a706a",
+   "sha_short": "1b50d9144cda",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -188,7 +248,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "e0ac90e"
+   "commit_last_touched": "e3f2f78"
   },
   {
    "artifact": "R14_PROGRESS_STOPGATE.md",
@@ -271,8 +331,8 @@
   {
    "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.json",
    "bytes": 4191,
-   "sha256": "ed82482cf424da214624b070cdfa5ee5a887d54afed9b396e49366ede195b530",
-   "sha_short": "ed82482cf424",
+   "sha256": "354923589fab9f17dcddf5b659894f6e0c640280d26e95435dc89eae15432938",
+   "sha_short": "354923589fab",
    "status": "current",
    "status_note": "因果实验在现行 HEAD 的复现差异",
    "producer_scripts": [
@@ -290,8 +350,8 @@
   {
    "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.md",
    "bytes": 1596,
-   "sha256": "1352d917af54c7208d11c95c9e48564dbe823bea1d64de6315cf0d2b7cbf6be0",
-   "sha_short": "1352d917af54",
+   "sha256": "24a15ca53cb2b0d05b043f26c3122877e9d8d284efda117e42b0b638f4f87d03",
+   "sha_short": "24a15ca53cb2",
    "status": "current",
    "status_note": "因果实验在现行 HEAD 的复现差异（人工裁决项 2 材料）",
    "producer_scripts": [
@@ -364,8 +424,8 @@
   {
    "artifact": "R14E_ARTIFACT_ATTRIBUTION.json",
    "bytes": 4075,
-   "sha256": "a1847a28cb1125f10b103dcdc4c2bd82705500690e7ee4e5e82b75879a6b2465",
-   "sha_short": "a1847a28cb11",
+   "sha256": "2817f5fdf904a03c3dcc09c0e29a300a308a8b8e82e3085f838ef809d848efd1",
+   "sha_short": "2817f5fdf904",
    "status": "current",
    "status_note": "证据件生产者归属（含安全闸门结论）",
    "producer_scripts": [
@@ -627,8 +687,8 @@
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
    "bytes": 3316,
-   "sha256": "3c84760e19ab3b41943926f5507d7fa856205f3b3055982adb167d70234351cb",
-   "sha_short": "3c84760e19ab",
+   "sha256": "c545736735e17a9b51c346cd9b7887345c36411acc67bdf20701616714c8c9c9",
+   "sha_short": "c545736735e1",
    "status": "verification_byproduct",
    "status_note": "动态核验产物：由归属/复现核对以 **新名** 重跑生成，刻意不覆盖提交件；它证明可复现性，本身不是交付件",
    "producer_scripts": [
@@ -664,9 +724,9 @@
   },
   {
    "artifact": "R14E_RERUN_SEMANTICS.json",
-   "bytes": 21562,
-   "sha256": "ce32f855ec100280731505cedb5de54320b0becdd7b6affd01b02bc633ac8ccb",
-   "sha_short": "ce32f855ec10",
+   "bytes": 24043,
+   "sha256": "2ab599119694ffef55812719d373edf833ae3a90ffa57408c7522f5d2f82f64e",
+   "sha_short": "2ab599119694",
    "status": "current",
    "status_note": "补集复现核对（结论级/注解级差异分列）",
    "producer_scripts": [
@@ -1025,8 +1085,8 @@
   {
    "artifact": "R14G0_GATE_READINESS_V5.json",
    "bytes": 8521,
-   "sha256": "44bcfb7f4ecb68d7c44f7b45cbf2ccec2bf71774333210d20ee88f01fe78f7ca",
-   "sha_short": "44bcfb7f4ecb",
+   "sha256": "2bd576003b6f95c2de5f5f0a635dd9e930fd9c44cf197b45a1e370c4da160917",
+   "sha_short": "2bd576003b6f",
    "status": "current",
    "status_note": "G 闸门行为级就绪审计（真实请求 0）",
    "producer_scripts": [
@@ -1078,8 +1138,8 @@
   {
    "artifact": "R14G_HISTORICAL_BYTES.json",
    "bytes": 3162,
-   "sha256": "1f9d1265ba3236cbd0556e7e71ce197cdf1fc21e9d04d0facdebbd9f119a1aa4",
-   "sha_short": "1f9d1265ba32",
+   "sha256": "3dae886812a8fc589b91ff4ad25dde3dc35a8817595c688e00cd1e4d30793d47",
+   "sha_short": "3dae886812a8",
    "status": "current",
    "status_note": "历史 Test 件逐字节对引入 commit 的完整性核验（含本轮误覆写事故记录）",
    "producer_scripts": [
@@ -1135,8 +1195,8 @@
   {
    "artifact": "R14G_PLAN.json",
    "bytes": 5017,
-   "sha256": "4146ad9571f1df8afd1e4db255813d8f434151fdb79c7fff5596e360d53a3bc8",
-   "sha_short": "4146ad9571f1",
+   "sha256": "b31ec35f3babbb8c45b4cb3d1b9cb46c0fb2e49f969d5fcd034571b81e389a2f",
+   "sha_short": "b31ec35f3bab",
    "status": "current",
    "status_note": "G 批 manifest（PLANNED_NOT_EXECUTED）",
    "producer_scripts": [
@@ -1191,8 +1251,8 @@
   {
    "artifact": "R14H_KB_CHANNEL_HEAD_DELTA.json",
    "bytes": 1501,
-   "sha256": "411ef70d3b84e63b0faa14173153aa4a646c8879ac438f83db6f99f4d1e317f0",
-   "sha_short": "411ef70d3b84",
+   "sha256": "ed537c2d4284d20bf7ded6d94ed23042331959d58472d9ab647132a50054093a",
+   "sha_short": "ed537c2d4284",
    "status": "current",
    "status_note": [
     "h1_r14_kb_channel_audit.py"
@@ -1210,7 +1270,10 @@
    "commit_last_touched": "e0ac90e"
   }
  ],
- "self_checks_failed": [],
+ "self_checks_failed": [
+  "D 交付材料档位异常：R14_DELIVERY_SUMMARY.md = unregistered",
+  "D 交付材料档位异常：R14_DELIVERY_SUMMARY.json = unregistered"
+ ],
  "reproduce_needs_out_override": [
   "R14E_REAL_PAGE_REPLAY_V4.json ← e2_r14_optionband_replay.py, e2b_r14_anchor_option_recovery.py, e2d_r14_production_replay_v4.py, r14_attribute_producer.py（需 --out 复现）",
   "R14E_REAL_PAGE_REPLAY_V6.json ← e2_r14_optionband_replay.py, e2b_r14_anchor_option_recovery.py, e2d_r14_production_replay_v4.py, r14_attribute_producer.py（需 --out 复现）",

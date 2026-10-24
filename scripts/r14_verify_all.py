@@ -722,6 +722,11 @@ def main() -> int:
     # **交付文档里的步数由本步回写**：手写"18 步 / 21 步"
     # 就是再造一个会过期的计数（本轮我已经错过两次）。
     _doc_sync = []
+    # `_a13_seen` 与越界判据**都**在 A13 回写循环之前准备：
+    # 上一版只在残留断言前初始化，而越界判据在**回写循环里**用它
+    # ⇒ `UnboundLocalError`，bundle 在收尾半路崩、
+    #   盘上留下的是**上一轮**的结论件（本轮第 11 条坑的第四次复发）。
+    _a13_seen = []
     _rewrite_targets = []          # **声明的回写目标**（不管本轮改没改）
     for _dn in ("R14_STAGE_E_DELIVERABLES.md", "R14_PROGRESS_STOPGATE.md"):
         _dp = EV / _dn

@@ -1,14 +1,14 @@
 # R14 ④ 交付汇总与盲评准入结论
 
-- HEAD `e0ac90ea0`；本汇总由 `scripts/r14_delivery_summary.py` **读真件生成**，数字不手打、不跨轮复用。
-- 取数来源：12 项登记交付件 + F/perturb/A9/G 计划。
+- HEAD `e3f2f785e`；本汇总由 `scripts/r14_delivery_summary.py` **读真件生成**，数字不手打、不跨轮复用。
+- 取数来源：14 项登记交付件 + F/perturb/A9/G 计划。
 
 ## 十项材料
 
-- **1 交付登记**：12 项在登记内且状态合规；索引 self_checks_failed []
+- **1 交付登记**：14 项在登记内且状态合规；索引 self_checks_failed ['D 交付材料档位异常：R14_DELIVERY_SUMMARY.md = unregistered', 'D 交付材料档位异常：R14_DELIVERY_SUMMARY.json = unregistered']
 - **2 一键复现 bundle**：status RAN head b183fde72 步数 21 fails [] http 0 tokens 0；A12 1/1、A10 []、A11 []
 - **3 声明审计**：fails []；C1 63 条、C3 27 条、C8 计数点 23（活引用 14 / 豁免 9）；注入自证 13 例全抓 True
-- **4 补集语义复现**：violations 0；登记反证 mode synthetic proved True
+- **4 补集语义复现**：violations 1；登记反证 mode synthetic proved True
 - **5 生产者归属**：V8 true_producers []、shape_only_matches ['scripts/e2d_r14_production_replay_v4.py']、partial ['scripts/e2_r14_optionband_replay.py'] ⇒ reproducibility VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING；双钉自测 fails []
 - **6 F 六条件**：E 臂 final_released 5 / correct_candidates 5 / 5/13 / wrong_releases []；F 臂同 5（5/13）
 - **7 perturb30 释放审计**：wrong_grid_releasable []、n 30
@@ -28,3 +28,7 @@
 
 预算：HTTP 0 / LLM 0。
 
+## 取数即断言：失败
+
+- 索引自检失败：['D 交付材料档位异常：R14_DELIVERY_SUMMARY.md = unregistered', 'D 交付材料档位异常：R14_DELIVERY_SUMMARY.json = unregistered']
+- 补集复现仍有 violations：1
