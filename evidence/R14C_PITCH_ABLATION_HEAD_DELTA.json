@@ -1,6 +1,6 @@
 {
  "stage": "R14-C 因果实验在现行 HEAD 的复现差异（0 HTTP；提交件未改动）",
- "head": "01832bca9",
+ "head": "a54f1c3d8",
  "compared": {
   "committed": "R14C_PITCH_ABLATION.json",
   "committed_sha256": "df83fb21b1362156",

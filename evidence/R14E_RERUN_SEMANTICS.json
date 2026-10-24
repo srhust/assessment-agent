@@ -19,42 +19,27 @@
  },
  "drift_register_source": "evidence/*HEAD_DELTA.json 的 compared.committed",
  "documented_verdict_drift": [],
- "annotation_only_drift": [
-  {
-   "artifact": "R14H_KB_CHANNEL_HEAD_DELTA.json",
-   "missing_from_script": 1,
-   "paths": [
-    "$.annotation_only",
-    "$.baseline",
-    "$.compared",
-    "$.comparison_truth",
-    "$.explanations",
-    "$.unexplained_verdict_diff"
-   ]
-  }
- ],
+ "annotation_only_drift": [],
  "rows": [
   {
    "artifact": "R14_CLAIM_AUDIT.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "e2e_r14_claim_audit.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14_DELIVERY_SUMMARY.json",
-   "status": "no_producer_no_command",
-   "declared_writers": [],
-   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
-   "refused": []
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
+   "declared_writers": []
   },
   {
    "artifact": "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
-   "status": "no_producer_no_command",
-   "declared_writers": [],
-   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
-   "refused": []
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
+   "declared_writers": []
   },
   {
    "artifact": "R14_INDEX.json",
@@ -64,46 +49,27 @@
   },
   {
    "artifact": "R14_VERIFICATION_BUNDLE.json",
-   "status": "refused_unsafe_candidates",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "r14_verify_all.py"
-   ],
-   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
-   "refused": [
-    {
-     "script": "r14_verify_all.py",
-     "reason": "自我编排器（名录）：动态核验它等于递归重跑整条链"
-    }
    ]
   },
   {
    "artifact": "R14C_PITCH_ABLATION.json",
-   "script": "c2_r14_pitch_ablation.py",
-   "rerun_via_out": "__R14SR__R14C_PITCH_ABLATION.json",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "c2_r14_pitch_ablation.py"
-   ],
-   "refused_unsafe": [],
-   "worktree_collateral": [
-    "evidence/__R14SR__R14C_PITCH_ABLATION.json"
-   ],
-   "collateral_removed": [],
-   "safety": "OK_ZERO_REQUESTS",
-   "offline": true,
-   "exit": 0,
-   "files_changed_by_rerun": [],
-   "rerun_read_from": "__R14SR__R14C_PITCH_ABLATION.json",
-   "own_declared_outputs_touched": [],
-   "status": "no_write_detected",
-   "detail": ""
+   ]
   },
   {
    "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "e2f_r14_causal_delta.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14C_PITCH_ABLATION_RERUN2.json",
@@ -119,49 +85,43 @@
   },
   {
    "artifact": "R14E_ANCHOR_SWEEP.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "e2e_r14_anchor_sweep.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14E_ARTIFACT_ATTRIBUTION.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "r14_attribute_producer.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14E_ATTRIBUTION_SELFTEST.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "r14_attribute_producer.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14E_HEAD_REVERIFY.json",
-   "status": "refused_unsafe_candidates",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "e2e_r14_head_reverify.py"
-   ],
-   "note": "唯一声明写出者被安全闸门拒跑（多为不支持 --out：重跑会在固定历史名下落盘），且不在 bundle 清单内 ⇒ 本工具**无法**动态核验，如实登记而不是猜一个结论",
-   "refused": [
-    {
-     "script": "e2e_r14_head_reverify.py",
-     "reason": "编排器（subprocess + scripts/*.py 字面量）：禁止递归/全链重跑"
-    }
    ]
   },
   {
    "artifact": "R14E_LINEAGE_SIX_CONDITION.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "e2e_r14_six_condition_lineage.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14E_NEWLAYOUT_REGRESSION_V2.json",
@@ -171,11 +131,11 @@
   },
   {
    "artifact": "R14E_NEWLAYOUT_REGRESSION_V3.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "e2e_r14_newlayout_regression.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY.json",
@@ -209,13 +169,13 @@
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "e2_r14_optionband_replay.py",
     "e2b_r14_anchor_option_recovery.py",
     "e2d_r14_production_replay_v4.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
@@ -231,11 +191,11 @@
   },
   {
    "artifact": "R14E_RERUN_SEMANTICS.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "r14_semantic_repro.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14E_SIX_CONDITION.json",
@@ -245,9 +205,9 @@
   },
   {
    "artifact": "R14E_SIX_CONDITION_V10.json",
-   "status": "covered_by_bundle",
-   "declared_writers": [],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
+   "declared_writers": []
   },
   {
    "artifact": "R14E_SIX_CONDITION_V2.json",
@@ -317,27 +277,27 @@
   },
   {
    "artifact": "R14E_STAGE_E_ACCEPTANCE_V8.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "e2e_r14_stage_e_acceptance.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14E_TIGHT_GAP_DIAGNOSIS.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "e2e_r14_tight_gap_diagnosis.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14F_PERTURB_RELEASE_AUDIT.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "f1_r14_perturb_release_audit.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14F_SIX_CONDITION.json",
@@ -347,11 +307,11 @@
   },
   {
    "artifact": "R14G0_GATE_READINESS_V5.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "e2e_r14_stage_g_readiness.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14G0_GATE_READINESS_V5_RERUN.json",
@@ -361,36 +321,36 @@
   },
   {
    "artifact": "R14G_HISTORICAL_BYTES.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "a9_r14_historical_bytes.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14G_HISTORICAL_BYTES_SELFTEST.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "a9_r14_historical_bytes.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14G_PLAN.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "d9_r14_stage_g_manifest.py",
     "d9b_r14_lock_manifest.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14H_KB_CHANNEL_AUDIT.json",
-   "status": "covered_by_bundle",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "h1_r14_kb_channel_audit.py"
-   ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   ]
   },
   {
    "artifact": "R14H_KB_CHANNEL_AUDIT_RERUN.json",
@@ -400,157 +360,11 @@
   },
   {
    "artifact": "R14H_KB_CHANNEL_HEAD_DELTA.json",
-   "script": "h1_r14_kb_channel_audit.py",
-   "rerun_via_out": "__R14SR__R14H_KB_CHANNEL_HEAD_DELTA.json",
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "h1_r14_kb_channel_audit.py"
-   ],
-   "refused_unsafe": [],
-   "worktree_collateral": [
-    "evidence/R14H_KB_CHANNEL_HEAD_DELTA.json",
-    "evidence/__R14SR__R14H_KB_CHANNEL_HEAD_DELTA.json"
-   ],
-   "collateral_removed": [],
-   "safety": "OK_ZERO_REQUESTS",
-   "offline": true,
-   "exit": 0,
-   "files_changed_by_rerun": [
-    "R14H_KB_CHANNEL_HEAD_DELTA.json"
-   ],
-   "rerun_read_from": "__R14SR__R14H_KB_CHANNEL_HEAD_DELTA.json",
-   "own_declared_outputs_touched": [
-    "R14H_KB_CHANNEL_HEAD_DELTA.json"
-   ],
-   "status": "semantic_drift",
-   "diff_count": 13,
-   "diff_classes": {
-    "verdict_level": 0,
-    "annotation_only": 1,
-    "numeric_precision": 0,
-    "other": 12,
-    "other_examples": [
-     {
-      "path": "$.annotation_only",
-      "committed": "[]",
-      "rerun": "<重跑未产出>"
-     },
-     {
-      "path": "$.baseline",
-      "committed": "git HEAD blob（就地重跑，盘上件已被本次覆盖）",
-      "rerun": "<重跑未产出>"
-     },
-     {
-      "path": "$.compared",
-      "committed": "{\"committed\": \"R14H_KB_CHANNEL_AUDIT.json\", \"rerun_by\": \"h1_r14_kb_channel_audit.py\", \"cod",
-      "rerun": "<重跑未产出>"
-     },
-     {
-      "path": "$.comparison_truth",
-      "committed": "{\"volatile_keys\": [\"_meta\", \"budget\", \"drift_register_source\", \"duration_s\", \"elapsed_s\", ",
-      "rerun": "<重跑未产出>"
-     },
-     {
-      "path": "$.explanations",
-      "committed": "{\"state_offline_replay\": \"取值改名：提交件写 other_path_succeeded_llm_planner_not_reproducible（五态口径",
-      "rerun": "<重跑未产出>"
-     },
-     {
-      "path": "$.unexplained_verdict_diff",
-      "committed": "[]",
-      "rerun": "<重跑未产出>"
-     },
-     {
-      "path": "$.verdict_level",
-      "committed": "[]",
-      "rerun": "<重跑未产出>"
-     },
-     {
-      "path": "$.addendum_is_derived",
-      "committed": "<提交件没有>",
-      "rerun": "true"
-     },
-     {
-      "path": "$.channel_trace",
-      "committed": "<提交件没有>",
-      "rerun": "[{\"id\": \"r10g-01\", \"status\": \"failed\", \"answer\": null, \"channel_delta\": {\"ast\": 1, \"planne"
-     },
-     {
-      "path": "$.five_state",
-      "committed": "<提交件没有>",
-      "rerun": "{\"r10g-01\": {\"state\": \"card_exists_not_retrieved\", \"state_offline_replay\": \"deterministic_"
-     }
-    ],
-    "verdict_paths": [],
-    "verdict_examples": []
-   },
-   "diffs": [
-    {
-     "path": "$.annotation_only",
-     "committed": "[]",
-     "rerun": "<重跑未产出>"
-    },
-    {
-     "path": "$.baseline",
-     "committed": "git HEAD blob（就地重跑，盘上件已被本次覆盖）",
-     "rerun": "<重跑未产出>"
-    },
-    {
-     "path": "$.compared",
-     "committed": "{\"committed\": \"R14H_KB_CHANNEL_AUDIT.json\", \"rerun_by\": \"h1_r14_kb_channel_audit.py\", \"cod",
-     "rerun": "<重跑未产出>"
-    },
-    {
-     "path": "$.comparison_truth",
-     "committed": "{\"volatile_keys\": [\"_meta\", \"budget\", \"drift_register_source\", \"duration_s\", \"elapsed_s\", ",
-     "rerun": "<重跑未产出>"
-    },
-    {
-     "path": "$.explanations",
-     "committed": "{\"state_offline_replay\": \"取值改名：提交件写 other_path_succeeded_llm_planner_not_reproducible（五态口径",
-     "rerun": "<重跑未产出>"
-    },
-    {
-     "path": "$.unexplained_verdict_diff",
-     "committed": "[]",
-     "rerun": "<重跑未产出>"
-    },
-    {
-     "path": "$.verdict_level",
-     "committed": "[]",
-     "rerun": "<重跑未产出>"
-    },
-    {
-     "path": "$.addendum_is_derived",
-     "committed": "<提交件没有>",
-     "rerun": "true"
-    },
-    {
-     "path": "$.channel_correction_addendum",
-     "committed": "<提交件没有>",
-     "rerun": "{\"r10g-01\": {\"verbatim_claim_from_source\": \"retr=[] 且 solved：检索**已调用但为空**，作答走 direct-AST；不"
-    },
-    {
-     "path": "$.channel_trace",
-     "committed": "<提交件没有>",
-     "rerun": "[{\"id\": \"r10g-01\", \"status\": \"failed\", \"answer\": null, \"channel_delta\": {\"ast\": 1, \"planne"
-    },
-    {
-     "path": "$.five_state",
-     "committed": "<提交件没有>",
-     "rerun": "{\"r10g-01\": {\"state\": \"card_exists_not_retrieved\", \"state_offline_replay\": \"deterministic_"
-    },
-    {
-     "path": "$.missing_gold_card_classification",
-     "committed": "<提交件没有>",
-     "rerun": "{\"jr.categorical-syllogism\": {\"equivalent_present\": null, \"class\": \"缺卡（三段论属逻辑判断族，numeric K"
-    },
-    {
-     "path": "$.stage",
-     "committed": "<提交件没有>",
-     "rerun": "R14-H planner KB audit (0 HTTP)"
-    }
-   ],
-   "detail": "13 处差异：结论级 0 / 注解级 1 / 其他 12"
+   ]
   }
  ],
  "note": "本脚本只做诊断并**恢复原样**，不落地重跑结果；恢复后仓库必须与运行前一致（由 git status 另证）",
