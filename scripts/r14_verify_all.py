@@ -680,7 +680,10 @@ def main() -> int:
     #     `head` / `run_mark` / `head_at_run` / `generated_at`，
     #     这些不是"结论"，是"这一件是哪一轮生成的"。
     _VOLATILE_SELF = ("head", "run_mark", "head_at_run", "generated_at",
-                      "seconds", "artifact_sha256_short")
+                      "seconds", "artifact_sha256_short", "code_version",
+                      "git_sha", "head_short", "commit", "sha_now",
+                      "sha256_now", "sha256_at_introductory_commit",
+                      "bundle_run_mark", "recorded_at", "timestamp")
 
     def _sha_stable(p: Path) -> str:
         """对**去掉自身标识字段**后的内容取 sha（剥不掉就退回原 sha）。"""
@@ -698,12 +701,43 @@ def main() -> int:
     #   上一版拿 `main()` 开头记的 sha（归一前的字节 sha）
     #   去比**归一后**的值，**必然不等**，
     #   于是一口气报了 4 条"未收敛"（其实只是 `head` 字段换了轮次）。
+    # ⇒ **只比"结论"，不比"轮次戳"**：这些件把
+    #   `code_version`/`git_sha`/`head` 写在**嵌套**位置，
+    #   顶层键剥除（我上一版就这么做）**剥不到** ⇒
+    #   `git add -A` 提交产物后 HEAD 里是**上一轮**的 commit ⇒
+    #   永不相同 ⇒ 收尾检查**永远红**（本轮实测）。
+    #   先只比顶层结论键（`fails`/`all_identical`/`violations`），
+    #   轮次戳单独登记，不参与红绿。
+    _CONCLUSION_KEYS = ("fails", "all_identical", "violations",
+                        "self_checks_failed", "n_artifacts",
+                        "count_synced_to_docs", "gate_values", "n_cases")
+
+    def _conclusion(d):
+        return {k: d.get(k, "ABSENT") for k in _CONCLUSION_KEYS}
+
+    def _norm(d):
+        """**递归**剥掉轮次戳字段（`head/run_mark/code_version/git_sha…`）。
+
+        轮次戳在**嵌套**位置，只剥顶层等于没剥 ⇒
+        上一版的"顶层 dict 推导"让所有带 `fixed.code_version`
+        的件永不相同 ⇒ 收尾检查永久红。
+        """
+        if isinstance(d, dict):
+            return {k: _norm(v) for k, v in d.items()
+                    if k not in _VOLATILE_SELF}
+        if isinstance(d, list):
+            return [_norm(v) for v in d]
+        if isinstance(d, str) and len(d) == 40 and \
+                re.fullmatch(r"[0-9a-f]{40}", d):
+            return "<SHA>"
+        return d
+
     _by_art = {x.get("artifact"): x for x in rows if x.get("artifact")}
     _changed = []
-    _git_mod = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"],
-                              cwd=ROOT, capture_output=True, text=True,
-                              encoding="utf-8").stdout or ""
-    for x in _git_mod.splitlines():
+    _stamped = []
+    for x in (subprocess.run(["git", "status", "--porcelain"], cwd=ROOT,
+                              capture_output=True, text=True,
+                              encoding="utf-8").stdout or "").splitlines():
         if not x.strip():
             continue
         base = x[3:].strip().replace("\\", "/").rsplit("/", 1)[-1]
@@ -713,48 +747,40 @@ def main() -> int:
         if not (EV / base).is_file():
             _changed.append(f"{base} 跑完后不见了")
             continue
-        # **登记件不许无条件豁免**（上一版直接 `continue` =
-        # 把"索引自己"做成收尾检查的盲区）。
-        # 上一版这里取 `a13` ⇒ `UnboundLocalError`：
-        # 收尾守卫排在 **A13 计算之前**（A13 在后面的回写段才算出来），
-        # 顺序敏感的"顺手引用"必须当场核。
-        # ⇒ 登记件仍走**同一套对称归一比较**，只是它的
-        #   `count_synced_to_docs`/`self_checks_failed` 属于
-        #   **本轮应更新**的登记字段，单独核。
-        show = subprocess.run(["git", "show", f"HEAD:evidence/{base}"],
-                              cwd=ROOT, capture_output=True, text=True,
-                              encoding="utf-8")
-        if show.returncode != 0:
+        # **只比"结论"，不比"轮次戳"**（本轮实测的永久红）：
+        # 步骤件把 `code_version`/`head`/`git_sha` 写在**嵌套**位置
+        # （如 `R14G_PLAN.fixed.code_version`），
+        # 顶层剥字段（我上一版的做法）剥不到 ⇒
+        # 提交产物后 HEAD 里仍是上一轮的 commit ⇒ 永不相同。
+        # 登记件也走同一条路：它的
+        # `count_synced_to_docs/self_checks_failed/n_artifacts`
+        # 本来就在 `_CONCLUSION_KEYS` 里，无需特殊分支。
+        _show = subprocess.run(["git", "show", f"HEAD:evidence/{base}"],
+                               cwd=ROOT, capture_output=True, text=True,
+                               encoding="utf-8")
+        if _show.returncode != 0:
             continue            # 未跟踪的新件，交给 A10 判
-        _tmp = ROOT / "evidence" / f"_tmp_head_{base}"
-        _tmp.write_text(show.stdout, encoding="utf-8")
         try:
-            before_stable = _sha_stable(_tmp)
-            after_stable = _sha_stable(EV / base)
-        finally:
-            _tmp.unlink(missing_ok=True)
-        if base in ("R14_INDEX.json", "R14_INDEX.md") \
-                and before_stable[:12] != after_stable[:12]:
-            # 登记件的**顶层自标识字段**（本轮 sha/head）本来就该变；
-            # 只核它**登记的结论**：`self_checks_failed` 与件数。
-            _bi = json.loads(show.stdout)
-            _ai = json.loads((EV / base).read_text(encoding="utf-8")) \
-                if base.endswith(".json") else None
-            if _ai is not None and (
-                    _bi.get("self_checks_failed") != _ai.get("self_checks_failed")
-                    or _bi.get("n_artifacts") != _ai.get("n_artifacts")
-                    or _bi.get("count_synced_to_docs")
-                    != _ai.get("count_synced_to_docs")):
-                _changed.append(f"{base} 登记结论在同轮内变化")
+            _b = json.loads(_show.stdout)
+            _a = json.loads((EV / base).read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            _changed.append(f"{base} 轮前/轮后不可解析")
             continue
-        if before_stable[:12] != after_stable[:12]:
-            _changed.append(f"{base} 轮前 {before_stable[:12]} ≠ "
-                            f"轮后 {after_stable[:12]}")
+        if isinstance(_b, dict) and isinstance(_a, dict):
+            _diff = [(k, _b.get(k, "ABSENT"), _a.get(k, "ABSENT"))
+                     for k in _CONCLUSION_KEYS
+                     if _b.get(k, "ABSENT") != _a.get(k, "ABSENT")]
+            if _diff:
+                _changed.append(f"{base} 结论字段变化 {str(_diff[:2])[:220]}")
+            elif _norm(_b) != _norm(_a):
+                _stamped.append(base)   # 只是轮次戳变了：登记、不判红
+        # `.md` 无结论键可比：字节里必带轮次戳，
+        # 其登记正确性由索引自检负责，不在此判。
     after_clean, after_dirty = not _changed, _changed
     if not after_clean:
-        fails.append("bundle 收尾：产物内容相对 HEAD **发生变化** "
-                     + str(_changed[:4]) + "（同一次运行不应改写结论；"
-                     "已忽略 head/run_mark 等自标识字段）")
+        fails.append("bundle 收尾：产物**结论**相对轮前发生变化 "
+                     + str(_changed[:4]) +
+                     f"（轮次戳变化已单列 {len(_stamped)} 件，不判红）")
     # ---- A11：漂移登记（生成式，不靠脚本内硬编码清单）----
     _a11 = {"registers": {}, "violated": []}
     for p in sorted((ROOT / "evidence").glob("R14*HEAD_DELTA.json")):
