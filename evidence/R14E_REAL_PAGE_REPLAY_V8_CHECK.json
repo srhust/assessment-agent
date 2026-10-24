@@ -9,9 +9,9 @@
   "artifact_untouched": true,
   "candidates_tried": 3,
   "attribution_stale": false,
-  "attribution_head": "c292f863fdc800b3e05863dba77023d2076e0be1"
+  "attribution_head": "2bcb8d49303288252f3db8ea213c4ef9678e1010"
  },
- "head": "c292f863fdc800b3e05863dba77023d2076e0be1",
+ "head": "2bcb8d49303288252f3db8ea213c4ef9678e1010",
  "verdict_fields_checked": [
   "solver_status",
   "solver_answer",

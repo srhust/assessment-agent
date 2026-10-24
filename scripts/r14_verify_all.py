@@ -693,6 +693,11 @@ def main() -> int:
         return hashlib.sha256(json.dumps(
             d, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
 
+    # ⇒ 比较必须做**对称归一**：先对 HEAD 里的版本算"稳定 sha"，
+    #   再对工作区版本算同一个"稳定 sha"——
+    #   上一版拿 `main()` 开头记的 sha（归一前的字节 sha）
+    #   去比**归一后**的值，**必然不等**，
+    #   于是一口气报了 4 条"未收敛"（其实只是 `head` 字段换了轮次）。
     _by_art = {x.get("artifact"): x for x in rows if x.get("artifact")}
     _changed = []
     for x in (subprocess.run(["git", "status", "--porcelain"], cwd=ROOT,
@@ -704,15 +709,29 @@ def main() -> int:
         row = _by_art.get(base)
         if row is None or row.get("out_mode") == "skip":
             continue
-        want = row.get("artifact_sha256_short")
-        got = _sha_stable(EV / base)[:12] if (EV / base).is_file() else "GONE"
-        if want and want != got:
-            _changed.append(f"{base} 步骤记录 {want} ≠ 跑完 {got}")
+        if not (EV / base).is_file():
+            _changed.append(f"{base} 跑完后不见了")
+            continue
+        show = subprocess.run(["git", "show", f"HEAD:evidence/{base}"],
+                              cwd=ROOT, capture_output=True, text=True,
+                              encoding="utf-8")
+        if show.returncode != 0:
+            continue            # 未跟踪的新件，交给 A10 判
+        _tmp = ROOT / "evidence" / f"_tmp_head_{base}"
+        _tmp.write_text(show.stdout, encoding="utf-8")
+        try:
+            before_stable = _sha_stable(_tmp)
+            after_stable = _sha_stable(EV / base)
+        finally:
+            _tmp.unlink(missing_ok=True)
+        if before_stable[:12] != after_stable[:12]:
+            _changed.append(f"{base} 轮前 {before_stable[:12]} ≠ "
+                            f"轮后 {after_stable[:12]}")
     after_clean, after_dirty = not _changed, _changed
     if not after_clean:
-        fails.append("bundle 收尾：步骤产物在**同一次运行内**未收敛 "
-                     + str(_changed[:4]) + "（后跑的步骤改了先跑的产物 ⇒ "
-                     "本轮结论不可复用）")
+        fails.append("bundle 收尾：产物内容相对 HEAD **发生变化** "
+                     + str(_changed[:4]) + "（同一次运行不应改写结论；"
+                     "已忽略 head/run_mark 等自标识字段）")
     # ---- A11：漂移登记（生成式，不靠脚本内硬编码清单）----
     _a11 = {"registers": {}, "violated": []}
     for p in sorted((ROOT / "evidence").glob("R14*HEAD_DELTA.json")):
