@@ -142,11 +142,22 @@ def main(out_name: str = RERUN) -> int:
     # 而本脚本**自己**量到 5/5 页判定逐字段相同、V8 未被改动
     # ⇒ 复现成立，却被别人的档位判成失败。
     # 归属档位仍然**如实登记**在件里（可见，但不越权）。
-    ok = (doc["verdict_identical_all"] and doc["v8_untouched"]
-          and att["artifact_untouched"] and not att["attribution_stale"])
-    doc["gate_basis"] = ("local_measured_only: verdict_identical_all + "
-                         "v8_untouched + artifact_untouched + 未过期；"
-                         "attribution.reproducibility 仅登记不越权")
+    # **门槛项列表化，`ok` 由列表算出**：
+    # 写一句"我是本地口径"不算数——上一版就是这么错的
+    # （键名对不上，bundle 直接报 `gate_basis__local_only = None`）。
+    GATE_TERMS = ["verdict_identical_all", "v8_untouched",
+                  "artifact_untouched", "not_attribution_stale"]
+    gate_values = {
+        "verdict_identical_all": doc["verdict_identical_all"],
+        "v8_untouched": doc["v8_untouched"],
+        "artifact_untouched": att["artifact_untouched"],
+        "not_attribution_stale": not att["attribution_stale"]}
+    ok = all(gate_values[t] for t in GATE_TERMS)
+    doc["gate_terms"] = GATE_TERMS
+    doc["gate_values"] = gate_values
+    doc["gate_basis"] = ("local_measured_only：`ok` 由 `gate_terms` 逐项算出；"
+                         "attribution.reproducibility **只登记、不参与门槛**"
+                         "（拿归属档位当准入条件=越权引用别人的结论）")
     dst.write_text(json.dumps(doc, ensure_ascii=False, indent=1),
                    encoding="utf-8")
     return 0 if ok else 1

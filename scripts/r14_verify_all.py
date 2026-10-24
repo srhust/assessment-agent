@@ -135,8 +135,12 @@ STEPS = [
      # `VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING` ⇒
      # **过期的是这个期望**，不是被核对的脚本。
      {"verdict_identical_all": True, "v8_untouched": True,
-      "attribution": {"artifact_untouched": True},
-      "gate_basis__local_only": True},
+      # 门槛项**精确比对**：想偷偷加/删 `GATE_TERMS` 里的项，
+      # 这里立刻红（上一版期望一个自述布尔 `gate_basis__local_only`，
+      # 那个键**根本不存在**于产出里 ⇒ bundle 报 `= None`）。
+      "gate_terms": ["verdict_identical_all", "v8_untouched",
+                     "artifact_untouched", "not_attribution_stale"],
+      "attribution": {"artifact_untouched": True}},
      "bare", "R14E_REAL_PAGE_REPLAY_V8_CHECK.json"),
     ("scripts/e2e_r14_six_condition_lineage.py",
      "R14E_LINEAGE_SIX_CONDITION.json", {"v10_equals_v9": True},
