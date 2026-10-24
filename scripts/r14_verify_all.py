@@ -1035,15 +1035,18 @@ def _crash_record(exc_text: str) -> None:
 
 
 def endguard_selftest() -> int:
-    """**must-fire：打坏结论字段，收尾守卫必须报红**。
+    """**must-fire：结论字段漂移必须报，且只报结论字段**。
 
-    只验"绿"不验"能红"的守卫是**装饰**（本轮已多次实测）。
-    上一版我拿 `r14_verify_all.py --only-end-guard` 试，
-    那个分支**根本不存在** ⇒ bundle 走完整流程、
-    被我自己刚改脏的工作区以 `dirty_worktree` 拒跑 ⇒
-    **测试空转**（"探针没落地，守卫就没被测过"）。
-    ⇒ 这里**直接在内存里跑同一段判据**：
-       复原位与 HEAD 版比较，注入版必须报出差异。
+    两个方向都要测，**只测一个方向的守卫等于没测**：
+      · 注入位（工作区结论 ≠ 基线结论）⇒ **必须报**；
+      · 复原位（工作区只改了 `generated_at` 这类轮次戳，
+        结论与基线**完全相同**）⇒ **必须不报**。
+    上一版复原位用的是"**当前工作区**"，
+    而当前工作区已经比基线多跑了若干轮 ⇒
+    `fails` 本来就不一样 ⇒ 把**正常漂移**误判成"判据过宽"
+    （本轮实测 `fails_clean`），
+    这是**测试自身错了**，我却差点把守卫改成放过差异。
+    ⇒ 复原位改成**从基线构造**：只动轮次戳、不动结论。
     """
     out = {"checked": [], "must_fire_seen": False, "budget":
            {"http_requests_made": 0}}
@@ -1056,23 +1059,26 @@ def endguard_selftest() -> int:
         print(json.dumps(out, ensure_ascii=False))
         return 0
     _b = json.loads(head_txt)
-    _good = json.loads((EV / base).read_text(encoding="utf-8"))
-    _bad = dict(_good)
+    _recon = dict(_b)                      # 复原位 = 基线内容
+    _recon["generated_at"] = "2099-01-01T00:00:00"   # 只动轮次戳
+    _bad = dict(_b)                        # 注入位 = 改结论
     _bad["fails"] = ["__injected__"]
-    vol = None      # 本自测只比结论键，不比轮次戳（`_VOLATILE_SELF` 是 main 的局部）
     keys = ("fails", "all_identical", "violations", "self_checks_failed",
             "n_artifacts", "count_synced_to_docs", "gate_values", "n_cases")
-    for label, cand in (("复原位（应不报）", _good), ("注入位（必须报）", _bad)):
+    for label, cand in (("复原位（应不报）", _recon), ("注入位（必须报）", _bad)):
         diff = [(k, _b.get(k, "ABSENT"), cand.get(k, "ABSENT"))
                 for k in keys if _b.get(k, "ABSENT") != cand.get(k, "ABSENT")]
         out["checked"].append({"case": label, "reported": bool(diff),
                                "diff": str(diff[:2])[:160]})
         if label.startswith("注入") and diff:
             out["must_fire_seen"] = True
+        if label.startswith("注入") and not diff:
+            out["fails_fire"] = "注入结论字段后守卫**没报** ⇒ 装饰"
         if label.startswith("复原") and diff:
-            out["fails_clean"] = "复原位也被报红 ⇒ 判据过宽"
+            out["fails_clean"] = "复原位（仅轮次戳变化）被报红 ⇒ 判据过宽"
     print(json.dumps(out, ensure_ascii=False, indent=1))
-    return 0 if out["must_fire_seen"] and "fails_clean" not in out else 1
+    return 0 if (out["must_fire_seen"] and "fails_clean" not in out
+                 and "fails_fire" not in out) else 1
 
 
 if __name__ == "__main__":
