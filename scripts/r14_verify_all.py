@@ -663,14 +663,34 @@ def main() -> int:
     else:
         fails.append("A7 缺 R14E_RERUN_SEMANTICS.json（补集复现核对未跑）")
 
-    after_clean, after_dirty = worktree_clean()
-    # **收尾不干净必须计入失败**：上一版只把它写进件里，
-    # 于是出现过 `status RAN / fails [] / worktree_clean_after False`
-    # **同件并存**（本轮实测）——"跑完要干净"成了装饰。
+    # **收尾检查不许用 `git status` 对比 HEAD**（本轮实测）：
+    # 每个步骤件里都带 `"head": <本轮 HEAD>`，
+    # 于是跑完后**必然**与 HEAD 不同 ⇒ `worktree_clean_after` 永远 False ⇒
+    # 我把它接进 `fails` 后 bundle **永久红**，提交产物也无效
+    # （变的正是 `head` 字段本身）。
+    # ⇒ 正确形状：**同一轮内收敛**——逐件比较
+    #   "步骤当时记录的 sha"与"全部步骤跑完后的实际 sha"，
+    #   只有内容真的在同轮内变化才算违规。
+    _by_art = {x.get("artifact"): x for x in rows if x.get("artifact")}
+    _changed = []
+    for x in (subprocess.run(["git", "status", "--porcelain"], cwd=ROOT,
+                              capture_output=True,
+                              text=True).stdout or "").splitlines():
+        if not x.strip():
+            continue
+        base = x[3:].strip().replace("\\", "/").rsplit("/", 1)[-1]
+        row = _by_art.get(base)
+        if row is None or row.get("out_mode") == "skip":
+            continue
+        want = row.get("artifact_sha256_short")
+        got = sha(EV / base)[:12] if (EV / base).is_file() else "GONE"
+        if want and want != got:
+            _changed.append(f"{base} 步骤记录 {want} ≠ 跑完 {got}")
+    after_clean, after_dirty = not _changed, _changed
     if not after_clean:
-        fails.append("bundle 收尾工作区不干净：" + str(after_dirty[:6]) +
-                     "（步骤改写了在册件 ⇒ 本轮结论不可复用，"
-                     "需重跑或如实作废）")
+        fails.append("bundle 收尾：步骤产物在**同一次运行内**未收敛 "
+                     + str(_changed[:4]) + "（后跑的步骤改了先跑的产物 ⇒ "
+                     "本轮结论不可复用）")
     # ---- A11：漂移登记（生成式，不靠脚本内硬编码清单）----
     _a11 = {"registers": {}, "violated": []}
     for p in sorted((ROOT / "evidence").glob("R14*HEAD_DELTA.json")):
