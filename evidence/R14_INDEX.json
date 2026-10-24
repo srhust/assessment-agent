@@ -1,5 +1,5 @@
 {
- "run_mark": "fe8168ea2fd1",
+ "run_mark": "d695cd637cdb",
  "A1b_selftest": {
   "probe": [
    "R14_VERIFICATION_BUNDLE.json",
@@ -49,7 +49,7 @@
   "R14_DELIVERY_SUMMARY.json",
   "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json"
  ],
- "generated_at_head": "2bcb8d49303288252f3db8ea213c4ef9678e1010",
+ "generated_at_head": "6ff7c2436e7b057c36b513436617baa4a8ec4c80",
  "n_artifacts": 60,
  "by_status": {
   "current": [
@@ -126,13 +126,16 @@
    "status": "current",
    "status_note": "交付件一致性审计（含审计器自证）",
    "producer_scripts": [
-    "e2e_r14_claim_audit.py"
+    "e2e_r14_claim_audit.py",
+    "r14_attribute_producer.py",
+    "r14_delivery_summary.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "aa81b50",
    "commit_last_touched": "ceb7e5d"
@@ -164,12 +167,12 @@
    "producer_scripts": [
     "r14_delivery_summary.py"
    ],
-   "producer_tier": "mention_exact_only",
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
    "reproduced_by_bundle": false,
-   "reproducible": false,
+   "reproducible": true,
    "commit_added": "e3f2f78",
    "commit_last_touched": "5ea9b74"
   },
@@ -200,23 +203,22 @@
    "status": "current",
    "status_note": "④ 交付汇总的取数即断言反证",
    "producer_scripts": [
-    "r14_delivery_summary.py",
-    "r14_semantic_repro.py"
+    "r14_delivery_summary.py"
    ],
-   "producer_tier": "mention_exact_only",
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
    "reproduced_by_bundle": false,
-   "reproducible": false,
+   "reproducible": true,
    "commit_added": "e3f2f78",
    "commit_last_touched": "e3f2f78"
   },
   {
    "artifact": "R14_INDEX.json",
    "bytes": 46400,
-   "sha256": "3a85d289e295bbefd7d9f03dae0b3c478ce499c0a5cc8bcdd637e245e455e31b",
-   "sha_short": "3a85d289e295",
+   "sha256": "9c0c935d90c50d3fccd95eaecf64fa0063d0120f51b184c7ce79b55d06d4ea79",
+   "sha_short": "9c0c935d90c5",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -225,20 +227,20 @@
     "r14_semantic_repro.py",
     "r14_verify_all.py"
    ],
-   "producer_tier": "mention_exact_only",
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "2bcb8d4"
+   "commit_last_touched": "6ff7c24"
   },
   {
    "artifact": "R14_INDEX.md",
    "bytes": 9453,
-   "sha256": "d85af596fc540a427d08ed0009d510a3d2eba308a59bb3f4db0f23476fbb1866",
-   "sha_short": "d85af596fc54",
+   "sha256": "d59e5632422e05dc171dda8b58799c1eb9d61517d63d18eaeaa5bb90ef5942b4",
+   "sha_short": "d59e5632422e",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -251,7 +253,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "2bcb8d4"
+   "commit_last_touched": "6ff7c24"
   },
   {
    "artifact": "R14_PROGRESS_STOPGATE.md",
@@ -295,12 +297,15 @@
   },
   {
    "artifact": "R14_VERIFICATION_BUNDLE.json",
-   "bytes": 12585,
-   "sha256": "16f31fd8f14a9f80b182f70516f830e0bed5a99f42bea47ab67a62f7ed792cea",
-   "sha_short": "16f31fd8f14a",
+   "bytes": 1086,
+   "sha256": "38b8aecd49d3c7dcb25deed7cf01b8fbc18d93f335b714975c2667ca710dbb69",
+   "sha_short": "38b8aecd49d3",
    "status": "current",
    "status_note": "一键复现 bundle（18 步离线验证）",
    "producer_scripts": [
+    "r14_attribute_producer.py",
+    "r14_delivery_summary.py",
+    "r14_semantic_repro.py",
     "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
@@ -310,7 +315,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f9a2fc8",
-   "commit_last_touched": "2bcb8d4"
+   "commit_last_touched": "6ff7c24"
   },
   {
    "artifact": "R14C_PITCH_ABLATION.json",
@@ -320,7 +325,9 @@
    "status": "current",
    "status_note": "pitch 双轴消融（因果上限依据）",
    "producer_scripts": [
-    "c2_r14_pitch_ablation.py"
+    "c2_r14_pitch_ablation.py",
+    "e2f_r14_causal_delta.py",
+    "r14_attribute_producer.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
@@ -334,27 +341,28 @@
   {
    "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.json",
    "bytes": 4191,
-   "sha256": "b8ecde07bb292b8b5aa469b8e7a24a41c07495e5d95a6ccfe8d2e997b7470223",
-   "sha_short": "b8ecde07bb29",
+   "sha256": "8e6f121f1e95fe11bb6e2b55a39abc58e937aa7c8ab0dcd14b68fc496c660e23",
+   "sha_short": "8e6f121f1e95",
    "status": "current",
    "status_note": "因果实验在现行 HEAD 的复现差异",
    "producer_scripts": [
-    "e2f_r14_causal_delta.py"
+    "e2f_r14_causal_delta.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f118cf9",
-   "commit_last_touched": "2bcb8d4"
+   "commit_last_touched": "6ff7c24"
   },
   {
    "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.md",
    "bytes": 1596,
-   "sha256": "59f32d747dfa7eb90bde56428cf088212ab1240229c2feaf8ed5bece41194add",
-   "sha_short": "59f32d747dfa",
+   "sha256": "943ee98db70e14bff5fe601d3e6b6b65a62b2d793adadf651aafbec3b8bd1898",
+   "sha_short": "943ee98db70e",
    "status": "current",
    "status_note": "因果实验在现行 HEAD 的复现差异（人工裁决项 2 材料）",
    "producer_scripts": [
@@ -367,7 +375,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f118cf9",
-   "commit_last_touched": "2bcb8d4"
+   "commit_last_touched": "6ff7c24"
   },
   {
    "artifact": "R14C_PITCH_ABLATION_RERUN2.json",
@@ -379,12 +387,12 @@
    "producer_scripts": [
     "e2f_r14_causal_delta.py"
    ],
-   "producer_tier": "mention_exact_only",
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
    "reproduced_by_bundle": false,
-   "reproducible": false,
+   "reproducible": true,
    "commit_added": "f118cf9",
    "commit_last_touched": "f118cf9"
   },
@@ -413,13 +421,14 @@
    "status": "current",
    "status_note": "独立排版锚点普查 59 页",
    "producer_scripts": [
-    "e2e_r14_anchor_sweep.py"
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "4fd5dc8"
@@ -432,16 +441,20 @@
    "status": "current",
    "status_note": "证据件生产者归属（含安全闸门结论）",
    "producer_scripts": [
-    "r14_attribute_producer.py"
+    "e2_r14_v8_reproducibility.py",
+    "r14_attribute_producer.py",
+    "r14_delivery_summary.py",
+    "r14_semantic_repro.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d48d97e",
-   "commit_last_touched": "2bcb8d4"
+   "commit_last_touched": "6ff7c24"
   },
   {
    "artifact": "R14E_ATTRIBUTION_SELFTEST.json",
@@ -451,13 +464,15 @@
    "status": "current",
    "status_note": "归属安全闸门的自证注入结果",
    "producer_scripts": [
-    "r14_attribute_producer.py"
+    "r14_attribute_producer.py",
+    "r14_delivery_summary.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "d48d97e",
    "commit_last_touched": "c34e128"
@@ -470,7 +485,8 @@
    "status": "current",
    "status_note": "三项离线基线 HEAD 复验（零漂移）",
    "producer_scripts": [
-    "e2e_r14_head_reverify.py"
+    "e2e_r14_head_reverify.py",
+    "r14_attribute_producer.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
@@ -489,13 +505,15 @@
    "status": "current",
    "status_note": "六条件跨轮血缘（旧协议件分列不混比）",
    "producer_scripts": [
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_six_condition_lineage.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "8f4ca49",
    "commit_last_touched": "8f4ca49"
@@ -525,7 +543,9 @@
    "status": "erratum_kept",
    "status_note": "把证据链单元数标为消费单元，与落盘裁剪份数混同（V3 已勘误，保留不删）",
    "producer_scripts": [
-    "e2e_r14_newlayout_regression.py"
+    "e2e_r14_newlayout_regression.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
@@ -544,13 +564,15 @@
    "status": "current",
    "status_note": "新排版独立 Dev 回归（含 V2 口径勘误）",
    "producer_scripts": [
-    "e2e_r14_newlayout_regression.py"
+    "e2e_r14_newlayout_regression.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "c2b28ea",
    "commit_last_touched": "c2b28ea"
@@ -564,8 +586,11 @@
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
     "e2_r14_optionband_replay.py",
+    "e2_r14_v8_reproducibility.py",
     "e2b_r14_anchor_option_recovery.py",
-    "e2d_r14_production_replay_v4.py"
+    "e2d_r14_production_replay_v4.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
@@ -585,8 +610,11 @@
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
     "e2_r14_optionband_replay.py",
+    "e2_r14_v8_reproducibility.py",
     "e2b_r14_anchor_option_recovery.py",
-    "e2d_r14_production_replay_v4.py"
+    "e2d_r14_production_replay_v4.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": true,
@@ -606,8 +634,11 @@
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
     "e2_r14_optionband_replay.py",
+    "e2_r14_v8_reproducibility.py",
     "e2b_r14_anchor_option_recovery.py",
-    "e2d_r14_production_replay_v4.py"
+    "e2d_r14_production_replay_v4.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
@@ -627,8 +658,11 @@
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
     "e2_r14_optionband_replay.py",
+    "e2_r14_v8_reproducibility.py",
     "e2b_r14_anchor_option_recovery.py",
-    "e2d_r14_production_replay_v4.py"
+    "e2d_r14_production_replay_v4.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": true,
@@ -648,8 +682,11 @@
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
     "e2_r14_optionband_replay.py",
+    "e2_r14_v8_reproducibility.py",
     "e2b_r14_anchor_option_recovery.py",
-    "e2d_r14_production_replay_v4.py"
+    "e2d_r14_production_replay_v4.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": true,
@@ -669,8 +706,11 @@
    "status_note": "真实截图解析件端到端复放",
    "producer_scripts": [
     "e2_r14_optionband_replay.py",
+    "e2_r14_v8_reproducibility.py",
     "e2b_r14_anchor_option_recovery.py",
-    "e2d_r14_production_replay_v4.py"
+    "e2d_r14_production_replay_v4.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
@@ -684,21 +724,23 @@
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
    "bytes": 3316,
-   "sha256": "d1c081e1e4e8fd30004477441c2263b230daa52b68507c29a34725db5dff40bd",
-   "sha_short": "d1c081e1e4e8",
+   "sha256": "44bd1662e14225c4e6a12223d4059d0f9e5b3ca32de8dfe769f167bf0cce756c",
+   "sha_short": "44bd1662e142",
    "status": "verification_byproduct",
    "status_note": "动态核验产物：由归属/复现核对以 **新名** 重跑生成，刻意不覆盖提交件；它证明可复现性，本身不是交付件",
    "producer_scripts": [
-    "e2_r14_v8_reproducibility.py"
+    "e2_r14_v8_reproducibility.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "92103ec",
-   "commit_last_touched": "2bcb8d4"
+   "commit_last_touched": "6ff7c24"
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
@@ -709,14 +751,13 @@
    "status_note": "动态核验产物：由归属/复现核对以 **新名** 重跑生成，刻意不覆盖提交件；它证明可复现性，本身不是交付件",
    "producer_scripts": [
     "e2_r14_v8_reproducibility.py",
-    "r14_attribute_producer.py",
     "r14_verify_all.py"
    ],
-   "producer_tier": "mention_exact_only",
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "92103ec",
    "commit_last_touched": "4fd5dc8"
@@ -729,13 +770,15 @@
    "status": "current",
    "status_note": "补集复现核对（结论级/注解级差异分列）",
    "producer_scripts": [
-    "r14_semantic_repro.py"
+    "r14_delivery_summary.py",
+    "r14_semantic_repro.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f118cf9",
    "commit_last_touched": "c292f86"
@@ -748,14 +791,17 @@
    "status": "historical",
    "status_note": "E 首跑件（C/D 候选口径与后续不同，逐条说明见血缘件）",
    "producer_scripts": [
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_six_condition_lineage.py",
+    "r14_delivery_summary.py",
+    "r14_verify_all.py"
    ],
-   "producer_tier": "mention_exact_only",
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
    "reproduced_by_bundle": false,
-   "reproducible": false,
+   "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
   },
@@ -772,11 +818,11 @@
     "r14_delivery_summary.py",
     "r14_verify_all.py"
    ],
-   "producer_tier": "mention_exact_only",
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "b94041e",
    "commit_last_touched": "b94041e"
@@ -789,14 +835,17 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_six_condition_lineage.py",
+    "r14_delivery_summary.py",
+    "r14_verify_all.py"
    ],
-   "producer_tier": "mention_family_only",
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
    "reproduced_by_bundle": false,
-   "reproducible": false,
+   "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
   },
@@ -808,14 +857,17 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_six_condition_lineage.py",
+    "r14_delivery_summary.py",
+    "r14_verify_all.py"
    ],
-   "producer_tier": "mention_family_only",
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
    "reproduced_by_bundle": false,
-   "reproducible": false,
+   "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
   },
@@ -827,14 +879,17 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_six_condition_lineage.py",
+    "r14_delivery_summary.py",
+    "r14_verify_all.py"
    ],
-   "producer_tier": "mention_family_only",
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
    "reproduced_by_bundle": false,
-   "reproducible": false,
+   "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
   },
@@ -846,14 +901,17 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_six_condition_lineage.py",
+    "r14_delivery_summary.py",
+    "r14_verify_all.py"
    ],
-   "producer_tier": "mention_family_only",
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
    "reproduced_by_bundle": false,
-   "reproducible": false,
+   "reproducible": true,
    "commit_added": "d715369",
    "commit_last_touched": "d715369"
   },
@@ -865,14 +923,17 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_six_condition_lineage.py",
+    "r14_delivery_summary.py",
+    "r14_verify_all.py"
    ],
-   "producer_tier": "mention_family_only",
+   "producer_tier": "declared_writer",
    "written_via_out_override": true,
-   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
    "reproduced_by_bundle": false,
-   "reproducible": false,
+   "reproducible": true,
    "commit_added": "eb47076",
    "commit_last_touched": "eb47076"
   },
@@ -885,14 +946,16 @@
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
     "e2e_r14_head_reverify.py",
-    "e2e_r14_six_condition_lineage.py"
+    "e2e_r14_six_condition_lineage.py",
+    "r14_delivery_summary.py",
+    "r14_verify_all.py"
    ],
-   "producer_tier": "mention_exact_only",
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
    "reproduced_by_bundle": false,
-   "reproducible": false,
+   "reproducible": true,
    "commit_added": "eb47076",
    "commit_last_touched": "eb47076"
   },
@@ -904,7 +967,10 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_stage_e_acceptance.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_stage_e_acceptance.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
@@ -923,7 +989,10 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_stage_e_acceptance.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_stage_e_acceptance.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": true,
@@ -942,7 +1011,10 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_stage_e_acceptance.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_stage_e_acceptance.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": true,
@@ -961,7 +1033,10 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_stage_e_acceptance.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_stage_e_acceptance.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": true,
@@ -980,7 +1055,10 @@
    "status": "superseded",
    "status_note": "同名高版本件为当前引用",
    "producer_scripts": [
-    "e2e_r14_stage_e_acceptance.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_stage_e_acceptance.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
@@ -999,13 +1077,16 @@
    "status": "current",
    "status_note": "Stage E 验收",
    "producer_scripts": [
-    "e2e_r14_stage_e_acceptance.py"
+    "e2e_r14_head_reverify.py",
+    "e2e_r14_stage_e_acceptance.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "b94041e",
    "commit_last_touched": "b94041e"
@@ -1018,13 +1099,15 @@
    "status": "current",
    "status_note": "tight 覆盖缺口逐页成因",
    "producer_scripts": [
-    "e2e_r14_tight_gap_diagnosis.py"
+    "e2e_r14_tight_gap_diagnosis.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "c2b28ea",
    "commit_last_touched": "c2b28ea"
@@ -1054,13 +1137,16 @@
    "status": "current",
    "status_note": "扰动 30 页释放审计（f1 固定件）",
    "producer_scripts": [
-    "f1_r14_perturb_release_audit.py"
+    "e2e_r14_head_reverify.py",
+    "r14_attribute_producer.py",
+    "r14_delivery_summary.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "4712825",
    "commit_last_touched": "d715369"
@@ -1073,36 +1159,38 @@
    "status": "historical",
    "status_note": "E **前**现行协议基线",
    "producer_scripts": [
-    "e2e_r14_six_condition_lineage.py",
-    "f1_r14_perturb_release_audit.py"
+    "e2e_r14_six_condition_lineage.py"
    ],
-   "producer_tier": "mention_exact_only",
+   "producer_tier": "declared_writer",
    "written_via_out_override": false,
-   "producer_note": "仅提及、未声明写出：**引用≠产出**",
+   "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
    "reproduced_by_bundle": false,
-   "reproducible": false,
+   "reproducible": true,
    "commit_added": "4712825",
    "commit_last_touched": "4712825"
   },
   {
    "artifact": "R14G0_GATE_READINESS_V5.json",
    "bytes": 8521,
-   "sha256": "8235db1cefb6401e94b51d88394e0bce708e178a3ca79caa8efd27d154a46447",
-   "sha_short": "8235db1cefb6",
+   "sha256": "041c1a84d8a3545214a1308d6d6f96e1ef814f23a86ca3212f0e64c8d0d49bc8",
+   "sha_short": "041c1a84d8a3",
    "status": "current",
    "status_note": "G 闸门行为级就绪审计（真实请求 0）",
    "producer_scripts": [
-    "e2e_r14_stage_g_readiness.py"
+    "e2e_r14_stage_g_readiness.py",
+    "r14_attribute_producer.py",
+    "r14_delivery_summary.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "ce44cc7",
-   "commit_last_touched": "2bcb8d4"
+   "commit_last_touched": "6ff7c24"
   },
   {
    "artifact": "R14G0_GATE_READINESS_V5_RERUN.json",
@@ -1141,21 +1229,24 @@
   {
    "artifact": "R14G_HISTORICAL_BYTES.json",
    "bytes": 3162,
-   "sha256": "2f7f99f8d9071c56977e21bede7a403c0ed34b129f429da41fdd4d14c1f5fbc7",
-   "sha_short": "2f7f99f8d907",
+   "sha256": "61b9edfdd950adba62176719b7ca4255a0cb25513373f445449a68f8492a2d75",
+   "sha_short": "61b9edfdd950",
    "status": "current",
    "status_note": "历史 Test 件逐字节对引入 commit 的完整性核验（含本轮误覆写事故记录）",
    "producer_scripts": [
-    "a9_r14_historical_bytes.py"
+    "a9_r14_historical_bytes.py",
+    "e2e_r14_stage_g_readiness.py",
+    "r14_delivery_summary.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "e2ae3ed",
-   "commit_last_touched": "2bcb8d4"
+   "commit_last_touched": "6ff7c24"
   },
   {
    "artifact": "R14G_HISTORICAL_BYTES.md",
@@ -1184,13 +1275,15 @@
    "status": "current",
    "status_note": "A9 字节基线检查的触发反证",
    "producer_scripts": [
-    "a9_r14_historical_bytes.py"
+    "a9_r14_historical_bytes.py",
+    "e2e_r14_stage_g_readiness.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "e2ae3ed",
    "commit_last_touched": "337dfd7"
@@ -1198,22 +1291,27 @@
   {
    "artifact": "R14G_PLAN.json",
    "bytes": 5017,
-   "sha256": "e09c0d0e5441faa63e8f4dd41c3b8c673530d94dab476f0bb578d1a3758aeb37",
-   "sha_short": "e09c0d0e5441",
+   "sha256": "caf8a3aaea3624adc2968c61b0be1594c75559c1ff3046bbe6674b3fecae82b9",
+   "sha_short": "caf8a3aaea36",
    "status": "current",
    "status_note": "G 批 manifest（PLANNED_NOT_EXECUTED）",
    "producer_scripts": [
     "d9_r14_stage_g_manifest.py",
-    "d9b_r14_lock_manifest.py"
+    "d9b_r14_lock_manifest.py",
+    "e2e_r14_stage_g_batch.py",
+    "e2e_r14_stage_g_readiness.py",
+    "r14_attribute_producer.py",
+    "r14_delivery_summary.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "ce44cc7",
-   "commit_last_touched": "2bcb8d4"
+   "commit_last_touched": "6ff7c24"
   },
   {
    "artifact": "R14H_KB_CHANNEL_AUDIT.json",
@@ -1223,13 +1321,15 @@
    "status": "current",
    "status_note": "H KB 通道审计",
    "producer_scripts": [
-    "h1_r14_kb_channel_audit.py"
+    "h1_r14_kb_channel_audit.py",
+    "r14_attribute_producer.py",
+    "r14_verify_all.py"
    ],
    "producer_tier": "declared_writer",
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "5ab91dd",
    "commit_last_touched": "acc4c1d"
@@ -1254,8 +1354,8 @@
   {
    "artifact": "R14H_KB_CHANNEL_HEAD_DELTA.json",
    "bytes": 1501,
-   "sha256": "dfb4f75e556f7acf5f48668511b00f267da17e4e85d10277e65982048bbe419a",
-   "sha_short": "dfb4f75e556f",
+   "sha256": "3807bdc5ff14d6664d0534a2f7b603f584d7fbbd01c126453c4ead7b1734e531",
+   "sha_short": "3807bdc5ff14",
    "status": "current",
    "status_note": [
     "h1_r14_kb_channel_audit.py"
@@ -1270,22 +1370,22 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f23482a",
-   "commit_last_touched": "2bcb8d4"
+   "commit_last_touched": "6ff7c24"
   }
  ],
  "self_checks_failed": [],
  "reproduce_needs_out_override": [
-  "R14E_REAL_PAGE_REPLAY_V4.json ← e2_r14_optionband_replay.py, e2b_r14_anchor_option_recovery.py, e2d_r14_production_replay_v4.py（需 --out 复现）",
-  "R14E_REAL_PAGE_REPLAY_V6.json ← e2_r14_optionband_replay.py, e2b_r14_anchor_option_recovery.py, e2d_r14_production_replay_v4.py（需 --out 复现）",
-  "R14E_REAL_PAGE_REPLAY_V7.json ← e2_r14_optionband_replay.py, e2b_r14_anchor_option_recovery.py, e2d_r14_production_replay_v4.py（需 --out 复现）",
-  "R14E_SIX_CONDITION_V2.json ← e2e_r14_six_condition_lineage.py（需 --out 复现）",
-  "R14E_SIX_CONDITION_V3.json ← e2e_r14_six_condition_lineage.py（需 --out 复现）",
-  "R14E_SIX_CONDITION_V6.json ← e2e_r14_six_condition_lineage.py（需 --out 复现）",
-  "R14E_SIX_CONDITION_V7.json ← e2e_r14_six_condition_lineage.py（需 --out 复现）",
-  "R14E_SIX_CONDITION_V8.json ← e2e_r14_six_condition_lineage.py（需 --out 复现）",
-  "R14E_STAGE_E_ACCEPTANCE_V4.json ← e2e_r14_stage_e_acceptance.py（需 --out 复现）",
-  "R14E_STAGE_E_ACCEPTANCE_V5.json ← e2e_r14_stage_e_acceptance.py（需 --out 复现）",
-  "R14E_STAGE_E_ACCEPTANCE_V6.json ← e2e_r14_stage_e_acceptance.py（需 --out 复现）"
+  "R14E_REAL_PAGE_REPLAY_V4.json ← e2_r14_optionband_replay.py, e2_r14_v8_reproducibility.py, e2b_r14_anchor_option_recovery.py, e2d_r14_production_replay_v4.py, r14_attribute_producer.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_REAL_PAGE_REPLAY_V6.json ← e2_r14_optionband_replay.py, e2_r14_v8_reproducibility.py, e2b_r14_anchor_option_recovery.py, e2d_r14_production_replay_v4.py, r14_attribute_producer.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_REAL_PAGE_REPLAY_V7.json ← e2_r14_optionband_replay.py, e2_r14_v8_reproducibility.py, e2b_r14_anchor_option_recovery.py, e2d_r14_production_replay_v4.py, r14_attribute_producer.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_SIX_CONDITION_V2.json ← e2e_r14_head_reverify.py, e2e_r14_six_condition_lineage.py, r14_delivery_summary.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_SIX_CONDITION_V3.json ← e2e_r14_head_reverify.py, e2e_r14_six_condition_lineage.py, r14_delivery_summary.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_SIX_CONDITION_V6.json ← e2e_r14_head_reverify.py, e2e_r14_six_condition_lineage.py, r14_delivery_summary.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_SIX_CONDITION_V7.json ← e2e_r14_head_reverify.py, e2e_r14_six_condition_lineage.py, r14_delivery_summary.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_SIX_CONDITION_V8.json ← e2e_r14_head_reverify.py, e2e_r14_six_condition_lineage.py, r14_delivery_summary.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_STAGE_E_ACCEPTANCE_V4.json ← e2e_r14_head_reverify.py, e2e_r14_stage_e_acceptance.py, r14_attribute_producer.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_STAGE_E_ACCEPTANCE_V5.json ← e2e_r14_head_reverify.py, e2e_r14_stage_e_acceptance.py, r14_attribute_producer.py, r14_verify_all.py（需 --out 复现）",
+  "R14E_STAGE_E_ACCEPTANCE_V6.json ← e2e_r14_head_reverify.py, e2e_r14_stage_e_acceptance.py, r14_attribute_producer.py, r14_verify_all.py（需 --out 复现）"
  ],
  "reading_order_for_human": [
   "1. R14_PROGRESS_STOPGATE.md（进度 + 6 个待裁决点）",

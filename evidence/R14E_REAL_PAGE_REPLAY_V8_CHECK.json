@@ -8,10 +8,10 @@
   ],
   "artifact_untouched": true,
   "candidates_tried": 3,
-  "attribution_stale": false,
+  "attribution_stale": true,
   "attribution_head": "2bcb8d49303288252f3db8ea213c4ef9678e1010"
  },
- "head": "2bcb8d49303288252f3db8ea213c4ef9678e1010",
+ "head": "6ff7c2436e7b057c36b513436617baa4a8ec4c80",
  "verdict_fields_checked": [
   "solver_status",
   "solver_answer",
@@ -111,7 +111,7 @@
   "verdict_identical_all": true,
   "v8_untouched": true,
   "artifact_untouched": true,
-  "not_attribution_stale": true
+  "not_attribution_stale": false
  },
  "gate_basis": "local_measured_only：`ok` 由 `gate_terms` 逐项算出；attribution.reproducibility **只登记、不参与门槛**（拿归属档位当准入条件=越权引用别人的结论）"
 }

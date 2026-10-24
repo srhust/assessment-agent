@@ -545,10 +545,32 @@ def _resolve_target(node, src_map):
             got |= src_map[c.id]
         elif isinstance(c, ast.Attribute):
             # `a.out` / `args.out`：键是**整串属性路径**
-            got |= src_map.get(ast.unparse(c), set())
+            _d = _dotted(c)
+            if _d:
+                got |= src_map.get(_d, set())
             if isinstance(c.value, ast.Name):
                 got |= src_map.get(f"{c.value.id}.{c.attr}", set())
     return {v.rsplit("/", 1)[-1] for v in got}
+
+
+def _dotted(node):
+    """把 `Name`/`Attribute` 链**迭代**拼成 `"a.out"`（不用 `ast.unparse`）。
+
+    本轮实测：`ast.unparse` 对大模块（`e2e_r14_index.py` 两千行）
+    走 `_write_constant` 一路递归，在归属器里抛
+    `RecursionError: maximum recursion depth exceeded` ⇒
+    `r14_attribute_producer.py` 退出码 1、bundle 两条步骤同时红。
+    我只需要一个**属性路径字符串**，不需要完整的反解析器。
+    """
+    parts = []
+    cur = node
+    while isinstance(cur, ast.Attribute):
+        parts.append(cur.attr)
+        cur = cur.value
+    if not isinstance(cur, ast.Name):
+        return None
+    parts.append(cur.id)
+    return ".".join(reversed(parts))
 
 
 def _argparse_dests(tree):
@@ -575,16 +597,14 @@ def _argparse_dests(tree):
                                 dflt.value, str):
                             flags[name] = dflt.value
             elif isinstance(f, ast.Attribute) and f.attr == "parse_args":
-                holder = f.value
-                key = ast.unparse(holder) if holder is not None else ""
-                for t2 in (node,):
-                    pass
-                holders[key] = True
+                key = _dotted(f.value)
+                if key:
+                    holders[key] = True
     for node in ast.walk(tree):
         if isinstance(node, ast.Assign) and isinstance(node.value, ast.Call):
             fv = node.value.func
             if isinstance(fv, ast.Attribute) and fv.attr == "parse_args":
-                holder = ast.unparse(fv.value) if fv.value else ""
+                holder = _dotted(fv.value) or ""
                 for t in node.targets:
                     if isinstance(t, ast.Name):
                         holders[t.id] = holder
@@ -634,12 +654,14 @@ def _ast_write_targets(src: str) -> set:
     for node in ast.walk(tree):
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) \
                 and node.func.attr == "parse_args":
-            holders[ast.unparse(node.func.value)] = node
+            _h = _dotted(node.func.value)
+            if _h:
+                holders[_h] = node
     dest_by_holder = {}
     for node in ast.walk(tree):
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) \
                 and node.func.attr == "add_argument":
-            owner = ast.unparse(node.func.value)
+            owner = _dotted(node.func.value)
             dflt = next((kw.value for kw in node.keywords
                          if kw.arg == "default"), None)
             if isinstance(dflt, ast.Constant) and isinstance(dflt.value, str) \
@@ -658,11 +680,12 @@ def _ast_write_targets(src: str) -> set:
             return None
         for node in ast.walk(tree):
             if isinstance(node, ast.Assign) and isinstance(
-                    node.value, ast.Call) and ast.unparse(
-                        node.value.func).endswith("parse_args"):
+                    node.value, ast.Call) and isinstance(
+                        node.value.func, ast.Attribute) and \
+                    node.value.func.attr == "parse_args":
                 if any(isinstance(t, ast.Name) and t.id == base.id
                        for t in node.targets):
-                    return ast.unparse(node.value.func.value)
+                    return _dotted(node.value.func.value)
         return None
 
     def _resolve(target, scope):
@@ -681,8 +704,19 @@ def _ast_write_targets(src: str) -> set:
                         c.attr, set()))
         return {v for v in got if v}
 
-    def _assigned_in(scope, var):
-        """`scope` 内把 `var` 当赋值目标的那些 RHS 的件名（一跳即止）。"""
+    def _assigned_in(scope, var, _seen=None):
+        """`scope` 内把 `var` 当赋值目标的那些 RHS 的件名。
+
+        **必须有环保护**：`_assigned_in` 对 RHS 里的每个 `Name`
+        再次调用自己，遇到 `dst = Path(dst)` / `i = i + 1`
+        这种自指赋值就**无限递归** ⇒
+        本轮实测 `RecursionError: maximum recursion depth exceeded`
+        （归属器退出码 1，bundle 两条步骤同时红）。
+        """
+        seen = _seen or set()
+        if var in seen:
+            return set()
+        seen = seen | {var}
         out = set()
         for node in ast.walk(scope):
             if isinstance(node, ast.Assign) and any(
@@ -691,7 +725,7 @@ def _ast_write_targets(src: str) -> set:
                 vals = set(_json_lits(node.value))
                 for c in ast.walk(node.value):
                     if isinstance(c, ast.Name):
-                        vals |= _assigned_in(scope, c.id)
+                        vals |= _assigned_in(scope, c.id, seen)
                     elif isinstance(c, ast.Attribute):
                         owner = _owner_of(c)
                         if owner:
