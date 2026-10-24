@@ -1,29 +1,15 @@
 {
  "status": "REFUSED",
- "reason": "dirty_worktree",
+ "reason": "crashed",
  "detail": {
-  "note": "bundle 要求先提交再复现（不自动 stash）",
-  "dirty": [
-   " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.json",
-   " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.md",
-   " M evidence/R14E_ARTIFACT_ATTRIBUTION.json",
-   " M evidence/R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
-   " M evidence/R14E_RERUN_SEMANTICS.json",
-   " M evidence/R14G0_GATE_READINESS_V5.json",
-   " M evidence/R14G_HISTORICAL_BYTES.json",
-   " M evidence/R14G_PLAN.json",
-   " M evidence/R14H_KB_CHANNEL_HEAD_DELTA.json",
-   " M evidence/R14_DELIVERY_SUMMARY.json",
-   " M evidence/R14_DELIVERY_SUMMARY.md",
-   " M evidence/R14_INDEX.json"
-  ]
+  "traceback_tail": "Traceback (most recent call last):\n  File \"E:\\assessment-agent\\scripts\\r14_verify_all.py\", line 879, in <module>\n    sys.exit(main())\n  File \"E:\\assessment-agent\\scripts\\r14_verify_all.py\", line 416, in main\n    \"DSH_BUNDLE_RUN_MARK\": mark}\nNameError: name 'mark' is not defined\n"
  },
- "head_at_run": "c34e1288a585dcf5e44a3b2ad1d4bb76a351fc35",
- "run_mark": "fe967201cac5",
+ "head_at_run": "1fed0fc924f30472130e74a19919358c736005b2",
+ "run_mark": "c2094c0268a9",
  "n_steps": 0,
  "steps": [],
  "fails": [
-  "FATAL dirty_worktree"
+  "FATAL crashed"
  ],
  "budget": {
   "http_requests_made": 0,

@@ -374,6 +374,12 @@ def main() -> int:
         return refuse_and_record("missing_artifacts",
                                  {"missing": missing})
     before = {p.name: sha(p) for p in EV.glob("R14*") if p.is_file()}
+    # **本轮 mark 必须在步骤循环之前生成**（而不是落盘时临时造）：
+    # 它同时用于 ① 通过 env 下发给每个子步骤、
+    # ② 最终写进 bundle 件；两处**同一个值**才能让交付汇总区分
+    # "本轮证据"与"上一轮证据"。落盘时才生成 ⇒ 子步骤读到的
+    # 永远是上一轮的 mark ⇒ 判据空转。
+    _this_run_mark = _uuid.uuid4().hex[:12]
     rows, fails = [], []
     for script, art, must, out_mode, out_val in STEPS:
         parts = script.split()
@@ -413,7 +419,18 @@ def main() -> int:
                # 没有这个 mark，汇总无法区分"本轮未写完"与
                # "上一轮真失败"，就会把上一轮的 REFUSED
                # 当本轮失败依据 ⇒ **自引用死锁**。
-               "DSH_BUNDLE_RUN_MARK": mark}
+               # ⇒ 这里**不能**用 L228 的 `mark`：那是
+               # `refuse_and_record()` 的**局部变量**（我第一版就是这么写，
+               # 当场 `NameError: name 'mark' is not defined`，
+               # bundle 以 `REFUSED/crashed` 崩溃——
+               # 崩溃记录机制这次真的接住了它）。
+               # 也不能用 L822 的 `_run_mark`：它在**全部步骤跑完之后**
+               # 才生成，而那意味着本轮 bundle 件的 mark
+               # **必然不等于**下发给子进程的 mark ⇒
+               # `basis` 永远 `PREVIOUS_RUN`，判据空转。
+               # ⇒ 正确形状：**在步骤循环之前**生成本轮 mark，
+                #   同时把它用于 env 下发与最终落盘（同一个值）。
+                "DSH_BUNDLE_RUN_MARK": _this_run_mark}
         t0 = time.time()
         r = subprocess.run(argv, cwd=ROOT, capture_output=True, text=True,
                            encoding="utf-8", env=env)
@@ -819,7 +836,9 @@ def main() -> int:
             "要么删掉 HAND_WRITTEN 里的声明，要么别在 bundle 里写它")
 
     import uuid as _uuid
-    _run_mark = _uuid.uuid4().hex[:12]
+    # **同一个 mark**：下发给子步骤的 env 与最终写进件的 `run_mark`
+    # 必须同值，否则交付汇总的 `basis` 永远判不成 `THIS_RUN`。
+    _run_mark = _this_run_mark
     out = {"status": "RAN", "run_mark": _run_mark,
            "head_at_run": head, "n_steps": len(rows),
            "docs_step_count_synced": _doc_sync,
