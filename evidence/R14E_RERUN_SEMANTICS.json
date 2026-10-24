@@ -10,9 +10,12 @@
   ]
  },
  "drift_register_selftest": {
-  "fails": [
-   "没有已登记的结论级漂移，反证无从执行"
-  ]
+  "fails": [],
+  "mode": "synthetic",
+  "real_rows_available": false,
+  "synthetic_mechanism_proved": true,
+  "target": "R14Z_SYNTH.json",
+  "note": "真实行缺席时用合成样本证明登记机制**能**改变判定（纯内存/tmp 目录、零 HTTP、不碰证据件）"
  },
  "drift_register_source": "evidence/*HEAD_DELTA.json 的 compared.committed",
  "documented_verdict_drift": [],
@@ -230,7 +233,9 @@
   {
    "artifact": "R14E_SIX_CONDITION_V10.json",
    "status": "covered_by_bundle",
-   "declared_writers": [],
+   "declared_writers": [
+    "d1_r11_six_condition.py"
+   ],
    "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
   },
   {

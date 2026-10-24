@@ -1,7 +1,7 @@
 {
  "status": "RAN",
- "run_mark": "178072e74fb4",
- "head_at_run": "65ef817385c5cd1d2f804ccc5f43f1a3147f4d36",
+ "run_mark": "c362f95c2883",
+ "head_at_run": "427fe4d08ff7ce765c39af76a0b836eba23f8660",
  "n_steps": 21,
  "docs_step_count_synced": [],
  "A13_step_count_guard": {
@@ -41,7 +41,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "0efca06a4d52",
+   "artifact_sha256_short": "0dd6e5c66b34",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -56,7 +56,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.3,
-   "artifact_sha256_short": "1e45e8278726",
+   "artifact_sha256_short": "b32935bd524e",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -70,7 +70,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.1,
+   "seconds": 1.2,
    "artifact_sha256_short": "d27ba4087d5c",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -85,7 +85,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.7,
+   "seconds": 5.8,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -160,8 +160,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 3.1,
-   "artifact_sha256_short": "0425f9c0b62f",
+   "seconds": 3.7,
+   "artifact_sha256_short": "03bd8f01b16b",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -175,7 +175,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 4.5,
+   "seconds": 4.8,
    "artifact_sha256_short": "8812f2b72e12",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -190,7 +190,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.1,
+   "seconds": 1.0,
    "artifact_sha256_short": "89be0925dcbf",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -206,7 +206,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "e1be6416a5e7",
+   "artifact_sha256_short": "e57536eaa5a4",
    "artifact_rewritten": true,
    "stdout_tail": [
     "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
@@ -251,7 +251,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.1,
-   "artifact_sha256_short": "307339440528",
+   "artifact_sha256_short": "ab4ba6bff3b7",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -265,11 +265,11 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 1,
-   "seconds": 39.6,
-   "artifact_sha256_short": "40c683aeedd8",
-   "artifact_rewritten": false,
+   "seconds": 40.2,
+   "artifact_sha256_short": "bc70eda5609c",
+   "artifact_rewritten": true,
    "stdout_tail": [
-    "}"
+    "drift_register_selftest FAILED: ['没有已登记的结论级漂移，反证无从执行']"
    ],
    "run_mark_artifact": null,
    "run_mark_stdout": null
@@ -279,9 +279,9 @@
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
    "out_mode": "bare",
    "expected_to_change": false,
-   "exit": 0,
-   "seconds": 1.3,
-   "artifact_sha256_short": "c93a9c52869a",
+   "exit": 1,
+   "seconds": 1.2,
+   "artifact_sha256_short": "d70bae89f2d2",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -311,7 +311,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 4.6,
-   "artifact_sha256_short": "c80a59768934",
+   "artifact_sha256_short": "e2efcbb40432",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -324,10 +324,10 @@
    "artifact": "R14_CLAIM_AUDIT.json",
    "out_mode": "fixed",
    "expected_to_change": false,
-   "exit": 1,
-   "seconds": 9.7,
-   "artifact_sha256_short": "34de79463775",
-   "artifact_rewritten": false,
+   "exit": 0,
+   "seconds": 9.8,
+   "artifact_sha256_short": "6e3f867228bf",
+   "artifact_rewritten": true,
    "stdout_tail": [
     "}"
    ],
@@ -340,14 +340,14 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 7.3,
-   "artifact_sha256_short": "09b28b553bf7",
+   "seconds": 7.8,
+   "artifact_sha256_short": "94d75419b6bc",
    "artifact_rewritten": true,
    "stdout_tail": [
-    "{\"run_mark\": \"a2152bbd0b40\", \"n_artifacts\": 57, \"self_checks_failed\": []}"
+    "{\"run_mark\": \"d7974eb45ca7\", \"n_artifacts\": 57, \"self_checks_failed\": []}"
    ],
-   "run_mark_artifact": "a2152bbd0b40",
-   "run_mark_stdout": "a2152bbd0b40"
+   "run_mark_artifact": "d7974eb45ca7",
+   "run_mark_stdout": "d7974eb45ca7"
   }
  ],
  "comparison_volatile_keys": {
@@ -380,12 +380,10 @@
  },
  "fails": [
   "scripts/r14_semantic_repro.py 退出码 1：",
-  "scripts/r14_semantic_repro.py → R14E_RERUN_SEMANTICS.json 的 violations = [{'artifact': 'R14E_REAL_PAGE_REPLAY_V8.json', 'script': 'e2_r14_optionband_replay.py', 'declared_writers': ['e2_r14_optionband_replay.py', 'r14_attribute_producer.py', 'e2b_r14_anchor_option_recovery.py', 'e2d_r14_production_replay_v4.py'], 'refused_unsafe': [{'script': 'r14_attribute_producer.py', 'reason': '自我递归'}, {'script': 'e2b_r14_anchor_option_recovery.py', 'reason': '不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）'}], 'worktree_collateral': ['evidence/R14E_REAL_PAGE_REPLAY_V8.json'], 'collateral_removed': [], 'safety': 'OK_ZERO_REQUESTS', 'offline': True, 'exit': 0, 'files_changed_by_rerun': ['R14E_REAL_PAGE_REPLAY_V8.json'], 'own_declared_outputs_touched': ['R14E_REAL_PAGE_REPLAY_V8.json'], 'status': 'semantic_drift', 'diff_count': 22, 'diff_classes': {'verdict_level': 7, 'annotation_only': 0, 'numeric_precision': 0, 'other': 15, 'other_examples': [{'path': '$.ft-mirror-04.chain', 'committed': '[\"declared_options:3\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-mirror-04.option_sha256', 'committed': '[\"b89eb0d5c84280c8\", \"59783c0d44a3f077\", \"73746abb55f83330\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-mirror-04.options_used', 'committed': '[\"A\", \"B\", \"C\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-mirror-04--tight.chain', 'committed': '[\"declared_options:0\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-mirror-04--tight.option_sha256', 'committed': '[\"d4e42d469bc8e0e4\", \"697c7f8fc3797461\", \"42fd9c879bc47f82\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-mirror-04--tight.options_used', 'committed': '[]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-overlay-12.chain', 'committed': '[\"declared_options:4\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-overlay-12.option_sha256', 'committed': '[\"67c81cfa4aacc3b0\", \"2ff83e867c8d4444\", \"bd3f10377ef775ff\", \"c87be50da5dc3bc4\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-overlay-12.options_used', 'committed': '[\"A\", \"B\", \"C\", \"D\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-rot90-01.chain', 'committed': '[\"declared_options:4\"]', 'rerun': '<重跑未产出>'}], 'verdict_paths': ['$.ft-mirror-04--tight.consumed_crop_shas', '$.ft-mirror-04--tight.label_association_verified[0]', '$.ft-mirror-04--tight.label_association_verified[1]', '$.ft-mirror-04--tight.label_association_verified[2]', '$.ft-mirror-04--tight.provenance[0]', '$.ft-mirror-04--tight.provenance[1]', '$.ft-mirror-04--tight.provenance[2]'], 'verdict_examples': [{'path': '$.ft-mirror-04--tight.consumed_crop_shas', 'committed': '[\"b3ae9ada1cea8f2d\", \"419011ac3cad289a\", \"27ca966ec399486e\", \"52d63f2d238a963e\"]', 'rerun': 'null'}, {'path': '$.ft-mirror-04--tight.label_association_verified[0]', 'committed': 'null', 'rerun': 'true'}, {'path': '$.ft-mirror-04--tight.label_association_verified[1]', 'committed': 'null', 'rerun': 'true'}, {'path': '$.ft-mirror-04--tight.label_association_verified[2]', 'committed': 'null', 'rerun': 'true'}, {'path': '$.ft-mirror-04--tight.provenance[0]', 'committed': 'null', 'rerun': 'unknown'}, {'path': '$.ft-mirror-04--tight.provenance[1]', 'committed': 'null', 'rerun': 'unknown'}, {'path': '$.ft-mirror-04--tight.provenance[2]', 'committed': 'null', 'rerun': 'unknown'}]}, 'diffs': [{'path': '$.ft-mirror-04.chain', 'committed': '[\"declared_options:3\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-mirror-04.option_sha256', 'committed': '[\"b89eb0d5c84280c8\", \"59783c0d44a3f077\", \"73746abb55f83330\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-mirror-04.options_used', 'committed': '[\"A\", \"B\", \"C\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-mirror-04--tight.chain', 'committed': '[\"declared_options:0\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-mirror-04--tight.option_sha256', 'committed': '[\"d4e42d469bc8e0e4\", \"697c7f8fc3797461\", \"42fd9c879bc47f82\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-mirror-04--tight.options_used', 'committed': '[]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-mirror-04--tight.consumed_crop_shas', 'committed': '[\"b3ae9ada1cea8f2d\", \"419011ac3cad289a\", \"27ca966ec399486e\", \"52d63f2d238a963e\"]', 'rerun': 'null'}, {'path': '$.ft-mirror-04--tight.label_association_verified[0]', 'committed': 'null', 'rerun': 'true'}, {'path': '$.ft-mirror-04--tight.label_association_verified[1]', 'committed': 'null', 'rerun': 'true'}, {'path': '$.ft-mirror-04--tight.label_association_verified[2]', 'committed': 'null', 'rerun': 'true'}, {'path': '$.ft-mirror-04--tight.provenance[0]', 'committed': 'null', 'rerun': 'unknown'}, {'path': '$.ft-mirror-04--tight.provenance[1]', 'committed': 'null', 'rerun': 'unknown'}, {'path': '$.ft-mirror-04--tight.provenance[2]', 'committed': 'null', 'rerun': 'unknown'}, {'path': '$.ft-overlay-12.chain', 'committed': '[\"declared_options:4\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-overlay-12.option_sha256', 'committed': '[\"67c81cfa4aacc3b0\", \"2ff83e867c8d4444\", \"bd3f10377ef775ff\", \"c87be50da5dc3bc4\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-overlay-12.options_used', 'committed': '[\"A\", \"B\", \"C\", \"D\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-rot90-01.chain', 'committed': '[\"declared_options:4\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-rot90-01.option_sha256', 'committed': '[\"52b3fc247734d4aa\", \"5896f34be920015d\", \"4a2f7db5ef4feed3\", \"f817c48b4889899d\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-rot90-01.options_used', 'committed': '[\"A\", \"B\", \"C\", \"D\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-trans-07.chain', 'committed': '[\"declared_options:3\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-trans-07.option_sha256', 'committed': '[\"2c8483b4af6ee1a8\", \"0fbfa086d45ef6a4\", \"b61c6c3fd7cf5d57\"]', 'rerun': '<重跑未产出>'}, {'path': '$.ft-trans-07.options_used', 'committed': '[\"A\", \"B\", \"C\"]', 'rerun': '<重跑未产出>'}], 'detail': '22 处差异：结论级 7 / 注解级 0 / 其他 15'}]，应为 []",
-  "scripts/e2e_r14_claim_audit.py 退出码 1：",
-  "scripts/e2e_r14_claim_audit.py → R14_CLAIM_AUDIT.json 的 fails = ['C8 R14_PROGRESS_STOPGATE.md 写 核对副产物=4，索引真值 5 ⇒ 计数过期', 'C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=56 件，索引真值是 57 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步', 'C8 R14_STAGE_E_DELIVERABLES.md 写 verification_byproduct=4，索引真值 5 ⇒ 计数过期']，应为 []",
-  "A7 有**未解释**的结论级漂移：['R14E_REAL_PAGE_REPLAY_V8.json']",
-  "A7 补集复现核对仍有违规：['R14E_REAL_PAGE_REPLAY_V8.json']",
-  "A11 漂移登记不过：['R14E_REAL_PAGE_REPLAY_V8.json 与 HEAD 存在**结论级**差异，但没有任何登记件点名它 ⇒ 差异未解释（登记件缺失就是未解释）']"
+  "scripts/e2_r14_v8_reproducibility.py 退出码 1：",
+  "scripts/e2_r14_v8_reproducibility.py → R14E_REAL_PAGE_REPLAY_V8_CHECK.json 的 attribution 子集不符：{'reproducibility': 'VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING', 'artifact_untouched': True} ≠ {'reproducibility': 'REPRODUCIBLE_FROM_HEAD', 'artifact_untouched': True}",
+  "A7 漂移登记**反证**失败：['没有已登记的结论级漂移，反证无从执行']",
+  "A7 剥掉解释件后仍算已登记 ⇒ documented 成了吞违规的开关"
  ],
  "worktree_clean_before": true,
  "worktree_clean_after": false,
@@ -400,13 +398,9 @@
     "R14H_KB_CHANNEL_HEAD_DELTA.json"
    ]
   },
-  "violated": [
-   "R14E_REAL_PAGE_REPLAY_V8.json 与 HEAD 存在**结论级**差异，但没有任何登记件点名它 ⇒ 差异未解释（登记件缺失就是未解释）"
-  ],
+  "violated": [],
   "derived_from": "R14E_RERUN_SEMANTICS.json",
-  "need_register": [
-   "R14E_REAL_PAGE_REPLAY_V8.json"
-  ]
+  "need_register": []
  },
  "A10_selftest": {
   "fails": [],
@@ -430,10 +424,12 @@
   " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.md",
   " M evidence/R14E_ARTIFACT_ATTRIBUTION.json",
   " M evidence/R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
+  " M evidence/R14E_RERUN_SEMANTICS.json",
   " M evidence/R14G0_GATE_READINESS_V5.json",
   " M evidence/R14G_HISTORICAL_BYTES.json",
   " M evidence/R14G_PLAN.json",
   " M evidence/R14H_KB_CHANNEL_HEAD_DELTA.json",
+  " M evidence/R14_CLAIM_AUDIT.json",
   " M evidence/R14_INDEX.json",
   " M evidence/R14_INDEX.md"
  ],

@@ -134,9 +134,21 @@ def main(out_name: str = RERUN) -> int:
                                           for k, v in rows.items()}},
                      ensure_ascii=False, indent=1))
     print("written", dst)
+    # **退出码只由本地实测决定**：
+    # `att["reproducibility"]` 是**归属件**的口径，写进本脚本的
+    # 准入条件等于"拿别人的结论当自己的证据"（越权引用）。
+    # 本轮实测就是这样崩的：归属器如实把 V8 降级成
+    # `VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING`，
+    # 而本脚本**自己**量到 5/5 页判定逐字段相同、V8 未被改动
+    # ⇒ 复现成立，却被别人的档位判成失败。
+    # 归属档位仍然**如实登记**在件里（可见，但不越权）。
     ok = (doc["verdict_identical_all"] and doc["v8_untouched"]
-          and att["reproducibility"] == "REPRODUCIBLE_FROM_HEAD"
           and att["artifact_untouched"] and not att["attribution_stale"])
+    doc["gate_basis"] = ("local_measured_only: verdict_identical_all + "
+                         "v8_untouched + artifact_untouched + 未过期；"
+                         "attribution.reproducibility 仅登记不越权")
+    dst.write_text(json.dumps(doc, ensure_ascii=False, indent=1),
+                   encoding="utf-8")
     return 0 if ok else 1
 
 

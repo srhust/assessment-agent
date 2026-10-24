@@ -1,19 +1,17 @@
 {
  "purpose": "V8 复现性核验（生产者归属驱动，判定层与证据层分开登记）",
  "attribution": {
-  "reproducibility": "REPRODUCIBLE_FROM_HEAD",
-  "true_producers": [
-   "scripts/e2d_r14_production_replay_v4.py"
-  ],
+  "reproducibility": "VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING",
+  "true_producers": [],
   "partial_producers": [
    "scripts/e2_r14_optionband_replay.py"
   ],
   "artifact_untouched": true,
   "candidates_tried": 4,
   "attribution_stale": false,
-  "attribution_head": "65ef817385c5cd1d2f804ccc5f43f1a3147f4d36"
+  "attribution_head": "427fe4d08ff7ce765c39af76a0b836eba23f8660"
  },
- "head": "65ef817385c5cd1d2f804ccc5f43f1a3147f4d36",
+ "head": "427fe4d08ff7ce765c39af76a0b836eba23f8660",
  "verdict_fields_checked": [
   "solver_status",
   "solver_answer",
@@ -89,20 +87,19 @@
   }
  },
  "reproducibility": {
-  "status": "REPRODUCIBLE_FROM_HEAD",
-  "true_producer_scripts": [
-   "scripts/e2d_r14_production_replay_v4.py"
-  ],
+  "status": "VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING",
+  "true_producer_scripts": [],
   "partial_producer_scripts": [
    "scripts/e2_r14_optionband_replay.py"
   ],
   "verdict_layer": "9 个判定字段（含 option_boxes）与 V8 逐字一致 5/5 ⇒ 2/5 结论未变",
-  "evidence_layer": "富化键由 true producer 全部产出",
+  "evidence_layer": "富化键无脚本可产出（这才是真正的证据层退化）",
   "correction": "上轮此件写 NOT_REPRODUCIBLE_FROM_HEAD 属**误判**：只试了引用 V8 件名的脚本，未穷尽候选。真作者是 e2d_r14_production_replay_v4.py。"
  },
  "v8_untouched": true,
  "v8_sha256": "89be0925dcbf",
  "rerun_artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
  "llm_calls_used": 0,
- "http_requests_made": 0
+ "http_requests_made": 0,
+ "gate_basis": "local_measured_only: verdict_identical_all + v8_untouched + artifact_untouched + 未过期；attribution.reproducibility 仅登记不越权"
 }

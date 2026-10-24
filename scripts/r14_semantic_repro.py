@@ -168,12 +168,14 @@ def semantic_equal(a, b):
 
 
 
-def drift_registers() -> dict:
+def drift_registers(ev_dir=None, skip=None) -> dict:
     """**生成式**的漂移登记：任何 `*_HEAD_DELTA.json` 里 `compared.committed`
     指向的件，视为"已解释的漂移"。登记来自**产物**而不是脚本里的硬编码清单，
     所以删掉解释件会立刻让核对重新报违规。"""
     reg = {}
-    for p in EV.glob("R14*HEAD_DELTA.json"):
+    for p in (ev_dir or EV).glob("R14*HEAD_DELTA.json"):
+        if skip and p.name in skip:
+            continue
         try:
             d = json.loads(p.read_text(encoding="utf-8"))
         except Exception:  # noqa: BLE001
@@ -290,8 +292,45 @@ def selftest_drift_register(rows_now) -> dict:
     fails, notes = [], []
     doc = [x for x in rows_now if x.get("status") == "semantic_drift_documented"]
     if not doc:
-        fails.append("没有已登记的结论级漂移，反证无从执行")
-        return {"fails": fails}
+        # **没有真实已登记漂移 ≠ 反证可以弃权**。
+        # 上一版在这里 `return {"fails": [...]}`：检查器一旦没有输入
+        # 就沉默报错，等于"这套机制只在碰巧有样本时才算存在"。
+        # ⇒ 用**合成样本**跑同一套判据（纯内存 + tmp 目录，
+        #   不碰证据件、零 HTTP），机制有效性必须**每次都可证**。
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            ev = Path(td)
+            reg_name = "R14Z_SYNTH_HEAD_DELTA.json"
+            (ev / reg_name).write_text(json.dumps(
+                {"compared": {"committed": "R14Z_SYNTH.json"}},
+                ensure_ascii=False), encoding="utf-8")
+            synth = [{"artifact": "R14Z_SYNTH.json",
+                      "status": "semantic_drift_documented",
+                      "diff_classes": {"verdict_level": 3}}]
+            real = drift_registers(ev)          # 从**指定目录**取登记
+            if "R14Z_SYNTH.json" not in real:
+                fails.append("合成反证：登记件没被解析出来 ⇒ "
+                             "机制本身跑不起来，反证无意义")
+            stripped = drift_registers(
+                ev, skip={reg_name})
+            if "R14Z_SYNTH.json" in stripped:
+                fails.append("合成反证失败：剥掉解释件后仍算已登记 "
+                             "⇒ documented 成了吞违规的开关")
+            # **反向注入**：登记件指向**别的**件名 ⇒ 不该算登记
+            (ev / reg_name).write_text(json.dumps(
+                {"compared": {"committed": "R14Z_OTHER.json"}},
+                ensure_ascii=False), encoding="utf-8")
+            if "R14Z_SYNTH.json" in drift_registers(ev):
+                fails.append("合成反证失败：指向别的件的登记件被算成登记 "
+                             "⇒ 登记是\u201c同名就算\u201d而不是\u201c指向这件\u201d")
+            synth_ok = not fails
+        return {"fails": fails,
+                "mode": "synthetic",
+                "real_rows_available": False,
+                "synthetic_mechanism_proved": synth_ok,
+                "target": "R14Z_SYNTH.json",
+                "note": "真实行缺席时用合成样本证明登记机制**能**改变判定"
+                        "（纯内存/tmp 目录、零 HTTP、不碰证据件）"}
     target = doc[0]["artifact"]
     reg = drift_registers()
     if target not in reg:
