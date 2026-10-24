@@ -4,11 +4,12 @@
  "detail": {
   "note": "bundle 要求先提交再复现（不自动 stash）；入口守卫忽略 bundle 结论件自身",
   "dirty": [
-   " D t1.txt"
+   "索引里残留 SCRATCH 临时件：tmp_probe.txt",
+   " M scripts/r14_verify_all.py"
   ]
  },
- "head_at_run": "ab9fe53e12f0963c3fd9e6107273ee5854e7f31b",
- "run_mark": "c3a318c74222",
+ "head_at_run": "b7856dbbea610464d8a6f7d745a7b60bf4a2475d",
+ "run_mark": "d2bb5fa5630c",
  "n_steps": 0,
  "steps": [],
  "fails": [

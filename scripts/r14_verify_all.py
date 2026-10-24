@@ -341,14 +341,17 @@ def worktree_clean(self_only: bool = False):
     # `git add -A` 把 `t1.txt` 一起提交 ⇒ 之后 `git status` 不再列它 ⇒
     # `SCRATCH` 豁免**看不见**它 ⇒ 我读到的是绿。
     # ⇒ 豁免只对**未入库**的临时件成立；入库的临时件必须显式抓出。
+    # **注意 `worktree_clean()` 是纯函数，签名里没有 `fails`**：
+    # 我第一版直接 `fails.append(...)` ⇒ `NameError` 把 bundle 打崩
+    # （崩溃路径这次**确实**落了 `REFUSED`，落盘纪律生效）。
+    # ⇒ 违规作为**返回值的一部分**交回调用方。
     _tracked = subprocess.run(["git", "ls-files"], cwd=ROOT,
                               capture_output=True, text=True,
                               encoding="utf-8").stdout or ""
+    tracked_scratch = []
     for t in (x.strip().rsplit("/", 1)[-1] for x in _tracked.splitlines()):
         if t and SCRATCH.match(t) and t != ".DS_Store":
-            _msg = f"索引里残留 SCRATCH 临时件：{t}"
-            if _msg not in fails:
-                fails.append(_msg)
+            tracked_scratch.append(t)
     keep = []
     for x in (r.stdout or "").splitlines():
         if not x.strip():
@@ -390,6 +393,7 @@ def worktree_clean(self_only: bool = False):
             fails.append(f"A5 禁止改动历史件：{x}")
             continue
         keep.append(x)
+    keep = [f"索引里残留 SCRATCH 临时件：{t}" for t in tracked_scratch] + keep
     return (not keep), keep
 
 
@@ -398,6 +402,10 @@ def main() -> int:
     # 是**设计如此**（`git add -A` 提交后它又变脏是必然），
     # 拿它当"工作区脏"拒跑 = 被自己上一轮的输出卡死（本轮实测）。
     clean, dirty = worktree_clean(self_only=True)
+    # **入口豁免不许把"已入库的临时件"也豁免掉**：
+    # `self_only` 只豁免 bundle 结论件，`tracked_scratch` 必须照报。
+    if any(x.startswith("索引里残留") for x in dirty):
+        clean = False
     if not clean:
         return refuse_and_record(
             "dirty_worktree",
