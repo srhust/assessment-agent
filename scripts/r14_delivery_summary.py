@@ -124,7 +124,7 @@ def main() -> int:
     if _degraded:
         # **不许覆盖真实值来"凑结构"**：只补**真正缺失**的键，
         # 且不把 `status` 改成别的值、不把 `fails` 换成自造句子。
-        for _k in ("A12_stale_artifact_guard", "A13_step_count_rewrite_guard",
+        for _k in ("A12_stale_artifact_guard", "A13_step_count_guard",
                    "A10_collateral", "A11_drift_register", "budget"):
             b.setdefault(_k, "MISSING: 非本轮 bundle 证据")
         b["_basis"] = _bundle_basis
@@ -133,7 +133,7 @@ def main() -> int:
     _b_tokens = (b.get("budget") or {}).get("tokens_used", "ABSENT") \
         if isinstance(b.get("budget"), dict) else "ABSENT"
     _a12 = b.get("A12_stale_artifact_guard")
-    _a13 = b.get("A13_step_count_rewrite_guard")
+    _a13 = b.get("A13_step_count_guard")
     _a10 = b.get("A10_collateral")
     _a11 = (b.get("A11_drift_register") or {}).get("violated") \
         if isinstance(b.get("A11_drift_register"), dict) else None
@@ -148,9 +148,9 @@ def main() -> int:
     if _basis_this_run and b.get("fails") != []:
         fails.append(f"bundle fails 非空：{b['fails'][:2]}")
     # ---- 写出路径上的 bundle 派生键：一律**只走安全读取** ----
-    # 上一版这里留着 `b['A13_step_count_rewrite_guard']['synced']` 与
+    # 上一版这里留着 `b['A13_step_count_guard']['synced']` 与
     # `b['head_at_run'][:9]`：REFUSED 件**没有这两个键** ⇒
-    # `KeyError: 'A13_step_count_rewrite_guard'`，
+    # `KeyError: 'A13_step_count_guard'`，
     # 报告器在**它唯一该老实的路径**上崩掉，
     # 而 bundle 把崩溃记成"步骤失败"——看板上只看得见"脚本坏了"。
     _b_head = b.get("head_at_run", "ABSENT")

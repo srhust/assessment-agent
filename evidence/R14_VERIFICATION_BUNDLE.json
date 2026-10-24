@@ -1,21 +1,441 @@
 {
- "status": "REFUSED",
- "reason": "crashed",
- "detail": {
-  "traceback_tail": "Traceback (most recent call last):\n  File \"E:\\assessment-agent\\scripts\\r14_verify_all.py\", line 894, in <module>\n    sys.exit(main())\n  File \"E:\\assessment-agent\\scripts\\r14_verify_all.py\", line 825, in main\n    _by_sync = {x for x in a13.get(\"synced\", []) if x in _hw}\n  File \"E:\\assessment-agent\\scripts\\r14_verify_all.py\", line 825, in <setcomp>\n    _by_sync = {x for x in a13.get(\"synced\", []) if x in _hw}\nTypeError: unhashable type: 'list'\n"
+ "status": "RAN",
+ "run_mark": "c846890484f5",
+ "head_at_run": "d7d34a30e1d2f367019cdfa8e12b4d9e6d8eb854",
+ "n_steps": 21,
+ "docs_step_count_synced": [],
+ "A13_step_count_guard": {
+  "checked_docs": 2,
+  "required_steps": 21,
+  "synced": [],
+  "rewrite_targets": [
+   "R14_STAGE_E_DELIVERABLES.md",
+   "R14_PROGRESS_STOPGATE.md"
+  ],
+  "rewrite_scope": "仅**步数语境**（真跑 N 步 / 一键复现 N 步 / 清单 N 步）；序号与判断句不动，越界自报",
+  "step_count_lines": [
+   [
+    "R14_STAGE_E_DELIVERABLES.md",
+    21
+   ],
+   [
+    "R14_STAGE_E_DELIVERABLES.md",
+    21
+   ],
+   [
+    "R14_PROGRESS_STOPGATE.md",
+    21
+   ],
+   [
+    "R14_PROGRESS_STOPGATE.md",
+    21
+   ]
+  ],
+  "note": "交付文档里的步数由本步统一回写并断言无残留；上一版只替两个位置 ⇒ 同一篇文档出现 15/16/21 步自相矛盾"
  },
- "head_at_run": "d36b5005ce0ceefaff71ba037b05c16531b4b5ff",
- "run_mark": "957d32be27cb",
- "n_steps": 0,
- "steps": [],
- "fails": [
-  "FATAL crashed"
+ "steps": [
+  {
+   "step": "scripts/d9_r14_stage_g_manifest.py",
+   "artifact": "R14G_PLAN.json",
+   "out_mode": "fixed",
+   "expected_to_change": true,
+   "exit": 0,
+   "seconds": 1.0,
+   "artifact_sha256_short": "a60572423d95",
+   "artifact_rewritten": true,
+   "stdout_tail": [
+    "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/d9b_r14_lock_manifest.py",
+   "artifact": "R14G_PLAN.json",
+   "out_mode": "fixed",
+   "expected_to_change": true,
+   "exit": 0,
+   "seconds": 0.5,
+   "artifact_sha256_short": "174d2c1670e9",
+   "artifact_rewritten": true,
+   "stdout_tail": [
+    "}"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/e2e_r14_stage_e_acceptance.py",
+   "artifact": "R14E_STAGE_E_ACCEPTANCE_V8.json",
+   "out_mode": "bare",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 1.7,
+   "artifact_sha256_short": "d27ba4087d5c",
+   "artifact_rewritten": false,
+   "stdout_tail": [
+    "checks_failed: []"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/d1_r11_six_condition.py",
+   "artifact": "R14E_SIX_CONDITION_V10.json",
+   "out_mode": "cwd_relative",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 10.7,
+   "artifact_sha256_short": "86dc65890f4e",
+   "artifact_rewritten": false,
+   "stdout_tail": [
+    "}"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/f1_r14_perturb_release_audit.py",
+   "artifact": "R14F_PERTURB_RELEASE_AUDIT.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 3.2,
+   "artifact_sha256_short": "da176b1a274b",
+   "artifact_rewritten": false,
+   "stdout_tail": [
+    "{\"contract\": \"15/15\", \"perturb_loc\": \"23/30\", \"perturb_status\": {\"ok\": 18, \"ambiguous\": 10, \"no_band\": 1, \"assumed_target\": 1}, \"solve_rows\": 17, \"wrong_grid_releasable\": [], \"wrong_accept_pert\": []}"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/e2e_r14_newlayout_regression.py",
+   "artifact": "R14E_NEWLAYOUT_REGRESSION_V3.json",
+   "out_mode": "bare",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 5.3,
+   "artifact_sha256_short": "9a6a48a7e9ad",
+   "artifact_rewritten": false,
+   "stdout_tail": [
+    "written E:\\assessment-agent\\evidence\\R14E_NEWLAYOUT_REGRESSION_V3.json"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/e2e_r14_tight_gap_diagnosis.py",
+   "artifact": "R14E_TIGHT_GAP_DIAGNOSIS.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 2.2,
+   "artifact_sha256_short": "13b771de58f9",
+   "artifact_rewritten": false,
+   "stdout_tail": [
+    "written E:\\assessment-agent\\evidence\\R14E_TIGHT_GAP_DIAGNOSIS.json"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/e2e_r14_anchor_sweep.py",
+   "artifact": "R14E_ANCHOR_SWEEP.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 1.3,
+   "artifact_sha256_short": "b96827fe92f9",
+   "artifact_rewritten": false,
+   "stdout_tail": [
+    "}"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/r14_attribute_producer.py",
+   "artifact": "R14E_ARTIFACT_ATTRIBUTION.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 14.4,
+   "artifact_sha256_short": "fda4f19775f5",
+   "artifact_rewritten": true,
+   "stdout_tail": [
+    "}"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/r14_attribute_producer.py --selftest",
+   "artifact": "R14E_ATTRIBUTION_SELFTEST.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 26.5,
+   "artifact_sha256_short": "b7d44eecbd8d",
+   "artifact_rewritten": false,
+   "stdout_tail": [
+    "}"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/e2d_r14_production_replay_v4.py",
+   "artifact": "R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
+   "out_mode": "bare",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 1.7,
+   "artifact_sha256_short": "89be0925dcbf",
+   "artifact_rewritten": false,
+   "stdout_tail": [
+    "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_RERUN.json"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/a9_r14_historical_bytes.py",
+   "artifact": "R14G_HISTORICAL_BYTES.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 1.1,
+   "artifact_sha256_short": "d05bb5130e9f",
+   "artifact_rewritten": true,
+   "stdout_tail": [
+    "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/a9_r14_historical_bytes.py --selftest",
+   "artifact": "R14G_HISTORICAL_BYTES_SELFTEST.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 3.2,
+   "artifact_sha256_short": "0f8a026f9b49",
+   "artifact_rewritten": false,
+   "stdout_tail": [
+    "{\"selftest_fails\": [], \"main_rc\": 0, \"main_artifact_keys\": [\"budget\", \"checks\", \"data_worktree_entries\", \"fails\", \"head\", \"http_requests_made\", \"incident_record\", \"llm_calls_used\", \"rows\"], \"missing_keys\": []}"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/h1_r14_kb_channel_audit.py",
+   "artifact": "R14H_KB_CHANNEL_AUDIT.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 1.9,
+   "artifact_sha256_short": "9fd286b67089",
+   "artifact_rewritten": false,
+   "stdout_tail": [
+    "{\"missing\": {\"jr.categorical-syllogism\": \"缺卡（三段论属逻辑判断族，numeric\", \"nc.arithmetic-precedence\": \"确定性执行器已覆盖（Direct-AST\", \"nc.combinatorics-power\": \"缺卡（排列组合/幂集计数族 KB 无任何\", \"nc.work-rate\": \"异名等价卡（效率最小公倍数法即工程问题通\"}, \"channel_rows\": 7}"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/e2f_r14_causal_delta.py",
+   "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 0.2,
+   "artifact_sha256_short": "1327c32ae6f5",
+   "artifact_rewritten": true,
+   "stdout_tail": [
+    "}"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/r14_semantic_repro.py",
+   "artifact": "R14E_RERUN_SEMANTICS.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 211.8,
+   "artifact_sha256_short": "fb884769018a",
+   "artifact_rewritten": true,
+   "stdout_tail": [
+    "}"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/e2_r14_v8_reproducibility.py",
+   "artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
+   "out_mode": "bare",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 1.8,
+   "artifact_sha256_short": "f62619a433e1",
+   "artifact_rewritten": true,
+   "stdout_tail": [
+    "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/e2e_r14_six_condition_lineage.py",
+   "artifact": "R14E_LINEAGE_SIX_CONDITION.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 0.1,
+   "artifact_sha256_short": "51c6deb05227",
+   "artifact_rewritten": false,
+   "stdout_tail": [
+    "written E:\\assessment-agent\\evidence\\R14E_LINEAGE_SIX_CONDITION.json"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/e2e_r14_stage_g_readiness.py",
+   "artifact": "R14G0_GATE_READINESS_V5.json",
+   "out_mode": "bare",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 5.7,
+   "artifact_sha256_short": "48b762b58d35",
+   "artifact_rewritten": true,
+   "stdout_tail": [
+    "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/e2e_r14_claim_audit.py",
+   "artifact": "R14_CLAIM_AUDIT.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 16.0,
+   "artifact_sha256_short": "c1816e5937fa",
+   "artifact_rewritten": false,
+   "stdout_tail": [
+    "}"
+   ],
+   "run_mark_artifact": null,
+   "run_mark_stdout": null
+  },
+  {
+   "step": "scripts/e2e_r14_index.py",
+   "artifact": "R14_INDEX.json",
+   "out_mode": "fixed",
+   "expected_to_change": false,
+   "exit": 0,
+   "seconds": 22.1,
+   "artifact_sha256_short": "f56bd2c9fa4d",
+   "artifact_rewritten": true,
+   "stdout_tail": [
+    "{\"run_mark\": \"2403938ee04e\", \"n_artifacts\": 60, \"count_synced_to_docs\": [], \"self_checks_failed\": []}"
+   ],
+   "run_mark_artifact": "2403938ee04e",
+   "run_mark_stdout": "2403938ee04e"
+  }
+ ],
+ "comparison_volatile_keys": {
+  "volatile_keys": [
+   "_meta",
+   "budget",
+   "drift_register_source",
+   "duration_s",
+   "elapsed_s",
+   "generated_at",
+   "http_requests_made",
+   "llm_calls_used",
+   "note",
+   "notes",
+   "run_id",
+   "seconds",
+   "timestamp",
+   "wall_clock",
+   "why_this_exists"
+  ],
+  "must_see": [
+   "artifact",
+   "code_version",
+   "committed",
+   "committed_sha256",
+   "head",
+   "rerun_at_head",
+   "rerun_by"
+  ]
+ },
+ "fails": [],
+ "worktree_clean_before": true,
+ "worktree_clean_after": false,
+ "A10_expected_paths": 39,
+ "A10_collateral": [],
+ "A11_drift_register": {
+  "registers": {
+   "R14C_PITCH_ABLATION.json": [
+    "R14C_PITCH_ABLATION_HEAD_DELTA.json"
+   ],
+   "R14H_KB_CHANNEL_AUDIT.json": [
+    "R14H_KB_CHANNEL_HEAD_DELTA.json"
+   ]
+  },
+  "violated": [],
+  "derived_from": "R14E_RERUN_SEMANTICS.json",
+  "need_register": []
+ },
+ "A10_selftest": {
+  "fails": [],
+  "collateral_detected": [
+   "data/_a10_selftest_probe.txt"
+  ],
+  "restored": true,
+  "budget": {
+   "http_requests_made": 0
+  }
+ },
+ "A12_stale_artifact_guard": {
+  "verified": true,
+  "steps_with_mark": 1,
+  "stdout_matches_artifact": 1,
+  "refutation": "改掉件内 run_mark ⇒ 差异必须可见（已复原）",
+  "note": "件内 mark 必须与该步 stdout mark 一致，否则该步的件可能是上一轮残留"
+ },
+ "dirty_after": [
+  " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.json",
+  " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.md",
+  " M evidence/R14E_ARTIFACT_ATTRIBUTION.json",
+  " M evidence/R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
+  " M evidence/R14E_RERUN_SEMANTICS.json",
+  " M evidence/R14G0_GATE_READINESS_V5.json",
+  " M evidence/R14G_HISTORICAL_BYTES.json",
+  " M evidence/R14G_PLAN.json",
+  " M evidence/R14H_KB_CHANNEL_HEAD_DELTA.json",
+  " M evidence/R14_INDEX.json",
+  " M evidence/R14_INDEX.md"
  ],
  "budget": {
   "http_requests_made": 0,
-  "tokens_used": 0
+  "tokens_used": 0,
+  "max_requests": 6,
+  "max_tokens": 100000,
+  "note": "Stage G 不在本清单：须人工批准 R14_PROGRESS_STOPGATE.md 后才可由 scripts/e2e_r14_stage_g_batch.py 发起"
  },
- "http_requests_made": 0,
- "llm_calls_used": 0,
- "note": "本轮**未执行**任何核对步骤；本件是拒绝记录，上一轮的判定已失效"
+ "not_included": {
+  "pytest": "由 `python -m pytest -q` 单独跑（本 bundle 不冒充测试结果）",
+  "stage_g_batch": "未获人工批准，未执行；模型名仍 UNRESOLVED_MUST_BE_CONFIRMED_BY_HUMAN",
+  "blind_eval": "NOT READY：真实截图端到端 2/5 释放正确"
+ }
 }

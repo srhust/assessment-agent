@@ -44,19 +44,45 @@
   },
   {
    "artifact": "R14_DELIVERY_SUMMARY.json",
-   "status": "covered_by_bundle",
+   "script": "r14_delivery_summary.py",
+   "rerun_via_out": "__R14SR__R14_DELIVERY_SUMMARY.json",
    "declared_writers": [
     "r14_delivery_summary.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "refused_unsafe": [],
+   "worktree_collateral": [
+    "evidence/__R14SR__R14_DELIVERY_SUMMARY.json"
+   ],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [],
+   "rerun_read_from": "__R14SR__R14_DELIVERY_SUMMARY.json",
+   "own_declared_outputs_touched": [],
+   "status": "no_write_detected",
+   "detail": ""
   },
   {
    "artifact": "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
-   "status": "covered_by_bundle",
+   "script": "r14_delivery_summary.py",
+   "rerun_via_out": "__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
    "declared_writers": [
     "r14_delivery_summary.py"
    ],
-   "note": "一键复现 bundle 已重跑该件并核对件内不变量，本处只跑**补集**（不重复计时）"
+   "refused_unsafe": [],
+   "worktree_collateral": [
+    "evidence/__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json"
+   ],
+   "collateral_removed": [],
+   "safety": "OK_ZERO_REQUESTS",
+   "offline": true,
+   "exit": 0,
+   "files_changed_by_rerun": [],
+   "rerun_read_from": "__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
+   "own_declared_outputs_touched": [],
+   "status": "no_write_detected",
+   "detail": ""
   },
   {
    "artifact": "R14_INDEX.json",

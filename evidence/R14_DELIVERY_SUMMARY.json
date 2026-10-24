@@ -1,5 +1,5 @@
 {
- "head": "c3c839aa1a27bb28a436618683b049c994df0a06",
+ "head": "d7d34a30e1d2f367019cdfa8e12b4d9e6d8eb854",
  "numbers_source_artifacts": [
   "R14_STAGE_E_DELIVERABLES.md",
   "R14_PROGRESS_STOPGATE.md",
@@ -23,7 +23,7 @@
   },
   {
    "item": "2 一键复现 bundle",
-   "value": "basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head c3c839aa1 步数 23 fails ['scripts/r14_delivery_summary.py 退出码 1：', 'scripts/r14_delivery_summary.py → R14_DELIVERY_SUMMARY.json 的 fails = [\\'bundle 不是本轮真跑（status=REFUSED）\\', \"bundle fails 非空：[\\'bundle status=REFUSED，守卫明细不可用（汇总按缺件处理）\\']\"]，应为 []'] http 0 tokens 0；A12 1/1、A10 []、A11 []"
+   "value": "basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head d7d34a30e 步数 21 fails [] http 0 tokens 0；A12 1/1、A10 []、A11 []"
   },
   {
    "item": "3 声明审计",
@@ -59,9 +59,7 @@
   }
  ],
  "blind_eval_admission": "NOT_READY",
- "fails": [
-  "bundle fails 非空：['scripts/r14_delivery_summary.py 退出码 1：', 'scripts/r14_delivery_summary.py → R14_DELIVERY_SUMMARY.json 的 fails = [\\'bundle 不是本轮真跑（status=REFUSED）\\', \"bundle fails 非空：[\\'bundle status=REFUSED，守卫明细不可用（汇总按缺件处理）\\']\"]，应为 []']"
- ],
+ "fails": [],
  "budget": {
   "http_requests_made": 0,
   "tokens_used": 0

@@ -1,12 +1,12 @@
 # R14 ④ 交付汇总与盲评准入结论
 
-- HEAD `c3c839aa1`；本汇总由 `scripts/r14_delivery_summary.py` **读真件生成**，数字不手打、不跨轮复用。
+- HEAD `d7d34a30e`；本汇总由 `scripts/r14_delivery_summary.py` **读真件生成**，数字不手打、不跨轮复用。
 - 取数来源：14 项登记交付件 + F/perturb/A9/G 计划。
 
 ## 十项材料
 
 - **1 交付登记**：14 项在登记内且状态合规；索引 self_checks_failed []
-- **2 一键复现 bundle**：basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head c3c839aa1 步数 23 fails ['scripts/r14_delivery_summary.py 退出码 1：', 'scripts/r14_delivery_summary.py → R14_DELIVERY_SUMMARY.json 的 fails = [\'bundle 不是本轮真跑（status=REFUSED）\', "bundle fails 非空：[\'bundle status=REFUSED，守卫明细不可用（汇总按缺件处理）\']"]，应为 []'] http 0 tokens 0；A12 1/1、A10 []、A11 []
+- **2 一键复现 bundle**：basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head d7d34a30e 步数 21 fails [] http 0 tokens 0；A12 1/1、A10 []、A11 []
 - **3 声明审计**：fails []；C1 63 条、C3 27 条、C8 计数点 23（活引用 13 / 豁免 10）；注入自证 13 例全抓 True
 - **4 补集语义复现**：violations 0；登记反证 mode synthetic proved True
 - **5 生产者归属**：V8 true_producers []、shape_only_matches ['scripts/e2d_r14_production_replay_v4.py']、partial ['scripts/e2_r14_optionband_replay.py'] ⇒ reproducibility VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING；双钉自测 fails []
@@ -28,6 +28,3 @@
 
 预算：HTTP 0 / LLM 0。
 
-## 取数即断言：失败
-
-- bundle fails 非空：['scripts/r14_delivery_summary.py 退出码 1：', 'scripts/r14_delivery_summary.py → R14_DELIVERY_SUMMARY.json 的 fails = [\'bundle 不是本轮真跑（status=REFUSED）\', "bundle fails 非空：[\'bundle status=REFUSED，守卫明细不可用（汇总按缺件处理）\']"]，应为 []']
