@@ -743,11 +743,16 @@ def main() -> int:
         # 登记件也走同一条路：它的
         # `count_synced_to_docs/self_checks_failed/n_artifacts`
         # 本来就在 `_CONCLUSION_KEYS` 里，无需特殊分支。
-        _show = subprocess.run(["git", "show", f"HEAD:evidence/{base}"],
+        # **轮前基线必须是"本轮开头那个 commit"**（本轮实测的空转）：
+        # `main()` 中途若把步骤产物 `git add`+`commit`，
+        # HEAD 就前移到**轮后版本** ⇒ `git show HEAD:<件>` 与磁盘恒等
+        # ⇒ 守卫永不触发 ⇒ 我看到的 `clean_after True`
+        # 是**空转出来的绿**，不是证据。
+        _show = subprocess.run(["git", "show", f"{head}:evidence/{base}"],
                                cwd=ROOT, capture_output=True, text=True,
                                encoding="utf-8")
         if _show.returncode != 0:
-            continue            # 未跟踪的新件，交给 A10 判
+            continue            # 本轮基线里没有：新件，交给 A10 判
         try:
             _b = json.loads(_show.stdout)
             _a = json.loads((EV / base).read_text(encoding="utf-8"))
