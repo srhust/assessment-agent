@@ -14,6 +14,7 @@
   3. 输出 `attribution`（true / partial / none）与每候选的证据；
   4. 若某件**连 partial 都没有** → 才允许写 NOT_REPRODUCIBLE_FROM_HEAD。
 """
+import ast
 import hashlib
 import json
 import re
@@ -228,7 +229,11 @@ def attribute(artifact: str, only=None):
                            encoding="utf-8", env=env)
         p = EV / tmp
         row = {"script": f"scripts/{cand}", "exit": r.returncode,
-               "wrote": p.is_file()}
+               "wrote": p.is_file(),
+               # **静态：这脚本会不会写这个件名**（默认名/写出语句/
+               # bundle 运行计划的 out_override）。形状比对**不能**
+               # 替代这一项——本轮就是它把不写 V8 名的 e2d 判成了作者。
+               "writes_this_name": artifact in script_declares_write(cand)}
         if not p.is_file():
             row["note"] = "未产出（可能不支持 --out 或不是该件的作者）"
             out.append(row)
@@ -261,7 +266,10 @@ def attribute(artifact: str, only=None):
                         "classification": "top_level_only" if same else "not_producer"})
         p.unlink()
         out.append(row)
-    true = [x["script"] for x in out if x.get("classification") == "true_producer"]
+    _full = [x for x in out if x.get("classification") == "true_producer"]
+    # **作者 = 形状/判定层对上 且 静态声明写该件名**
+    true = [x["script"] for x in _full if x.get("writes_this_name")]
+    shape_only = [x["script"] for x in _full if not x.get("writes_this_name")]
     partial = [x["script"] for x in out
                if x.get("classification") == "partial_verdict_only"]
     after = hashlib.sha256((EV / artifact).read_bytes()).hexdigest()
@@ -288,12 +296,15 @@ def attribute(artifact: str, only=None):
             "selection": "static write-target (deny-by-default on network/"
                         "orchestrator scripts)",
             "true_producers": true,
+            "shape_only_matches": shape_only,
             "partial_producers": partial,
             "shape_reconciliation": shape_reconciliation(
                 artifact, true, partial),
-            "reproducibility": ("REPRODUCIBLE_FROM_HEAD" if true else
-                                ("VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING"
-                                 if partial else "NOT_REPRODUCIBLE_FROM_HEAD")),
+            "reproducibility": (
+                "REPRODUCIBLE_FROM_HEAD" if true else
+                ("VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING" if partial
+                 else ("SHAPE_MATCH_ONLY_NOT_A_NAMED_WRITER" if shape_only
+                       else "NOT_REPRODUCIBLE_FROM_HEAD"))),
             "artifact_untouched": before == after,
             "candidates_tried": len(out), "evidence": out}
 
@@ -464,6 +475,58 @@ def _writer_closure(src: str, lit: str) -> bool:
     return False
 
 
+BUNDLE_STEPS_SRC = ROOT / "scripts" / "r14_verify_all.py"
+
+
+def bundle_out_plan() -> dict:
+    """从 **bundle 的运行计划**取"哪一步用 `--out` 落到哪个件名"。
+
+    这是**已登记的结构性事实**（不是我手打的豁免名单）：
+    `STEPS` 元组的第 5 项 `out_override` 就是那一步实际写出的件名。
+    上一版归属器只认**源码里的字面默认名**，于是把
+    `R14E_REAL_PAGE_REPLAY_V8_RERUN.json` 判成"没人写它"
+    （索引 `producer_tier = mention_exact_only`、`reproducible=False`），
+    而 A10 又如实抓到 bundle 每轮写出它 ⇒ 只剩两条路：
+    **登记身份**（本函数）或**给它发豁免**（禁止）。
+
+    **用 `ast` 而不是正则**：上一版正则匹配 0 件
+    （STEPS 是多行、带注释与嵌套 dict），解释器给的 AST
+    才是不会过期的结构锚点。
+    """
+    plan = {}
+    if not BUNDLE_STEPS_SRC.is_file():
+        return plan
+    tree = ast.parse(BUNDLE_STEPS_SRC.read_text(encoding="utf-8"))
+    for node in tree.body:
+        if not (isinstance(node, ast.Assign)
+                and any(getattr(t, "id", "") == "STEPS" for t in node.targets)):
+            continue
+        if not isinstance(node.value, (ast.List, ast.Tuple)):
+            return plan
+        for el in node.value.elts:
+            if not isinstance(el, ast.Tuple) or len(el.elts) < 5:
+                continue
+            step = ast.literal_eval(el.elts[0]) if isinstance(
+                el.elts[0], ast.Constant) else None
+            art = ast.literal_eval(el.elts[1]) if isinstance(
+                el.elts[1], ast.Constant) else None
+            over = el.elts[4]
+            over_v = None
+            if isinstance(over, ast.Constant) and isinstance(over.value, str):
+                over_v = over.value
+            if not step or not art:
+                continue
+            script = step.split()[0].split("/")[-1]
+            # **归一件名**：STEPS 里 `out_override` 有时写成
+            # `evidence/X.json`（带目录），与裸名 `X.json` 是同一个件；
+            # 不归一就会出现两个键、下游按裸名查不到。
+            a1 = Path(art).name
+            plan.setdefault(a1, set()).add(script)
+            if over_v:
+                plan.setdefault(Path(over_v).name, set()).add(script)
+    return {k: sorted(v) for k, v in plan.items()}
+
+
 def script_declares_write(name: str):
     """从**源码**判断该脚本声明会写出的证据件（**不执行脚本**）。
 
@@ -490,6 +553,20 @@ def script_declares_write(name: str):
                       or re.search(r"^[^\n]{0,40}open\s*\(", after))
         if direct or _writer_closure(src, lit):
             out.add(base)
+    # **`--out` 覆盖名也算作者，但要有写出能力**：
+    # 证据来自 bundle 的**已登记运行计划**（不是我为 A10 加的豁免名单），
+    # 可**提到 ≠ 生产**这条口径在这里同样成立——
+    # 本轮实测：无条件并入让 `e2d_...v4.py` 拿到
+    # `R14E_REAL_PAGE_REPLAY_V8.json` 的作者档，
+    # 而它与该件的唯一关系是源码数组里的**读取**
+    # （真作者只有 `e2_r14_optionband_replay.py`，默认名正是 V8）。
+    _pl = bundle_out_plan()
+    _can_write = bool(WRITE_STMT.search(src)) if "WRITE_STMT" in dir() else         bool(re.search(r"\.write_text\s*\(|\.write_bytes\s*\(|"
+                       r"open\([^)]*[\"']w", src))
+    if _can_write:
+        for art, scripts in _pl.items():
+            if name in scripts:
+                out.add(art)
     return sorted(out)
 
 

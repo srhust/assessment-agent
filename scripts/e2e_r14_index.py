@@ -289,6 +289,38 @@ def produced_by(script: str, artifact: str, row) -> bool:
     return any(script == n for n, _ln in out_arg_producer(artifact))
 
 
+PROBE_SCOPE = re.compile(
+    r"mkdtemp|TemporaryDirectory|tmp_path|tmpdir|\bfake\b|_fake|tempfile")
+# **字符类 `["']` 由变量拼出**：把它直接写进 raw 字符串会提前闭合
+# 字符串定界符 ⇒ SyntaxError（本轮实测踩到）。
+_CLS = '["\']'
+REAL_EV_ANCHOR = re.compile(
+    "(?:^|[\\s(,=])EV\\s*/|ROOT\\s*/\\s*" + _CLS + "evidence|"
+    + _CLS + "evidence/|\\.write_text")
+
+
+def _line_is_probe_write(lines, idx) -> bool:
+    """该写出语句是否属于**探针/临时目录**（不是生产）。
+
+    `e2e_r14_claim_audit.py:124` 在 `tempfile.mkdtemp()` 的**假 evidence
+    目录**里造 `R14G_RESULT.json`，用来注入违规验证 C6；
+    盘上/索引里都没有这个件 ⇒ **探针写 ≠ 生产**。
+    """
+    lo = max(0, idx - 8)
+    if PROBE_SCOPE.search("\\n".join(lines[lo:idx + 8])):
+        return True
+    depth = len(lines[idx]) - len(lines[idx].lstrip())
+    j = idx
+    while j > 0 and (lines[j - 1].startswith(" " * depth)
+                     or not lines[j - 1].strip()):
+        j -= 1
+    k = idx
+    while k + 1 < len(lines) and (lines[k + 1].startswith(" " * depth)
+                                  or not lines[k + 1].strip()):
+        k += 1
+    return bool(PROBE_SCOPE.search("\\n".join(lines[j:k + 1])))
+
+
 def really_written_by(script: str, artifact: str):
     """**默认输出名 == 被归属件** ⇒ 直接算命中（真作者最硬的证据）。
 
@@ -318,13 +350,15 @@ def really_written_by(script: str, artifact: str):
     for i, ln in enumerate(lines):
         if artifact not in ln or not WRITE_STMT.search(ln):
             continue
+        if _line_is_probe_write(lines, i):
+            continue      # **探针写 ≠ 生产**（tempfile/fake 目录里的写出）
         return i + 1
     # 跨行写法：`json.dumps(...)` 与 `write_text` 分行
     for i, ln in enumerate(lines):
         if artifact not in ln:
             continue
         win = "\n".join(lines[max(0, i - 3):i + 4])
-        if WRITE_STMT.search(win):
+        if WRITE_STMT.search(win) and not _line_is_probe_write(lines, i):
             return i + 1
     return None
 
