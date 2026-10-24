@@ -406,7 +406,14 @@ def main() -> int:
                          f"{Path(will_write).name}，与现行件 {art} 不符")
             continue
         env = {**os.environ, "PYTHONPATH": str(ROOT / "src"),
-               "PYTHONIOENCODING": "utf-8"}
+               "PYTHONIOENCODING": "utf-8",
+               # **把本轮 run_mark 下发给子进程**：
+               # 交付汇总被排进 bundle 后，它读到的 bundle 件必然是
+               # **上一轮**的（bundle 自己最后才落盘）。
+               # 没有这个 mark，汇总无法区分"本轮未写完"与
+               # "上一轮真失败"，就会把上一轮的 REFUSED
+               # 当本轮失败依据 ⇒ **自引用死锁**。
+               "DSH_BUNDLE_RUN_MARK": mark}
         t0 = time.time()
         r = subprocess.run(argv, cwd=ROOT, capture_output=True, text=True,
                            encoding="utf-8", env=env)

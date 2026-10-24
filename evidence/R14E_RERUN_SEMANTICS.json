@@ -56,7 +56,6 @@
    "status": "refused_no_bundle_context",
    "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
-    "e2e_r14_index.py",
     "r14_verify_all.py"
    ]
   },
@@ -101,7 +100,6 @@
    "status": "refused_no_bundle_context",
    "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
-    "e2e_r14_index.py",
     "r14_attribute_producer.py"
    ]
   },
@@ -179,7 +177,6 @@
    "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
     "e2_r14_optionband_replay.py",
-    "r14_attribute_producer.py",
     "e2b_r14_anchor_option_recovery.py",
     "e2d_r14_production_replay_v4.py"
    ]
@@ -214,9 +211,7 @@
    "artifact": "R14E_SIX_CONDITION_V10.json",
    "status": "refused_no_bundle_context",
    "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
-   "declared_writers": [
-    "d1_r11_six_condition.py"
-   ]
+   "declared_writers": []
   },
   {
    "artifact": "R14E_SIX_CONDITION_V2.json",

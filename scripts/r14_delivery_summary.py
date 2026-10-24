@@ -8,6 +8,7 @@
 """
 import io
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -65,7 +66,7 @@ def main() -> int:
     for i, x in enumerate(sys.argv):
         if x == "--out" and i + 1 < len(sys.argv):
             name = sys.argv[i + 1]
-    fails, rows = [], []
+    fails, rows, log_only = [], [], []
     try:
         i = L("R14_INDEX.json")
         b = L("R14_VERIFICATION_BUNDLE.json")
@@ -87,12 +88,23 @@ def main() -> int:
         return 1
 
     # ---- 取数即断言：任何一项不对，汇总**不许**产出"看起来通过" ----
-    # **报告器不许自己崩**：上一版在 `:131` 直接取
-    # `b['A12_stale_artifact_guard']`，bundle 一旦被 `REFUSED`
-    # （`status/n_steps/fails` 之外的键全都不存在）就抛 `KeyError`，
-    # 交付层从"如实报告失败"退化成"报告器故障"——
-    # 而后者会让人误以为"是汇总脚本坏了，不是验证没过"。
-    _degraded = b.get("status") != "RAN" or "A12_stale_artifact_guard" not in b
+    # **不许拿"本轮还没写完的 bundle 件"当判定依据**（自引用死锁）：
+    # bundle 把本汇总排成第 22 步，而 bundle 自己的件在**全部步骤跑完**
+    # 之后才落盘 ⇒ 本步读到的必然是**上一轮**的状态。
+    # 上一轮 bundle 因脏 worktree 被 `REFUSED`，于是这里判 MISSING →
+    # `fails` 非空 → bundle 判本步失败 → 下轮又读到"失败"——
+    # **自己把自己锁死**。
+    # ⇒ 用 bundle 通过环境下发的**本次 run_mark** 判"是不是本轮"：
+    #   `basis = THIS_RUN` 才允许把 bundle 状态当失败依据；
+    #   `PREVIOUS_RUN` 只留痕、不判失败（本轮 bundle 结论由
+    #   bundle 自己的 `fails` 负责，它会读到真实的本轮状态）。
+    _this_mark = os.environ.get("DSH_BUNDLE_RUN_MARK", "")
+    _basis_this_run = bool(_this_mark) and b.get("run_mark") == _this_mark
+    _degraded = (not _basis_this_run) and (
+        b.get("status") != "RAN" or "A12_stale_artifact_guard" not in b)
+    _bundle_basis = "THIS_RUN" if _basis_this_run else (
+        "PREVIOUS_RUN（本步在 bundle 内运行，读不到本轮 bundle 件）"
+        if _this_mark else "STANDALONE（不在 bundle 内，磁盘件即上一轮）")
     if _degraded:
         for _k in ("A12_stale_artifact_guard", "A13_step_count_rewrite_guard",
                    "A10_collateral", "A11_drift_register", "budget",
@@ -114,8 +126,10 @@ def main() -> int:
     # ⇒ 降级原因必须进 `fails`（由下面的断言段接住、非零退出、
     #   并在件里如实标注 MISSING），**绝不伪造数字**。
     if _degraded:
-        fails.append("bundle 非完整运行态 ⇒ 守卫明细 MISSING，"
-                     "本汇总不得作为完成品使用")
+        # **不判失败、但必须留痕**：外层 bundle 会用本轮真实 `fails`
+        # 作最终判定；这里若也判失败就成了自我实现的预言。
+        log_only.append("bundle 证据 basis=" + _bundle_basis +
+                        "：守卫明细非本轮，不作为本步失败依据")
     if b.get("status") != "RAN":
         fails.append(f"bundle 不是本轮真跑（status={b.get('status')}）")
     if b.get("fails") != []:

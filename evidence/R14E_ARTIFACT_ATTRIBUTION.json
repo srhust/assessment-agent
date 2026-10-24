@@ -1,7 +1,7 @@
 {
  "purpose": "生产者归属：把'可复现'建立在**试过候选**上而不是试一个就下结论；候选范围由 mode 如实登记（full=全部 e2*/d1/f1*，一次约 20 条全量管线；fast=族名/富化键命中的少数脚本）",
  "mode": "fast",
- "head": "ceb7e5df2793d42acdd99eed7542bcc33273f822",
+ "head": "c34e1288a585dcf5e44a3b2ad1d4bb76a351fc35",
  "verdict_fields": [
   "solver_status",
   "solver_answer",
@@ -28,10 +28,6 @@
     {
      "script": "scripts/e2b_r14_anchor_option_recovery.py",
      "reason": "不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）"
-    },
-    {
-     "script": "scripts/r14_attribute_producer.py",
-     "reason": "自我递归"
     }
    ],
    "selection": "static write-target (deny-by-default on network/orchestrator scripts)",
@@ -52,18 +48,12 @@
    },
    "reproducibility": "VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING",
    "artifact_untouched": true,
-   "candidates_tried": 4,
+   "candidates_tried": 3,
    "evidence": [
     {
      "safety_refused": {
       "script": "scripts/e2b_r14_anchor_option_recovery.py",
       "reason": "不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）"
-     }
-    },
-    {
-     "safety_refused": {
-      "script": "scripts/r14_attribute_producer.py",
-      "reason": "自我递归"
      }
     },
     {
