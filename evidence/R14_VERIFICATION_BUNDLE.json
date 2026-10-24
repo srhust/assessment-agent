@@ -1,7 +1,7 @@
 {
  "status": "RAN",
- "run_mark": "8cd440789d3e",
- "head_at_run": "c3a03b75dce38a30d7a8d92509d440423a580fb8",
+ "run_mark": "082b3102e38c",
+ "head_at_run": "8290b9a169c380d545c0ad8a2cbabee27fe6e0b7",
  "n_steps": 21,
  "docs_step_count_synced": [],
  "A13_step_count_guard": {
@@ -41,7 +41,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "40b80fe5c1d3",
+   "artifact_sha256_short": "c48d017a204e",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -56,7 +56,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.3,
-   "artifact_sha256_short": "0670528803b6",
+   "artifact_sha256_short": "35cb96aee9bd",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -70,7 +70,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.2,
+   "seconds": 1.1,
    "artifact_sha256_short": "d27ba4087d5c",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -85,7 +85,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.7,
+   "seconds": 5.6,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -115,7 +115,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.4,
+   "seconds": 2.3,
    "artifact_sha256_short": "9a6a48a7e9ad",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -160,8 +160,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 3.7,
-   "artifact_sha256_short": "eff396747bc7",
+   "seconds": 3.8,
+   "artifact_sha256_short": "2a08047d9186",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -175,7 +175,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.2,
+   "seconds": 5.1,
    "artifact_sha256_short": "8812f2b72e12",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -206,7 +206,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "5916eaa47bce",
+   "artifact_sha256_short": "c42bfd3cd0d5",
    "artifact_rewritten": true,
    "stdout_tail": [
     "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
@@ -251,7 +251,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.1,
-   "artifact_sha256_short": "0aeb9aba291a",
+   "artifact_sha256_short": "e8296e050dca",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -265,8 +265,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 37.8,
-   "artifact_sha256_short": "274c24136f82",
+   "seconds": 38.2,
+   "artifact_sha256_short": "ce32f855ec10",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -281,7 +281,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 1.2,
-   "artifact_sha256_short": "a68fa2170feb",
+   "artifact_sha256_short": "b97ae4c40ca2",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -310,8 +310,8 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 4.6,
-   "artifact_sha256_short": "a981c7eaef88",
+   "seconds": 4.7,
+   "artifact_sha256_short": "95b00d35ee0d",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -325,7 +325,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 9.3,
+   "seconds": 9.6,
    "artifact_sha256_short": "6e3f867228bf",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -340,14 +340,14 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 8.2,
-   "artifact_sha256_short": "b06863afe78e",
+   "seconds": 8.1,
+   "artifact_sha256_short": "648c5f7e61b0",
    "artifact_rewritten": true,
    "stdout_tail": [
-    "{\"run_mark\": \"37034460bc55\", \"n_artifacts\": 57, \"self_checks_failed\": []}"
+    "{\"run_mark\": \"cc42767b876a\", \"n_artifacts\": 57, \"self_checks_failed\": []}"
    ],
-   "run_mark_artifact": "37034460bc55",
-   "run_mark_stdout": "37034460bc55"
+   "run_mark_artifact": "cc42767b876a",
+   "run_mark_stdout": "cc42767b876a"
   }
  ],
  "comparison_volatile_keys": {
@@ -378,9 +378,7 @@
    "rerun_by"
   ]
  },
- "fails": [
-  "scripts/e2_r14_v8_reproducibility.py → R14E_REAL_PAGE_REPLAY_V8_CHECK.json 的 gate_basis__local_only = None，应为 True"
- ],
+ "fails": [],
  "worktree_clean_before": true,
  "worktree_clean_after": false,
  "A10_expected_paths": 39,

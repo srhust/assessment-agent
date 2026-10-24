@@ -9,9 +9,9 @@
   "artifact_untouched": true,
   "candidates_tried": 4,
   "attribution_stale": false,
-  "attribution_head": "c3a03b75dce38a30d7a8d92509d440423a580fb8"
+  "attribution_head": "8290b9a169c380d545c0ad8a2cbabee27fe6e0b7"
  },
- "head": "c3a03b75dce38a30d7a8d92509d440423a580fb8",
+ "head": "8290b9a169c380d545c0ad8a2cbabee27fe6e0b7",
  "verdict_fields_checked": [
   "solver_status",
   "solver_answer",
@@ -101,5 +101,17 @@
  "rerun_artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
  "llm_calls_used": 0,
  "http_requests_made": 0,
- "gate_basis": "local_measured_only: verdict_identical_all + v8_untouched + artifact_untouched + 未过期；attribution.reproducibility 仅登记不越权"
+ "gate_terms": [
+  "verdict_identical_all",
+  "v8_untouched",
+  "artifact_untouched",
+  "not_attribution_stale"
+ ],
+ "gate_values": {
+  "verdict_identical_all": true,
+  "v8_untouched": true,
+  "artifact_untouched": true,
+  "not_attribution_stale": true
+ },
+ "gate_basis": "local_measured_only：`ok` 由 `gate_terms` 逐项算出；attribution.reproducibility **只登记、不参与门槛**（拿归属档位当准入条件=越权引用别人的结论）"
 }

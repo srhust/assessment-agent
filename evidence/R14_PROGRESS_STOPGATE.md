@@ -332,6 +332,68 @@ bundle 侧：V8 不再是 `skip`（不重跑）——改由**真作者**重跑�
     找不到 `p.write_text`，注入的假作者就逃过了自检）。
     **两组钉子必须同时过**——缺任何一组都不算修好。
 
+### 追加（R13）：索引口径改动之后又抓到六条
+
+15. **A10b 的第一版是"恰好合规"的检查。**
+    它只看 `a13["synced"]`（本轮**真的改写过**的文档），
+    可文档已是最新值 ⇒ 集合为空 ⇒ `fails []`，
+    而 `HAND_WRITTEN` 里那条假声明**还原样躺着**。
+    ⇒ 判据改为 **本轮改写 ∪ 声明的回写目标**；
+    没触发不等于没问题，这是本轮第三次撞同一形态。
+
+16. **"注释不进判据"是判据本身的要求。**
+    `A10b` 用 `re.findall('"….md"')` 从 `HAND_WRITTEN = {…}` **整块**抓件名，
+    于是**注释里提到的文件名**被当成声明 ⇒
+    我早已删掉的 `R14_PROGRESS_STOPGATE.md` 又被报成"人工撰写"，
+    我照着这条**假阳性**连改了两轮。
+    ⇒ `strip_py_comments()`（按引号状态剥 `#`，字符串里的 `#` 不算注释），
+      并由 `tests/test_comment_insensitive_decls.py` 钉住
+      "注释里多加件名 ⇒ 判据结果逐字不变"。
+
+17. **拒绝也必须落盘。** bundle 在门口 `return 2`（工作区脏）时
+    **不写结论件**，磁盘上留着**上一轮的 `RAN`**；
+    我读了它、把旧 `fails` 当本轮结论报出来（第 11 条同一个坑复发）。
+    ⇒ `refuse_and_record()`：拒绝也写 `status: REFUSED` +
+      `run_mark` + `n_steps: 0` + `fails: ["FATAL …"]`，
+      "结论没了"变成**可见事实**。
+
+18. **`ast.parse` 不等于可运行。** 我的补丁脚本用 `ast.parse` 自检就打印"ok"，
+    但 `compile()` 在同一文件上报 `SyntaxError: invalid character '…'`；
+    真凶是一行**死代码**（`_n_before_lines = _t.count(...)` 写在 `_t` 赋值**之前**）。
+    ⇒ 之后每次改脚本都跑 `python -m py_compile`，
+      并在**干净树上真跑**一遍才算落地。
+
+19. **"只被提到"与"探针写"都不算作者（同一口径的两个方向）。**
+    为消 A10 我曾把 bundle 计划的 `out_override` **无条件**并进作者集 ⇒
+    `e2d_...v4.py` 立刻拿到 `R14E_REAL_PAGE_REPLAY_V8.json` 的作者档，
+    而它与该件的唯一关系是源码数组里的**读取**；
+    同一轮里 `e2e_r14_claim_audit.py:124` 在 `tempfile.mkdtemp()`
+    的**假 evidence 目录**里造一个 `R14G_*` 探针件注入违规，
+    也被"写出语句挨着件名"判成了作者。
+    ⇒ 作者 = **形状/判定层对上 ∩ 静态声明写该件名**；
+      计划里的 `out_override` 只对**确有写出能力**的脚本生效；
+      临时目录里的写出记为**探针**，不进作者位。
+      归属件新增 `shape_only_matches`，
+      V8 如实降为 `VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING`
+      ——**不**再把"e2d 是作者"和"e2d 不写这个名"两句话同时端出来。
+
+20. **别拿别人的结论当自己的门槛。**
+    `e2_r14_v8_reproducibility.py` 的退出条件里写着
+    `attribution.reproducibility == "REPRODUCIBLE_FROM_HEAD"`；
+    归属器一降级，它就退出 1，**而它自己的实测**是
+    `verdict_identical_all True`、`v8_untouched True`、5/5 页逐字段相同。
+    ⇒ 门槛改为 **`GATE_TERMS` 列表驱动**（`ok = all(gate_values[t])`），
+      件里登记 `gate_terms`/`gate_values`，bundle **精确比对**该列表 ⇒
+      偷加/偷删门槛项立刻红；只写一句"我是本地口径"的自述字符串**不算**门槛
+      （上一版就是自述键名对不上，bundle 报 `= None`）。
+
+21. **bundle 不能把自己的上一轮产物当"已覆盖"输入。**
+    我第一版要求 `head_at_run == 本轮 HEAD`，结果**单跑必然不成立**：
+    bundle 自己就是改写证据件的步骤，跑完 HEAD 必然落后于产物 ⇒
+    22 行全部 `refused_no_bundle_context`、复现 0 件。
+    ⇒ 新鲜度改为 **`merge-base --is-ancestor`**（同 HEAD 或其祖先可信），
+      其余情形照旧**拒跑任何生产者**，并在行里写明拒跑理由。
+
 ## 需要人工裁决的点
 
 1. 接受"尺度协议是主因、pitch 非因果必需"这一**弱于预设**的结论
