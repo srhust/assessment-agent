@@ -1,5 +1,5 @@
 {
- "head": "c34e1288a585dcf5e44a3b2ad1d4bb76a351fc35",
+ "head": "c3c839aa1a27bb28a436618683b049c994df0a06",
  "numbers_source_artifacts": [
   "R14_STAGE_E_DELIVERABLES.md",
   "R14_PROGRESS_STOPGATE.md",
@@ -23,7 +23,7 @@
   },
   {
    "item": "2 一键复现 bundle",
-   "value": "status REFUSED head ceb7e5df2 步数 0 fails ['bundle status=REFUSED，守卫明细不可用（汇总按缺件处理）'] http 0 tokens 0；A12 0/0、A10 ['MISSING']、A11 ['MISSING']"
+   "value": "basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head c3c839aa1 步数 23 fails ['scripts/r14_delivery_summary.py 退出码 1：', 'scripts/r14_delivery_summary.py → R14_DELIVERY_SUMMARY.json 的 fails = [\\'bundle 不是本轮真跑（status=REFUSED）\\', \"bundle fails 非空：[\\'bundle status=REFUSED，守卫明细不可用（汇总按缺件处理）\\']\"]，应为 []'] http 0 tokens 0；A12 1/1、A10 []、A11 []"
   },
   {
    "item": "3 声明审计",
@@ -60,9 +60,7 @@
  ],
  "blind_eval_admission": "NOT_READY",
  "fails": [
-  "bundle 非完整运行态 ⇒ 守卫明细 MISSING，本汇总不得作为完成品使用",
-  "bundle 不是本轮真跑（status=REFUSED）",
-  "bundle fails 非空：['bundle status=REFUSED，守卫明细不可用（汇总按缺件处理）']"
+  "bundle fails 非空：['scripts/r14_delivery_summary.py 退出码 1：', 'scripts/r14_delivery_summary.py → R14_DELIVERY_SUMMARY.json 的 fails = [\\'bundle 不是本轮真跑（status=REFUSED）\\', \"bundle fails 非空：[\\'bundle status=REFUSED，守卫明细不可用（汇总按缺件处理）\\']\"]，应为 []']"
  ],
  "budget": {
   "http_requests_made": 0,

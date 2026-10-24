@@ -99,41 +99,65 @@ def main() -> int:
     #   `PREVIOUS_RUN` 只留痕、不判失败（本轮 bundle 结论由
     #   bundle 自己的 `fails` 负责，它会读到真实的本轮状态）。
     _this_mark = os.environ.get("DSH_BUNDLE_RUN_MARK", "")
-    _basis_this_run = bool(_this_mark) and b.get("run_mark") == _this_mark
+    # **`REFUSED` 件根本没有 `run_mark` 可比**（它连 mark 都还没发）：
+    # 上一版把 `PREVIOUS_RUN` 当降级 ⇒ 伪造出
+    # `status=REFUSED / fails=['bundle status=REFUSED，守卫明细不可用']`
+    # 这两条**汇总器自己造出来的值**，再拿它们去触发
+    # `status != RAN` 断言 ⇒ **报告器捏造证据、自己判自己失败**，
+    # bundle 永远无法绿（本轮实测三次复发）。
+    # ⇒ 分级：`THIS_RUN`（磁盘件就是本轮）照实断言；
+    #   `IN_BUNDLE_PREVIOUS`（在 bundle 内、磁盘件是上一轮）
+    #   **不拿它当本轮依据**、如实标注后**由本轮外层判定**；
+    #   `STANDALONE_PREVIOUS`（独立运行）上一轮即当前证据，照实断言。
+    _disk_mark = b.get("run_mark") or ""
+    if _this_mark and _disk_mark == _this_mark:
+        _bundle_basis = "THIS_RUN"
+        _basis_this_run = True
+    elif _this_mark:
+        _bundle_basis = "IN_BUNDLE_PREVIOUS（bundle 本轮件尚未落盘）"
+        _basis_this_run = False
+    else:
+        _bundle_basis = "STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）"
+        _basis_this_run = True
     _degraded = (not _basis_this_run) and (
         b.get("status") != "RAN" or "A12_stale_artifact_guard" not in b)
-    _bundle_basis = "THIS_RUN" if _basis_this_run else (
-        "PREVIOUS_RUN（本步在 bundle 内运行，读不到本轮 bundle 件）"
-        if _this_mark else "STANDALONE（不在 bundle 内，磁盘件即上一轮）")
     if _degraded:
+        # **不许覆盖真实值来"凑结构"**：只补**真正缺失**的键，
+        # 且不把 `status` 改成别的值、不把 `fails` 换成自造句子。
         for _k in ("A12_stale_artifact_guard", "A13_step_count_rewrite_guard",
-                   "A10_collateral", "A11_drift_register", "budget",
-                   "head_at_run", "n_steps", "fails"):
-            b.setdefault(_k, "MISSING: bundle 非完整运行态")
-        b["status"] = b.get("status") or "MISSING"
-        b["n_steps"] = 0
-        b["fails"] = [f"bundle status={b.get('status')}，"
-                      "守卫明细不可用（汇总按缺件处理）"]
-        b["budget"] = {"http_requests_made": 0, "tokens_used": 0}
-        b["A12_stale_artifact_guard"] = {
-            "stdout_matches_artifact": 0, "steps_with_mark": 0}
-        b["A13_step_count_rewrite_guard"] = {"synced": 0, "targets_checked": 0}
-        b["A10_collateral"] = ["MISSING"]
-        b["A11_drift_register"] = {"violated": ["MISSING"]}
-    # **降级不许只留在 stdout**：bundle `REFUSED` 时汇总器**照样写出**
-    # md/json，看板就会出现一份"守卫明细 MISSING"的**交付件**——
-    # 它长得像完成品，比不写更危险。
-    # ⇒ 降级原因必须进 `fails`（由下面的断言段接住、非零退出、
-    #   并在件里如实标注 MISSING），**绝不伪造数字**。
-    if _degraded:
-        # **不判失败、但必须留痕**：外层 bundle 会用本轮真实 `fails`
-        # 作最终判定；这里若也判失败就成了自我实现的预言。
-        log_only.append("bundle 证据 basis=" + _bundle_basis +
-                        "：守卫明细非本轮，不作为本步失败依据")
-    if b.get("status") != "RAN":
+                   "A10_collateral", "A11_drift_register", "budget"):
+            b.setdefault(_k, "MISSING: 非本轮 bundle 证据")
+        b["_basis"] = _bundle_basis
+    _b_http = (b.get("budget") or {}).get("http_requests_made", "ABSENT") \
+        if isinstance(b.get("budget"), dict) else "ABSENT"
+    _b_tokens = (b.get("budget") or {}).get("tokens_used", "ABSENT") \
+        if isinstance(b.get("budget"), dict) else "ABSENT"
+    _a12 = b.get("A12_stale_artifact_guard")
+    _a13 = b.get("A13_step_count_rewrite_guard")
+    _a10 = b.get("A10_collateral")
+    _a11 = (b.get("A11_drift_register") or {}).get("violated") \
+        if isinstance(b.get("A11_drift_register"), dict) else None
+    _sm = (lambda d, k: d.get(k, "ABSENT") if isinstance(d, dict)
+           else "ABSENT(NOT_THIS_RUN)")
+    if _basis_this_run and b.get("status") != "RAN":
         fails.append(f"bundle 不是本轮真跑（status={b.get('status')}）")
-    if b.get("fails") != []:
+    # ⇒ **两条 bundle 断言都必须受 basis 门控制**：
+    # 上一版我只给 `status` 加了门，`b.get("fails") != []` 仍照读，
+    # 于是 REFUSED 件的自造 fails 句子照样把本步判失败，
+    # 外层 bundle 又把这一步记进**本轮** fails ⇒ 死循环。
+    if _basis_this_run and b.get("fails") != []:
         fails.append(f"bundle fails 非空：{b['fails'][:2]}")
+    # ---- 写出路径上的 bundle 派生键：一律**只走安全读取** ----
+    # 上一版这里留着 `b['A13_step_count_rewrite_guard']['synced']` 与
+    # `b['head_at_run'][:9]`：REFUSED 件**没有这两个键** ⇒
+    # `KeyError: 'A13_step_count_rewrite_guard'`，
+    # 报告器在**它唯一该老实的路径**上崩掉，
+    # 而 bundle 把崩溃记成"步骤失败"——看板上只看得见"脚本坏了"。
+    _b_head = b.get("head_at_run", "ABSENT")
+    _b_status = b.get("status", "ABSENT")
+    _b_steps = b.get("n_steps", "ABSENT")
+    _b_fails = b.get("fails", "ABSENT")
+    _synced = _a13.get("synced") if isinstance(_a13, dict) else "ABSENT"
     if a.get("fails") != []:
         fails.append(f"声明审计 fails 非空：{a['fails'][:2]}")
     if i.get("self_checks_failed") != []:
@@ -155,7 +179,12 @@ def main() -> int:
     if g.get("budget", {}).get("spent_so_far", {}) != {
             "requests": 0, "tokens": 0}:
         fails.append(f"Stage G 预算已消耗：{g.get('budget', {}).get('spent_so_far')}")
-    if b.get("budget", {}).get("http_requests_made") != 0:
+    # **非本轮时不许读任何 bundle 守卫键**（它们可能是
+    # `MISSING: 非本轮 bundle 证据` 这种**字符串**，
+    # 上一版正是这样在 `b['budget']['http_requests_made']` 上抛
+    # `TypeError: string indices must be integers` ⇒
+    # 报告器在被要求"降级"的路径上**直接崩**）。
+    if _basis_this_run and b.get("budget", {}).get("http_requests_made") != 0:
         fails.append("bundle 本轮发生过 HTTP 请求")
 
     D = i["deliverables_required"]
@@ -166,15 +195,14 @@ def main() -> int:
     rows += [
         ["1 交付登记", f"{len(D)} 项在登记内且状态合规；"
                        f"索引 self_checks_failed {i['self_checks_failed']}"],
-        ["2 一键复现 bundle", f"status {b['status']} head "
-                              f"{b['head_at_run'][:9]} 步数 {b['n_steps']} "
-                              f"fails {b['fails']} http "
-                              f"{b['budget']['http_requests_made']} tokens "
-                              f"{b['budget']['tokens_used']}；"
-                              f"A12 {b['A12_stale_artifact_guard']['stdout_matches_artifact']}/"
-                              f"{b['A12_stale_artifact_guard']['steps_with_mark']}"
-                              f"、A10 {b['A10_collateral']}、"
-                              f"A11 {b['A11_drift_register']['violated']}"],
+        ["2 一键复现 bundle", f"basis {_bundle_basis}；status {_b_status} "
+                              f"head {str(_b_head)[:9]} 步数 {_b_steps} "
+                              f"fails {_b_fails} "
+                              f"http {_b_http} tokens {_b_tokens}；"
+                              f"A12 {_sm(_a12, 'stdout_matches_artifact')}/"
+                              f"{_sm(_a12, 'steps_with_mark')}、"
+                              f"A10 {_a10 if _basis_this_run else 'NOT_THIS_RUN'}、"
+                              f"A11 {_a11 if _basis_this_run else 'NOT_THIS_RUN'}"],
         ["3 声明审计", f"fails {a['fails']}；C1 "
                        f"{a['notes']['C1_citations_checked']} 条、C3 "
                        f"{a['notes']['C3_key_paths_checked']} 条、C8 计数点 "
