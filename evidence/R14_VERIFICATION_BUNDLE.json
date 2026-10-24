@@ -1,7 +1,7 @@
 {
  "status": "RAN",
- "run_mark": "66b292e9d8db",
- "head_at_run": "6ff7c2436e7b057c36b513436617baa4a8ec4c80",
+ "run_mark": "38b9b094739d",
+ "head_at_run": "e288bf84bc6b9af87218ae363c332d2973299f8c",
  "n_steps": 21,
  "docs_step_count_synced": [],
  "A13_step_count_guard": {
@@ -40,8 +40,8 @@
    "out_mode": "fixed",
    "expected_to_change": true,
    "exit": 0,
-   "seconds": 1.5,
-   "artifact_sha256_short": "1f85f3cb67fa",
+   "seconds": 1.2,
+   "artifact_sha256_short": "efee8acecc0c",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -55,8 +55,8 @@
    "out_mode": "fixed",
    "expected_to_change": true,
    "exit": 0,
-   "seconds": 0.6,
-   "artifact_sha256_short": "caf8a3aaea36",
+   "seconds": 0.5,
+   "artifact_sha256_short": "5ded9635d7ea",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -70,7 +70,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.5,
+   "seconds": 1.9,
    "artifact_sha256_short": "d27ba4087d5c",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -85,7 +85,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 22.0,
+   "seconds": 12.1,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -100,7 +100,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 4.1,
+   "seconds": 3.0,
    "artifact_sha256_short": "da176b1a274b",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -115,7 +115,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 6.3,
+   "seconds": 5.9,
    "artifact_sha256_short": "9a6a48a7e9ad",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -130,7 +130,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.6,
+   "seconds": 2.3,
    "artifact_sha256_short": "13b771de58f9",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -145,7 +145,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.7,
+   "seconds": 1.5,
    "artifact_sha256_short": "b96827fe92f9",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -159,11 +159,13 @@
    "artifact": "R14E_ARTIFACT_ATTRIBUTION.json",
    "out_mode": "fixed",
    "expected_to_change": false,
-   "exit": 1,
-   "seconds": 124.4,
-   "artifact_sha256_short": "bcb0ad690b2b",
-   "artifact_rewritten": false,
-   "stdout_tail": [],
+   "exit": 0,
+   "seconds": 17.3,
+   "artifact_sha256_short": "7281306730c0",
+   "artifact_rewritten": true,
+   "stdout_tail": [
+    "}"
+   ],
    "run_mark_artifact": null,
    "run_mark_stdout": null
   },
@@ -172,11 +174,13 @@
    "artifact": "R14E_ATTRIBUTION_SELFTEST.json",
    "out_mode": "fixed",
    "expected_to_change": false,
-   "exit": 1,
-   "seconds": 113.3,
+   "exit": 0,
+   "seconds": 29.8,
    "artifact_sha256_short": "b7d44eecbd8d",
    "artifact_rewritten": false,
-   "stdout_tail": [],
+   "stdout_tail": [
+    "}"
+   ],
    "run_mark_artifact": null,
    "run_mark_stdout": null
   },
@@ -186,7 +190,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.9,
+   "seconds": 1.8,
    "artifact_sha256_short": "89be0925dcbf",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -202,7 +206,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 1.3,
-   "artifact_sha256_short": "7f56eaa9db30",
+   "artifact_sha256_short": "03153bf3a213",
    "artifact_rewritten": true,
    "stdout_tail": [
     "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
@@ -231,7 +235,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.0,
+   "seconds": 2.6,
    "artifact_sha256_short": "9fd286b67089",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -247,7 +251,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.2,
-   "artifact_sha256_short": "8e6f121f1e95",
+   "artifact_sha256_short": "caf14a339fb5",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -260,11 +264,13 @@
    "artifact": "R14E_RERUN_SEMANTICS.json",
    "out_mode": "fixed",
    "expected_to_change": false,
-   "exit": 1,
-   "seconds": 143.1,
+   "exit": 0,
+   "seconds": 234.9,
    "artifact_sha256_short": "84c66c451bf8",
    "artifact_rewritten": false,
-   "stdout_tail": [],
+   "stdout_tail": [
+    "}"
+   ],
    "run_mark_artifact": null,
    "run_mark_stdout": null
   },
@@ -273,9 +279,9 @@
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
    "out_mode": "bare",
    "expected_to_change": false,
-   "exit": 1,
-   "seconds": 3.5,
-   "artifact_sha256_short": "44bd1662e142",
+   "exit": 0,
+   "seconds": 2.2,
+   "artifact_sha256_short": "7d7c26c51090",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -304,8 +310,8 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 7.1,
-   "artifact_sha256_short": "041c1a84d8a3",
+   "seconds": 6.5,
+   "artifact_sha256_short": "801fa685f565",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -319,7 +325,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 21.4,
+   "seconds": 20.9,
    "artifact_sha256_short": "c1816e5937fa",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -334,14 +340,14 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 137.5,
-   "artifact_sha256_short": "27a7a187434d",
+   "seconds": 27.0,
+   "artifact_sha256_short": "fae1a544da9b",
    "artifact_rewritten": true,
    "stdout_tail": [
-    "{\"run_mark\": \"d695cd637cdb\", \"n_artifacts\": 60, \"count_synced_to_docs\": [], \"self_checks_failed\": []}"
+    "{\"run_mark\": \"90dc37f66579\", \"n_artifacts\": 60, \"count_synced_to_docs\": [], \"self_checks_failed\": []}"
    ],
-   "run_mark_artifact": "d695cd637cdb",
-   "run_mark_stdout": "d695cd637cdb"
+   "run_mark_artifact": "90dc37f66579",
+   "run_mark_stdout": "90dc37f66579"
   }
  ],
  "comparison_volatile_keys": {
@@ -373,11 +379,7 @@
   ]
  },
  "fails": [
-  "scripts/r14_attribute_producer.py 退出码 1：ode.value)\n  File \"C:\\Users\\hwxhe\\anaconda3\\lib\\ast.py\", line 1200, in _write_constant\n    if isinstance(value, (float, complex)):\nRecursionError: maximum recursion depth exceeded in __instancecheck__",
-  "scripts/r14_attribute_producer.py --selftest 退出码 1：ode.value)\n  File \"C:\\Users\\hwxhe\\anaconda3\\lib\\ast.py\", line 1200, in _write_constant\n    if isinstance(value, (float, complex)):\nRecursionError: maximum recursion depth exceeded in __instancecheck__",
-  "scripts/r14_semantic_repro.py 退出码 1：ode.value)\n  File \"C:\\Users\\hwxhe\\anaconda3\\lib\\ast.py\", line 1200, in _write_constant\n    if isinstance(value, (float, complex)):\nRecursionError: maximum recursion depth exceeded in __instancecheck__",
-  "scripts/e2_r14_v8_reproducibility.py 退出码 1：",
-  "bundle 收尾：产物内容相对 HEAD **发生变化** ['R14E_REAL_PAGE_REPLAY_V8_CHECK.json 轮前 1ec239614e46 ≠ 轮后 fa0aa6b86c0c', 'R14G0_GATE_READINESS_V5.json 轮前 5636079e57e6 ≠ 轮后 f23a34a29453', 'R14G_HISTORICAL_BYTES.json 轮前 e6dd860fb25b ≠ 轮后 0c1f0f9d0872', 'R14G_PLAN.json 轮前 a78954a30332 ≠ 轮后 7a926e3248bd']（同一次运行不应改写结论；已忽略 head/run_mark 等自标识字段）"
+  "bundle 收尾：产物内容相对 HEAD **发生变化** ['R14E_REAL_PAGE_REPLAY_V8_CHECK.json 轮前 fa0aa6b86c0c ≠ 轮后 942de8553878', 'R14G0_GATE_READINESS_V5.json 轮前 f23a34a29453 ≠ 轮后 04f3177cf822', 'R14G_HISTORICAL_BYTES.json 轮前 0c1f0f9d0872 ≠ 轮后 00694c11647a', 'R14G_PLAN.json 轮前 7a926e3248bd ≠ 轮后 94e1ecdbe08d']（同一次运行不应改写结论；已忽略 head/run_mark 等自标识字段）"
  ],
  "worktree_clean_before": true,
  "worktree_clean_after": false,
@@ -414,11 +416,11 @@
   "note": "件内 mark 必须与该步 stdout mark 一致，否则该步的件可能是上一轮残留"
  },
  "dirty_after": [
-  "R14E_REAL_PAGE_REPLAY_V8_CHECK.json 轮前 1ec239614e46 ≠ 轮后 fa0aa6b86c0c",
-  "R14G0_GATE_READINESS_V5.json 轮前 5636079e57e6 ≠ 轮后 f23a34a29453",
-  "R14G_HISTORICAL_BYTES.json 轮前 e6dd860fb25b ≠ 轮后 0c1f0f9d0872",
-  "R14G_PLAN.json 轮前 a78954a30332 ≠ 轮后 7a926e3248bd",
-  "R14_INDEX.json 轮前 337927206313 ≠ 轮后 a0e5db7962e1"
+  "R14E_REAL_PAGE_REPLAY_V8_CHECK.json 轮前 fa0aa6b86c0c ≠ 轮后 942de8553878",
+  "R14G0_GATE_READINESS_V5.json 轮前 f23a34a29453 ≠ 轮后 04f3177cf822",
+  "R14G_HISTORICAL_BYTES.json 轮前 0c1f0f9d0872 ≠ 轮后 00694c11647a",
+  "R14G_PLAN.json 轮前 7a926e3248bd ≠ 轮后 94e1ecdbe08d",
+  "R14_INDEX.json 轮前 a0e5db7962e1 ≠ 轮后 6b7a66d2d825"
  ],
  "budget": {
   "http_requests_made": 0,

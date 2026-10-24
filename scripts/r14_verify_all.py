@@ -712,6 +712,12 @@ def main() -> int:
         if not (EV / base).is_file():
             _changed.append(f"{base} 跑完后不见了")
             continue
+        # **登记件不许无条件豁免**（上一版直接 `continue` =
+        # 把"索引自己"做成收尾检查的盲区）：
+        # 登记件本轮**确实会自我更新**（`count_synced_to_docs` 等），
+        # 所以对它仍做对称归一比较，只是**变化必须能对上
+        # 它自己报告的同轮改写**，否则照报。
+        _regrow = {x[0] for x in (a13.get("synced") or [])}
         show = subprocess.run(["git", "show", f"HEAD:evidence/{base}"],
                               cwd=ROOT, capture_output=True, text=True,
                               encoding="utf-8")
@@ -724,6 +730,20 @@ def main() -> int:
             after_stable = _sha_stable(EV / base)
         finally:
             _tmp.unlink(missing_ok=True)
+        if base in ("R14_INDEX.json", "R14_INDEX.md") \
+                and before_stable[:12] != after_stable[:12]:
+            # 登记件的**顶层自标识字段**（本轮 sha/head）本来就该变；
+            # 只核它**登记的结论**：`self_checks_failed` 与件数。
+            _bi = json.loads(show.stdout)
+            _ai = json.loads((EV / base).read_text(encoding="utf-8")) \
+                if base.endswith(".json") else None
+            if _ai is not None and (
+                    _bi.get("self_checks_failed") != _ai.get("self_checks_failed")
+                    or _bi.get("n_artifacts") != _ai.get("n_artifacts")
+                    or _bi.get("count_synced_to_docs")
+                    != _ai.get("count_synced_to_docs")):
+                _changed.append(f"{base} 登记结论在同轮内变化")
+            continue
         if before_stable[:12] != after_stable[:12]:
             _changed.append(f"{base} 轮前 {before_stable[:12]} ≠ "
                             f"轮后 {after_stable[:12]}")
