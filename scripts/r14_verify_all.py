@@ -337,6 +337,18 @@ def worktree_clean(self_only: bool = False):
     收尾守卫用默认严格模式。"""
     r = subprocess.run(["git", "status", "--porcelain"], cwd=ROOT,
                        capture_output=True, text=True)
+    # **已入库的 SCRATCH 件也是脏**（本轮实测：我自己把它绕过去了）：
+    # `git add -A` 把 `t1.txt` 一起提交 ⇒ 之后 `git status` 不再列它 ⇒
+    # `SCRATCH` 豁免**看不见**它 ⇒ 我读到的是绿。
+    # ⇒ 豁免只对**未入库**的临时件成立；入库的临时件必须显式抓出。
+    _tracked = subprocess.run(["git", "ls-files"], cwd=ROOT,
+                              capture_output=True, text=True,
+                              encoding="utf-8").stdout or ""
+    for t in (x.strip().rsplit("/", 1)[-1] for x in _tracked.splitlines()):
+        if t and SCRATCH.match(t) and t != ".DS_Store":
+            _msg = f"索引里残留 SCRATCH 临时件：{t}"
+            if _msg not in fails:
+                fails.append(_msg)
     keep = []
     for x in (r.stdout or "").splitlines():
         if not x.strip():
