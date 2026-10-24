@@ -1,7 +1,7 @@
 {
  "status": "RAN",
- "run_mark": "a6ca9627d51d",
- "head_at_run": "bcc06026ccfa03cb6c4d36c4cb1edabb6e405d35",
+ "run_mark": "16a6b01fd627",
+ "head_at_run": "c292f863fdc800b3e05863dba77023d2076e0be1",
  "n_steps": 21,
  "docs_step_count_synced": [],
  "A13_step_count_guard": {
@@ -41,7 +41,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 1.2,
-   "artifact_sha256_short": "cf8e88048b93",
+   "artifact_sha256_short": "810c0dd37cc6",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -56,7 +56,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.5,
-   "artifact_sha256_short": "5ea95bd8a787",
+   "artifact_sha256_short": "7559fcfabd83",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -85,7 +85,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 11.5,
+   "seconds": 10.7,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -100,7 +100,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.8,
+   "seconds": 3.0,
    "artifact_sha256_short": "da176b1a274b",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -115,7 +115,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 4.7,
+   "seconds": 5.0,
    "artifact_sha256_short": "9a6a48a7e9ad",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -130,7 +130,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.3,
+   "seconds": 2.1,
    "artifact_sha256_short": "13b771de58f9",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -145,7 +145,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.4,
+   "seconds": 1.2,
    "artifact_sha256_short": "b96827fe92f9",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -160,8 +160,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 16.6,
-   "artifact_sha256_short": "cb112beec554",
+   "seconds": 13.9,
+   "artifact_sha256_short": "6672683db9fc",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -175,7 +175,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 29.3,
+   "seconds": 25.3,
    "artifact_sha256_short": "b7d44eecbd8d",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -190,7 +190,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.7,
+   "seconds": 1.6,
    "artifact_sha256_short": "89be0925dcbf",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -205,8 +205,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.2,
-   "artifact_sha256_short": "26ebe1c4f6fc",
+   "seconds": 1.1,
+   "artifact_sha256_short": "3bfc3baefab6",
    "artifact_rewritten": true,
    "stdout_tail": [
     "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
@@ -220,7 +220,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 3.4,
+   "seconds": 3.1,
    "artifact_sha256_short": "0f8a026f9b49",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -235,7 +235,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.9,
+   "seconds": 1.7,
    "artifact_sha256_short": "9fd286b67089",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -250,8 +250,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 0.2,
-   "artifact_sha256_short": "539b0714b6ea",
+   "seconds": 0.1,
+   "artifact_sha256_short": "625955f48613",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -265,9 +265,9 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 226.3,
+   "seconds": 214.7,
    "artifact_sha256_short": "84c66c451bf8",
-   "artifact_rewritten": true,
+   "artifact_rewritten": false,
    "stdout_tail": [
     "}"
    ],
@@ -281,7 +281,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 2.0,
-   "artifact_sha256_short": "25cc2964959f",
+   "artifact_sha256_short": "e49a34574231",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -310,8 +310,8 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 6.5,
-   "artifact_sha256_short": "026e4d8e6bc6",
+   "seconds": 6.0,
+   "artifact_sha256_short": "037c5b1a752b",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -325,7 +325,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 17.7,
+   "seconds": 17.6,
    "artifact_sha256_short": "c1816e5937fa",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -340,14 +340,14 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 23.6,
-   "artifact_sha256_short": "10078a027fcf",
+   "seconds": 23.5,
+   "artifact_sha256_short": "3a85d289e295",
    "artifact_rewritten": true,
    "stdout_tail": [
-    "{\"run_mark\": \"a57a81becb29\", \"n_artifacts\": 60, \"count_synced_to_docs\": [], \"self_checks_failed\": []}"
+    "{\"run_mark\": \"8584a0806be6\", \"n_artifacts\": 60, \"count_synced_to_docs\": [], \"self_checks_failed\": []}"
    ],
-   "run_mark_artifact": "a57a81becb29",
-   "run_mark_stdout": "a57a81becb29"
+   "run_mark_artifact": "8584a0806be6",
+   "run_mark_stdout": "8584a0806be6"
   }
  ],
  "comparison_volatile_keys": {
@@ -379,7 +379,7 @@
   ]
  },
  "fails": [
-  "bundle 收尾工作区不干净：[' M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.json', ' M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.md', ' M evidence/R14E_ARTIFACT_ATTRIBUTION.json', ' M evidence/R14E_REAL_PAGE_REPLAY_V8_CHECK.json', ' M evidence/R14E_RERUN_SEMANTICS.json', ' M evidence/R14G0_GATE_READINESS_V5.json']（步骤改写了在册件 ⇒ 本轮结论不可复用，需重跑或如实作废）"
+  "bundle 收尾：步骤产物在**同一次运行内**未收敛 ['R14G_HISTORICAL_BYTES.json 步骤记录 3bfc3baefab6 ≠ 跑完 86453aa1d7dd']（后跑的步骤改了先跑的产物 ⇒ 本轮结论不可复用）"
  ],
  "worktree_clean_before": true,
  "worktree_clean_after": false,
@@ -416,17 +416,7 @@
   "note": "件内 mark 必须与该步 stdout mark 一致，否则该步的件可能是上一轮残留"
  },
  "dirty_after": [
-  " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.json",
-  " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.md",
-  " M evidence/R14E_ARTIFACT_ATTRIBUTION.json",
-  " M evidence/R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
-  " M evidence/R14E_RERUN_SEMANTICS.json",
-  " M evidence/R14G0_GATE_READINESS_V5.json",
-  " M evidence/R14G_HISTORICAL_BYTES.json",
-  " M evidence/R14G_PLAN.json",
-  " M evidence/R14H_KB_CHANNEL_HEAD_DELTA.json",
-  " M evidence/R14_INDEX.json",
-  " M evidence/R14_INDEX.md"
+  "R14G_HISTORICAL_BYTES.json 步骤记录 3bfc3baefab6 ≠ 跑完 86453aa1d7dd"
  ],
  "budget": {
   "http_requests_made": 0,

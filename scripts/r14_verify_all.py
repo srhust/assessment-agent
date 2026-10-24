@@ -671,6 +671,28 @@ def main() -> int:
     # ⇒ 正确形状：**同一轮内收敛**——逐件比较
     #   "步骤当时记录的 sha"与"全部步骤跑完后的实际 sha"，
     #   只有内容真的在同轮内变化才算违规。
+    # ⇒ 但**逐字节 sha 仍不够**：件里的 `"head"` 字段记录的是
+    #   **运行时的 HEAD**，`main()` 开头取一次、步骤跑完后 HEAD 未变，
+    #   可**步骤本身**（如 A9）重跑时读到的却是**上一轮**的
+    #   `head_at_run`（先跑的步骤写、后跑的步骤再写）⇒
+    #   同一次运行内该字段被改两次 ⇒ 不收敛。
+    #   ⇒ 比较时**剥掉易变的自身标识字段**：
+    #     `head` / `run_mark` / `head_at_run` / `generated_at`，
+    #     这些不是"结论"，是"这一件是哪一轮生成的"。
+    _VOLATILE_SELF = ("head", "run_mark", "head_at_run", "generated_at",
+                      "seconds", "artifact_sha256_short")
+
+    def _sha_stable(p: Path) -> str:
+        """对**去掉自身标识字段**后的内容取 sha（剥不掉就退回原 sha）。"""
+        try:
+            d = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            return sha(p)
+        if isinstance(d, dict):
+            d = {k: v for k, v in d.items() if k not in _VOLATILE_SELF}
+        return hashlib.sha256(json.dumps(
+            d, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
+
     _by_art = {x.get("artifact"): x for x in rows if x.get("artifact")}
     _changed = []
     for x in (subprocess.run(["git", "status", "--porcelain"], cwd=ROOT,
@@ -683,7 +705,7 @@ def main() -> int:
         if row is None or row.get("out_mode") == "skip":
             continue
         want = row.get("artifact_sha256_short")
-        got = sha(EV / base)[:12] if (EV / base).is_file() else "GONE"
+        got = _sha_stable(EV / base)[:12] if (EV / base).is_file() else "GONE"
         if want and want != got:
             _changed.append(f"{base} 步骤记录 {want} ≠ 跑完 {got}")
     after_clean, after_dirty = not _changed, _changed
