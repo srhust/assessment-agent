@@ -129,9 +129,14 @@ STEPS = [
      "fixed", "evidence/R14E_RERUN_SEMANTICS.json"),
     ("scripts/e2_r14_v8_reproducibility.py",
      "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
+     # **期望值必须是"本地实测口径"**：硬编码归属档位
+     # (`REPRODUCIBLE_FROM_HEAD`) 等于拿**别人的结论**当准入条件；
+     # 本轮归属器如实把 V8 降级成
+     # `VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING` ⇒
+     # **过期的是这个期望**，不是被核对的脚本。
      {"verdict_identical_all": True, "v8_untouched": True,
-      "attribution": {"reproducibility": "REPRODUCIBLE_FROM_HEAD",
-                      "artifact_untouched": True}},
+      "attribution": {"artifact_untouched": True},
+      "gate_basis__local_only": True},
      "bare", "R14E_REAL_PAGE_REPLAY_V8_CHECK.json"),
     ("scripts/e2e_r14_six_condition_lineage.py",
      "R14E_LINEAGE_SIX_CONDITION.json", {"v10_equals_v9": True},
@@ -555,8 +560,18 @@ def main() -> int:
         st = semd.get("drift_register_selftest") or {}
         if st.get("fails"):
             fails.append(f"A7 漂移登记**反证**失败：{st['fails'][:2]}")
-        if st and st.get("after_removal_status") != "violated":
-            fails.append("A7 剥掉解释件后仍算已登记 ⇒ documented 成了吞违规的开关")
+        if st:
+            # **两种模式分别核**：真实模式看 `after_removal_status`，
+            # 合成模式看 `synthetic_mechanism_proved`。上一版只读前者，
+            # 于是"本轮没有真实已登记漂移"被误报成"剥掉解释件后
+            # 仍算已登记"——那是**键名与产出脱节**，不是机制失效。
+            if st.get("mode") == "synthetic":
+                if not st.get("synthetic_mechanism_proved"):
+                    fails.append("A7 合成反证未证明登记机制能改变判定 "
+                                 "⇒ documented 可能是吞违规的开关")
+            elif st.get("after_removal_status") != "violated":
+                fails.append("A7 剥掉解释件后仍算已登记 "
+                             "⇒ documented 成了吞违规的开关")
         for x in semd.get("documented_verdict_drift", []):
             reg = EV / (x.get("register") or [""])[0]
             if not reg.is_file():
