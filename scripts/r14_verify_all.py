@@ -365,6 +365,13 @@ def worktree_clean(self_only: bool = False):
         # 这些件是**核验器的临时产物**，与 `SCRATCH` 同类。
         if base.startswith("__R14SR__") or base.startswith("__probe"):
             continue
+        # **临时件命名必须落在 `SCRATCH` 覆盖内**（本轮实测的自伤）：
+        # `SCRATCH = ^(t_|tmp_|\.DS_Store)` 只认**文件名**前缀；
+        # 我为了记录教训写过 `tools_scratch.py`/`tools_hv.py` 这类
+        # `tools_*` 临时件 ⇒ 它**不是** SCRATCH ⇒ 入口守卫如实拒跑。
+        # ⇒ 判据没错，错在我用完没删；
+        #   **不新增豁免**：把 `tools_*` 加进 SCRATCH
+        #   等于给未来的自己开后门。
         if path.startswith("evidence/R14E_REAL_PAGE_REPLAY_V8_RERUN"):
             continue          # 比对用的重跑新件，允许未跟踪
         if path.endswith("R14E_REAL_PAGE_REPLAY_V8.json"):

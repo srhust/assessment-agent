@@ -103,7 +103,7 @@
   "retry_headroom_note": "计划 5 页 + 余量 1 次请求 = 上限 6；一旦发生 **2 页**重试即触顶，第 6 次之后的请求会被原子闸拒绝——缺的那一页必须记为 BudgetExhausted 并计入端到端分母，不得降低页数或放松闸来抹掉。（G0 C1d 已实测该行为）"
  },
  "fixed": {
-  "code_version": "a69db5347526ef6fc1a370d94d2e4eabc041836b",
+  "code_version": "9b39356b5ad64a729f6db21897b1980264ffe6a0",
   "worktree_dirty": false,
   "prompt_file": null,
   "prompt_sha256": "7c9dc3c847da45d4db5938c9696e43991b0892070280b8e1d751a4887b18eb19",
