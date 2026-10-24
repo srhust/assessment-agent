@@ -700,9 +700,10 @@ def main() -> int:
     #   于是一口气报了 4 条"未收敛"（其实只是 `head` 字段换了轮次）。
     _by_art = {x.get("artifact"): x for x in rows if x.get("artifact")}
     _changed = []
-    for x in (subprocess.run(["git", "status", "--porcelain"], cwd=ROOT,
-                              capture_output=True,
-                              text=True).stdout or "").splitlines():
+    _git_mod = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"],
+                              cwd=ROOT, capture_output=True, text=True,
+                              encoding="utf-8").stdout or ""
+    for x in _git_mod.splitlines():
         if not x.strip():
             continue
         base = x[3:].strip().replace("\\", "/").rsplit("/", 1)[-1]
@@ -713,11 +714,13 @@ def main() -> int:
             _changed.append(f"{base} 跑完后不见了")
             continue
         # **登记件不许无条件豁免**（上一版直接 `continue` =
-        # 把"索引自己"做成收尾检查的盲区）：
-        # 登记件本轮**确实会自我更新**（`count_synced_to_docs` 等），
-        # 所以对它仍做对称归一比较，只是**变化必须能对上
-        # 它自己报告的同轮改写**，否则照报。
-        _regrow = {x[0] for x in (a13.get("synced") or [])}
+        # 把"索引自己"做成收尾检查的盲区）。
+        # 上一版这里取 `a13` ⇒ `UnboundLocalError`：
+        # 收尾守卫排在 **A13 计算之前**（A13 在后面的回写段才算出来），
+        # 顺序敏感的"顺手引用"必须当场核。
+        # ⇒ 登记件仍走**同一套对称归一比较**，只是它的
+        #   `count_synced_to_docs`/`self_checks_failed` 属于
+        #   **本轮应更新**的登记字段，单独核。
         show = subprocess.run(["git", "show", f"HEAD:evidence/{base}"],
                               cwd=ROOT, capture_output=True, text=True,
                               encoding="utf-8")
