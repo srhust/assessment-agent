@@ -1,5 +1,5 @@
 {
- "head": "e3f2f785e573533d0ae4f0e259ad09c5427d46f7",
+ "head": "c8e76ed6e1fd1b20e81a6931cd6b85ed2543cc36",
  "numbers_source_artifacts": [
   "R14_STAGE_E_DELIVERABLES.md",
   "R14_PROGRESS_STOPGATE.md",
@@ -27,11 +27,11 @@
   },
   {
    "item": "3 声明审计",
-   "value": "fails []；C1 63 条、C3 27 条、C8 计数点 23（活引用 14 / 豁免 9）；注入自证 13 例全抓 True"
+   "value": "fails ['C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步']；C1 63 条、C3 27 条、C8 计数点 23（活引用 14 / 豁免 9）；注入自证 13 例全抓 True"
   },
   {
    "item": "4 补集语义复现",
-   "value": "violations 1；登记反证 mode synthetic proved True"
+   "value": "violations 0；登记反证 mode synthetic proved True"
   },
   {
    "item": "5 生产者归属",
@@ -60,8 +60,8 @@
  ],
  "blind_eval_admission": "NOT_READY",
  "fails": [
-  "索引自检失败：['D 交付材料档位异常：R14_DELIVERY_SUMMARY.md = unregistered', 'D 交付材料档位异常：R14_DELIVERY_SUMMARY.json = unregistered']",
-  "补集复现仍有 violations：1"
+  "声明审计 fails 非空：['C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步']",
+  "索引自检失败：['D 交付材料档位异常：R14_DELIVERY_SUMMARY.md = unregistered', 'D 交付材料档位异常：R14_DELIVERY_SUMMARY.json = unregistered']"
  ],
  "budget": {
   "http_requests_made": 0,

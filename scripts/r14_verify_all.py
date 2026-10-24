@@ -850,5 +850,31 @@ def main() -> int:
     return 1 if fails or not all(x["exit"] == 0 for x in rows) else 0
 
 
+def _crash_record(exc_text: str) -> None:
+    """**崩溃也要落盘**（本轮第 4 次读到旧结论件的根修）。
+
+    `refuse_and_record` 只覆盖**主动拒绝**分支；本轮 bundle 是被
+    `UnboundLocalError` 打崩的 ⇒ 磁盘上留着**上一轮**的
+    `RAN / steps 21 / fails []`，我连着两次把旧结论当本轮结果。
+    崩溃路径必须有**同样的**落盘义务，否则"结论件的新鲜度"
+    永远靠调用方记得比对 head。
+    """
+    try:
+        refuse_and_record("crashed", {"traceback_tail": exc_text[-1500:]},
+                          rc=1)
+    except Exception:  # noqa: BLE001
+        # 落盘本身再失败，至少 stdout 上还能看见 traceback（不静默）
+        pass
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except SystemExit:
+        raise
+    except BaseException as e:                      # noqa: BLE001
+        import traceback
+        tb = traceback.format_exc()
+        print(tb, file=sys.stderr)
+        _crash_record(tb)
+        sys.exit(1)

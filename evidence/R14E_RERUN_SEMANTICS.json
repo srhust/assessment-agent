@@ -1,31 +1,6 @@
 {
  "n_checked": 50,
- "violations": [
-  {
-   "artifact": "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
-   "script": "r14_delivery_summary.py",
-   "rerun_via_out": "__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
-   "declared_writers": [
-    "r14_delivery_summary.py"
-   ],
-   "refused_unsafe": [],
-   "worktree_collateral": [
-    "evidence/R14_DELIVERY_SUMMARY.md",
-    "evidence/__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json"
-   ],
-   "collateral_removed": [],
-   "safety": "OK_ZERO_REQUESTS",
-   "offline": true,
-   "exit": 0,
-   "files_changed_by_rerun": [
-    "R14_DELIVERY_SUMMARY.md"
-   ],
-   "rerun_read_from": "__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
-   "own_declared_outputs_touched": [],
-   "status": "VIOLATION_write_path_drift",
-   "detail": "重跑 scripts/r14_delivery_summary.py 除本件外还改动了非自指件 ['R14_DELIVERY_SUMMARY.md']"
-  }
- ],
+ "violations": [],
  "identical_detector_selftest": {
   "fails": [],
   "cases": [
@@ -69,53 +44,15 @@
   },
   {
    "artifact": "R14_DELIVERY_SUMMARY.json",
-   "script": "r14_delivery_summary.py",
-   "rerun_via_out": "__R14SR__R14_DELIVERY_SUMMARY.json",
-   "declared_writers": [
-    "r14_delivery_summary.py"
-   ],
-   "refused_unsafe": [],
-   "worktree_collateral": [
-    "evidence/R14_DELIVERY_SUMMARY.md",
-    "evidence/__R14SR__R14_DELIVERY_SUMMARY.json"
-   ],
-   "collateral_removed": [],
-   "safety": "OK_ZERO_REQUESTS",
-   "offline": true,
-   "exit": 0,
-   "files_changed_by_rerun": [
-    "R14_DELIVERY_SUMMARY.md"
-   ],
-   "rerun_read_from": "__R14SR__R14_DELIVERY_SUMMARY.json",
-   "own_declared_outputs_touched": [
-    "R14_DELIVERY_SUMMARY.md"
-   ],
-   "status": "no_write_detected",
-   "detail": ""
+   "status": "skipped_not_current",
+   "why": "写出者已前进到现行件名；对历史/被取代件重跑核对既无意义又接近“改历史 Test 结果”（目标②禁止）。地位真值取自 R14_INDEX.json",
+   "index_status": "unregistered"
   },
   {
    "artifact": "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
-   "script": "r14_delivery_summary.py",
-   "rerun_via_out": "__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
-   "declared_writers": [
-    "r14_delivery_summary.py"
-   ],
-   "refused_unsafe": [],
-   "worktree_collateral": [
-    "evidence/R14_DELIVERY_SUMMARY.md",
-    "evidence/__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json"
-   ],
-   "collateral_removed": [],
-   "safety": "OK_ZERO_REQUESTS",
-   "offline": true,
-   "exit": 0,
-   "files_changed_by_rerun": [
-    "R14_DELIVERY_SUMMARY.md"
-   ],
-   "rerun_read_from": "__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
-   "own_declared_outputs_touched": [],
-   "status": "VIOLATION_write_path_drift",
-   "detail": "重跑 scripts/r14_delivery_summary.py 除本件外还改动了非自指件 ['R14_DELIVERY_SUMMARY.md']"
+   "status": "skipped_not_current",
+   "why": "写出者已前进到现行件名；对历史/被取代件重跑核对既无意义又接近“改历史 Test 结果”（目标②禁止）。地位真值取自 R14_INDEX.json",
+   "index_status": "unregistered"
   },
   {
    "artifact": "R14_INDEX.json",

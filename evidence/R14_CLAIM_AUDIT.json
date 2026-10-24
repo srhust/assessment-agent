@@ -8,7 +8,9 @@
   "R14G0_READINESS.md",
   "R14C_PITCH_ABLATION_HEAD_DELTA.md"
  ],
- "fails": [],
+ "fails": [
+  "C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步"
+ ],
  "notes": {
   "C1_citations_checked": 63,
   "C8_count_citations": [
@@ -16,7 +18,7 @@
     "doc": "R14_PROGRESS_STOPGATE.md",
     "kind": "artifact_total",
     "cited": 55,
-    "truth": 57,
+    "truth": 60,
     "context": "example_or_old_value_skipped",
     "exempt_by": "inline_code_or_fence"
    },
@@ -24,7 +26,7 @@
     "doc": "R14_PROGRESS_STOPGATE.md",
     "kind": "artifact_total",
     "cited": 55,
-    "truth": 57,
+    "truth": 60,
     "context": "example_or_old_value_skipped",
     "exempt_by": "inline_code_or_fence"
    },
@@ -32,7 +34,7 @@
     "doc": "R14_PROGRESS_STOPGATE.md",
     "kind": "artifact_total",
     "cited": 57,
-    "truth": 57,
+    "truth": 60,
     "context": "example_or_old_value_skipped",
     "exempt_by": "inline_code_or_fence"
    },
@@ -108,7 +110,7 @@
     "doc": "R14_STAGE_E_DELIVERABLES.md",
     "kind": "artifact_total",
     "cited": 55,
-    "truth": 57,
+    "truth": 60,
     "context": "example_or_old_value_skipped",
     "exempt_by": "inline_code_or_fence"
    },
@@ -116,7 +118,7 @@
     "doc": "R14_STAGE_E_DELIVERABLES.md",
     "kind": "artifact_total",
     "cited": 57,
-    "truth": 57
+    "truth": 60
    },
    {
     "doc": "R14_STAGE_E_DELIVERABLES.md",
@@ -272,7 +274,7 @@
     "injection_applied": "n/a",
     "caught_expected_check": true,
     "note": "",
-    "sample_fail": "C1 R14E_NEWLAYOUT_REGRESSION.md:[80] 引用了不存在的件（且非勘误语境）：R14E_NOT_A_REAL_ARTIFACT.json",
+    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步",
     "stderr_tail": ""
    },
    {
@@ -283,7 +285,7 @@
     "injection_applied": "n/a",
     "caught_expected_check": true,
     "note": "",
-    "sample_fail": "C2 R14_PROGRESS_STOPGATE.md:439 把被取代件 R14E_NEWLAYOUT_REGRESSION_V2.json 当作当前引用（该句无勘误语境）",
+    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步",
     "stderr_tail": ""
    },
    {
@@ -294,7 +296,7 @@
     "injection_applied": "n/a",
     "caught_expected_check": true,
     "note": "",
-    "sample_fail": "C5 R14_PROGRESS_STOPGATE.md 出现禁止措辞「真实截图已突破」",
+    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步",
     "stderr_tail": ""
    },
    {
@@ -305,7 +307,7 @@
     "injection_applied": "n/a",
     "caught_expected_check": true,
     "note": "",
-    "sample_fail": "C3 R14E_NEWLAYOUT_REGRESSION.md 抄录 17 != 件内 16（('layers', 'candidates_solved')）",
+    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步",
     "stderr_tail": ""
    },
    {
@@ -316,7 +318,7 @@
     "injection_applied": "n/a",
     "caught_expected_check": true,
     "note": "",
-    "sample_fail": "C6 不应存在 G 结果件（未获人工批准）：['R14G_RESULT.json']",
+    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步",
     "stderr_tail": ""
    },
    {
@@ -327,7 +329,7 @@
     "injection_applied": "n/a",
     "caught_expected_check": true,
     "note": "",
-    "sample_fail": "C7 R14E_NEWLAYOUT_REGRESSION.md:80 对 R14E_REAL_PAGE_REPLAY_V8.json 断言 ['NOT_REPRODUCIBLE_FROM_HEAD', 'REPRODUCIBLE_FROM_HEAD']，但归属真值是 VERDICT_REPRODUC",
+    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步",
     "stderr_tail": ""
    },
    {
@@ -338,7 +340,7 @@
     "injection_applied": "yes",
     "caught_expected_check": true,
     "note": "",
-    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=68 件，索引真值是 57 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步",
+    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=68 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步",
     "stderr_tail": ""
    },
    {
@@ -349,7 +351,7 @@
     "injection_applied": "yes",
     "caught_expected_check": true,
     "note": "",
-    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 current=47，索引真值 30 ⇒ 计数过期",
+    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步",
     "stderr_tail": ""
    },
    {
@@ -360,7 +362,7 @@
     "injection_applied": "yes",
     "caught_expected_check": true,
     "note": "",
-    "sample_fail": "C3 登记表 **PLAN 未执行** 引用了 R14G_PLAN.json 中**不存在的键** status_typo_not_a_key ⇒ 检查器自身写错了引用，不是交付件数字不符",
+    "sample_fail": "C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步",
     "stderr_tail": ""
    },
    {
@@ -400,7 +402,7 @@
     "case": "中文行文（带量词）不得被当作计数引用",
     "expect_check_id": "C8",
     "injection_applied": "yes",
-    "exit": 0,
+    "exit": 1,
     "caught_expected_check": true,
     "note": "带量词的行文**不得**被当作计数引用",
     "sample_fail": "",

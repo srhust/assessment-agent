@@ -134,7 +134,7 @@ G0 也**如实暴露了预算的脆弱面**（C1d）：计划 5 页 + 1 次余�
 地位一律取自登记表；当前 30 / 被取代 17 / **核对副产物 5** / 历史 2 /
 勘误保留 1 / 自指 2，`unregistered []`。
 
-一键复现清单现为 **21 步**（`e2f_r14_causal_delta.py`、
+一键复现清单现为 **23 步**（`e2f_r14_causal_delta.py`、
 `r14_semantic_repro.py` 由 `skip` 改为真 `fixed` 步；其后又加入
 A9 字节基线、A9 触发反证、h1 漂移解释件三步），
 `fails []`，`http_requests_made 0`、`tokens_used 0`。
@@ -195,7 +195,7 @@ A9 字节基线、A9 触发反证、h1 漂移解释件三步），
 ## 一键复现与**复现边界**（本轮新增，必读）
 
 `scripts/r14_verify_all.py` → `evidence/R14_VERIFICATION_BUNDLE.json`：
-从**干净工作区**按固定顺序**真跑** 21 步离线验证器（子进程、`PYTHONPATH=src`），
+从**干净工作区**按固定顺序**真跑** 23 步离线验证器（子进程、`PYTHONPATH=src`），
 登记每步退出码/耗时/产物 sha256 与件内关键事实。当前 **`fails []`、
 `all_steps_exit_zero true`**。附带两条强检查：**A4 预检**（跑之前就按 `--out`
 形态算出"将写到哪个绝对路径"，不等于现行件即拒绝——这条抓出了会**覆盖历史件**
