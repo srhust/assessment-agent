@@ -1,1 +1,0 @@
-{"n_items": 10, "fails": [], "admission": "NOT_READY"}
