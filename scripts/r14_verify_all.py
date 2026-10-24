@@ -342,6 +342,16 @@ def worktree_clean():
         base = path.rsplit("/", 1)[-1]
         if "R14_VERIFICATION_BUNDLE" in path or SCRATCH.match(base):
             continue
+        # **补集复现的重跑临时件不是脏**（本轮实测的死锁）：
+        # bundle 第 16 步 `r14_semantic_repro.py` 会生成
+        # `evidence/__R14SR__*.json` 并删除，但若它中途崩溃
+        # （或事后被判"本轮不可信"）就留下未跟踪件 ⇒
+        # 下一次 bundle 以 `dirty_worktree` 拒跑 ⇒
+        # bundle 件保持 `REFUSED` ⇒ `semantic_repro` 又判
+        # "无 bundle 上下文"拒绝实跑 ⇒ **verification 永远冻结**。
+        # 这些件是**核验器的临时产物**，与 `SCRATCH` 同类。
+        if base.startswith("__R14SR__") or base.startswith("__probe"):
+            continue
         if path.startswith("evidence/R14E_REAL_PAGE_REPLAY_V8_RERUN"):
             continue          # 比对用的重跑新件，允许未跟踪
         if path.endswith("R14E_REAL_PAGE_REPLAY_V8.json"):
