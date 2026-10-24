@@ -1,7 +1,7 @@
 {
  "status": "RAN",
- "run_mark": "c362f95c2883",
- "head_at_run": "427fe4d08ff7ce765c39af76a0b836eba23f8660",
+ "run_mark": "fde714d9c0a0",
+ "head_at_run": "f798e4c29f1c3c22c56f42255f5a63df41557d6c",
  "n_steps": 21,
  "docs_step_count_synced": [],
  "A13_step_count_guard": {
@@ -41,7 +41,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "0dd6e5c66b34",
+   "artifact_sha256_short": "6e45bac17346",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -56,7 +56,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.3,
-   "artifact_sha256_short": "b32935bd524e",
+   "artifact_sha256_short": "c011ba62b53e",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -70,7 +70,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.2,
+   "seconds": 1.1,
    "artifact_sha256_short": "d27ba4087d5c",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -85,7 +85,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.8,
+   "seconds": 5.6,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -115,7 +115,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.4,
+   "seconds": 2.3,
    "artifact_sha256_short": "9a6a48a7e9ad",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -161,7 +161,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 3.7,
-   "artifact_sha256_short": "03bd8f01b16b",
+   "artifact_sha256_short": "c12422d4bfaa",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -175,7 +175,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 4.8,
+   "seconds": 5.1,
    "artifact_sha256_short": "8812f2b72e12",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -190,7 +190,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.0,
+   "seconds": 1.1,
    "artifact_sha256_short": "89be0925dcbf",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -206,7 +206,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.7,
-   "artifact_sha256_short": "e57536eaa5a4",
+   "artifact_sha256_short": "b90915fed4ea",
    "artifact_rewritten": true,
    "stdout_tail": [
     "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
@@ -251,7 +251,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.1,
-   "artifact_sha256_short": "ab4ba6bff3b7",
+   "artifact_sha256_short": "37b2ff6e3265",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -264,12 +264,12 @@
    "artifact": "R14E_RERUN_SEMANTICS.json",
    "out_mode": "fixed",
    "expected_to_change": false,
-   "exit": 1,
-   "seconds": 40.2,
-   "artifact_sha256_short": "bc70eda5609c",
-   "artifact_rewritten": true,
+   "exit": 0,
+   "seconds": 35.6,
+   "artifact_sha256_short": "ce32f855ec10",
+   "artifact_rewritten": false,
    "stdout_tail": [
-    "drift_register_selftest FAILED: ['没有已登记的结论级漂移，反证无从执行']"
+    "}"
    ],
    "run_mark_artifact": null,
    "run_mark_stdout": null
@@ -279,9 +279,9 @@
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
    "out_mode": "bare",
    "expected_to_change": false,
-   "exit": 1,
+   "exit": 0,
    "seconds": 1.2,
-   "artifact_sha256_short": "d70bae89f2d2",
+   "artifact_sha256_short": "f5ad0df9d4d5",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -311,7 +311,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 4.6,
-   "artifact_sha256_short": "e2efcbb40432",
+   "artifact_sha256_short": "b8b58a84957a",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -325,9 +325,9 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 9.8,
+   "seconds": 9.7,
    "artifact_sha256_short": "6e3f867228bf",
-   "artifact_rewritten": true,
+   "artifact_rewritten": false,
    "stdout_tail": [
     "}"
    ],
@@ -340,14 +340,14 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 7.8,
-   "artifact_sha256_short": "94d75419b6bc",
+   "seconds": 7.9,
+   "artifact_sha256_short": "fdf657274938",
    "artifact_rewritten": true,
    "stdout_tail": [
-    "{\"run_mark\": \"d7974eb45ca7\", \"n_artifacts\": 57, \"self_checks_failed\": []}"
+    "{\"run_mark\": \"8adcd34959d1\", \"n_artifacts\": 57, \"self_checks_failed\": []}"
    ],
-   "run_mark_artifact": "d7974eb45ca7",
-   "run_mark_stdout": "d7974eb45ca7"
+   "run_mark_artifact": "8adcd34959d1",
+   "run_mark_stdout": "8adcd34959d1"
   }
  ],
  "comparison_volatile_keys": {
@@ -379,10 +379,7 @@
   ]
  },
  "fails": [
-  "scripts/r14_semantic_repro.py 退出码 1：",
-  "scripts/e2_r14_v8_reproducibility.py 退出码 1：",
   "scripts/e2_r14_v8_reproducibility.py → R14E_REAL_PAGE_REPLAY_V8_CHECK.json 的 attribution 子集不符：{'reproducibility': 'VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING', 'artifact_untouched': True} ≠ {'reproducibility': 'REPRODUCIBLE_FROM_HEAD', 'artifact_untouched': True}",
-  "A7 漂移登记**反证**失败：['没有已登记的结论级漂移，反证无从执行']",
   "A7 剥掉解释件后仍算已登记 ⇒ documented 成了吞违规的开关"
  ],
  "worktree_clean_before": true,
@@ -424,12 +421,10 @@
   " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.md",
   " M evidence/R14E_ARTIFACT_ATTRIBUTION.json",
   " M evidence/R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
-  " M evidence/R14E_RERUN_SEMANTICS.json",
   " M evidence/R14G0_GATE_READINESS_V5.json",
   " M evidence/R14G_HISTORICAL_BYTES.json",
   " M evidence/R14G_PLAN.json",
   " M evidence/R14H_KB_CHANNEL_HEAD_DELTA.json",
-  " M evidence/R14_CLAIM_AUDIT.json",
   " M evidence/R14_INDEX.json",
   " M evidence/R14_INDEX.md"
  ],

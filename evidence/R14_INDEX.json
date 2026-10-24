@@ -1,5 +1,5 @@
 {
- "run_mark": "d7974eb45ca7",
+ "run_mark": "8adcd34959d1",
  "A1b_selftest": {
   "probe": [
    "R14_VERIFICATION_BUNDLE.json",
@@ -47,7 +47,7 @@
   "R14E_ATTRIBUTION_SELFTEST.json",
   "R14E_ARTIFACT_ATTRIBUTION.json"
  ],
- "generated_at_head": "427fe4d08ff7ce765c39af76a0b836eba23f8660",
+ "generated_at_head": "f798e4c29f1c3c22c56f42255f5a63df41557d6c",
  "n_artifacts": 57,
  "by_status": {
   "current": [
@@ -128,10 +128,10 @@
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": false,
+   "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "aa81b50",
-   "commit_last_touched": "adb6536"
+   "commit_last_touched": "f798e4c"
   },
   {
    "artifact": "R14_CLAIM_AUDIT.md",
@@ -153,8 +153,8 @@
   {
    "artifact": "R14_INDEX.json",
    "bytes": 44214,
-   "sha256": "5a4a761cf4ada83c6aa01d006486d7bef86cf9dc2ed5b243e1d686db4e0140ef",
-   "sha_short": "5a4a761cf4ad",
+   "sha256": "94d75419b6bc7b70ec3e1bcfd12228f1092dfd729d22ec2318881640aba95a10",
+   "sha_short": "94d75419b6bc",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -169,13 +169,13 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "427fe4d"
+   "commit_last_touched": "f798e4c"
   },
   {
    "artifact": "R14_INDEX.md",
    "bytes": 9144,
-   "sha256": "b6376575ae21cae6729b245ec693c625d8965860280a825af91dbbdb686b6e91",
-   "sha_short": "b6376575ae21",
+   "sha256": "f0e761d5e90444a66353299efd8deb34d7a18f1b9ac8bf119ec81c21c498200b",
+   "sha_short": "f0e761d5e904",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -188,7 +188,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "427fe4d"
+   "commit_last_touched": "f798e4c"
   },
   {
    "artifact": "R14_PROGRESS_STOPGATE.md",
@@ -232,9 +232,9 @@
   },
   {
    "artifact": "R14_VERIFICATION_BUNDLE.json",
-   "bytes": 19954,
-   "sha256": "3ad27b9e1c5c738dfdae83d085b62fb1f27e350365d6ca058f3bbe45d80658dc",
-   "sha_short": "3ad27b9e1c5c",
+   "bytes": 13440,
+   "sha256": "e4aac4377ad158b95bc57c5d1284db679f6041a614430d86bb909e965ac5ac8d",
+   "sha_short": "e4aac4377ad1",
    "status": "current",
    "status_note": "一键复现 bundle（18 步离线验证）",
    "producer_scripts": [
@@ -247,7 +247,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f9a2fc8",
-   "commit_last_touched": "e93bd70"
+   "commit_last_touched": "f798e4c"
   },
   {
    "artifact": "R14C_PITCH_ABLATION.json",
@@ -271,8 +271,8 @@
   {
    "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.json",
    "bytes": 4191,
-   "sha256": "ab4ba6bff3b71ef44d5d4c35d307c3ad538e35a12d8367b13de741178391881a",
-   "sha_short": "ab4ba6bff3b7",
+   "sha256": "37b2ff6e3265c6b9229e69114738dc4cef60f0e1a96f208c2fca862bac355bc1",
+   "sha_short": "37b2ff6e3265",
    "status": "current",
    "status_note": "因果实验在现行 HEAD 的复现差异",
    "producer_scripts": [
@@ -285,13 +285,13 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "f118cf9",
-   "commit_last_touched": "e93bd70"
+   "commit_last_touched": "f798e4c"
   },
   {
    "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.md",
    "bytes": 1596,
-   "sha256": "1031c0fa18715172c04d8621a7306f5c28622a3b3ed7f86af39fb3bfa9f84b66",
-   "sha_short": "1031c0fa1871",
+   "sha256": "8f3bb9033f937df6ddba005f6ba0138847954ba4a24e6a0ecfd623839016632a",
+   "sha_short": "8f3bb9033f93",
    "status": "current",
    "status_note": "因果实验在现行 HEAD 的复现差异（人工裁决项 2 材料）",
    "producer_scripts": [
@@ -304,7 +304,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f118cf9",
-   "commit_last_touched": "e93bd70"
+   "commit_last_touched": "f798e4c"
   },
   {
    "artifact": "R14C_PITCH_ABLATION_RERUN2.json",
@@ -364,8 +364,8 @@
   {
    "artifact": "R14E_ARTIFACT_ATTRIBUTION.json",
    "bytes": 4075,
-   "sha256": "03bd8f01b16b91fc7bbbe555b98629487d977ab1c204f64fd873ac9367842d38",
-   "sha_short": "03bd8f01b16b",
+   "sha256": "c12422d4bfaa1d4136d5be4bdf2b0603c20defe908ebea3c091305ddb7234d4f",
+   "sha_short": "c12422d4bfaa",
    "status": "current",
    "status_note": "证据件生产者归属（含安全闸门结论）",
    "producer_scripts": [
@@ -378,7 +378,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "d48d97e",
-   "commit_last_touched": "427fe4d"
+   "commit_last_touched": "f798e4c"
   },
   {
    "artifact": "R14E_ATTRIBUTION_SELFTEST.json",
@@ -626,9 +626,9 @@
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
-   "bytes": 2845,
-   "sha256": "d70bae89f2d2d9526df93739dbaefb1218ba00925c884c9be1b6457ec5d3c926",
-   "sha_short": "d70bae89f2d2",
+   "bytes": 3004,
+   "sha256": "f5ad0df9d4d51481eaa4631467c08c6aec44e1bbad1643a9c466732748f694c3",
+   "sha_short": "f5ad0df9d4d5",
    "status": "verification_byproduct",
    "status_note": "动态核验产物：由归属/复现核对以 **新名** 重跑生成，刻意不覆盖提交件；它证明可复现性，本身不是交付件",
    "producer_scripts": [
@@ -638,10 +638,10 @@
    "written_via_out_override": false,
    "producer_note": "声明写出（确有写出且出现该件/族名）",
    "git_tracked": true,
-   "reproduced_by_bundle": true,
+   "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "92103ec",
-   "commit_last_touched": "e93bd70"
+   "commit_last_touched": "f798e4c"
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
@@ -664,9 +664,9 @@
   },
   {
    "artifact": "R14E_RERUN_SEMANTICS.json",
-   "bytes": 21359,
-   "sha256": "bc70eda5609c47ca3d531898312ccc7b086668a3c82f63fbb65bbb8b62904a45",
-   "sha_short": "bc70eda5609c",
+   "bytes": 21562,
+   "sha256": "ce32f855ec100280731505cedb5de54320b0becdd7b6affd01b02bc633ac8ccb",
+   "sha_short": "ce32f855ec10",
    "status": "current",
    "status_note": "补集复现核对（结论级/注解级差异分列）",
    "producer_scripts": [
@@ -679,7 +679,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f118cf9",
-   "commit_last_touched": "e028de9"
+   "commit_last_touched": "f798e4c"
   },
   {
    "artifact": "R14E_SIX_CONDITION.json",
@@ -1025,8 +1025,8 @@
   {
    "artifact": "R14G0_GATE_READINESS_V5.json",
    "bytes": 8521,
-   "sha256": "e2efcbb404320434bf618a432c4b0da7a7c16e25fd458e002063e57f40609649",
-   "sha_short": "e2efcbb40432",
+   "sha256": "b8b58a84957a970fcec25ad0b90fd37ff3a194926e81f3f71a63efb49528dd8c",
+   "sha_short": "b8b58a84957a",
    "status": "current",
    "status_note": "G 闸门行为级就绪审计（真实请求 0）",
    "producer_scripts": [
@@ -1039,7 +1039,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "ce44cc7",
-   "commit_last_touched": "e93bd70"
+   "commit_last_touched": "f798e4c"
   },
   {
    "artifact": "R14G0_GATE_READINESS_V5_RERUN.json",
@@ -1078,8 +1078,8 @@
   {
    "artifact": "R14G_HISTORICAL_BYTES.json",
    "bytes": 3162,
-   "sha256": "e880af2aca490cf2620995a993742187955146fb851255375cdafa9221016ee6",
-   "sha_short": "e880af2aca49",
+   "sha256": "b85ec6e3f6ce8e39efb1a161c3b638412fafb8f2465ae27a11a38d4ea685cfd3",
+   "sha_short": "b85ec6e3f6ce",
    "status": "current",
    "status_note": "历史 Test 件逐字节对引入 commit 的完整性核验（含本轮误覆写事故记录）",
    "producer_scripts": [
@@ -1092,7 +1092,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "e2ae3ed",
-   "commit_last_touched": "e93bd70"
+   "commit_last_touched": "f798e4c"
   },
   {
    "artifact": "R14G_HISTORICAL_BYTES.md",
@@ -1135,8 +1135,8 @@
   {
    "artifact": "R14G_PLAN.json",
    "bytes": 5017,
-   "sha256": "b32935bd524efe564c837ec401df5d6361c9e95b869d3d8d1d95834bca4cf83a",
-   "sha_short": "b32935bd524e",
+   "sha256": "c011ba62b53ee8cefe761c71088a0920fb43d77c5b792e711b9c2f6f1bedb0df",
+   "sha_short": "c011ba62b53e",
    "status": "current",
    "status_note": "G 批 manifest（PLANNED_NOT_EXECUTED）",
    "producer_scripts": [
@@ -1150,7 +1150,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "ce44cc7",
-   "commit_last_touched": "e93bd70"
+   "commit_last_touched": "f798e4c"
   },
   {
    "artifact": "R14H_KB_CHANNEL_AUDIT.json",
@@ -1191,8 +1191,8 @@
   {
    "artifact": "R14H_KB_CHANNEL_HEAD_DELTA.json",
    "bytes": 1501,
-   "sha256": "b6540f4faf12d76f20d440d3164b08582135a9af60d12fc24457226b3e7449f0",
-   "sha_short": "b6540f4faf12",
+   "sha256": "5b804b395d3c1151bab134251ffa577efc14a52717c436d6c338f3015689592d",
+   "sha_short": "5b804b395d3c",
    "status": "current",
    "status_note": [
     "h1_r14_kb_channel_audit.py"
@@ -1207,7 +1207,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f23482a",
-   "commit_last_touched": "e93bd70"
+   "commit_last_touched": "f798e4c"
   }
  ],
  "self_checks_failed": [],
