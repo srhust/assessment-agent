@@ -1,0 +1,15 @@
+{
+ "cases": [
+  "perturb30 出现错放",
+  "bundle 发生过 HTTP",
+  "取数缺件被看见"
+ ],
+ "caught": 3,
+ "total": 3,
+ "all_caught": true,
+ "budget": {
+  "http_requests_made": 0,
+  "tokens_used": 0
+ },
+ "note": "**内存打坏**，不落盘、不改证据件；本件只登记反证结果"
+}

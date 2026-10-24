@@ -1,0 +1,65 @@
+{
+ "head": "e0ac90ea0e2beb386bf8c3b3ab9bd2fa393e178f",
+ "numbers_source_artifacts": [
+  "R14_STAGE_E_DELIVERABLES.md",
+  "R14_PROGRESS_STOPGATE.md",
+  "R14_INDEX.md",
+  "R14_INDEX.json",
+  "R14_VERIFICATION_BUNDLE.json",
+  "R14G_PLAN.json",
+  "R14G0_GATE_READINESS_V5.json",
+  "R14G_HISTORICAL_BYTES.md",
+  "R14E_RERUN_SEMANTICS.json",
+  "R14_CLAIM_AUDIT.json",
+  "R14E_ATTRIBUTION_SELFTEST.json",
+  "R14E_ARTIFACT_ATTRIBUTION.json"
+ ],
+ "items": [
+  {
+   "item": "1 交付登记",
+   "value": "12 项在登记内且状态合规；索引 self_checks_failed []"
+  },
+  {
+   "item": "2 一键复现 bundle",
+   "value": "status RAN head b183fde72 步数 21 fails [] http 0 tokens 0；A12 1/1、A10 []、A11 []"
+  },
+  {
+   "item": "3 声明审计",
+   "value": "fails []；C1 63 条、C3 27 条、C8 计数点 23（活引用 14 / 豁免 9）；注入自证 13 例全抓 True"
+  },
+  {
+   "item": "4 补集语义复现",
+   "value": "violations 0；登记反证 mode synthetic proved True"
+  },
+  {
+   "item": "5 生产者归属",
+   "value": "V8 true_producers []、shape_only_matches ['scripts/e2d_r14_production_replay_v4.py']、partial ['scripts/e2_r14_optionband_replay.py'] ⇒ reproducibility VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING；双钉自测 fails []"
+  },
+  {
+   "item": "6 F 六条件",
+   "value": "E 臂 final_released 5 / correct_candidates 5 / 5/13 / wrong_releases []；F 臂同 5（5/13）"
+  },
+  {
+   "item": "7 perturb30 释放审计",
+   "value": "wrong_grid_releasable []、n 30"
+  },
+  {
+   "item": "8 新排版回归 + tight 诊断",
+   "value": "R14E_NEWLAYOUT_REGRESSION_V3 分列两量、零错放；R14E_TIGHT_GAP_DIAGNOSIS 零 API、不调阈值、不加规则"
+  },
+  {
+   "item": "9 历史 Test 件字节基线",
+   "value": "A9 fails []；逐件与**引入 commit** 的 git blob 比字节（rows 6）；未跟踪数据目录如实登记 ['!! data/benchmark_figshots_perturb/']"
+  },
+  {
+   "item": "10 Stage G 计划与闸",
+   "value": "status PLANNED_NOT_EXECUTED、model_lock UNRESOLVED_MUST_BE_CONFIRMED_BY_HUMAN、已用 {'requests': 0, 'tokens': 0}（上限 6 请求 / 100000 token）、批准后就绪 True failing []"
+  }
+ ],
+ "blind_eval_admission": "NOT_READY",
+ "fails": [],
+ "budget": {
+  "http_requests_made": 0,
+  "tokens_used": 0
+ }
+}

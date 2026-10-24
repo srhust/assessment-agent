@@ -153,6 +153,17 @@ STEPS = [
      {"fails": []}, "fixed", None),
     ("scripts/e2e_r14_index.py", "R14_INDEX.json",
      {"self_checks_failed": []}, "fixed", None),
+    # ④ 交付汇总：**逐项从真件取数**，数字不手打、不跨轮复用。
+    ("scripts/r14_delivery_summary.py",
+     "R14_DELIVERY_SUMMARY.json",
+     {"fails": [], "blind_eval_admission": "NOT_READY",
+      "budget": {"http_requests_made": 0, "tokens_used": 0}},
+     "fixed", None),
+    # **反证**：把必须成立的不变量打坏，汇总必须报失败；
+    # 没有这一步，"取数即断言"只是我写的一段没人验证的 if。
+    ("scripts/r14_delivery_summary.py --selftest-inject",
+     "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
+     {"all_caught": True}, "fixed", None),
 ]
 SNAPSHOT_MODE = {"scripts/f1_r14_perturb_release_audit.py"}
 # 允许**因 HEAD 推进而如实改动**的件：G 批 manifest 的版本锁必须跟着 HEAD 走。

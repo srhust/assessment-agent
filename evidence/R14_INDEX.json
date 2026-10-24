@@ -1,5 +1,5 @@
 {
- "run_mark": "b42216c56e03",
+ "run_mark": "933e96e66103",
  "A1b_selftest": {
   "probe": [
    "R14_VERIFICATION_BUNDLE.json",
@@ -47,7 +47,7 @@
   "R14E_ATTRIBUTION_SELFTEST.json",
   "R14E_ARTIFACT_ATTRIBUTION.json"
  ],
- "generated_at_head": "b183fde727c2b3664c40a5be65f44af517ec68a1",
+ "generated_at_head": "e0ac90ea0e2beb386bf8c3b3ab9bd2fa393e178f",
  "n_artifacts": 57,
  "by_status": {
   "current": [
@@ -153,8 +153,8 @@
   {
    "artifact": "R14_INDEX.json",
    "bytes": 44212,
-   "sha256": "648c5f7e61b0337d6d19f86d2d785aad0a622624a72379b9e7d0dc6a3f8e33b4",
-   "sha_short": "648c5f7e61b0",
+   "sha256": "8832bfbd12de2223616a2042caaf01df62a29f58e5cc50c9fdb1f80ed65768b5",
+   "sha_short": "8832bfbd12de",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -169,13 +169,13 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "b183fde"
+   "commit_last_touched": "e0ac90e"
   },
   {
    "artifact": "R14_INDEX.md",
    "bytes": 9144,
-   "sha256": "8e93c8da3160094ead02febaf03d58a94467e8f24c5bad7a6c2043deb19c7247",
-   "sha_short": "8e93c8da3160",
+   "sha256": "3412d01bdd5043567b6ef8a348bdb33bf5aa72632569ef2c16ca9801f7e3a59d",
+   "sha_short": "3412d01bdd50",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -188,7 +188,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "b183fde"
+   "commit_last_touched": "e0ac90e"
   },
   {
    "artifact": "R14_PROGRESS_STOPGATE.md",
@@ -232,9 +232,9 @@
   },
   {
    "artifact": "R14_VERIFICATION_BUNDLE.json",
-   "bytes": 12734,
-   "sha256": "3a743e5e1a2eff071251d072deed3febfde098b82f9b3c8e7e2fa05be8d3968f",
-   "sha_short": "3a743e5e1a2e",
+   "bytes": 12691,
+   "sha256": "e1c6396d368ba3a3cc157bdbe37a3fb0ba659cec72699a6a2e63b9f790a92e48",
+   "sha_short": "e1c6396d368b",
    "status": "current",
    "status_note": "一键复现 bundle（18 步离线验证）",
    "producer_scripts": [
@@ -247,7 +247,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f9a2fc8",
-   "commit_last_touched": "b183fde"
+   "commit_last_touched": "e0ac90e"
   },
   {
    "artifact": "R14C_PITCH_ABLATION.json",
@@ -285,7 +285,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "f118cf9",
-   "commit_last_touched": "b183fde"
+   "commit_last_touched": "e0ac90e"
   },
   {
    "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.md",
@@ -304,7 +304,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f118cf9",
-   "commit_last_touched": "b183fde"
+   "commit_last_touched": "e0ac90e"
   },
   {
    "artifact": "R14C_PITCH_ABLATION_RERUN2.json",
@@ -378,7 +378,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "d48d97e",
-   "commit_last_touched": "b183fde"
+   "commit_last_touched": "e0ac90e"
   },
   {
    "artifact": "R14E_ATTRIBUTION_SELFTEST.json",
@@ -641,7 +641,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "92103ec",
-   "commit_last_touched": "b183fde"
+   "commit_last_touched": "e0ac90e"
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
@@ -1039,7 +1039,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "ce44cc7",
-   "commit_last_touched": "b183fde"
+   "commit_last_touched": "e0ac90e"
   },
   {
    "artifact": "R14G0_GATE_READINESS_V5_RERUN.json",
@@ -1092,7 +1092,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "e2ae3ed",
-   "commit_last_touched": "b183fde"
+   "commit_last_touched": "e0ac90e"
   },
   {
    "artifact": "R14G_HISTORICAL_BYTES.md",
@@ -1150,7 +1150,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "ce44cc7",
-   "commit_last_touched": "b183fde"
+   "commit_last_touched": "e0ac90e"
   },
   {
    "artifact": "R14H_KB_CHANNEL_AUDIT.json",
@@ -1207,7 +1207,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f23482a",
-   "commit_last_touched": "b183fde"
+   "commit_last_touched": "e0ac90e"
   }
  ],
  "self_checks_failed": [],
