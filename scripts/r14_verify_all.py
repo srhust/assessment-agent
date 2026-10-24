@@ -1041,7 +1041,50 @@ def _crash_record(exc_text: str) -> None:
         pass
 
 
+def endguard_selftest() -> int:
+    """**must-fire：打坏结论字段，收尾守卫必须报红**。
+
+    只验"绿"不验"能红"的守卫是**装饰**（本轮已多次实测）。
+    上一版我拿 `r14_verify_all.py --only-end-guard` 试，
+    那个分支**根本不存在** ⇒ bundle 走完整流程、
+    被我自己刚改脏的工作区以 `dirty_worktree` 拒跑 ⇒
+    **测试空转**（"探针没落地，守卫就没被测过"）。
+    ⇒ 这里**直接在内存里跑同一段判据**：
+       复原位与 HEAD 版比较，注入版必须报出差异。
+    """
+    out = {"checked": [], "must_fire_seen": False, "budget":
+           {"http_requests_made": 0}}
+    base = "R14G_HISTORICAL_BYTES.json"
+    head_txt = subprocess.run(["git", "show", f"HEAD:evidence/{base}"],
+                              cwd=ROOT, capture_output=True, text=True,
+                              encoding="utf-8").stdout
+    if not head_txt:
+        out["note"] = "HEAD 里没有该件，无法构造基线"
+        print(json.dumps(out, ensure_ascii=False))
+        return 0
+    _b = json.loads(head_txt)
+    _good = json.loads((EV / base).read_text(encoding="utf-8"))
+    _bad = dict(_good)
+    _bad["fails"] = ["__injected__"]
+    vol = None      # 本自测只比结论键，不比轮次戳（`_VOLATILE_SELF` 是 main 的局部）
+    keys = ("fails", "all_identical", "violations", "self_checks_failed",
+            "n_artifacts", "count_synced_to_docs", "gate_values", "n_cases")
+    for label, cand in (("复原位（应不报）", _good), ("注入位（必须报）", _bad)):
+        diff = [(k, _b.get(k, "ABSENT"), cand.get(k, "ABSENT"))
+                for k in keys if _b.get(k, "ABSENT") != cand.get(k, "ABSENT")]
+        out["checked"].append({"case": label, "reported": bool(diff),
+                               "diff": str(diff[:2])[:160]})
+        if label.startswith("注入") and diff:
+            out["must_fire_seen"] = True
+        if label.startswith("复原") and diff:
+            out["fails_clean"] = "复原位也被报红 ⇒ 判据过宽"
+    print(json.dumps(out, ensure_ascii=False, indent=1))
+    return 0 if out["must_fire_seen"] and "fails_clean" not in out else 1
+
+
 if __name__ == "__main__":
+    if "--selftest-endguard" in sys.argv:
+        sys.exit(endguard_selftest())
     try:
         sys.exit(main())
     except SystemExit:

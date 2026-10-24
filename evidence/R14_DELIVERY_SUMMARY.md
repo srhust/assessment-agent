@@ -1,14 +1,14 @@
 # R14 ④ 交付汇总与盲评准入结论
 
-- HEAD `91c649670`；本汇总由 `scripts/r14_delivery_summary.py` **读真件生成**，数字不手打、不跨轮复用。
+- HEAD `f81960288`；本汇总由 `scripts/r14_delivery_summary.py` **读真件生成**，数字不手打、不跨轮复用。
 - 取数来源：14 项登记交付件 + F/perturb/A9/G 计划。
 
 ## 十项材料
 
 - **1 交付登记**：14 项在登记内且状态合规；索引 self_checks_failed []
-- **2 一键复现 bundle**：basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head 91c649670 步数 21 fails ['scripts/r14_semantic_repro.py 退出码 1：', 'scripts/r14_semantic_repro.py → R14E_RERUN_SEMANTICS.json 的 violations = [{\'artifact\': \'R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\', \'script\': \'r14_delivery_summary.py\', \'rerun_via_out\': \'__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\', \'declared_writers\': [\'r14_delivery_summary.py\'], \'refused_unsafe\': [], \'worktree_collateral\': [\'evidence/R14_DELIVERY_SUMMARY.md\', \'evidence/__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\'], \'collateral_removed\': [], \'safety\': \'OK_ZERO_REQUESTS\', \'offline\': True, \'exit\': 0, \'files_changed_by_rerun\': [\'R14_DELIVERY_SUMMARY.md\'], \'rerun_read_from\': \'__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\', \'own_declared_outputs_touched\': [], \'status\': \'VIOLATION_write_path_drift\', \'detail\': "重跑 scripts/r14_delivery_summary.py 除本件外还改动了非自指件 [\'R14_DELIVERY_SUMMARY.md\']"}]，应为 []', "A7 补集复现核对仍有违规：['R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json']"] http 0 tokens 0；A12 1/1、A10 []、A11 []
+- **2 一键复现 bundle**：basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head f81960288 步数 21 fails [] http 0 tokens 0；A12 1/1、A10 []、A11 []
 - **3 声明审计**：fails []；C1 63 条、C3 27 条、C8 计数点 23（活引用 13 / 豁免 10）；注入自证 13 例全抓 True
-- **4 补集语义复现**：violations 1；登记反证 mode synthetic proved True
+- **4 补集语义复现**：violations 0；登记反证 mode synthetic proved True
 - **5 生产者归属**：V8 true_producers []、shape_only_matches ['scripts/e2d_r14_production_replay_v4.py']、partial ['scripts/e2_r14_optionband_replay.py'] ⇒ reproducibility VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING；双钉自测 fails []
 - **6 F 六条件**：E 臂 final_released 5 / correct_candidates 5 / 5/13 / wrong_releases []；F 臂同 5（5/13）
 - **7 perturb30 释放审计**：wrong_grid_releasable []、n 30
@@ -28,7 +28,3 @@
 
 预算：HTTP 0 / LLM 0。
 
-## 取数即断言：失败
-
-- bundle fails 非空：['scripts/r14_semantic_repro.py 退出码 1：', 'scripts/r14_semantic_repro.py → R14E_RERUN_SEMANTICS.json 的 violations = [{\'artifact\': \'R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\', \'script\': \'r14_delivery_summary.py\', \'rerun_via_out\': \'__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\', \'declared_writers\': [\'r14_delivery_summary.py\'], \'refused_unsafe\': [], \'worktree_collateral\': [\'evidence/R14_DELIVERY_SUMMARY.md\', \'evidence/__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\'], \'collateral_removed\': [], \'safety\': \'OK_ZERO_REQUESTS\', \'offline\': True, \'exit\': 0, \'files_changed_by_rerun\': [\'R14_DELIVERY_SUMMARY.md\'], \'rerun_read_from\': \'__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\', \'own_declared_outputs_touched\': [], \'status\': \'VIOLATION_write_path_drift\', \'detail\': "重跑 scripts/r14_delivery_summary.py 除本件外还改动了非自指件 [\'R14_DELIVERY_SUMMARY.md\']"}]，应为 []']
-- 补集复现仍有 violations：1

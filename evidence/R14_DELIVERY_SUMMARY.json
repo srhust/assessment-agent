@@ -1,5 +1,5 @@
 {
- "head": "91c6496705eece43ceb6411c4a3ab6d97d58b9d5",
+ "head": "f819602884138b10a19bce92e01e75f85f4cc700",
  "numbers_source_artifacts": [
   "R14_STAGE_E_DELIVERABLES.md",
   "R14_PROGRESS_STOPGATE.md",
@@ -23,7 +23,7 @@
   },
   {
    "item": "2 一键复现 bundle",
-   "value": "basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head 91c649670 步数 21 fails ['scripts/r14_semantic_repro.py 退出码 1：', 'scripts/r14_semantic_repro.py → R14E_RERUN_SEMANTICS.json 的 violations = [{\\'artifact\\': \\'R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\\', \\'script\\': \\'r14_delivery_summary.py\\', \\'rerun_via_out\\': \\'__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\\', \\'declared_writers\\': [\\'r14_delivery_summary.py\\'], \\'refused_unsafe\\': [], \\'worktree_collateral\\': [\\'evidence/R14_DELIVERY_SUMMARY.md\\', \\'evidence/__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\\'], \\'collateral_removed\\': [], \\'safety\\': \\'OK_ZERO_REQUESTS\\', \\'offline\\': True, \\'exit\\': 0, \\'files_changed_by_rerun\\': [\\'R14_DELIVERY_SUMMARY.md\\'], \\'rerun_read_from\\': \\'__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\\', \\'own_declared_outputs_touched\\': [], \\'status\\': \\'VIOLATION_write_path_drift\\', \\'detail\\': \"重跑 scripts/r14_delivery_summary.py 除本件外还改动了非自指件 [\\'R14_DELIVERY_SUMMARY.md\\']\"}]，应为 []', \"A7 补集复现核对仍有违规：['R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json']\"] http 0 tokens 0；A12 1/1、A10 []、A11 []"
+   "value": "basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head f81960288 步数 21 fails [] http 0 tokens 0；A12 1/1、A10 []、A11 []"
   },
   {
    "item": "3 声明审计",
@@ -31,7 +31,7 @@
   },
   {
    "item": "4 补集语义复现",
-   "value": "violations 1；登记反证 mode synthetic proved True"
+   "value": "violations 0；登记反证 mode synthetic proved True"
   },
   {
    "item": "5 生产者归属",
@@ -59,10 +59,7 @@
   }
  ],
  "blind_eval_admission": "NOT_READY",
- "fails": [
-  "bundle fails 非空：['scripts/r14_semantic_repro.py 退出码 1：', 'scripts/r14_semantic_repro.py → R14E_RERUN_SEMANTICS.json 的 violations = [{\\'artifact\\': \\'R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\\', \\'script\\': \\'r14_delivery_summary.py\\', \\'rerun_via_out\\': \\'__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\\', \\'declared_writers\\': [\\'r14_delivery_summary.py\\'], \\'refused_unsafe\\': [], \\'worktree_collateral\\': [\\'evidence/R14_DELIVERY_SUMMARY.md\\', \\'evidence/__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\\'], \\'collateral_removed\\': [], \\'safety\\': \\'OK_ZERO_REQUESTS\\', \\'offline\\': True, \\'exit\\': 0, \\'files_changed_by_rerun\\': [\\'R14_DELIVERY_SUMMARY.md\\'], \\'rerun_read_from\\': \\'__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json\\', \\'own_declared_outputs_touched\\': [], \\'status\\': \\'VIOLATION_write_path_drift\\', \\'detail\\': \"重跑 scripts/r14_delivery_summary.py 除本件外还改动了非自指件 [\\'R14_DELIVERY_SUMMARY.md\\']\"}]，应为 []']",
-  "补集复现仍有 violations：1"
- ],
+ "fails": [],
  "budget": {
   "http_requests_made": 0,
   "tokens_used": 0
