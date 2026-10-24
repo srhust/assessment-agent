@@ -1,5 +1,5 @@
 {
- "head": "a54f1c3d89307a6df6a2fd4d86a37d7ba6a229a5",
+ "head": "1878eb4b38044909ff88d210c5ec7053f01794d2",
  "numbers_source_artifacts": [
   "R14_STAGE_E_DELIVERABLES.md",
   "R14_PROGRESS_STOPGATE.md",
@@ -23,7 +23,7 @@
   },
   {
    "item": "2 一键复现 bundle",
-   "value": "basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head a54f1c3d8 步数 21 fails [] http 0 tokens 0；A12 1/1、A10 []、A11 []"
+   "value": "basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head 9b39356b5 步数 21 fails [] http 0 tokens 0；A12 1/1、A10 []、A11 []"
   },
   {
    "item": "3 声明审计",
