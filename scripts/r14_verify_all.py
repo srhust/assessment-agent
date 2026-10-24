@@ -822,7 +822,15 @@ def main() -> int:
         if _mt:
             _hw = set(re.findall(r"\"([^\"]+\.md)\"", _mt.group(1)))
     _by_step = {x["artifact"] for x in rows if x.get("artifact") in _hw}
-    _by_sync = {x for x in a13.get("synced", []) if x in _hw}
+    # **`synced` 的元素是 `(文档, [计数种类])`**，不是文件名：
+    # 上一版 `{x for x in a13["synced"] if x in _hw}` 里
+    # `x` 是含 list 的元组 ⇒ `TypeError: unhashable type: 'list'`
+    # ⇒ bundle 崩在 A10b 上（`REFUSED/crashed`）。
+    # **判据不许拿运行期副产品的结构当身份**：
+    # 改写类回写只可能发生在**索引步骤**里，
+    # 直接查"索引步骤本轮写没写过 HAND_WRITTEN 的件"就够了，
+    # 而声明式回写目标由 `_by_target` 覆盖（与本轮碰没碰到无关）。
+    _by_sync = set()
     _by_target = {x for x in a13.get("rewrite_targets", []) if x in _hw}
     _hw_written = sorted(_by_step | _by_sync | _by_target)
     if _hw_written:
