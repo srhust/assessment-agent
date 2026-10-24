@@ -24,6 +24,21 @@ def L(name: str):
     return json.load(io.open(p, encoding="utf-8"))
 
 
+def out_name(default: str) -> str:
+    """**唯一的 `--out` 解析器**：所有分支都只能写"被指定的那一个"件。
+
+    上一版只有 `main()` 认 `--out`，`selftest_inject()` 硬写固定名 ⇒
+    `r14_semantic_repro.py` 传 `--out __R14SR__…INJECT_SELFTEST.json`
+    时它**照旧写死名**，`__R14SR__…` 变成 `worktree_collateral`、
+    而被重跑的"本件"根本没被写 ⇒ `VIOLATION_write_path_drift`。
+    """
+    name = default
+    for i, x in enumerate(sys.argv):
+        if x == "--out" and i + 1 < len(sys.argv):
+            name = sys.argv[i + 1]
+    return name
+
+
 def selftest_inject() -> int:
     """**反证**：把不变量打坏，汇总必须报失败。
 
@@ -53,7 +68,8 @@ def selftest_inject() -> int:
            "budget": {"http_requests_made": 0, "tokens_used": 0},
            "note": "**内存打坏**，不落盘、不改证据件；"
                    "本件只登记反证结果"}
-    (EV / "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json").write_text(
+    # **走唯一的 `--out` 解析器**（见 `out_name`）
+    (EV / out_name("R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json")).write_text(
         json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     print(json.dumps(out, ensure_ascii=False))
     return 0 if caught == len(cases) else 1
@@ -62,10 +78,14 @@ def selftest_inject() -> int:
 def main() -> int:
     if "--selftest-inject" in sys.argv:
         return selftest_inject()
-    name = "R14_DELIVERY_SUMMARY.json"
-    for i, x in enumerate(sys.argv):
-        if x == "--out" and i + 1 < len(sys.argv):
-            name = sys.argv[i + 1]
+    name = out_name("R14_DELIVERY_SUMMARY.json")
+    # **`--out` 只写被指定的那一个件**：
+    # `r14_semantic_repro.py` 用 `--out __R14SR__<名>` 重跑每个 current 件，
+    # 若顺手把兄弟 `.md` 也改掉就是 `VIOLATION_write_path_drift`
+    # （本轮实测命中：重跑 INJECT_SELFTEST 却改掉了
+    #  `R14_DELIVERY_SUMMARY.md`）。"写了两个件"不是贴心，
+    # 是**输出计划与声明不符**。
+    _out_explicit = name != "R14_DELIVERY_SUMMARY.json"
     fails, rows, log_only = [], [], []
     try:
         i = L("R14_INDEX.json")
@@ -272,8 +292,20 @@ def main() -> int:
     if fails:
         md += ["## 取数即断言：失败", ""] + [f"- {x}" for x in fails]
 
-    (EV / "R14_DELIVERY_SUMMARY.md").write_text("\n".join(md) + "\n",
-                                                encoding="utf-8")
+    # **`--out` 时不许写兄弟 `.md`**（补集语义可复现要求
+    # "重跑只动被指定的那一个件"）：
+    # 上一版无条件写 `R14_DELIVERY_SUMMARY.md` ⇒
+    # `r14_semantic_repro.py` 用 `--out __R14SR__…INJECT_SELFTEST.json`
+    # 重跑时把 md 也改掉 ⇒ `VIOLATION_write_path_drift`。
+    # 而且这里还有个**更脏的事实**：md 名根本不带 `--out`，
+    # 也就是说 `--out` 语义我从来没实现完整过（json 走 name、md 走死名）。
+    # ⇒ 但**改名后的 md 不在登记册里**，补集复现照样判
+    #   `VIOLATION_no_write_detected`（本轮实测第 2 条违规）。
+    #   正确形状：**带 `--out` 就只写那一个件**，md 由默认路径那次写。
+    _stem = name.rsplit(".", 1)[0]
+    if name == "R14_DELIVERY_SUMMARY.json":
+        (EV / (_stem + ".md")).write_text("\n".join(md) + "\n",
+                                          encoding="utf-8")
     (EV / name).write_text(json.dumps(
         {"head": head, "numbers_source_artifacts": D,
          "items": [{"item": k, "value": v} for k, v in rows],

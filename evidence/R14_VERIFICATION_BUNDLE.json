@@ -1,7 +1,7 @@
 {
  "status": "RAN",
- "run_mark": "c846890484f5",
- "head_at_run": "d7d34a30e1d2f367019cdfa8e12b4d9e6d8eb854",
+ "run_mark": "94223b3a743c",
+ "head_at_run": "91c6496705eece43ceb6411c4a3ab6d97d58b9d5",
  "n_steps": 21,
  "docs_step_count_synced": [],
  "A13_step_count_guard": {
@@ -40,8 +40,8 @@
    "out_mode": "fixed",
    "expected_to_change": true,
    "exit": 0,
-   "seconds": 1.0,
-   "artifact_sha256_short": "a60572423d95",
+   "seconds": 1.1,
+   "artifact_sha256_short": "f773ac08b87c",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G_PLAN.json"
@@ -56,7 +56,7 @@
    "expected_to_change": true,
    "exit": 0,
    "seconds": 0.5,
-   "artifact_sha256_short": "174d2c1670e9",
+   "artifact_sha256_short": "08bca1faf036",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -85,7 +85,7 @@
    "out_mode": "cwd_relative",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 10.7,
+   "seconds": 9.9,
    "artifact_sha256_short": "86dc65890f4e",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -100,7 +100,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 3.2,
+   "seconds": 2.5,
    "artifact_sha256_short": "da176b1a274b",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -115,7 +115,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.3,
+   "seconds": 3.9,
    "artifact_sha256_short": "9a6a48a7e9ad",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -130,7 +130,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 2.2,
+   "seconds": 1.9,
    "artifact_sha256_short": "13b771de58f9",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -145,7 +145,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.3,
+   "seconds": 1.1,
    "artifact_sha256_short": "b96827fe92f9",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -160,8 +160,8 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 14.4,
-   "artifact_sha256_short": "fda4f19775f5",
+   "seconds": 14.0,
+   "artifact_sha256_short": "a4bd661da5f7",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -175,7 +175,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 26.5,
+   "seconds": 28.1,
    "artifact_sha256_short": "b7d44eecbd8d",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -190,7 +190,7 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.7,
+   "seconds": 1.9,
    "artifact_sha256_short": "89be0925dcbf",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -206,7 +206,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 1.1,
-   "artifact_sha256_short": "d05bb5130e9f",
+   "artifact_sha256_short": "5b66c848591b",
    "artifact_rewritten": true,
    "stdout_tail": [
     "{\"n\": 6, \"fails\": [], \"all_identical\": true}"
@@ -235,7 +235,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.9,
+   "seconds": 1.8,
    "artifact_sha256_short": "9fd286b67089",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -251,7 +251,7 @@
    "expected_to_change": false,
    "exit": 0,
    "seconds": 0.2,
-   "artifact_sha256_short": "1327c32ae6f5",
+   "artifact_sha256_short": "bfc041278db6",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -264,9 +264,9 @@
    "artifact": "R14E_RERUN_SEMANTICS.json",
    "out_mode": "fixed",
    "expected_to_change": false,
-   "exit": 0,
-   "seconds": 211.8,
-   "artifact_sha256_short": "fb884769018a",
+   "exit": 1,
+   "seconds": 224.5,
+   "artifact_sha256_short": "f148f06f0d6f",
    "artifact_rewritten": true,
    "stdout_tail": [
     "}"
@@ -280,8 +280,8 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 1.8,
-   "artifact_sha256_short": "f62619a433e1",
+   "seconds": 2.0,
+   "artifact_sha256_short": "097a2f1097dd",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14E_REAL_PAGE_REPLAY_V8_CHECK.json"
@@ -295,7 +295,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 0.1,
+   "seconds": 0.2,
    "artifact_sha256_short": "51c6deb05227",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -310,8 +310,8 @@
    "out_mode": "bare",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 5.7,
-   "artifact_sha256_short": "48b762b58d35",
+   "seconds": 6.3,
+   "artifact_sha256_short": "a2a6a576fd71",
    "artifact_rewritten": true,
    "stdout_tail": [
     "written E:\\assessment-agent\\evidence\\R14G0_GATE_READINESS_V5.json"
@@ -325,7 +325,7 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 16.0,
+   "seconds": 16.7,
    "artifact_sha256_short": "c1816e5937fa",
    "artifact_rewritten": false,
    "stdout_tail": [
@@ -340,14 +340,14 @@
    "out_mode": "fixed",
    "expected_to_change": false,
    "exit": 0,
-   "seconds": 22.1,
-   "artifact_sha256_short": "f56bd2c9fa4d",
+   "seconds": 21.4,
+   "artifact_sha256_short": "46552368c531",
    "artifact_rewritten": true,
    "stdout_tail": [
-    "{\"run_mark\": \"2403938ee04e\", \"n_artifacts\": 60, \"count_synced_to_docs\": [], \"self_checks_failed\": []}"
+    "{\"run_mark\": \"187369387bca\", \"n_artifacts\": 60, \"count_synced_to_docs\": [], \"self_checks_failed\": []}"
    ],
-   "run_mark_artifact": "2403938ee04e",
-   "run_mark_stdout": "2403938ee04e"
+   "run_mark_artifact": "187369387bca",
+   "run_mark_stdout": "187369387bca"
   }
  ],
  "comparison_volatile_keys": {
@@ -378,7 +378,11 @@
    "rerun_by"
   ]
  },
- "fails": [],
+ "fails": [
+  "scripts/r14_semantic_repro.py 退出码 1：",
+  "scripts/r14_semantic_repro.py → R14E_RERUN_SEMANTICS.json 的 violations = [{'artifact': 'R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json', 'script': 'r14_delivery_summary.py', 'rerun_via_out': '__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json', 'declared_writers': ['r14_delivery_summary.py'], 'refused_unsafe': [], 'worktree_collateral': ['evidence/R14_DELIVERY_SUMMARY.md', 'evidence/__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json'], 'collateral_removed': [], 'safety': 'OK_ZERO_REQUESTS', 'offline': True, 'exit': 0, 'files_changed_by_rerun': ['R14_DELIVERY_SUMMARY.md'], 'rerun_read_from': '__R14SR__R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json', 'own_declared_outputs_touched': [], 'status': 'VIOLATION_write_path_drift', 'detail': \"重跑 scripts/r14_delivery_summary.py 除本件外还改动了非自指件 ['R14_DELIVERY_SUMMARY.md']\"}]，应为 []",
+  "A7 补集复现核对仍有违规：['R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json']"
+ ],
  "worktree_clean_before": true,
  "worktree_clean_after": false,
  "A10_expected_paths": 39,

@@ -202,7 +202,7 @@
    "evidence": {
     "planned": 5,
     "sha_mismatches": [],
-    "code_version": "d7d34a30e1d2f367019cdfa8e12b4d9e6d8eb854",
+    "code_version": "91c6496705eece43ceb6411c4a3ab6d97d58b9d5",
     "code_version_matches_manifest": true,
     "worktree_dirty_at_plan_time": false,
     "worktree_dirty_now": true,

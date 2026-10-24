@@ -211,6 +211,15 @@ def bundle_artifacts():
             return None                  # REFUSED 件 ⇒ 不可信
         if not d.get("steps"):
             return None
+        # **REFUSED 件的 `steps` 也是"登记过"的**（本轮实测：
+        # 上一轮脏工作区被拒，`steps` 照样列全，于是补集把
+        # `R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json` 当成
+        # "bundle 已覆盖"而**永不实跑** ⇒ `violations` 冻结在
+        # 上一轮那条 `write_path_drift` 上，改完代码也看不见）。
+        # ⇒ 覆盖短路只在 bundle **真跑成功**时成立：
+        #   `status == "RAN"` **且** `fails == []`。
+        if d.get("status") != "RAN" or d.get("fails"):
+            return None
         # **新鲜度**：bundle 自己就是会改证据件的步骤，
         # 它跑完后 HEAD 必然**落后于**产物 ⇒ 不能要求严格相等
         # （上版那么写导致单跑时 22 件全部 refused，等于自断核验）。
