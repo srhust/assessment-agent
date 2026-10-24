@@ -31,15 +31,19 @@
   },
   {
    "artifact": "R14_DELIVERY_SUMMARY.json",
-   "status": "skipped_not_current",
-   "why": "写出者已前进到现行件名；对历史/被取代件重跑核对既无意义又接近“改历史 Test 结果”（目标②禁止）。地位真值取自 R14_INDEX.json",
-   "index_status": "unregistered"
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
+   "declared_writers": [
+    "r14_delivery_summary.py"
+   ]
   },
   {
    "artifact": "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
-   "status": "skipped_not_current",
-   "why": "写出者已前进到现行件名；对历史/被取代件重跑核对既无意义又接近“改历史 Test 结果”（目标②禁止）。地位真值取自 R14_INDEX.json",
-   "index_status": "unregistered"
+   "status": "refused_no_bundle_context",
+   "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
+   "declared_writers": [
+    "r14_delivery_summary.py"
+   ]
   },
   {
    "artifact": "R14_INDEX.json",
@@ -52,6 +56,7 @@
    "status": "refused_no_bundle_context",
    "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
+    "e2e_r14_index.py",
     "r14_verify_all.py"
    ]
   },
@@ -96,6 +101,7 @@
    "status": "refused_no_bundle_context",
    "note": "bundle 结论件**不可信**（REFUSED / 跨 HEAD / steps 空）⇒ 无法判断本件是否已被 bundle 覆盖，因此**拒绝重跑任何生产者**：宁可不核验，也不在默认名下碰现行件",
    "declared_writers": [
+    "e2e_r14_index.py",
     "r14_attribute_producer.py"
    ]
   },

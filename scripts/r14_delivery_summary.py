@@ -87,6 +87,35 @@ def main() -> int:
         return 1
 
     # ---- 取数即断言：任何一项不对，汇总**不许**产出"看起来通过" ----
+    # **报告器不许自己崩**：上一版在 `:131` 直接取
+    # `b['A12_stale_artifact_guard']`，bundle 一旦被 `REFUSED`
+    # （`status/n_steps/fails` 之外的键全都不存在）就抛 `KeyError`，
+    # 交付层从"如实报告失败"退化成"报告器故障"——
+    # 而后者会让人误以为"是汇总脚本坏了，不是验证没过"。
+    _degraded = b.get("status") != "RAN" or "A12_stale_artifact_guard" not in b
+    if _degraded:
+        for _k in ("A12_stale_artifact_guard", "A13_step_count_rewrite_guard",
+                   "A10_collateral", "A11_drift_register", "budget",
+                   "head_at_run", "n_steps", "fails"):
+            b.setdefault(_k, "MISSING: bundle 非完整运行态")
+        b["status"] = b.get("status") or "MISSING"
+        b["n_steps"] = 0
+        b["fails"] = [f"bundle status={b.get('status')}，"
+                      "守卫明细不可用（汇总按缺件处理）"]
+        b["budget"] = {"http_requests_made": 0, "tokens_used": 0}
+        b["A12_stale_artifact_guard"] = {
+            "stdout_matches_artifact": 0, "steps_with_mark": 0}
+        b["A13_step_count_rewrite_guard"] = {"synced": 0, "targets_checked": 0}
+        b["A10_collateral"] = ["MISSING"]
+        b["A11_drift_register"] = {"violated": ["MISSING"]}
+    # **降级不许只留在 stdout**：bundle `REFUSED` 时汇总器**照样写出**
+    # md/json，看板就会出现一份"守卫明细 MISSING"的**交付件**——
+    # 它长得像完成品，比不写更危险。
+    # ⇒ 降级原因必须进 `fails`（由下面的断言段接住、非零退出、
+    #   并在件里如实标注 MISSING），**绝不伪造数字**。
+    if _degraded:
+        fails.append("bundle 非完整运行态 ⇒ 守卫明细 MISSING，"
+                     "本汇总不得作为完成品使用")
     if b.get("status") != "RAN":
         fails.append(f"bundle 不是本轮真跑（status={b.get('status')}）")
     if b.get("fails") != []:

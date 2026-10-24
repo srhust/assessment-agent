@@ -1,5 +1,5 @@
 {
- "head": "eba947ed85fef773777be2c4da2eb44adebf8d49",
+ "head": "ceb7e5df2793d42acdd99eed7542bcc33273f822",
  "numbers_source_artifacts": [
   "R14_STAGE_E_DELIVERABLES.md",
   "R14_PROGRESS_STOPGATE.md",
@@ -23,7 +23,7 @@
   },
   {
    "item": "2 一键复现 bundle",
-   "value": "status RAN head eba947ed8 步数 23 fails ['scripts/e2e_r14_claim_audit.py 退出码 1：', \"scripts/e2e_r14_claim_audit.py → R14_CLAIM_AUDIT.json 的 fails = ['C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步']，应为 []\", 'scripts/e2e_r14_index.py 退出码 1：', \"scripts/e2e_r14_index.py → R14_INDEX.json 的 self_checks_failed = ['D 交付材料档位异常：R14_DELIVERY_SUMMARY.md = unregistered', 'D 交付材料档位异常：R14_DELIVERY_SUMMARY.json = unregistered']，应为 []\", 'scripts/r14_delivery_summary.py 退出码 1：exit(main())\\n  File \"E:\\\\assessment-agent\\\\scripts\\\\r14_delivery_summary.py\", line 131, in main\\n    f\"A12 {b[\\'A12_stale_artifact_guard\\'][\\'stdout_matches_artifact\\']}/\"\\nKeyError: \\'A12_stale_artifact_guard\\'', 'scripts/r14_delivery_summary.py → R14_DELIVERY_SUMMARY.json 的 fails = [\"声明审计 fails 非空：[\\'C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步\\']\", \"索引自检失败：[\\'D 交付材料档位异常：R14_DELIVERY_SUMMARY.md = unregistered\\', \\'D 交付材料档位异常：R14_DELIVERY_SUMMARY.json = unregistered\\']\"]，应为 []'] http 0 tokens 0；A12 1/1、A10 []、A11 []"
+   "value": "status RAN head ceb7e5df2 步数 23 fails ['scripts/r14_attribute_producer.py --selftest 退出码 1：', \"scripts/r14_attribute_producer.py --selftest → R14E_ATTRIBUTION_SELFTEST.json 的 fails = ['写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者']，应为 []\", 'scripts/r14_delivery_summary.py 退出码 1：exit(main())\\n  File \"E:\\\\assessment-agent\\\\scripts\\\\r14_delivery_summary.py\", line 131, in main\\n    f\"A12 {b[\\'A12_stale_artifact_guard\\'][\\'stdout_matches_artifact\\']}/\"\\nKeyError: \\'A12_stale_artifact_guard\\'', 'scripts/r14_delivery_summary.py → R14_DELIVERY_SUMMARY.json 的 fails = [\\'bundle fails 非空：[\\\\\\'scripts/e2e_r14_claim_audit.py 退出码 1：\\\\\\', \"scripts/e2e_r14_claim_audit.py → R14_CLAIM_AUDIT.json 的 fails = [\\\\\\'C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步\\\\\\']，应为 []\"]\\']，应为 []', \"A6 安全闸门自检未过：['写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者']\"] http 0 tokens 0；A12 1/1、A10 []、A11 []"
   },
   {
    "item": "3 声明审计",
@@ -60,7 +60,7 @@
  ],
  "blind_eval_admission": "NOT_READY",
  "fails": [
-  "bundle fails 非空：['scripts/e2e_r14_claim_audit.py 退出码 1：', \"scripts/e2e_r14_claim_audit.py → R14_CLAIM_AUDIT.json 的 fails = ['C8 R14_STAGE_E_DELIVERABLES.md 写 artifact_total=57 件，索引真值是 60 件 ⇒ 计数过期，请重跑 scripts/e2e_r14_index.py 后同步']，应为 []\"]"
+  "bundle fails 非空：['scripts/r14_attribute_producer.py --selftest 退出码 1：', \"scripts/r14_attribute_producer.py --selftest → R14E_ATTRIBUTION_SELFTEST.json 的 fails = ['写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者']，应为 []\"]"
  ],
  "budget": {
   "http_requests_made": 0,

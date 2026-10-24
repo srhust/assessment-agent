@@ -527,6 +527,221 @@ def bundle_out_plan() -> dict:
     return {k: sorted(v) for k, v in plan.items()}
 
 
+def _resolve_target(node, src_map):
+    """**语法级**解析写出目标：字面量 ∪ 变量来源 ∪ 属性 dest。
+
+    上一版只认"`(EV / \"X.json\").write_text(...)`"这种**直接**形状，
+    于是 `name = "X.json"; p = EV / name; p.write_text(...)`
+    （注入样例与多个真生产者的真实形状）解析成**空集** ⇒
+    `自测报 写目标静态识别错：[]`——
+    判据自己失效却把问题报在被测脚本身上。
+    """
+    got = set()
+    for c in ast.walk(node):
+        if isinstance(c, ast.Constant) and isinstance(c.value, str) \
+                and c.value.endswith(".json"):
+            got.add(c.value)
+        elif isinstance(c, ast.Name) and c.id in src_map:
+            got |= src_map[c.id]
+        elif isinstance(c, ast.Attribute):
+            # `a.out` / `args.out`：键是**整串属性路径**
+            got |= src_map.get(ast.unparse(c), set())
+            if isinstance(c.value, ast.Name):
+                got |= src_map.get(f"{c.value.id}.{c.attr}", set())
+    return {v.rsplit("/", 1)[-1] for v in got}
+
+
+def _argparse_dests(tree):
+    """**AST 级 argparse  dest 表**：`{对象属性: 默认件名}`。
+
+    `add_argument("--out", default="X.json")` 记 `("out", "X.json")`；
+    再看 `args = p.parse_args()` ⇒ 属性 `args.out` 的来源是 `X.json`。
+    注入样例 `zfake_orch.py` 走的就是这条路；
+    漏了它，`script_declares_write` 对它返回**空集合**，
+    于是自测把**判据自身失效**报成"脚本写目标识别错"。
+    """
+    flags = {}
+    holders = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            f = node.func
+            if isinstance(f, ast.Attribute) and f.attr == "add_argument":
+                dflt = next((kw.value for kw in node.keywords
+                             if kw.arg == "default"), None)
+                for a in node.args:
+                    if isinstance(a, ast.Constant) and isinstance(a.value, str):
+                        name = a.value.lstrip("-").replace("-", "_")
+                        if isinstance(dflt, ast.Constant) and isinstance(
+                                dflt.value, str):
+                            flags[name] = dflt.value
+            elif isinstance(f, ast.Attribute) and f.attr == "parse_args":
+                holder = f.value
+                key = ast.unparse(holder) if holder is not None else ""
+                for t2 in (node,):
+                    pass
+                holders[key] = True
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign) and isinstance(node.value, ast.Call):
+            fv = node.value.func
+            if isinstance(fv, ast.Attribute) and fv.attr == "parse_args":
+                holder = ast.unparse(fv.value) if fv.value else ""
+                for t in node.targets:
+                    if isinstance(t, ast.Name):
+                        holders[t.id] = holder
+    out = {}
+    for var, holder in holders.items():
+        for flag, dv in flags.items():
+            if dv.endswith(".json"):
+                out[f"{var}.{flag}"] = dv
+    return out
+
+
+def _ast_write_targets(src: str) -> set:
+    """**AST 级**：返回**写出目标**解析出的 `.json` 件名集合。
+
+    为什么必须换到 AST：邻近文本判据我连着修了四轮
+    （40 字符窗口、保留换行、60 字符窗口、同语句 splitlines），
+    `e2e_r14_index.py` 仍被误判成 bundle 的作者，
+    而注入样例 `zfake_orch.py` 却解析成**空集** ——
+    正则形状修不胜修，**语法树不会骗人**。
+
+    支持的写出形状（本项目真实出现的全部形态）：
+      · `(EV / "X.json").write_text(...)`            —— 内联字面量
+      · `open("X.json", "w")`                        —— 第一位置参数
+      · `name = "X.json"; p = EV / name; p.write_text()` —— 变量回溯
+      · `ap.add_argument("--out", default="X.json");
+         a = ap.parse_args(); p = Path("evidence") / a.out;
+         p.write_text()`                              —— argparse dest
+    **作用域限制**：变量回溯只在**同一函数体**内进行
+    （模块级作用域作为兜底）；跨函数的同名变量**不算**来源——
+    这正是 `e2e_r14_index.py` 的 bundle 假阳性来源
+    （它在 `_bundle_steps()` 里 `p = EV / "R14_VERIFICATION_BUNDLE.json"`
+    **读**该件，而 `write_text` 在 `main()` 里写 `R14_INDEX.json`）。
+    """
+    names = set()
+    try:
+        tree = ast.parse(src)
+    except SyntaxError:
+        return names
+
+    def _json_lits(node):
+        return {c.value.rsplit("/", 1)[-1] for c in ast.walk(node)
+                if isinstance(c, ast.Constant) and isinstance(c.value, str)
+                and c.value.endswith(".json")}
+
+    # ---- argparse dest：`{持有者表达式: {dest: 默认件名}}` ----
+    holders = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) \
+                and node.func.attr == "parse_args":
+            holders[ast.unparse(node.func.value)] = node
+    dest_by_holder = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) \
+                and node.func.attr == "add_argument":
+            owner = ast.unparse(node.func.value)
+            dflt = next((kw.value for kw in node.keywords
+                         if kw.arg == "default"), None)
+            if isinstance(dflt, ast.Constant) and isinstance(dflt.value, str) \
+                    and dflt.value.endswith(".json"):
+                for a in node.args:
+                    if isinstance(a, ast.Constant) and isinstance(a.value, str) \
+                            and a.value.startswith("-"):
+                        dest_by_holder.setdefault(owner, {})[
+                            a.value.lstrip("-").replace("-", "_")] = \
+                            dflt.value.rsplit("/", 1)[-1]
+
+    def _owner_of(attr_node):
+        """`a.out` → 解析 `a` 是哪个 parser 的 `parse_args()` 结果。"""
+        base = attr_node.value
+        if not isinstance(base, ast.Name):
+            return None
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Assign) and isinstance(
+                    node.value, ast.Call) and ast.unparse(
+                        node.value.func).endswith("parse_args"):
+                if any(isinstance(t, ast.Name) and t.id == base.id
+                       for t in node.targets):
+                    return ast.unparse(node.value.func.value)
+        return None
+
+    def _resolve(target, scope):
+        """把写出目标解析成件名集合（只走语法树，不走文本邻近）。"""
+        got = set(_json_lits(target))
+        for c in ast.walk(target):
+            if isinstance(c, ast.Name):
+                got |= _assigned_in(scope, c.id)
+            elif isinstance(c, ast.Attribute):
+                owner = _owner_of(c)
+                if owner:
+                    got |= set(dest_by_holder.get(owner, {}).get(
+                        c.attr, set()) if isinstance(
+                        dest_by_holder.get(owner, {}).get(c.attr, ""),
+                        str) else dest_by_holder.get(owner, {}).get(
+                        c.attr, set()))
+        return {v for v in got if v}
+
+    def _assigned_in(scope, var):
+        """`scope` 内把 `var` 当赋值目标的那些 RHS 的件名（一跳即止）。"""
+        out = set()
+        for node in ast.walk(scope):
+            if isinstance(node, ast.Assign) and any(
+                    isinstance(t, ast.Name) and t.id == var
+                    for t in node.targets):
+                vals = set(_json_lits(node.value))
+                for c in ast.walk(node.value):
+                    if isinstance(c, ast.Name):
+                        vals |= _assigned_in(scope, c.id)
+                    elif isinstance(c, ast.Attribute):
+                        owner = _owner_of(c)
+                        if owner:
+                            v = dest_by_holder.get(owner, {}).get(c.attr)
+                            if v:
+                                vals.add(v)
+                out |= vals
+        return out
+
+    def _probe_lines(scope):
+        return {n.lineno for n in ast.walk(scope)
+                if isinstance(n, ast.Call) and any(
+                    k in ast.dump(n.func) for k in
+                    ("mkdtemp", "TemporaryDirectory", "NamedTemporaryFile"))}
+
+    scopes = [tree] + [n for n in ast.walk(tree)
+                       if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef,
+                                         ast.ClassDef))]
+    for scope in scopes:
+        bad = _probe_lines(scope)
+        for node in ast.walk(scope):
+            if not isinstance(node, ast.Call):
+                continue
+            f = node.func
+            if node.lineno in bad:
+                continue          # **探针作用域内不算生产**
+            if isinstance(f, ast.Attribute) and f.attr in (
+                    "write_text", "write_bytes"):
+                names |= _resolve(f.value, scope)
+            elif isinstance(f, ast.Name) and f.id == "open":
+                if node.args and isinstance(node.args[0], ast.Constant) \
+                        and isinstance(node.args[0].value, str) \
+                        and node.args[0].value.endswith(".json"):
+                    if any(isinstance(a, ast.Constant) and a.value in ("w", "wb")
+                           for a in node.args[1:]):
+                        names.add(node.args[0].value.rsplit("/", 1)[-1])
+    return names
+
+
+_AST_CACHE = {}
+
+
+def _ast_targets(src: str) -> set:
+    """AST 缓存入口（同一份源码多次判据共用）。"""
+    key = hash(src)
+    if key not in _AST_CACHE:
+        _AST_CACHE[key] = _ast_write_targets(src)
+    return _AST_CACHE[key]
+
+
 def script_declares_write(name: str):
     """从**源码**判断该脚本声明会写出的证据件（**不执行脚本**）。
 
@@ -548,11 +763,42 @@ def script_declares_write(name: str):
         after = src[m.end(): m.end() + 300]
         if re.match(r"\s*:", after):        # 字典键 = 登记，不是写出目标
             continue
-        direct = bool(re.search(r"^\s*\)\s*\.write_text\s*\(", after)
-                      or re.search(r"^[^\n]{0,40}write_text", after)
-                      or re.search(r"^[^\n]{0,40}open\s*\(", after))
-        if direct or _writer_closure(src, lit):
-            out.add(base)
+        # **邻近 ≠ 同语句**（本轮实测两处假作者都死在这）：
+        # `^[^\n]{0,40}write_text` 里的 40 字符窗口**跨过**了
+        # 键值对的值与逗号，于是
+        # `"R14_VERIFICATION_BUNDLE.json": "一键复现 bundle…",`
+        # 后面 300 字符里出现的 `(EV / "R14_INDEX.json").write_text(`
+        # 被算到**前一个名字**头上；`e2e_r14_claim_audit.py` 的
+        # `R14_CLAIM_AUDIT.json` 同因（它在 `mkdtemp` 探针里写
+        # `R14G_RESULT.json`，那更不该算生产）。
+        # ⇒ 只认**闭合形状**：字面量后紧跟 `)` 再 `.write_text(`/
+        #   `.write_bytes(`；或同行内 `open("NAME", "w")`。
+        # 窗口 = 字面量之后到**下一个行尾换行**（`after` 保留换行）；
+        # 上一版用 `after.split("\n")[0]` ⇒ 换行被吃掉，
+        # **跨行**的 `write_text` 逃过了"同语句"这条判据。
+        _nl = after.find("\n")
+        stmt = after if _nl < 0 else after[:_nl]
+        direct = bool(re.match(r"^\s*\)\s*\.write_(text|bytes)\s*\(", after)
+                      or re.match(r'^\s*,\s*[\'"]w', stmt)
+                      or (re.match(r"^\s*\)\s*$", stmt) and
+                          re.search(r"\.write_(text|bytes)\s*\(",
+                                    after[len(stmt):len(stmt) + 60])))
+        if direct and _PROBE_SCOPE.search(src[max(0, m.start() - 400):
+                                             m.end() + 400]):
+            # **探针作用域内不算生产**（与 `e2e_r14_index` 同口径）：
+            # `e2e_r14_claim_audit.py` 在 `tempfile.mkdtemp()` 的
+            # **假 evidence 目录**里造 `R14G_RESULT.json` 注入违规，
+            # 那不是"写出这个交付件"。
+            direct = False
+        if (direct or _writer_closure(src, lit)) \
+                and base in _ast_targets(src):
+            # **AST 交叉核对**：闭包/邻近说"写"，但 AST 的写出目标里
+            # 没有这个名字 ⇒ 判 False，并把分歧**记进 out 的旁注**
+            # （`_AST_DISAGREE` 供自测打印，避免我又"静默相信正则"）。
+            if base in _AST_CACHE.setdefault(name, _ast_write_targets(src)):
+                out.add(base)
+            else:
+                _AST_DISAGREE.append((name, base))
     # **`--out` 覆盖名也算作者，但要有写出能力**：
     # 证据来自 bundle 的**已登记运行计划**（不是我为 A10 加的豁免名单），
     # 可**提到 ≠ 生产**这条口径在这里同样成立——
@@ -561,13 +807,51 @@ def script_declares_write(name: str):
     # 而它与该件的唯一关系是源码数组里的**读取**
     # （真作者只有 `e2_r14_optionband_replay.py`，默认名正是 V8）。
     _pl = bundle_out_plan()
-    _can_write = bool(WRITE_STMT.search(src)) if "WRITE_STMT" in dir() else         bool(re.search(r"\.write_text\s*\(|\.write_bytes\s*\(|"
-                       r"open\([^)]*[\"']w", src))
-    if _can_write:
-        for art, scripts in _pl.items():
-            if name in scripts:
-                out.add(art)
+    for art, scripts in _pl.items():
+        if name in scripts and art in _ast_targets(src):
+            out.add(art)
     return sorted(out)
+
+
+_PROBE_SCOPE = re.compile(r"mkdtemp|TemporaryDirectory|tmp_path|tmpdir|"
+                         r"\bfake\b|_fake|tempfile")
+
+
+def _writes_literal(src: str, art: str) -> bool:
+    """`art` 是否作为**写出目标**的字面量出现在 `src` 里。
+
+    上一版用 `_can_write`（源码里有**任意** `write_text`）就并入计划名 ⇒
+    `e2e_r14_index.py` 只是**读** `R14_VERIFICATION_BUNDLE.json`，
+    却因为自己也写 `R14_INDEX.json` 被判成 bundle 的作者
+    （`EXPECTED_NOT_WRITERS` 的钉子当场报误判——
+    钉子的价值就在这：它有权把我的判据判错）。
+    两种真实形状：
+    · `(EV / "NAME").write_text(...)` / `.write_bytes(...)`
+    · `open(..., "NAME", "w")`
+    """
+    for m in re.finditer('"%s"' % re.escape(art), src):
+        tail = src[m.end():m.end() + 220]
+        hit = re.match(r"\s*\)\s*\.write_(text|bytes)\s*\(", tail)
+        if hit:
+            # **同一条语句**才算写在它身上：中间若又出现新的
+            # `X / "…"` 或 `"….json"` 字面量 ⇒ 那个 `write_text`
+            # 写的是**别件**，本字面量只是读取链上的一环。
+            # 实测误判形状：`json.loads((EV / "BUNDLE.json")
+            # .read_text(...))` 之后 220 字符内正好是
+            # `(EV / "INDEX.json").write_text(`。
+            between = tail[:hit.end()]
+            if re.search(r'"[^"]*\.json"|\w+\s*/\s*"', between):
+                pass
+            else:
+                return True
+        if re.search(r"open\([^)]*$", src[max(0, m.start() - 240):m.start()]) \
+                and re.match(r"[^)]*,\s*[\"']w", src[m.end():m.end() + 40]):
+            return True
+    return False
+
+
+ORCH2_RE = re.compile(r"subprocess\.(run|Popen|check_output|call)\s*\("
+                      r"[^\n]*scripts/")
 
 
 def unsafe_to_run(name: str):
@@ -582,6 +866,15 @@ def unsafe_to_run(name: str):
         return "自我编排器（名录）：动态核验它等于递归重跑整条链"
     if ORCHESTRATOR.search(src) and SCRIPT_LITERAL.search(src):
         return "编排器（subprocess + scripts/*.py 字面量）：禁止递归/全链重跑"
+    # **安全类拒因优先于能力类**：上一版把 `--out` 检查排在编排器之后
+    # 却也排在**网络之后**，看似无碍；真正的问题是
+    # `ORCHESTRATOR`/`SCRIPT_LITERAL` 对注入样例**不成立**
+    # （样例用 `subprocess.run([sys.executable, "scripts/e2e_r14_index.py"])`），
+    # 于是落到 `--out` 分支、拒因不含"编排器"。
+    # ⇒ 判据加一条**字面量级**编排器识别（见 ORCH2），再排 `--out`。
+    if ORCH2_RE.search(src):
+        return ("编排器（subprocess 调用 scripts/*.py）：禁止递归/全链重跑"
+                "（字面量级识别）")
     if "--out" not in src:
         return ("不支持 --out 重定向：动态核验它等于**在固定历史名下落盘**，"
                 "会覆盖/新落已被取代的件（实测 e2b 就留下了杂件）")

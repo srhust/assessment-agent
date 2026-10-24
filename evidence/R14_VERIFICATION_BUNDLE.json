@@ -7,19 +7,19 @@
    " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.json",
    " M evidence/R14C_PITCH_ABLATION_HEAD_DELTA.md",
    " M evidence/R14E_ARTIFACT_ATTRIBUTION.json",
+   " M evidence/R14E_ATTRIBUTION_SELFTEST.json",
    " M evidence/R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
    " M evidence/R14E_RERUN_SEMANTICS.json",
    " M evidence/R14G0_GATE_READINESS_V5.json",
    " M evidence/R14G_HISTORICAL_BYTES.json",
    " M evidence/R14G_PLAN.json",
    " M evidence/R14H_KB_CHANNEL_HEAD_DELTA.json",
-   " M evidence/R14_CLAIM_AUDIT.json",
    " M evidence/R14_DELIVERY_SUMMARY.json",
    " M evidence/R14_DELIVERY_SUMMARY.md"
   ]
  },
- "head_at_run": "eba947ed85fef773777be2c4da2eb44adebf8d49",
- "run_mark": "0dc557545208",
+ "head_at_run": "ceb7e5df2793d42acdd99eed7542bcc33273f822",
+ "run_mark": "b7b9895d1f87",
  "n_steps": 0,
  "steps": [],
  "fails": [

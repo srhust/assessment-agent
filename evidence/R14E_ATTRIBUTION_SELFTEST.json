@@ -10,7 +10,6 @@
  "fails": [],
  "refused": [
   "e2b_r14_anchor_option_recovery.py",
-  "r14_attribute_producer.py",
   "zfake_net.py",
   "zfake_orch.py"
  ],
