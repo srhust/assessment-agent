@@ -559,16 +559,14 @@ def main() -> int:
                           or p.suffix == ".md"),
                       "commit_added": first, "commit_last_touched": last})
         if status == "self":
-            # **索引登记不了自己**（本轮实测）：
-            # `run_mark` 每轮不同 ⇒ 我的 sha 每轮不同 ⇒
-            # 登记自己的 sha 必然**在写完的那一刻就过期**。
-            # ⇒ `self` 行的 sha 换成**声明**而非数值，
-            #   `commit_last_touched` 不写"上一轮"（那正是
-            #   我前两轮看到 11 行永远不收敛的来源）。
-            rows[-1]["sha256"] = "SELF_REFERENTIAL_NOT_HASHED"
-            rows[-1]["sha_short"] = "SELF_REFERENTIAL_NOT_HASHED"
-            rows[-1].pop("sha256_bytes", None)
-            rows[-1]["commit_last_touched"] = "SELF_REFERENTIAL"
+            # **不豁免、也不打占位符**（上一版写
+            # `SELF_REFERENTIAL_NOT_HASHED` ⇒ A3 拿它和 HEAD 版指纹比，
+            # 必然不等，我于是差点把"取消逐轮台账"当成解决办法）。
+            # 索引登记的是**上一轮**那份自己的内容指纹
+            # （内容指纹跨轮稳定，见 `fingerprint_scope`），
+            # 本轮写出的新指纹由**下一轮**核 ⇒
+            # 每一份指纹都被核一次，**没有无人认领的字节**。
+            pass
 
     docs = {p.name: p.read_text(encoding="utf-8") for p in EV.glob("R14*.md")
             # 索引自身**就是**用来逐条列出非当前件的，扫它会自我误报
@@ -638,8 +636,35 @@ def main() -> int:
         # 而它自己的字节在写完之后才定 —— 自指无法登记最终字节
         # （状态说明里早已写明这点，这里补齐判据，
         #  否则"每跑一次必然多一处差异"会被当成不稳定）。
-        if r["artifact"].endswith(".json") and r["status"] != "self" \
-                and _content_fp(EV / r["artifact"]) != r["sha256"]:
+        if r["artifact"].endswith(".json") and \
+                _content_fp(EV / r["artifact"]) != r["sha256"]:
+            # **`self` 行不豁免，改用"上一次写出"的指纹核**。
+            # 上一版我给 `self` 行开了 `!= "self"` 的口子 ⇒
+            # 从此**没有任何东西**在核索引自己，
+            # 而索引是这整套台账的唯一出口。
+            # 索引字节自指（登记不了写出后的自己），
+            # 所以拿**上一版件**（HEAD 里的那份）与
+            # 登记的"上一次指纹"比：本轮写出的新指纹
+            # 由下一轮负责核——**每份指纹都会在下一轮被核一次**，
+            # 没有一个字节的指纹是无人认领的。
+            if r["status"] == "self":
+                _prev = subprocess.run(
+                    ["git", "show", f"HEAD:evidence/{r['artifact']}"],
+                    cwd=ROOT, capture_output=True, text=True,
+                    encoding="utf-8")
+                _tmp = ROOT / "evidence" / f"_tmp_self_{r['artifact']}"
+                if _prev.returncode == 0:
+                    _tmp.write_text(_prev.stdout, encoding="utf-8")
+                    try:
+                        _was = _content_fp(_tmp)
+                    finally:
+                        _tmp.unlink(missing_ok=True)
+                    if _was != r["sha256"]:
+                        fails.append(
+                            f"A3 哈希不稳定（自指行核上一版）："
+                            f"{r['artifact']} 登记 {r['sha256'][:12]} ≠ "
+                            f"HEAD 版 {_was[:12]}")
+                continue
             fails.append(f"A3 哈希不稳定：{r['artifact']}")
     # ---- A1b **反证**：谎报一件人工撰写，必须被抓 ----
     # **定义顺序**也是本轮踩过的坑：我第一版在这里用了 `by_name_early`，
