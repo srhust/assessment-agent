@@ -1,5 +1,5 @@
 {
- "run_mark": "0ebc45cde7eb",
+ "run_mark": "d64eaf06f995",
  "A1b_selftest": {
   "probe": [
    "R14_VERIFICATION_BUNDLE.json",
@@ -49,7 +49,7 @@
   "R14_DELIVERY_SUMMARY.json",
   "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json"
  ],
- "generated_at_head": "79e0ce0dba1ac0afbc9e765b0ebeb9c348e6b5b7",
+ "generated_at_head": "c0fafe6ae72f36594ab22210e5acb1e135d3e1f7",
  "fingerprint_scope": "sha_short 为**内容指纹**：剥除 head/run_mark/code_version/generated_at*/git_sha/commit/sha256_now 等**运行中戳**后再哈希；这些字段仍原样留在件里用于新鲜度判断，只是不参与指纹，否则每提交一轮就永远差一轮。",
  "n_artifacts": 60,
  "by_status": {
@@ -220,10 +220,10 @@
   },
   {
    "artifact": "R14_INDEX.json",
-   "bytes": 46400,
-   "sha256": "e18f3e601537f7db2eeb4a18d63a7a5fad50a9dc49e7459fffe383412d7f1c91",
-   "sha_short": "e18f3e601537",
-   "sha256_bytes": "dcbda982e28063cb8032cbbb2fb6a34291ba23b75d297819e22a985dc2199d79",
+   "bytes": 54784,
+   "sha256": "73497e81f95a4c3b445ba7814f39c57252d69ed85c96722ce06a4184e3a8872f",
+   "sha_short": "73497e81f95a",
+   "sha256_bytes": "17a881f8ce5fea0ea4b68c4763b2228805fe9be1276ce9930bc7619461a012bb",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -239,14 +239,14 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "79e0ce0"
+   "commit_last_touched": "c0fafe6"
   },
   {
    "artifact": "R14_INDEX.md",
-   "bytes": 9453,
-   "sha256": "69b6bfd57f99cadd7c9708384c2298dc9d6efa70891d5837ad6cfc65f91c13c3",
-   "sha_short": "69b6bfd57f99",
-   "sha256_bytes": "69b6bfd57f99cadd7c9708384c2298dc9d6efa70891d5837ad6cfc65f91c13c3",
+   "bytes": 12134,
+   "sha256": "c66c5768d42018560145fa2eeaace119eda42f497eefd02fc464a15c9a2f08c8",
+   "sha_short": "c66c5768d420",
+   "sha256_bytes": "c66c5768d42018560145fa2eeaace119eda42f497eefd02fc464a15c9a2f08c8",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -259,7 +259,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "79e0ce0"
+   "commit_last_touched": "c0fafe6"
   },
   {
    "artifact": "R14_PROGRESS_STOPGATE.md",
@@ -321,7 +321,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f9a2fc8",
-   "commit_last_touched": "139383a"
+   "commit_last_touched": "c0fafe6"
   },
   {
    "artifact": "R14C_PITCH_ABLATION.json",
@@ -361,7 +361,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "f118cf9",
-   "commit_last_touched": "139383a"
+   "commit_last_touched": "c0fafe6"
   },
   {
    "artifact": "R14C_PITCH_ABLATION_HEAD_DELTA.md",
@@ -381,7 +381,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f118cf9",
-   "commit_last_touched": "139383a"
+   "commit_last_touched": "c0fafe6"
   },
   {
    "artifact": "R14C_PITCH_ABLATION_RERUN2.json",
@@ -459,7 +459,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "d48d97e",
-   "commit_last_touched": "139383a"
+   "commit_last_touched": "c0fafe6"
   },
   {
    "artifact": "R14E_ATTRIBUTION_SELFTEST.json",
@@ -729,7 +729,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "92103ec",
-   "commit_last_touched": "139383a"
+   "commit_last_touched": "c0fafe6"
   },
   {
    "artifact": "R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
@@ -1154,7 +1154,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "ce44cc7",
-   "commit_last_touched": "139383a"
+   "commit_last_touched": "c0fafe6"
   },
   {
    "artifact": "R14G0_GATE_READINESS_V5_RERUN.json",
@@ -1271,7 +1271,7 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "ce44cc7",
-   "commit_last_touched": "139383a"
+   "commit_last_touched": "c0fafe6"
   },
   {
    "artifact": "R14H_KB_CHANNEL_AUDIT.json",
@@ -1331,61 +1331,10 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "f23482a",
-   "commit_last_touched": "139383a"
+   "commit_last_touched": "c0fafe6"
   }
  ],
- "self_checks_failed": [
-  "A3 哈希不稳定：R14_CLAIM_AUDIT.json",
-  "A3 哈希不稳定：R14_DELIVERY_SUMMARY.json",
-  "A3 哈希不稳定：R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json",
-  "A3 哈希不稳定：R14_INDEX.json",
-  "A3 哈希不稳定：R14_VERIFICATION_BUNDLE.json",
-  "A3 哈希不稳定：R14C_PITCH_ABLATION.json",
-  "A3 哈希不稳定：R14C_PITCH_ABLATION_HEAD_DELTA.json",
-  "A3 哈希不稳定：R14C_PITCH_ABLATION_RERUN2.json",
-  "A3 哈希不稳定：R14C_REAL_PARSE_REPLAY.json",
-  "A3 哈希不稳定：R14E_ANCHOR_SWEEP.json",
-  "A3 哈希不稳定：R14E_ARTIFACT_ATTRIBUTION.json",
-  "A3 哈希不稳定：R14E_ATTRIBUTION_SELFTEST.json",
-  "A3 哈希不稳定：R14E_HEAD_REVERIFY.json",
-  "A3 哈希不稳定：R14E_LINEAGE_SIX_CONDITION.json",
-  "A3 哈希不稳定：R14E_NEWLAYOUT_REGRESSION_V2.json",
-  "A3 哈希不稳定：R14E_NEWLAYOUT_REGRESSION_V3.json",
-  "A3 哈希不稳定：R14E_REAL_PAGE_REPLAY.json",
-  "A3 哈希不稳定：R14E_REAL_PAGE_REPLAY_V4.json",
-  "A3 哈希不稳定：R14E_REAL_PAGE_REPLAY_V5.json",
-  "A3 哈希不稳定：R14E_REAL_PAGE_REPLAY_V6.json",
-  "A3 哈希不稳定：R14E_REAL_PAGE_REPLAY_V7.json",
-  "A3 哈希不稳定：R14E_REAL_PAGE_REPLAY_V8.json",
-  "A3 哈希不稳定：R14E_REAL_PAGE_REPLAY_V8_CHECK.json",
-  "A3 哈希不稳定：R14E_REAL_PAGE_REPLAY_V8_RERUN.json",
-  "A3 哈希不稳定：R14E_RERUN_SEMANTICS.json",
-  "A3 哈希不稳定：R14E_SIX_CONDITION.json",
-  "A3 哈希不稳定：R14E_SIX_CONDITION_V10.json",
-  "A3 哈希不稳定：R14E_SIX_CONDITION_V2.json",
-  "A3 哈希不稳定：R14E_SIX_CONDITION_V3.json",
-  "A3 哈希不稳定：R14E_SIX_CONDITION_V6.json",
-  "A3 哈希不稳定：R14E_SIX_CONDITION_V7.json",
-  "A3 哈希不稳定：R14E_SIX_CONDITION_V8.json",
-  "A3 哈希不稳定：R14E_SIX_CONDITION_V9.json",
-  "A3 哈希不稳定：R14E_STAGE_E_ACCEPTANCE.json",
-  "A3 哈希不稳定：R14E_STAGE_E_ACCEPTANCE_V4.json",
-  "A3 哈希不稳定：R14E_STAGE_E_ACCEPTANCE_V5.json",
-  "A3 哈希不稳定：R14E_STAGE_E_ACCEPTANCE_V6.json",
-  "A3 哈希不稳定：R14E_STAGE_E_ACCEPTANCE_V7.json",
-  "A3 哈希不稳定：R14E_STAGE_E_ACCEPTANCE_V8.json",
-  "A3 哈希不稳定：R14E_TIGHT_GAP_DIAGNOSIS.json",
-  "A3 哈希不稳定：R14F_PERTURB_RELEASE_AUDIT.json",
-  "A3 哈希不稳定：R14F_SIX_CONDITION.json",
-  "A3 哈希不稳定：R14G0_GATE_READINESS_V5.json",
-  "A3 哈希不稳定：R14G0_GATE_READINESS_V5_RERUN.json",
-  "A3 哈希不稳定：R14G_HISTORICAL_BYTES.json",
-  "A3 哈希不稳定：R14G_HISTORICAL_BYTES_SELFTEST.json",
-  "A3 哈希不稳定：R14G_PLAN.json",
-  "A3 哈希不稳定：R14H_KB_CHANNEL_AUDIT.json",
-  "A3 哈希不稳定：R14H_KB_CHANNEL_AUDIT_RERUN.json",
-  "A3 哈希不稳定：R14H_KB_CHANNEL_HEAD_DELTA.json"
- ],
+ "self_checks_failed": [],
  "reproduce_needs_out_override": [
   "R14E_REAL_PAGE_REPLAY_V4.json ← e2_r14_optionband_replay.py, e2b_r14_anchor_option_recovery.py, e2d_r14_production_replay_v4.py（需 --out 复现）",
   "R14E_REAL_PAGE_REPLAY_V6.json ← e2_r14_optionband_replay.py, e2b_r14_anchor_option_recovery.py, e2d_r14_production_replay_v4.py（需 --out 复现）",

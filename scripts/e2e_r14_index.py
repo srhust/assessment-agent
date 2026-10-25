@@ -618,7 +618,13 @@ def main() -> int:
             unregistered.append(
                 f"{r['artifact']} ← {', '.join(r['producer_scripts'])}"
                 f"（需 --out 复现）")
-        if r["artifact"].endswith(".json") and sha(EV / r["artifact"]) != r["sha256"]:
+        # **A3 的"哈希稳定"指的是内容指纹稳定，不是字节稳定**
+        # （本轮实测：我换了 `sha256` 的口径却忘改 A3，
+        #  于是 49 件全报"哈希不稳定"——
+        #  判据与登记值**口径不同源**，报出来的是一整片假阳性）。
+        # 字节 sha 仍单独登记在 `sha256_bytes`，A3 不比它。
+        if r["artifact"].endswith(".json") and \
+                _content_fp(EV / r["artifact"]) != r["sha256"]:
             fails.append(f"A3 哈希不稳定：{r['artifact']}")
     # ---- A1b **反证**：谎报一件人工撰写，必须被抓 ----
     # **定义顺序**也是本轮踩过的坑：我第一版在这里用了 `by_name_early`，
