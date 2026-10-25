@@ -1,5 +1,5 @@
 {
- "run_mark": "92b72397fb30",
+ "run_mark": "56cd5453bdd9",
  "A1b_selftest": {
   "probe": [
    "R14_VERIFICATION_BUNDLE.json",
@@ -49,7 +49,7 @@
   "R14_DELIVERY_SUMMARY.json",
   "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json"
  ],
- "generated_at_head": "676c75c14e02f3f5652f19cec8fceef09c3fef09",
+ "generated_at_head": "af135b4ad101d1a28af13cafca45ea85569aa74a",
  "self_row_policy": "status=self 的行不登记字节与指纹：索引无法登记写出后的自己（自指）。它每轮的 `commit_last_touched` 必然指向上一轮，这是**已知且如实**，不是漏记。",
  "fingerprint_scope": "sha_short 为**内容指纹**：剥除 head/run_mark/code_version/generated_at*/git_sha/commit/sha256_now 等**运行中戳**后再哈希；这些字段仍原样留在件里用于新鲜度判断，只是不参与指纹，否则每提交一轮就永远差一轮。",
  "n_artifacts": 60,
@@ -221,10 +221,10 @@
   },
   {
    "artifact": "R14_INDEX.json",
-   "bytes": "SELF_REFERENTIAL_NOT_MEASURED",
-   "sha256": "6972f6ccfd0afd969a097e8392473391cc4749bde23f7057eb987395a9744f35",
-   "sha_short": "6972f6ccfd0a",
-   "sha256_bytes": "SELF_REFERENTIAL_NOT_MEASURED",
+   "bytes": 52176,
+   "sha256": "61ae6dbe2aa20fe37fe583404a5fc540133fdfda3af2baaa425d772c0f5cbdf4",
+   "sha_short": "61ae6dbe2aa2",
+   "sha256_bytes": "26cba7a79a99b9915565678f49c4cd55736e42ccca47130ea3ecd387d86f90ff",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -240,14 +240,14 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "676c75c"
+   "commit_last_touched": "af135b4"
   },
   {
    "artifact": "R14_INDEX.md",
-   "bytes": "SELF_REFERENTIAL_NOT_MEASURED",
-   "sha256": "492a994c764337f3299c30c3607952bed92a7dc018ad17256c91c082384d0a9a",
-   "sha_short": "492a994c7643",
-   "sha256_bytes": "SELF_REFERENTIAL_NOT_MEASURED",
+   "bytes": 9453,
+   "sha256": "3056b6efd748ed3daa0c08476f05d72a589cad2131d5a83351b8f84d462932a4",
+   "sha_short": "3056b6efd748",
+   "sha256_bytes": "3056b6efd748ed3daa0c08476f05d72a589cad2131d5a83351b8f84d462932a4",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -260,7 +260,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "676c75c"
+   "commit_last_touched": "af135b4"
   },
   {
    "artifact": "R14_PROGRESS_STOPGATE.md",
