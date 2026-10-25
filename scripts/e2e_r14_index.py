@@ -85,6 +85,44 @@ ERRATUM = {
 def sha(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
+_RUN_STAMPS = ("head", "head_at_run", "run_mark", "generated_at",
+               "generated_at_head", "code_version", "git_sha", "head_short",
+               "commit", "sha_now", "sha256_now",
+               "sha256_at_introductory_commit", "bundle_run_mark",
+               "recorded_at", "timestamp", "artifact_sha256_short",
+               "seconds")
+
+
+def _strip_run_stamps(obj):
+    """**递归**剥运行中戳。
+
+    只剥顶层等于没剥：本轮实测轮次戳在**嵌套**位置
+    （`R14G_PLAN.fixed.code_version`、
+    `R14H_KB_CHANNEL_HEAD_DELTA.compared.code_version`）。
+    40 位十六进制串一律视为 commit sha（`git_sha` 之外的别名键
+    也能兜住）。
+    """
+    if isinstance(obj, dict):
+        return {k: _strip_run_stamps(v) for k, v in obj.items()
+                if k not in _RUN_STAMPS}
+    if isinstance(obj, list):
+        return [_strip_run_stamps(v) for v in obj]
+    if isinstance(obj, str) and len(obj) == 40 and             all(c in "0123456789abcdef" for c in obj):
+        return "<RUN-COMMIT>"
+    return obj
+
+
+def _content_fp(p):
+    """内容指纹：JSON 件走剥戳后规范化哈希，其余退回字节 sha。"""
+    try:
+        d = json.loads(Path(p).read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001  非 JSON（.md/.txt）只能按字节
+        return sha(p)
+    return hashlib.sha256(json.dumps(
+        _strip_run_stamps(d), ensure_ascii=False,
+        sort_keys=True).encode("utf-8")).hexdigest()
+
+
 
 # 读取方（非作者），不得进"生产脚本"列
 PRODUCER_EXCLUDE = {"e2e_r14_claim_audit.py", "e2e_r14_index.py"}
@@ -492,8 +530,15 @@ def main() -> int:
             #  计数随即与文档不符 —— C8 抓到的是**索引自己的双重清单**）。
             # 内联集合**删掉**：`.md` 的地位只由 `CURRENT` 决定。
             pass
+        # **`sha_short` 是内容指纹，不是字节 sha**（本轮实测）：
+        # 步骤件里记的是**运行时** HEAD，提交一轮后 HEAD 前移、
+        # 件里的戳却停在上一轮 ⇒ 字节 sha 永不相同 ⇒
+        # 每跑一轮多 11 个"看起来被改过"的脏件。
+        # ⇒ 哈希前剥运行中戳；字节 sha 仍写在 `sha256_bytes` 里，
+        #   **不删新鲜度字段，只是不让它进指纹**。
         rows.append({"artifact": name, "bytes": p.stat().st_size,
-                     "sha256": sha(p), "sha_short": sha(p)[:12],
+                     "sha256": _content_fp(p), "sha_short": _content_fp(p)[:12],
+                     "sha256_bytes": sha(p),
                      "status": status, "status_note": why,
                      "producer_scripts": prod,
                       "producer_tier": ptier,
@@ -659,9 +704,24 @@ def main() -> int:
            "A1b_selftest": out_a1b,
            "hand_written_declared": sorted(HAND_WRITTEN),
            "deliverables_required": DELIVERABLES,
+           # **`head` 是"运行中"戳，不是"内容"戳**（本轮实测）：
+           # 步骤件里记的是**运行时** HEAD
+           # （`R14G_PLAN.fixed.code_version`、`…HEAD_DELTA.head`…），
+           # 每次把这些件提交回去 HEAD 就前移一格 ⇒
+           # 它们**永远比 HEAD 落后一轮** ⇒ 索引登记的字节 sha
+           # 与磁盘永不相同 ⇒ 每跑一轮多出 11 个脏件。
+           # ⇒ 登记的应当是**内容指纹**：哈希前先剥运行中戳；
+           #   `generated_at_head` **保留**（新鲜度判断靠它，见 A12），
+           #   只是**不进指纹**。
            "generated_at_head": subprocess.run(
                 ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
                 text=True).stdout.strip(),
+           "fingerprint_scope": (
+                "sha_short 为**内容指纹**：剥除 "
+                "head/run_mark/code_version/generated_at*/git_sha/commit/"
+                "sha256_now 等**运行中戳**后再哈希；这些字段仍原样留在件里"
+                "用于新鲜度判断，只是不参与指纹，"
+                "否则每提交一轮就永远差一轮。"),
            "n_artifacts": len(rows),
            "by_status": {s: sorted(r["artifact"] for r in rows
                                    if r["status"] == s)
