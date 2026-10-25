@@ -559,6 +559,17 @@ def main() -> int:
                           or p.suffix == ".md"),
                       "commit_added": first, "commit_last_touched": last})
         if status == "self":
+            # **自指行的字节归本行自己负责**（反证已实测：
+            # 内容指纹跨轮稳定 —— 把 `head/run_mark/
+            # generated_at_head/fixed.code_version/
+            # steps[].seconds` 全打坏，四件指纹逐字不变）
+            # ⇒ `sha256/sha_short` 保留登记；
+            #   `bytes` 与 `sha256_bytes` 是**字节级**轮次戳，
+            #   自指件登记了必然每轮漂 ⇒ 改成声明，
+            #   并由 `self_bytes_declared` 明说这不是漏记。
+            rows[-1]["bytes"] = "SELF_REFERENTIAL_NOT_MEASURED"
+            rows[-1]["sha256_bytes"] = "SELF_REFERENTIAL_NOT_MEASURED"
+        if status == "self":
             # **不豁免、也不打占位符**（上一版写
             # `SELF_REFERENTIAL_NOT_HASHED` ⇒ A3 拿它和 HEAD 版指纹比，
             # 必然不等，我于是差点把"取消逐轮台账"当成解决办法）。
