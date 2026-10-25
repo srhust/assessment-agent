@@ -1,5 +1,5 @@
 {
- "head": "a6b9f3ed8632d8e6cb62d0d0ee51c8a061e7bc12",
+ "head": "98093e44e8eb35eab5639d51d90f4f8b8398184f",
  "numbers_source_artifacts": [
   "R14_STAGE_E_DELIVERABLES.md",
   "R14_PROGRESS_STOPGATE.md",
@@ -23,11 +23,11 @@
   },
   {
    "item": "2 一键复现 bundle",
-   "value": "basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head a6b9f3ed8 步数 21 fails ['scripts/r14_attribute_producer.py --selftest 退出码 1：', \"scripts/r14_attribute_producer.py --selftest → R14E_ATTRIBUTION_SELFTEST.json 的 fails = ['写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者']，应为 []\", \"A6 安全闸门自检未过：['写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者']\", 'bundle 收尾：产物**结论**相对轮前发生变化 [\"R14E_ATTRIBUTION_SELFTEST.json 结论字段变化 [(\\'fails\\', [], [\\'写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者\\'])]\"]（轮次戳变化已单列 3 件，不判红）'] http 0 tokens 0；A12 1/1、A10 []、A11 []"
+   "value": "basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head be8b850c4 步数 21 fails [] http 0 tokens 0；A12 1/1、A10 []、A11 []"
   },
   {
    "item": "3 声明审计",
-   "value": "fails []；C1 63 条、C3 27 条、C8 计数点 23（活引用 13 / 豁免 10）；注入自证 13 例全抓 True"
+   "value": "fails []；C1 64 条、C3 27 条、C8 计数点 23（活引用 13 / 豁免 10）；注入自证 13 例全抓 True"
   },
   {
    "item": "4 补集语义复现",
@@ -59,9 +59,7 @@
   }
  ],
  "blind_eval_admission": "NOT_READY",
- "fails": [
-  "bundle fails 非空：['scripts/r14_attribute_producer.py --selftest 退出码 1：', \"scripts/r14_attribute_producer.py --selftest → R14E_ATTRIBUTION_SELFTEST.json 的 fails = ['写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者']，应为 []\"]"
- ],
+ "fails": [],
  "budget": {
   "http_requests_made": 0,
   "tokens_used": 0
