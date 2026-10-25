@@ -1,5 +1,5 @@
 {
- "run_mark": "d64eaf06f995",
+ "run_mark": "e2f363c39298",
  "A1b_selftest": {
   "probe": [
    "R14_VERIFICATION_BUNDLE.json",
@@ -49,7 +49,7 @@
   "R14_DELIVERY_SUMMARY.json",
   "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json"
  ],
- "generated_at_head": "c0fafe6ae72f36594ab22210e5acb1e135d3e1f7",
+ "generated_at_head": "b0e5ff0b12563a341b0b57ccb6fbb92e0ef7ffef",
  "fingerprint_scope": "sha_short 为**内容指纹**：剥除 head/run_mark/code_version/generated_at*/git_sha/commit/sha256_now 等**运行中戳**后再哈希；这些字段仍原样留在件里用于新鲜度判断，只是不参与指纹，否则每提交一轮就永远差一轮。",
  "n_artifacts": 60,
  "by_status": {
@@ -220,10 +220,10 @@
   },
   {
    "artifact": "R14_INDEX.json",
-   "bytes": 54784,
-   "sha256": "73497e81f95a4c3b445ba7814f39c57252d69ed85c96722ce06a4184e3a8872f",
-   "sha_short": "73497e81f95a",
-   "sha256_bytes": "17a881f8ce5fea0ea4b68c4763b2228805fe9be1276ce9930bc7619461a012bb",
+   "bytes": 51971,
+   "sha256": "1092d60104fc6b36663ffde708ddfa4a20ed944ea8aad134c6f0a9ec0c65f030",
+   "sha_short": "1092d60104fc",
+   "sha256_bytes": "e1e5b3f3965289acb7112e53ea2344cade5e417af9f5948d402b7614873551d2",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -239,14 +239,14 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "c0fafe6"
+   "commit_last_touched": "b0e5ff0"
   },
   {
    "artifact": "R14_INDEX.md",
-   "bytes": 12134,
-   "sha256": "c66c5768d42018560145fa2eeaace119eda42f497eefd02fc464a15c9a2f08c8",
-   "sha_short": "c66c5768d420",
-   "sha256_bytes": "c66c5768d42018560145fa2eeaace119eda42f497eefd02fc464a15c9a2f08c8",
+   "bytes": 9453,
+   "sha256": "bafee9d5d64128b1f844bd83d5a5b8b307066e87962f41b7098923960f13de8f",
+   "sha_short": "bafee9d5d641",
+   "sha256_bytes": "bafee9d5d64128b1f844bd83d5a5b8b307066e87962f41b7098923960f13de8f",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -259,7 +259,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "c0fafe6"
+   "commit_last_touched": "b0e5ff0"
   },
   {
    "artifact": "R14_PROGRESS_STOPGATE.md",

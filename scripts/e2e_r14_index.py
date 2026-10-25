@@ -623,8 +623,12 @@ def main() -> int:
         #  于是 49 件全报"哈希不稳定"——
         #  判据与登记值**口径不同源**，报出来的是一整片假阳性）。
         # 字节 sha 仍单独登记在 `sha256_bytes`，A3 不比它。
-        if r["artifact"].endswith(".json") and \
-                _content_fp(EV / r["artifact"]) != r["sha256"]:
+        # **`self` 行不核哈希**：索引登记的是**写出前**收集的值，
+        # 而它自己的字节在写完之后才定 —— 自指无法登记最终字节
+        # （状态说明里早已写明这点，这里补齐判据，
+        #  否则"每跑一次必然多一处差异"会被当成不稳定）。
+        if r["artifact"].endswith(".json") and r["status"] != "self" \
+                and _content_fp(EV / r["artifact"]) != r["sha256"]:
             fails.append(f"A3 哈希不稳定：{r['artifact']}")
     # ---- A1b **反证**：谎报一件人工撰写，必须被抓 ----
     # **定义顺序**也是本轮踩过的坑：我第一版在这里用了 `by_name_early`，
@@ -722,6 +726,17 @@ def main() -> int:
            "generated_at_head": subprocess.run(
                 ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
                 text=True).stdout.strip(),
+           # **索引自身不登记字节/指纹**：它登记的必然是
+           # **上一次**写出的自己（自指），所以
+           # `commit_last_touched` / `bytes` / `sha*` 每轮都变。
+           # ⇒ 对 `status == "self"` 的行，
+           #   只登记**生产脚本、状态、结论自检**这些可核对项，
+           #   其余写 `SELF_REFERENTIAL_NOT_HASHED`。
+           "self_row_policy": (
+                "status=self 的行不登记字节与指纹：索引无法登记"
+                "写出后的自己（自指）。它每轮的 "
+                "`commit_last_touched` 必然指向上一轮，"
+                "这是**已知且如实**，不是漏记。"),
            "fingerprint_scope": (
                 "sha_short 为**内容指纹**：剥除 "
                 "head/run_mark/code_version/generated_at*/git_sha/commit/"
