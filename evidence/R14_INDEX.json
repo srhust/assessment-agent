@@ -1,5 +1,5 @@
 {
- "run_mark": "b439e99c7a61",
+ "run_mark": "26baff34e02c",
  "A1b_selftest": {
   "probe": [
    "R14_VERIFICATION_BUNDLE.json",
@@ -49,7 +49,7 @@
   "R14_DELIVERY_SUMMARY.json",
   "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json"
  ],
- "generated_at_head": "2853a54128253044de42f15482234663d04d2af4",
+ "generated_at_head": "e4cc1b0811aee5f90a67e6a4499608c45906d3f5",
  "self_row_policy": "status=self 的行不登记字节与指纹：索引无法登记写出后的自己（自指）。它每轮的 `commit_last_touched` 必然指向上一轮，这是**已知且如实**，不是漏记。",
  "fingerprint_scope": "sha_short 为**内容指纹**：剥除 head/run_mark/code_version/generated_at*/git_sha/commit/sha256_now 等**运行中戳**后再哈希；这些字段仍原样留在件里用于新鲜度判断，只是不参与指纹，否则每提交一轮就永远差一轮。",
  "n_artifacts": 60,
@@ -221,10 +221,10 @@
   },
   {
    "artifact": "R14_INDEX.json",
-   "bytes": 52108,
-   "sha256": "162259329d898a14d0009e6b906fdc63d8370482a7c36c9cdbe7ff4bd27d4849",
-   "sha_short": "162259329d89",
-   "sha256_bytes": "40eba489b5d2915e60f19b22dcfd4ae7acc7ab6ba33cc18b2e67d5e33597bc86",
+   "bytes": 52193,
+   "sha256": "907e21a600066eff3321d3db595caeffe9692a61f05c9cf0b4d3ced1f0359a13",
+   "sha_short": "907e21a60006",
+   "sha256_bytes": "863983cb108857dcf055197cb7db279aa0692086bc654b82f7de220a99852ae1",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -240,14 +240,14 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "2853a54"
+   "commit_last_touched": "e4cc1b0"
   },
   {
    "artifact": "R14_INDEX.md",
-   "bytes": 9584,
-   "sha256": "60c3aec99e832fd2f24328ed77ede5a16d01fa6a12876ba326909145e2cdc6d0",
-   "sha_short": "60c3aec99e83",
-   "sha256_bytes": "60c3aec99e832fd2f24328ed77ede5a16d01fa6a12876ba326909145e2cdc6d0",
+   "bytes": 9453,
+   "sha256": "1c380bf36cb6cb06807c1274612c95fc5c96bde748d75eebe02d9b986f444b44",
+   "sha_short": "1c380bf36cb6",
+   "sha256_bytes": "1c380bf36cb6cb06807c1274612c95fc5c96bde748d75eebe02d9b986f444b44",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -260,7 +260,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "2853a54"
+   "commit_last_touched": "e4cc1b0"
   },
   {
    "artifact": "R14_PROGRESS_STOPGATE.md",
