@@ -567,8 +567,7 @@ def main() -> int:
             #   `bytes` 与 `sha256_bytes` 是**字节级**轮次戳，
             #   自指件登记了必然每轮漂 ⇒ 改成声明，
             #   并由 `self_bytes_declared` 明说这不是漏记。
-            rows[-1]["bytes"] = "SELF_REFERENTIAL_NOT_MEASURED"
-            rows[-1]["sha256_bytes"] = "SELF_REFERENTIAL_NOT_MEASURED"
+
         if status == "self":
             # **不豁免、也不打占位符**（上一版写
             # `SELF_REFERENTIAL_NOT_HASHED` ⇒ A3 拿它和 HEAD 版指纹比，
