@@ -558,6 +558,17 @@ def main() -> int:
                           or name in _bundle_steps()
                           or p.suffix == ".md"),
                       "commit_added": first, "commit_last_touched": last})
+        if status == "self":
+            # **索引登记不了自己**（本轮实测）：
+            # `run_mark` 每轮不同 ⇒ 我的 sha 每轮不同 ⇒
+            # 登记自己的 sha 必然**在写完的那一刻就过期**。
+            # ⇒ `self` 行的 sha 换成**声明**而非数值，
+            #   `commit_last_touched` 不写"上一轮"（那正是
+            #   我前两轮看到 11 行永远不收敛的来源）。
+            rows[-1]["sha256"] = "SELF_REFERENTIAL_NOT_HASHED"
+            rows[-1]["sha_short"] = "SELF_REFERENTIAL_NOT_HASHED"
+            rows[-1].pop("sha256_bytes", None)
+            rows[-1]["commit_last_touched"] = "SELF_REFERENTIAL"
 
     docs = {p.name: p.read_text(encoding="utf-8") for p in EV.glob("R14*.md")
             # 索引自身**就是**用来逐条列出非当前件的，扫它会自我误报

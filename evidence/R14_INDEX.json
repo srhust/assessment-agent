@@ -1,5 +1,5 @@
 {
- "run_mark": "e76f3ef2b53c",
+ "run_mark": "6825f29bc664",
  "A1b_selftest": {
   "probe": [
    "R14_VERIFICATION_BUNDLE.json",
@@ -49,7 +49,7 @@
   "R14_DELIVERY_SUMMARY.json",
   "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json"
  ],
- "generated_at_head": "321bc7f2db91874cae2cfab8d853573cae580831",
+ "generated_at_head": "b5ba1b5ac9661c9a886fd8454b3696494c6b8c22",
  "self_row_policy": "status=self 的行不登记字节与指纹：索引无法登记写出后的自己（自指）。它每轮的 `commit_last_touched` 必然指向上一轮，这是**已知且如实**，不是漏记。",
  "fingerprint_scope": "sha_short 为**内容指纹**：剥除 head/run_mark/code_version/generated_at*/git_sha/commit/sha256_now 等**运行中戳**后再哈希；这些字段仍原样留在件里用于新鲜度判断，只是不参与指纹，否则每提交一轮就永远差一轮。",
  "n_artifacts": 60,
@@ -221,10 +221,9 @@
   },
   {
    "artifact": "R14_INDEX.json",
-   "bytes": 51970,
-   "sha256": "9712810e259419c7e01599d91027fc3d8626f695fe260a27fa9a4e765c74d770",
-   "sha_short": "9712810e2594",
-   "sha256_bytes": "9a77b3f345f3b88aeda71f85e67632187a56272d5865ab7cfbaaa21c0a747b01",
+   "bytes": 52193,
+   "sha256": "SELF_REFERENTIAL_NOT_HASHED",
+   "sha_short": "SELF_REFERENTIAL_NOT_HASHED",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -240,14 +239,13 @@
    "reproduced_by_bundle": true,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "321bc7f"
+   "commit_last_touched": "SELF_REFERENTIAL"
   },
   {
    "artifact": "R14_INDEX.md",
    "bytes": 9453,
-   "sha256": "876df16a097f3f805c6d9417dd7a86735177559cc8ae82b47838670bfd284ffe",
-   "sha_short": "876df16a097f",
-   "sha256_bytes": "876df16a097f3f805c6d9417dd7a86735177559cc8ae82b47838670bfd284ffe",
+   "sha256": "SELF_REFERENTIAL_NOT_HASHED",
+   "sha_short": "SELF_REFERENTIAL_NOT_HASHED",
    "status": "self",
    "status_note": "索引自身：无法登记写出后的最终字节（自指），故不入哈希自检",
    "producer_scripts": [
@@ -260,7 +258,7 @@
    "reproduced_by_bundle": false,
    "reproducible": true,
    "commit_added": "4917457",
-   "commit_last_touched": "321bc7f"
+   "commit_last_touched": "SELF_REFERENTIAL"
   },
   {
    "artifact": "R14_PROGRESS_STOPGATE.md",
