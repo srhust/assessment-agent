@@ -1,12 +1,12 @@
 # R14 ④ 交付汇总与盲评准入结论
 
-- HEAD `b9381e724`；本汇总由 `scripts/r14_delivery_summary.py` **读真件生成**，数字不手打、不跨轮复用。
+- HEAD `a6b9f3ed8`；本汇总由 `scripts/r14_delivery_summary.py` **读真件生成**，数字不手打、不跨轮复用。
 - 取数来源：14 项登记交付件 + F/perturb/A9/G 计划。
 
 ## 十项材料
 
 - **1 交付登记**：14 项在登记内且状态合规；索引 self_checks_failed []
-- **2 一键复现 bundle**：basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head b9381e724 步数 21 fails [] http 0 tokens 0；A12 1/1、A10 []、A11 []
+- **2 一键复现 bundle**：basis STANDALONE_PREVIOUS（独立运行，磁盘件即最新一轮）；status RAN head a6b9f3ed8 步数 21 fails ['scripts/r14_attribute_producer.py --selftest 退出码 1：', "scripts/r14_attribute_producer.py --selftest → R14E_ATTRIBUTION_SELFTEST.json 的 fails = ['写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者']，应为 []", "A6 安全闸门自检未过：['写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者']", 'bundle 收尾：产物**结论**相对轮前发生变化 ["R14E_ATTRIBUTION_SELFTEST.json 结论字段变化 [(\'fails\', [], [\'写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者\'])]"]（轮次戳变化已单列 3 件，不判红）'] http 0 tokens 0；A12 1/1、A10 []、A11 []
 - **3 声明审计**：fails []；C1 63 条、C3 27 条、C8 计数点 23（活引用 13 / 豁免 10）；注入自证 13 例全抓 True
 - **4 补集语义复现**：violations 0；登记反证 mode synthetic proved True
 - **5 生产者归属**：V8 true_producers []、shape_only_matches ['scripts/e2d_r14_production_replay_v4.py']、partial ['scripts/e2_r14_optionband_replay.py'] ⇒ reproducibility VERDICT_REPRODUCIBLE_EVIDENCE_KEYS_MISSING；双钉自测 fails []
@@ -28,3 +28,6 @@
 
 预算：HTTP 0 / LLM 0。
 
+## 取数即断言：失败
+
+- bundle fails 非空：['scripts/r14_attribute_producer.py --selftest 退出码 1：', "scripts/r14_attribute_producer.py --selftest → R14E_ATTRIBUTION_SELFTEST.json 的 fails = ['写出判据**误判**：e2e_r14_index.py 只是读取 R14_VERIFICATION_BUNDLE.json，不得算作者']，应为 []"]

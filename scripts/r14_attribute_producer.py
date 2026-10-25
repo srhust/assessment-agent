@@ -366,12 +366,32 @@ EXPECTED_WRITERS = {
     "e2e_r14_six_condition_lineage.py": "R14E_LINEAGE_SIX_CONDITION.json",
     "e2e_r14_tight_gap_diagnosis.py": "R14E_TIGHT_GAP_DIAGNOSIS.json",
     "e2e_r14_stage_g_readiness.py": "R14G0_GATE_READINESS_V5.json",
+    # **`name = out_name("X.json")` 形状**（局部 helper 的默认件名）：
+    # 正则邻近判据永远不认它，AST 主判据必须认 ——
+    # 本轮实测这条**漏判**过真生产者。
+    "r14_delivery_summary.py": "R14_DELIVERY_SUMMARY.json",
 }
-# **反向钉**：读取方**不得**被判成写出者（v3 的错就是这样让索引"生产"了 bundle 件）
+# **反向钉**：读取方**不得**被判成写出者
+# （v3 的错就是这样让索引"生产"了 bundle 件）。
+# **值改成列表**：同一脚本可以有多条不许越界的形状
+# ——上一版值只能是单个件名，于是
+# `claim_audit` 只能钉住 V8 一条，
+# 它在假 evidence 目录里造 `R14G_RESULT.json` 这条**没钉**，
+# AST 当主判据后立刻复现成"多一个作者"。
 EXPECTED_NOT_WRITERS = {
-    "e2e_r14_index.py": "R14_VERIFICATION_BUNDLE.json",
-    "e2e_r14_claim_audit.py": "R14E_STAGE_E_ACCEPTANCE_V8.json",
-    "e2_r14_v8_reproducibility.py": "R14E_REAL_PAGE_REPLAY_V8.json",
+    "e2e_r14_index.py": ["R14_VERIFICATION_BUNDLE.json"],
+    "e2e_r14_claim_audit.py": ["R14E_STAGE_E_ACCEPTANCE_V8.json",
+                               # 在 `tempfile.mkdtemp()` 的假目录里造的注入样本
+                               "R14G_RESULT.json"],
+    "e2_r14_v8_reproducibility.py": ["R14E_REAL_PAGE_REPLAY_V8.json"],
+    # **先读后写 + `finally` 里 git 复原** = 校验器临时改动，不是生产：
+    # 归属工具曾真的把 g1/g2/g3 三个历史批脚本挑成作者并重写这三件
+    # （事故记在 `a9_r14_historical_bytes.py` 自己的文档里）。
+    "a9_r14_historical_bytes.py": ["R11G_REAL_VISION.json",
+                                   "R12G_REAL_VISION.json",
+                                   "R13G_REAL_VISION.json"],
+    # 汇总器读索引取数，不许因此成为索引的作者
+    "r14_delivery_summary.py": ["R14_INDEX.json"],
 }
 
 def _writer_closure(src: str, lit: str) -> bool:
@@ -668,9 +688,20 @@ def _ast_write_targets(src: str) -> set:
         return names
 
     def _json_lits(node):
-        return {c.value.rsplit("/", 1)[-1] for c in ast.walk(node)
-                if isinstance(c, ast.Constant) and isinstance(c.value, str)
-                and c.value.endswith(".json")}
+        """字面量里的**件名**。
+
+        **空干不要**：`Path(...).with_suffix(".json")`
+        的字面量就是 `".json"`，它不是一个可登记的件名，
+        收进来只会污染归属（本轮实测出现 `.json` 这个假作者目标）。
+        """
+        got = set()
+        for c in ast.walk(node):
+            if isinstance(c, ast.Constant) and isinstance(c.value, str) \
+                    and c.value.endswith(".json"):
+                base = c.value.rsplit("/", 1)[-1]
+                if base.strip("."):
+                    got.add(base)
+        return got
 
     # ---- argparse dest：`{持有者表达式: {dest: 默认件名}}` ----
     holders = {}
@@ -727,6 +758,94 @@ def _ast_write_targets(src: str) -> set:
                         c.attr, set()))
         return {v for v in got if v}
 
+    # **词法作用域归属表**：每个节点属于哪个**最内层**作用域。
+    # 没有它，`_assigned_in(模块, x)` 会下钻进所有函数体，
+    # 把别的函数的**同名局部变量**串成来源（本轮实测假阳性根因：
+    # `_bundle_steps()` 里 `p = EV / "R14_VERIFICATION_BUNDLE.json"`
+    # 是**读取**，却经 `r → p` 串进了 `main()` 的写出目标）。
+    _inner_scopes = [n for n in ast.walk(tree)
+                     if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef,
+                                       ast.ClassDef))]
+    owner_of = {}
+
+    def _own(node, cur):
+        """每个节点登记**最内层**作用域。
+
+        上一版只登记了"树本身 + 各函数内部的节点"，
+        模块级语句同样要登记（顶层赋值、顶层写句都在这）。
+        **注意查表键**：本表键是 `id(节点)`，
+        用它查回去必须 `owner_of[id(node)]`；
+        上一版误写 `owner_of.get(node)` ⇒ 恒 None ⇒
+        13 个靠变量回溯认定的真生产者一起"漏判"
+        （成批失败先查键，不要先改判据语义）。
+        """
+        owner_of[id(node)] = cur
+        for ch in ast.iter_child_nodes(node):
+            if isinstance(ch, (ast.FunctionDef, ast.AsyncFunctionDef,
+                               ast.ClassDef)):
+                _own(ch, ch)
+            else:
+                _own(ch, cur)
+
+    _own(tree, tree)
+    # **祖先链**：Python 里函数**能读**模块全局，
+    # 所以可见性 = 自身 ∪ 祖先；兄弟函数的局部变量不可见。
+    parent_scope = {}
+
+    def _build_scope_tree(node, cur):
+        for ch in ast.iter_child_nodes(node):
+            if isinstance(ch, (ast.FunctionDef, ast.AsyncFunctionDef,
+                               ast.ClassDef)):
+                parent_scope[id(ch)] = cur
+                _build_scope_tree(ch, ch)
+            else:
+                _build_scope_tree(ch, cur)
+
+    _build_scope_tree(tree, tree)
+
+    def _ancestors(scope):
+        out, cur = [tree], scope
+        while cur is not None:
+            out.append(cur)
+            cur = parent_scope.get(id(cur))
+        return set(id(x) for x in out)
+
+    # **每个作用域"自有"的赋值**（不含嵌套函数里的）：
+    # 回溯祖先时必须**取到**祖先的赋值节点，
+    # 光"放行可见性"不够 —— `ast.walk(scope)` 里根本没有模块级节点。
+    assigns = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            # **键必须是 `id(scope)`**：`owner_of` 用 `id(节点)` 建键，
+            # 上一版写 `owner_of.get(node)`（拿节点当键）⇒ **恒 None** ⇒
+            # 所有赋值挤进 `id(None)` 一个桶 ⇒
+            # 靠变量回溯认定的真生产者**一起漏判**（本轮 13 个）。
+            # ⇒ 成批失败先查**建表/查表的键**，别急着改判据语义。
+            assigns.setdefault(owner_of[id(node)], []).append(node)
+
+    def _visible(owner, scope):
+        """赋值节点归属 `owner`，`scope` 里的代码能否看到它。"""
+        if owner is None:
+            return False
+        return id(owner) in _ancestors(scope)
+
+    def _scope_assigns(scope):
+        """`scope` 及其**祖先**能看到的赋值节点。
+
+        祖先 = 函数能读模块全局（Python 基本语义）。
+        **兄弟作用域的局部变量不在其中** —— 那正是上一轮
+        `_bundle_steps()` 里读 bundle 件的局部 `p`
+        被串进 `main()` 写出目标的入口。
+        """
+        out = []
+        cur = scope
+        while True:
+            out.extend(assigns.get(cur, []))
+            if cur is tree or id(cur) not in parent_scope:
+                break
+            cur = parent_scope[id(cur)]
+        return out
+
     def _assigned_in(scope, var, _seen=None):
         """`scope` 内把 `var` 当赋值目标的那些 RHS 的件名。
 
@@ -741,28 +860,198 @@ def _ast_write_targets(src: str) -> set:
             return set()
         seen = seen | {var}
         out = set()
-        for node in ast.walk(scope):
-            if isinstance(node, ast.Assign) and any(
-                    isinstance(t, ast.Name) and t.id == var
-                    for t in node.targets):
-                vals = set(_json_lits(node.value))
-                for c in ast.walk(node.value):
-                    if isinstance(c, ast.Name):
-                        vals |= _assigned_in(scope, c.id, seen)
-                    elif isinstance(c, ast.Attribute):
-                        owner = _owner_of(c)
-                        if owner:
-                            v = dest_by_holder.get(owner, {}).get(c.attr)
-                            if v:
-                                vals.add(v)
-                out |= vals
+        for node in _scope_assigns(scope):
+            if not any(isinstance(t, ast.Name) and t.id == var
+                       for t in node.targets):
+                continue
+            vals = set(_json_lits(node.value))
+            # **不需要单独的"helper 实参"分支**：
+            # `_json_lits(node.value)` 走的是**整棵 RHS 子树**，
+            # `name = out_name("X.json")` 里的字面量本来就在里面。
+            # 上一轮我加过这样一个分支，反证（打坏它结论不变）
+            # 证明它**不参与判定** ⇒ 删掉。
+            # 真正让 `r14_delivery_summary.py` 不再被漏判的是
+            # "**AST 当主判据**"那一条，不是这块重复代码。
+            for c in ast.walk(node.value):
+                if isinstance(c, ast.Name):
+                    vals |= _assigned_in(scope, c.id, seen)
+                elif isinstance(c, ast.Attribute):
+                    owner = _owner_of(c)
+                    if owner:
+                        v = dest_by_holder.get(owner, {}).get(c.attr)
+                        if v:
+                            vals.add(v)
+            out |= vals
         return out
 
+    # **临时目录根变量**：绑定过 mkdtemp()/TemporaryDirectory() 的名字
+    temp_names = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            v = node.value
+            # **整棵 RHS 子树**里出现探针构造都算（
+            # `tmp = Path(tempfile.mkdtemp())` 最外层是 `Path(...)`，
+            # 只看最外层调用 ⇒ 这个假 evidence 目录漏网，
+            # 里面造的 `R14G_RESULT.json` 被算成产出）
+            if any(isinstance(c, ast.Call) and any(
+                    k in ast.dump(c.func) for k in
+                    ("mkdtemp", "TemporaryDirectory",
+                     "NamedTemporaryFile")) for c in ast.walk(v)):
+                for t in node.targets:
+                    if isinstance(t, ast.Name):
+                        temp_names.add(t.id)
+                    elif isinstance(t, ast.Tuple):
+                        temp_names.update(
+                            e.id for e in t.elts if isinstance(e, ast.Name))
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.With):
+            for it in node.items:
+                ce = it.context_expr
+                if any(isinstance(c, ast.Call) and any(
+                        k in ast.dump(c.func) for k in
+                        ("mkdtemp", "TemporaryDirectory",
+                         "NamedTemporaryFile")) for c in ast.walk(ce)):
+                    if isinstance(it.optional_vars, ast.Name):
+                        temp_names.add(it.optional_vars.id)
+
+    def _uses_temp_root(expr, scope):
+        """写出目标里是否牵到**临时根**（含变量回溯一层）。"""
+        names = {c.id for c in ast.walk(expr) if isinstance(c, ast.Name)}
+        if names & temp_names:
+            return True
+        # **多跳闭包**：`fake = tmp / "r"` 里的 `tmp` 是临时根 ⇒
+        # `fake` 也是临时根。上一版只回溯一层，
+        # `claim_audit` 的假目录名正落在第二跳。
+        frontier = set(names)
+        grown = set()
+        while frontier:
+            nm = frontier.pop()
+            if nm in temp_names:
+                return True
+            if nm in grown:
+                continue
+            grown.add(nm)
+            for node in _scope_assigns(scope):
+                if not any(isinstance(t, ast.Name) and t.id == nm
+                           for t in node.targets):
+                    continue
+                inner = {c.id for c in ast.walk(node.value)
+                         if isinstance(c, ast.Name)}
+                frontier |= inner - grown
+        return False
+
+    def _restored_by_finally(write_node, scope):
+        """写出被包在 `try` 里，且 `finally` 用 `git checkout -- <同路径>`
+        复原 ⇒ **该写出的目的是临时改动**（校验器自测），不是生产。
+
+        **读不是证据**：生产者读旧件做对比是常态
+        （上一版"先读后写"判据把真生产者 `d9_r14_stage_g_manifest.py`
+        判成非作者，实测漏判）。
+        **承诺复原才是证据**：a9 的 `finally` 里
+        `subprocess.run(["git", "-C", ROOT, "checkout", "--", rel])`
+        自己说"这些字节不属于我"。
+        """
+        for anc in _ancestors_of(write_node, scope):
+            if not isinstance(anc, ast.Try):
+                continue
+            for fin in anc.finalbody:
+                for call in ast.walk(fin):
+                    if not isinstance(call, ast.Call):
+                        continue
+                    lits = [c.value for c in ast.walk(call)
+                            if isinstance(c, ast.Constant)
+                            and isinstance(c.value, str)]
+                    if "checkout" not in lits:
+                        continue
+                    # 复原路径与写出目标牵到同一个变量名 ⇒ 同一件
+                    wvars = {c.id for c in ast.walk(write_node)
+                             if isinstance(c, ast.Name)}
+                    fvars = {c.id for c in ast.walk(call)
+                             if isinstance(c, ast.Name)}
+                    if wvars & fvars or any(
+                            isinstance(x, str) and x.endswith(".json")
+                            and x.rsplit("/", 1)[-1]
+                            in {y for y in lits if isinstance(y, str)}
+                            for x in lits):
+                        return True
+        return False
+
+    # **节点 → 父节点**（一次递归建全，用对象身份）：
+    # 上一版我写的"祖先链"是拿栈瞎凑的 DFS，
+    # 返回的不是路径、还往 AST 节点上挂 `_seen_mark` 属性 ——
+    # **碰运气的判据不算判据**。
+    node_parent = {}
+
+    def _link_parents(node):
+        for ch in ast.iter_child_nodes(node):
+            node_parent[id(ch)] = node
+            _link_parents(ch)
+
+    _link_parents(tree)
+
+    def _ancestors_of(node, root):
+        out, cur, guard = [], node, 0
+        while cur is not None and guard < 5000:
+            out.append(cur)
+            if cur is root:
+                break
+            cur = node_parent.get(id(cur))
+            guard += 1
+        return out
+
+    def _reads_before_write(scope, var):
+        """同一作用域里，`var` 在写出**之前**是否被当文件读过。
+
+        读过 = `.read_text()/.read_bytes()` 或作为 `open(var)` 的参数。
+        ⇒ "先读已存在的件、再写回去"是**校验器的改动**，不是生产。
+        """
+        if not var:
+            return False
+        read_lines = []
+        for node in ast.walk(scope):
+            if isinstance(node, ast.Call):
+                f = node.func
+                if isinstance(f, ast.Attribute) and f.attr in (
+                        "read_text", "read_bytes"):
+                    base = f.value
+                    if isinstance(base, ast.Name) and base.id == var:
+                        read_lines.append(node.lineno)
+                if isinstance(f, ast.Name) and f.id == "open":
+                    if any(isinstance(a, ast.Name) and a.id == var
+                           for a in node.args):
+                        read_lines.append(node.lineno)
+        return bool(read_lines)
+
     def _probe_lines(scope):
-        return {n.lineno for n in ast.walk(scope)
-                if isinstance(n, ast.Call) and any(
+        """**探针行集**：命中即"这段写出不是生产交付件"。
+
+        上一版只收探针**调用那一行** ⇒
+        `with tempfile.TemporaryDirectory() as td:` 里的
+        `p.write_bytes(...)`（p 指向**真 evidence 路径**）
+        行号不同、躲过排除 ⇒
+        a9 被登记成 `R11G_REAL_VISION.json` 的作者
+        （它文档里记的正是"归属工具误挑历史批脚本、
+        把这三件重写"的事故，我自己又复现了一遍）。
+        ⇒ **按块排除**：`with` 体的整个行范围都算探针作用域。
+        """
+        out = set()
+        for n in ast.walk(scope):
+            if isinstance(n, ast.Call) and any(
                     k in ast.dump(n.func) for k in
-                    ("mkdtemp", "TemporaryDirectory", "NamedTemporaryFile"))}
+                    ("mkdtemp", "TemporaryDirectory", "NamedTemporaryFile")):
+                out.add(n.lineno)
+            if isinstance(n, ast.With):
+                if any(isinstance(it.context_expr, ast.Call) and any(
+                        k in ast.dump(it.context_expr.func) for k in
+                        ("mkdtemp", "TemporaryDirectory",
+                         "NamedTemporaryFile")) for it in n.items):
+                    out.update(range(n.lineno,
+                                     (n.end_lineno or n.lineno) + 1))
+        return out
+
+    def scope_name(sc):
+        return getattr(sc, "name", None) or "<module>"
 
     scopes = [tree] + [n for n in ast.walk(tree)
                        if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef,
@@ -772,12 +1061,24 @@ def _ast_write_targets(src: str) -> set:
         for node in ast.walk(scope):
             if not isinstance(node, ast.Call):
                 continue
+            # **写出语句归属该作用域才解析**（否则模块作用域
+            # 会把每个函数里的写句再解析一遍，用的是全局变量表）
+            if owner_of.get(id(node)) is not scope:
+                continue
             f = node.func
             if node.lineno in bad:
                 continue          # **探针作用域内不算生产**
             if isinstance(f, ast.Attribute) and f.attr in (
                     "write_text", "write_bytes"):
-                names |= _resolve(f.value, scope)
+                _recv = f.value
+                if _uses_temp_root(_recv, scope):
+                    continue      # 规则①：写进临时目录不算生产
+                if _restored_by_finally(node, scope):
+                    # 规则②：**这段写出承诺被撤销** ⇒ 不是生产
+                    _MUTATORS.setdefault(
+                        f.value, set()).add(scope_name(scope))
+                    continue
+                names |= _resolve(_recv, scope)
             elif isinstance(f, ast.Name) and f.id == "open":
                 if node.args and isinstance(node.args[0], ast.Constant) \
                         and isinstance(node.args[0].value, str) \
@@ -785,8 +1086,13 @@ def _ast_write_targets(src: str) -> set:
                     if any(isinstance(a, ast.Constant) and a.value in ("w", "wb")
                            for a in node.args[1:]):
                         names.add(node.args[0].value.rsplit("/", 1)[-1])
-    return names
+    # **空干不是件名**：`with_suffix(".json")` 等字面量在
+    # `open()` 分支没经过 `_json_lits` 的过滤，这里统一兜住。
+    return {n for n in names if n and n.strip(".") and len(n) > 5}
 
+
+# **改写者登记**：先读后写的形状不算作者，但要**看得见**被排除了什么
+_MUTATORS: dict = {}
 
 _AST_CACHE = {}
 
@@ -861,6 +1167,13 @@ def script_declares_write(name: str):
                 out.add(base)
             else:
                 _AST_DISAGREE.append((name, base))
+    # **AST 是主判据，正则只是补充**（本轮把闸门反向打开）：
+    # `_ast_targets(src)` 给出的就是"写出语句解析出的目标"，
+    # 再要求正则先认一遍，等于让**已被证伪的邻近判据继续当闸门**——
+    # `name = out_name("X.json")` 这类形状正则永远不认，
+    # 于是真生产者被静默漏判（本轮实测 `r14_delivery_summary.py`）。
+    for _a in _ast_targets(src):
+        out.add(_a)
     # **`--out` 覆盖名也算作者，但要有写出能力**：
     # 证据来自 bundle 的**已登记运行计划**（不是我为 A10 加的豁免名单），
     # 可**提到 ≠ 生产**这条口径在这里同样成立——
@@ -1070,9 +1383,11 @@ def selftest(artifact: str = "R14E_REAL_PAGE_REPLAY_V8.json"):
     for scr, art in EXPECTED_WRITERS.items():
         if art not in script_declares_write(scr):
             fails.append(f"写出判据**漏判**：{scr} 应声明写出 {art}")
-    for scr, art in EXPECTED_NOT_WRITERS.items():
-        if art in script_declares_write(scr):
-            fails.append(f"写出判据**误判**：{scr} 只是读取 {art}，不得算作者")
+    for scr, arts in EXPECTED_NOT_WRITERS.items():
+        for art in (arts if isinstance(arts, list) else [arts]):
+            if art in script_declares_write(scr):
+                fails.append(f"写出判据**误判**：{scr} 只是读取 {art}，"
+                             f"不得算作者")
     fakes = (("zfake_net.py", SELFTEST_NET), ("zfake_orch.py", SELFTEST_ORCH))
     for name, body in fakes:
         (ROOT / "scripts" / name).write_text(body, encoding="utf-8")
