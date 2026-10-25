@@ -1,5 +1,5 @@
 {
- "run_mark": "6825f29bc664",
+ "run_mark": "337486292fe2",
  "A1b_selftest": {
   "probe": [
    "R14_VERIFICATION_BUNDLE.json",
@@ -49,7 +49,7 @@
   "R14_DELIVERY_SUMMARY.json",
   "R14_DELIVERY_SUMMARY_INJECT_SELFTEST.json"
  ],
- "generated_at_head": "b5ba1b5ac9661c9a886fd8454b3696494c6b8c22",
+ "generated_at_head": "8922b02be531e87adab4983aa9bbf837bb67bf8b",
  "self_row_policy": "status=self 的行不登记字节与指纹：索引无法登记写出后的自己（自指）。它每轮的 `commit_last_touched` 必然指向上一轮，这是**已知且如实**，不是漏记。",
  "fingerprint_scope": "sha_short 为**内容指纹**：剥除 head/run_mark/code_version/generated_at*/git_sha/commit/sha256_now 等**运行中戳**后再哈希；这些字段仍原样留在件里用于新鲜度判断，只是不参与指纹，否则每提交一轮就永远差一轮。",
  "n_artifacts": 60,
@@ -221,7 +221,7 @@
   },
   {
    "artifact": "R14_INDEX.json",
-   "bytes": 52193,
+   "bytes": 51991,
    "sha256": "SELF_REFERENTIAL_NOT_HASHED",
    "sha_short": "SELF_REFERENTIAL_NOT_HASHED",
    "status": "self",
